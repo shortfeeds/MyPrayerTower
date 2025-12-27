@@ -55,6 +55,10 @@ model User {
   notifications     Notification[]
   sessions          Session[]
   
+  // B2B Portal Relations
+  followedChurches  ChurchFollower[]
+  churchAdminRoles  ChurchAdmin[]
+  
   @@index([email])
   @@index([homeChurchId])
 }
@@ -194,6 +198,12 @@ model Church {
   claims          ChurchClaim[]
   staff           ChurchStaff[]
   prayerRequests  PrayerRequest[]
+  
+  // B2B Portal Relations
+  subscription    ChurchSubscription?
+  announcements   ChurchAnnouncement[]
+  followers       ChurchFollower[]
+  admins          ChurchAdmin[]
   
   @@index([city, country])
   @@index([latitude, longitude])
@@ -740,4 +750,205 @@ enum MinistryType {
   YOUTH_GROUP
   SUPPORT_GROUP
   OTHER
+}
+
+// ============================================
+// B2B CHURCH PORTAL (Monetization)
+// ============================================
+
+model ChurchSubscription {
+  id              String              @id @default(cuid())
+  churchId        String              @unique
+  church          Church              @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  
+  // Tier
+  tier            ChurchTier          @default(UNCLAIMED)
+  
+  // Payment
+  paidAmount      Float?
+  paidAt          DateTime?
+  stripePaymentId String?
+  
+  // Features
+  announcementsLimit Int?             // null = unlimited
+  eventsLimit     Int?                // null = unlimited
+  adminsLimit     Int                 @default(1)
+  
+  // Status
+  isActive        Boolean             @default(false)
+  activatedAt     DateTime?
+  expiresAt       DateTime?           // null = lifetime
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  @@index([tier])
+  @@index([isActive])
+}
+
+enum ChurchTier {
+  UNCLAIMED       // Free, no management features
+  BASIC           // $99 - Basic parish
+  PRO             // $249 - Pro parish  
+  CATHEDRAL       // $499 - Large parishes
+  DIOCESE         // $2499 - Diocese license
+}
+
+model ChurchAnnouncement {
+  id              String              @id @default(cuid())
+  churchId        String
+  church          Church              @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  
+  // Content
+  title           String
+  content         String
+  imageUrl        String?
+  linkUrl         String?
+  linkText        String?
+  
+  // Targeting
+  isPinned        Boolean             @default(false)
+  isPublished     Boolean             @default(true)
+  publishedAt     DateTime            @default(now())
+  expiresAt       DateTime?
+  
+  // Notifications
+  pushSent        Boolean             @default(false)
+  pushSentAt      DateTime?
+  
+  // Stats
+  viewCount       Int                 @default(0)
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  @@index([churchId])
+  @@index([isPublished, publishedAt])
+}
+
+model ChurchFollower {
+  id              String              @id @default(cuid())
+  churchId        String
+  church          Church              @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Preferences
+  pushEnabled     Boolean             @default(true)
+  emailEnabled    Boolean             @default(false)
+  
+  // Status
+  isParishioner   Boolean             @default(false) // Official member vs visitor
+  
+  followedAt      DateTime            @default(now())
+  
+  @@unique([churchId, userId])
+  @@index([churchId])
+  @@index([userId])
+}
+
+model ChurchAdmin {
+  id              String              @id @default(cuid())
+  churchId        String
+  church          Church              @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Role
+  role            ChurchAdminRole     @default(EDITOR)
+  
+  // Permissions (override role if needed)
+  canEditInfo     Boolean             @default(true)
+  canPostAnnouncements Boolean        @default(true)
+  canManageEvents Boolean             @default(true)
+  canManageAdmins Boolean             @default(false)
+  canViewAnalytics Boolean            @default(true)
+  
+  invitedBy       String?
+  invitedAt       DateTime            @default(now())
+  acceptedAt      DateTime?
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  @@unique([churchId, userId])
+  @@index([churchId])
+  @@index([userId])
+}
+
+enum ChurchAdminRole {
+  OWNER           // Full control, can transfer ownership
+  ADMIN           // Full control except transfer
+  EDITOR          // Can edit content, no admin management
+  VIEWER          // Read-only analytics access
+}
+
+// ============================================
+// RSS NEWS FEEDS
+// ============================================
+
+model NewsArticle {
+  id           String   @id @default(cuid())
+  externalId   String   @unique // RSS GUID
+  source       String   // CNA, Vatican, EWTN, etc.
+  title        String
+  summary      String?
+  content      String?
+  imageUrl     String?
+  linkUrl      String
+  author       String?
+  category     String?
+  publishedAt  DateTime
+  fetchedAt    DateTime @default(now())
+  
+  @@index([source])
+  @@index([publishedAt])
+  @@index([category])
+}
+
+// ============================================
+// SPONSORED CONTENT & ADVERTISING
+// ============================================
+
+model SponsoredContent {
+  id           String      @id @default(cuid())
+  type         AdType
+  title        String
+  description  String?
+  imageUrl     String
+  linkUrl      String
+  placement    String      // homepage, sidebar, prayer-wall, events
+  advertiser   String
+  advertiserEmail String?
+  
+  // Schedule
+  startDate    DateTime
+  endDate      DateTime
+  
+  // Stats
+  impressions  Int         @default(0)
+  clicks       Int         @default(0)
+  
+  // Payment
+  paidAmount   Float?
+  stripePaymentId String?
+  
+  // Status
+  isActive     Boolean     @default(false)
+  isApproved   Boolean     @default(false)
+  approvedBy   String?
+  approvedAt   DateTime?
+  
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  
+  @@index([placement, isActive])
+  @@index([startDate, endDate])
+}
+
+enum AdType {
+  BANNER       // Standard image banner
+  NATIVE       // Text + small image, blends with content
+  NEWSLETTER   // Email newsletter sponsor
+  FEATURED     // Featured listing boost
 }

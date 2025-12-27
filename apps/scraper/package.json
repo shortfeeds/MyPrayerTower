@@ -9,6 +9,9 @@
         "scrape:churches": "ts-node src/scrapers/churches.ts",
         "scrape:saints": "ts-node src/scrapers/saints.ts",
         "import:netministries": "ts-node src/sync-netministries.ts",
+        "import:gcatholic:dioceses": "ts-node src/import-gcatholic-dioceses.ts",
+        "import:gcatholic:saints:complete": "ts-node src/import-gcatholic-saints-complete.ts",
+        "import:gcatholic:churches:complete": "ts-node src/import-gcatholic-churches-complete.ts",
         "scrape:all": "ts-node src/index.ts --full",
         "dev": "ts-node-dev --respawn src/index.ts"
     },

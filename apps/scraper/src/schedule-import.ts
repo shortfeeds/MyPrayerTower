@@ -1,5 +1,5 @@
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@mpt/database';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -76,9 +76,17 @@ async function main() {
 
             // Run the heavy scripts
             // Note: We run them sequentially to avoid memory issues
-            await runCommand('npm run import:gcatholic:dioceses'); // Ensure region structure
-            await runCommand('npm run import:gcatholic:saints:complete');
-            await runCommand('npm run import:gcatholic:churches:complete');
+            console.log('--- Step 1: GCatholic Dioceses ---');
+            await runCommand('npm run --prefix apps/scraper import:gcatholic:dioceses');
+
+            console.log('--- Step 2: GCatholic Saints ---');
+            await runCommand('npm run --prefix apps/scraper import:gcatholic:saints:complete');
+
+            console.log('--- Step 3: GCatholic Churches ---');
+            await runCommand('npm run --prefix apps/scraper import:gcatholic:churches:complete');
+
+            console.log('--- Step 4: NetMinistries (Churches & Ministries) ---');
+            await runCommand('npm run --prefix apps/scraper import:netministries');
 
             // Update log to completed
             const activeLog = await prisma.syncLog.findFirst({
@@ -103,7 +111,7 @@ async function main() {
 
         // 3. ALWAYS run RSS Sync (Daily check)
         console.log('📡 Running Daily RSS Sync...');
-        await runCommand('npx ts-node src/sync-gcatholic-rss.ts');
+        await runCommand('npx ts-node apps/scraper/src/sync-gcatholic-rss.ts');
 
         console.log('✅ Scheduler finished successfully.');
 
