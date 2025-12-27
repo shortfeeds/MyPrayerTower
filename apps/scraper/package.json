@@ -1,0 +1,32 @@
+{
+    "name": "@mpt/scraper",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "ts-node src/index.ts",
+        "scrape:prayers": "ts-node -e \"require('dotenv').config(); require('./src/scrapers/prayers').scrapeAllPrayers(require('@mpt/database').PrismaClient && new (require('@mpt/database').PrismaClient)())\"",
+        "scrape:dioceses": "ts-node src/scrapers/dioceses.ts",
+        "scrape:churches": "ts-node src/scrapers/churches.ts",
+        "scrape:saints": "ts-node src/scrapers/saints.ts",
+        "import:netministries": "ts-node src/sync-netministries.ts",
+        "scrape:all": "ts-node src/index.ts --full",
+        "dev": "ts-node-dev --respawn src/index.ts"
+    },
+    "dependencies": {
+        "@mpt/database": "workspace:*",
+        "@types/xml2js": "^0.4.14",
+        "axios": "^1.6.0",
+        "cheerio": "^1.0.0-rc.12",
+        "dotenv": "^16.3.0",
+        "p-queue": "^8.0.0",
+        "puppeteer": "^21.7.0",
+        "winston": "^3.11.0",
+        "xml2js": "^0.6.2"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.0",
+        "ts-node": "^10.9.0",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.3.0"
+    }
+}

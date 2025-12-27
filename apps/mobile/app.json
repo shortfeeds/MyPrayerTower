@@ -1,0 +1,48 @@
+{
+    "expo": {
+        "name": "MyPrayerTower",
+        "slug": "myprayertower",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "automatic",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#0c4a6e"
+        },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.myprayertower.app",
+            "infoPlist": {
+                "NSLocationWhenInUseUsageDescription": "We need your location to find churches near you."
+            }
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#0c4a6e"
+            },
+            "package": "com.myprayertower.app",
+            "permissions": [
+                "ACCESS_FINE_LOCATION",
+                "ACCESS_COARSE_LOCATION"
+            ]
+        },
+        "plugins": [
+            "expo-router",
+            "expo-location",
+            [
+                "expo-notifications",
+                {
+                    "icon": "./assets/notification-icon.png",
+                    "color": "#0ea5e9"
+                }
+            ]
+        ],
+        "scheme": "myprayertower"
+    }
+}

@@ -1,0 +1,171 @@
+{
+    "common": {
+        "appName": "MyPrayerTower",
+        "tagline": "Tu Viaje Espiritual, Una Plataforma",
+        "loading": "Cargando...",
+        "error": "Algo salió mal",
+        "retry": "Intentar de Nuevo",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "submit": "Enviar",
+        "search": "Buscar",
+        "filter": "Filtrar",
+        "all": "Todos",
+        "viewAll": "Ver Todo",
+        "learnMore": "Conocer Más",
+        "back": "Atrás",
+        "next": "Siguiente",
+        "continue": "Continuar"
+    },
+    "nav": {
+        "home": "Inicio",
+        "churches": "Iglesias",
+        "prayerWall": "Muro de Oración",
+        "prayers": "Oraciones",
+        "saints": "Santos",
+        "profile": "Perfil",
+        "login": "Iniciar Sesión",
+        "register": "Crear Cuenta",
+        "logout": "Cerrar Sesión"
+    },
+    "home": {
+        "hero": {
+            "title": "Tu Viaje Espiritual, Una Plataforma",
+            "subtitle": "Encuentra iglesias católicas en todo el mundo, únete a una comunidad global de oración y crece en la fe juntos.",
+            "ctaPrimary": "Buscar Iglesias Cerca de Mí",
+            "ctaSecondary": "Muro de Oración"
+        },
+        "stats": {
+            "churches": "Iglesias Listadas",
+            "prayers": "Oraciones Disponibles",
+            "countries": "Países",
+            "users": "Usuarios Activos"
+        },
+        "features": {
+            "title": "Todo para Tu Camino de Fe",
+            "churchFinder": "Buscador de Iglesias",
+            "churchFinderDesc": "Encuentra horarios de Misa, confesiones y eventos en iglesias católicas de todo el mundo",
+            "prayerWall": "Muro de Oración",
+            "prayerWallDesc": "Comparte tus intenciones y únete a otros en oración",
+            "prayerLibrary": "Biblioteca de Oraciones",
+            "prayerLibraryDesc": "Accede a más de 2,000 oraciones católicas tradicionales y contemporáneas",
+            "saints": "Santos y Lecturas",
+            "saintsDesc": "Historias diarias de santos, fiestas y lecturas espirituales"
+        }
+    },
+    "churches": {
+        "title": "Buscar Iglesias",
+        "searchPlaceholder": "Buscar por ciudad, código postal o dirección...",
+        "filters": {
+            "denomination": "Denominación",
+            "verified": "Solo Verificadas",
+            "nearMe": "Cerca de Mí"
+        },
+        "results": "Mostrando {{count}} iglesias",
+        "verified": "Verificada",
+        "massSchedule": "Horario de Misas",
+        "confession": "Confesión",
+        "directions": "Cómo Llegar",
+        "claim": "Reclamar Esta Iglesia",
+        "claimDesc": "¿Es esta tu iglesia? Reclama este listado para administrar tu perfil."
+    },
+    "prayerWall": {
+        "title": "Muro de Oración",
+        "submitButton": "Enviar Petición de Oración",
+        "categories": {
+            "health": "Salud",
+            "family": "Familia",
+            "work": "Trabajo",
+            "finances": "Finanzas",
+            "relationships": "Relaciones",
+            "spiritual": "Espiritual",
+            "thanksgiving": "Acción de Gracias",
+            "other": "Otro"
+        },
+        "prayButton": "Orar",
+        "praying": "Orando",
+        "answered": "Contestada",
+        "visibility": {
+            "public": "Público",
+            "anonymous": "Anónimo",
+            "church": "Solo Iglesia",
+            "private": "Privado"
+        },
+        "submitModal": {
+            "title": "Enviar Petición de Oración",
+            "placeholder": "Comparte tu intención de oración...",
+            "category": "Categoría",
+            "visibility": "¿Quién puede ver esto?",
+            "disclaimer": "Todas las peticiones de oración son revisadas antes de publicarse."
+        }
+    },
+    "prayers": {
+        "title": "Biblioteca de Oraciones",
+        "subtitle": "Más de 2,000 oraciones para cada ocasión",
+        "searchPlaceholder": "Buscar oraciones...",
+        "categories": {
+            "marian": "Oraciones Marianas",
+            "basic": "Oraciones Básicas",
+            "christ": "Oraciones a Cristo",
+            "family": "Oraciones Familiares",
+            "rosary": "Rosario",
+            "communion": "Comunión"
+        },
+        "popular": "Oraciones Populares"
+    },
+    "saints": {
+        "title": "Calendario de Santos",
+        "todaysSaint": "Santo del Día",
+        "upcoming": "Próximas Fiestas",
+        "browse": "Navegar por Mes"
+    },
+    "auth": {
+        "login": {
+            "title": "Bienvenido de Nuevo",
+            "subtitle": "Inicia sesión para continuar tu viaje",
+            "email": "Correo Electrónico",
+            "password": "Contraseña",
+            "forgotPassword": "¿Olvidaste tu Contraseña?",
+            "noAccount": "¿No tienes una cuenta?",
+            "signUp": "Regístrate"
+        },
+        "register": {
+            "title": "Crear Cuenta",
+            "subtitle": "Únete a millones que crecen en la fe",
+            "firstName": "Nombre",
+            "lastName": "Apellido",
+            "email": "Correo Electrónico",
+            "password": "Contraseña (8+ caracteres)",
+            "terms": "Al registrarte, aceptas nuestros Términos de Servicio y Política de Privacidad",
+            "hasAccount": "¿Ya tienes una cuenta?",
+            "signIn": "Iniciar Sesión"
+        }
+    },
+    "profile": {
+        "title": "Mi Perfil",
+        "memberSince": "Miembro desde {{date}}",
+        "stats": {
+            "prayers": "Oraciones",
+            "answered": "Contestadas",
+            "saved": "Guardadas",
+            "prayed": "Veces Orado"
+        },
+        "tabs": {
+            "prayers": "Mis Oraciones",
+            "saved": "Iglesias Guardadas",
+            "settings": "Configuración"
+        },
+        "upgrade": {
+            "title": "Actualizar a Premium",
+            "description": "Sin anuncios, modo sin conexión, oraciones en audio y más",
+            "button": "Actualizar Ahora"
+        }
+    },
+    "footer": {
+        "about": "Acerca de",
+        "contact": "Contacto",
+        "privacy": "Política de Privacidad",
+        "terms": "Términos de Servicio",
+        "copyright": "© {{year}} MyPrayerTower. Todos los derechos reservados."
+    }
+}

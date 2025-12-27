@@ -1,0 +1,171 @@
+{
+    "common": {
+        "appName": "MyPrayerTower",
+        "tagline": "Your Spiritual Journey, One Platform",
+        "loading": "Loading...",
+        "error": "Something went wrong",
+        "retry": "Try Again",
+        "save": "Save",
+        "cancel": "Cancel",
+        "submit": "Submit",
+        "search": "Search",
+        "filter": "Filter",
+        "all": "All",
+        "viewAll": "View All",
+        "learnMore": "Learn More",
+        "back": "Back",
+        "next": "Next",
+        "continue": "Continue"
+    },
+    "nav": {
+        "home": "Home",
+        "churches": "Churches",
+        "prayerWall": "Prayer Wall",
+        "prayers": "Prayers",
+        "saints": "Saints",
+        "profile": "Profile",
+        "login": "Sign In",
+        "register": "Create Account",
+        "logout": "Sign Out"
+    },
+    "home": {
+        "hero": {
+            "title": "Your Spiritual Journey, One Platform",
+            "subtitle": "Find Catholic churches worldwide, join a global prayer community, and grow in faith together.",
+            "ctaPrimary": "Find Churches Near Me",
+            "ctaSecondary": "Prayer Wall"
+        },
+        "stats": {
+            "churches": "Churches Listed",
+            "prayers": "Prayers Available",
+            "countries": "Countries",
+            "users": "Active Users"
+        },
+        "features": {
+            "title": "Everything for Your Faith Journey",
+            "churchFinder": "Church Finder",
+            "churchFinderDesc": "Find Mass times, confession schedules, and events at Catholic churches worldwide",
+            "prayerWall": "Prayer Wall",
+            "prayerWallDesc": "Share your intentions and join others in prayer",
+            "prayerLibrary": "Prayer Library",
+            "prayerLibraryDesc": "Access 2,000+ traditional and contemporary Catholic prayers",
+            "saints": "Saints & Readings",
+            "saintsDesc": "Daily saint stories, feast days, and spiritual readings"
+        }
+    },
+    "churches": {
+        "title": "Find Churches",
+        "searchPlaceholder": "Search by city, zip code, or address...",
+        "filters": {
+            "denomination": "Denomination",
+            "verified": "Verified Only",
+            "nearMe": "Near Me"
+        },
+        "results": "Showing {{count}} churches",
+        "verified": "Verified",
+        "massSchedule": "Mass Schedule",
+        "confession": "Confession",
+        "directions": "Get Directions",
+        "claim": "Claim This Church",
+        "claimDesc": "Is this your church? Claim this listing to manage your profile."
+    },
+    "prayerWall": {
+        "title": "Prayer Wall",
+        "submitButton": "Submit Prayer Request",
+        "categories": {
+            "health": "Health",
+            "family": "Family",
+            "work": "Work",
+            "finances": "Finances",
+            "relationships": "Relationships",
+            "spiritual": "Spiritual",
+            "thanksgiving": "Thanksgiving",
+            "other": "Other"
+        },
+        "prayButton": "Pray",
+        "praying": "Praying",
+        "answered": "Answered",
+        "visibility": {
+            "public": "Public",
+            "anonymous": "Anonymous",
+            "church": "Church Only",
+            "private": "Private"
+        },
+        "submitModal": {
+            "title": "Submit Prayer Request",
+            "placeholder": "Share your prayer intention...",
+            "category": "Category",
+            "visibility": "Who can see this?",
+            "disclaimer": "All prayer requests are reviewed before publishing."
+        }
+    },
+    "prayers": {
+        "title": "Prayer Library",
+        "subtitle": "2,000+ prayers for every occasion",
+        "searchPlaceholder": "Search prayers...",
+        "categories": {
+            "marian": "Marian Prayers",
+            "basic": "Basic Prayers",
+            "christ": "Christ Prayers",
+            "family": "Family Prayers",
+            "rosary": "Rosary",
+            "communion": "Communion"
+        },
+        "popular": "Popular Prayers"
+    },
+    "saints": {
+        "title": "Saints Calendar",
+        "todaysSaint": "Today's Saint",
+        "upcoming": "Upcoming Feast Days",
+        "browse": "Browse by Month"
+    },
+    "auth": {
+        "login": {
+            "title": "Welcome Back",
+            "subtitle": "Sign in to continue your journey",
+            "email": "Email",
+            "password": "Password",
+            "forgotPassword": "Forgot Password?",
+            "noAccount": "Don't have an account?",
+            "signUp": "Sign Up"
+        },
+        "register": {
+            "title": "Create Account",
+            "subtitle": "Join millions growing in faith",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "email": "Email",
+            "password": "Password (8+ characters)",
+            "terms": "By signing up, you agree to our Terms of Service and Privacy Policy",
+            "hasAccount": "Already have an account?",
+            "signIn": "Sign In"
+        }
+    },
+    "profile": {
+        "title": "My Profile",
+        "memberSince": "Member since {{date}}",
+        "stats": {
+            "prayers": "Prayers",
+            "answered": "Answered",
+            "saved": "Saved",
+            "prayed": "Times Prayed"
+        },
+        "tabs": {
+            "prayers": "My Prayers",
+            "saved": "Saved Churches",
+            "settings": "Settings"
+        },
+        "upgrade": {
+            "title": "Upgrade to Premium",
+            "description": "Remove ads, unlock offline mode, audio prayers & more",
+            "button": "Upgrade Now"
+        }
+    },
+    "footer": {
+        "about": "About",
+        "contact": "Contact",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "copyright": "© {{year}} MyPrayerTower. All rights reserved."
+    }
+}
