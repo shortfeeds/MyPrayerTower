@@ -33,4 +33,4 @@ jobs:
       - name: Run Smart Scheduler
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: pnpm exec ts-node apps/scraper/src/schedule-import.ts
+        run: pnpm dlx ts-node apps/scraper/src/schedule-import.ts
