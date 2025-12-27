@@ -5,18 +5,25 @@ on:
     # Run at 00:00 UTC every day
     - cron: '0 0 * * *'
   workflow_dispatch:
-    # Allow manual trigger
+    # Allow manual trigger with options
+    inputs:
+      force_full_import:
+        description: 'Force full import (ignore interval check)'
+        required: false
+        default: 'true'
+        type: boolean
 
 jobs:
   scheduled-import:
     runs-on: ubuntu-latest
+    timeout-minutes: 360  # 6 hours for large imports
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
@@ -33,4 +40,10 @@ jobs:
       - name: Run Smart Scheduler
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: pnpm dlx ts-node apps/scraper/src/schedule-import.ts
+        run: |
+          if [ "${{ github.event.inputs.force_full_import }}" == "true" ]; then
+            pnpm dlx ts-node apps/scraper/src/schedule-import.ts --force
+          else
+            pnpm dlx ts-node apps/scraper/src/schedule-import.ts
+          fi
+
