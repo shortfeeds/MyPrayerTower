@@ -42,8 +42,8 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           if [ "${{ github.event.inputs.force_full_import }}" == "true" ]; then
-            pnpm dlx ts-node apps/scraper/src/schedule-import.ts --force
+            pnpm --filter @mpt/scraper run scheduler:force
           else
-            pnpm dlx ts-node apps/scraper/src/schedule-import.ts
+            pnpm --filter @mpt/scraper run scheduler
           fi
 

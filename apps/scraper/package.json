@@ -13,6 +13,8 @@
         "import:gcatholic:saints:complete": "ts-node src/import-gcatholic-saints-complete.ts",
         "import:gcatholic:churches:complete": "ts-node src/import-gcatholic-churches-complete.ts",
         "scrape:all": "ts-node src/index.ts --full",
+        "scheduler": "ts-node src/schedule-import.ts",
+        "scheduler:force": "ts-node src/schedule-import.ts --force",
         "dev": "ts-node-dev --respawn src/index.ts"
     },
     "dependencies": {
