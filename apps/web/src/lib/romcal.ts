@@ -1,10 +1,8 @@
 /**
  * Romcal Service - Liturgical Calendar Integration
- * Provides Roman Catholic liturgical calendar data using romcal library
+ * Simple fallback implementation without external romcal dependency
+ * to avoid webpack/hydration issues
  */
-
-// @ts-ignore - romcal types may not be available
-import Romcal from 'romcal';
 
 export interface LiturgicalCelebration {
     key: string;
@@ -73,53 +71,169 @@ const SEASON_COLORS: Record<string, string> = {
 };
 
 /**
+ * Calculate Easter Sunday for a given year using the Anonymous Gregorian algorithm
+ */
+function calculateEaster(year: number): Date {
+    const a = year % 19;
+    const b = Math.floor(year / 100);
+    const c = year % 100;
+    const d = Math.floor(b / 4);
+    const e = b % 4;
+    const f = Math.floor((b + 8) / 25);
+    const g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4);
+    const k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7;
+    const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31) - 1;
+    const day = ((h + l - 7 * m + 114) % 31) + 1;
+
+    return new Date(year, month, day);
+}
+
+/**
+ * Get liturgical season for a date
+ */
+function getLiturgicalSeason(date: Date): { season: string; seasonKey: string; color: string } {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+
+    // Calculate Easter and related dates
+    const easter = calculateEaster(year);
+    const ashWednesday = new Date(easter);
+    ashWednesday.setDate(easter.getDate() - 46);
+    const palmSunday = new Date(easter);
+    palmSunday.setDate(easter.getDate() - 7);
+    const pentecost = new Date(easter);
+    pentecost.setDate(easter.getDate() + 49);
+
+    // Advent: 4 Sundays before Christmas (approximately Nov 27 - Dec 24)
+    const christmas = new Date(year, 11, 25);
+    const advent1 = new Date(christmas);
+    advent1.setDate(christmas.getDate() - ((christmas.getDay() + 21) % 7 + 21));
+
+    if (date >= advent1 && date < christmas) {
+        return { season: 'Advent', seasonKey: 'ADVENT', color: SEASON_COLORS.ADVENT };
+    }
+
+    // Christmas: Dec 25 to Baptism of the Lord (Sunday after Jan 6 or Jan 7 if Jan 6 is Sunday)
+    const jan6 = new Date(year, 0, 6);
+    const baptism = new Date(year, 0, jan6.getDay() === 0 ? 7 : (6 + (7 - jan6.getDay())));
+
+    if ((month === 11 && day >= 25) || (month === 0 && date <= baptism)) {
+        return { season: 'Christmas', seasonKey: 'CHRISTMAS', color: SEASON_COLORS.CHRISTMAS };
+    }
+
+    // Lent: Ash Wednesday to Holy Thursday evening
+    const holyThursday = new Date(easter);
+    holyThursday.setDate(easter.getDate() - 3);
+
+    if (date >= ashWednesday && date < holyThursday) {
+        return { season: 'Lent', seasonKey: 'LENT', color: SEASON_COLORS.LENT };
+    }
+
+    // Paschal Triduum: Holy Thursday evening to Easter Vigil
+    if (date >= holyThursday && date < easter) {
+        return { season: 'Paschal Triduum', seasonKey: 'PASCHAL_TRIDUUM', color: SEASON_COLORS.PASCHAL_TRIDUUM };
+    }
+
+    // Easter: Easter Sunday to Pentecost
+    if (date >= easter && date <= pentecost) {
+        return { season: 'Easter', seasonKey: 'EASTER', color: SEASON_COLORS.EASTER };
+    }
+
+    // Default: Ordinary Time
+    return { season: 'Ordinary Time', seasonKey: 'ORDINARY_TIME', color: SEASON_COLORS.ORDINARY_TIME };
+}
+
+/**
+ * Format date to key format (YYYY-MM-DD)
+ */
+function formatDateKey(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * Get day of week name
+ */
+function getDayOfWeek(date: Date): string {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[date.getDay()];
+}
+
+/**
+ * Check if date is a Holy Day of Obligation (US)
+ */
+function isHolyDayOfObligation(date: Date): boolean {
+    const month = date.getMonth();
+    const day = date.getDate();
+    const dayOfWeek = date.getDay();
+
+    // Always obligatory
+    const holyDays = [
+        { month: 0, day: 1 },   // Mary Mother of God
+        { month: 11, day: 25 }, // Christmas
+    ];
+
+    // Conditionally obligatory (when not on Saturday or Monday)
+    const conditionalHolyDays = [
+        { month: 7, day: 15 },  // Assumption
+        { month: 10, day: 1 },  // All Saints
+    ];
+
+    if (holyDays.some((hd) => hd.month === month && hd.day === day)) {
+        return true;
+    }
+
+    if (conditionalHolyDays.some((hd) => hd.month === month && hd.day === day)) {
+        // Not obligatory if falls on Saturday or Monday (transferred)
+        return dayOfWeek !== 1 && dayOfWeek !== 6;
+    }
+
+    // Immaculate Conception - Dec 8 (always obligatory in US)
+    if (month === 11 && day === 8) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
  * Get liturgical data for a specific date
  */
 export async function getLiturgicalDay(date: Date): Promise<LiturgicalDay> {
-    const year = date.getFullYear();
-
-    // Generate calendar for the year
-    const calendar = Romcal.calendarFor({
-        year: year,
-        country: 'unitedStates', // General Roman Calendar for USA
-        type: 'calendar',
-    });
-
-    // Find the entry for the specific date
+    const seasonInfo = getLiturgicalSeason(date);
     const dateStr = formatDateKey(date);
-    const dayData = calendar[dateStr];
+    const dayName = getDayOfWeek(date);
 
-    if (!dayData || dayData.length === 0) {
-        // Fallback for dates not found
-        return createFallbackDay(date);
-    }
+    // Calculate week of season (simplified)
+    const weekOfSeason = Math.ceil(date.getDate() / 7);
 
-    // Get the highest ranking celebration
-    const primaryCelebration = dayData[0];
-    const seasonKey = primaryCelebration.season?.key || 'ORDINARY_TIME';
-
-    const celebrations: LiturgicalCelebration[] = dayData.map((cel: any) => ({
-        key: cel.key || '',
-        name: cel.name || 'Unknown',
-        rank: cel.rank || 'WEEKDAY',
-        rankName: RANK_NAMES[cel.rank] || cel.rank || 'Weekday',
-        color: cel.liturgicalColors?.[0] || 'green',
-        colorHex: LITURGICAL_COLORS[cel.liturgicalColors?.[0]?.toLowerCase()] || '#008000',
-        seasonKey: cel.season?.key || seasonKey,
-        seasonName: SEASON_NAMES[cel.season?.key] || cel.season?.name || 'Ordinary Time',
-    }));
-
-    const primaryColor = celebrations[0]?.color?.toLowerCase() || 'green';
+    const celebrations: LiturgicalCelebration[] = [{
+        key: 'weekday',
+        name: `${dayName} of ${seasonInfo.season}`,
+        rank: date.getDay() === 0 ? 'SUNDAY' : 'WEEKDAY',
+        rankName: date.getDay() === 0 ? 'Sunday' : 'Weekday',
+        color: seasonInfo.color === '#FFFFFF' ? 'white' : seasonInfo.color === '#800080' ? 'purple' : 'green',
+        colorHex: seasonInfo.color,
+        seasonKey: seasonInfo.seasonKey,
+        seasonName: seasonInfo.season,
+    }];
 
     return {
         date: dateStr,
-        season: SEASON_NAMES[seasonKey] || 'Ordinary Time',
-        seasonKey: seasonKey,
-        seasonColor: LITURGICAL_COLORS[primaryColor] || SEASON_COLORS[seasonKey] || '#008000',
-        weekOfSeason: primaryCelebration.calendar?.weekOfSeason || 1,
-        dayOfWeek: getDayOfWeek(date),
+        season: seasonInfo.season,
+        seasonKey: seasonInfo.seasonKey,
+        seasonColor: seasonInfo.color,
+        weekOfSeason,
+        dayOfWeek: dayName,
         celebrations,
-        isHolyDayOfObligation: primaryCelebration.isHolyDayOfObligation || false,
+        isHolyDayOfObligation: isHolyDayOfObligation(date),
     };
 }
 
@@ -154,72 +268,6 @@ export async function getCurrentSeason(): Promise<{ season: string; color: strin
     return {
         season: today.season,
         color: today.seasonColor,
-    };
-}
-
-/**
- * Format date to romcal key format (YYYY-MM-DD)
- */
-function formatDateKey(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-/**
- * Get day of week name
- */
-function getDayOfWeek(date: Date): string {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return days[date.getDay()];
-}
-
-/**
- * Create fallback liturgical day for missing dates
- */
-function createFallbackDay(date: Date): LiturgicalDay {
-    const month = date.getMonth();
-    let season = 'Ordinary Time';
-    let seasonKey = 'ORDINARY_TIME';
-    let color = '#008000';
-
-    // Simple season detection based on month
-    if (month === 11 && date.getDate() >= 1) {
-        // December - likely Advent or Christmas
-        if (date.getDate() < 25) {
-            season = 'Advent';
-            seasonKey = 'ADVENT';
-            color = '#800080';
-        } else {
-            season = 'Christmas';
-            seasonKey = 'CHRISTMAS';
-            color = '#FFFFFF';
-        }
-    } else if (month === 0 && date.getDate() <= 13) {
-        season = 'Christmas';
-        seasonKey = 'CHRISTMAS';
-        color = '#FFFFFF';
-    }
-
-    return {
-        date: formatDateKey(date),
-        season,
-        seasonKey,
-        seasonColor: color,
-        weekOfSeason: 1,
-        dayOfWeek: getDayOfWeek(date),
-        celebrations: [{
-            key: 'weekday',
-            name: `${getDayOfWeek(date)} of ${season}`,
-            rank: 'WEEKDAY',
-            rankName: 'Weekday',
-            color: color === '#FFFFFF' ? 'white' : color === '#800080' ? 'purple' : 'green',
-            colorHex: color,
-            seasonKey,
-            seasonName: season,
-        }],
-        isHolyDayOfObligation: false,
     };
 }
 

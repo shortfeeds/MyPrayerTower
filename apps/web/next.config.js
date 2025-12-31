@@ -143,7 +143,15 @@ const nextConfig = {
                 headers: [
                     {
                         key: 'Content-Security-Policy',
-                        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://www.googleadservices.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://api.stripe.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://*.supabase.co; frame-src 'self' https://js.stripe.com https://www.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;",
+                        value: [
+                            "default-src 'self'",
+                            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://www.googleadservices.com https://sdk.cashfree.com https://va.vercel-scripts.com",
+                            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                            "font-src 'self' https://fonts.gstatic.com",
+                            "img-src 'self' data: https: blob:",
+                            "connect-src 'self' https://api.stripe.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://*.supabase.co https://api.cashfree.com https://sandbox.cashfree.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
+                            "frame-src 'self' https://js.stripe.com https://www.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://api.cashfree.com https://sandbox.cashfree.com",
+                        ].join('; '),
                     },
                 ],
             },
