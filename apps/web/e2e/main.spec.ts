@@ -13,7 +13,7 @@ test.describe('Home Page', () => {
 
         // Check stats section
         await expect(page.getByText('50,000+')).toBeVisible();
-        await expect(page.getByText('2,000+')).toBeVisible();
+        await expect(page.getByText('4,000+')).toBeVisible();
     });
 
     test('should navigate to churches page', async ({ page }) => {

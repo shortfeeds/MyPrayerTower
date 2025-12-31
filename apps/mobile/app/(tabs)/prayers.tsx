@@ -27,7 +27,7 @@ export default function PrayersScreen() {
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.title}>📖 Prayer Library</Text>
-                <Text style={styles.subtitle}>2,000+ prayers for every occasion</Text>
+                <Text style={styles.subtitle}>4,000+ prayers for every occasion</Text>
 
                 {/* Search */}
                 <View style={styles.searchContainer}>

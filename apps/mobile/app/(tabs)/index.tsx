@@ -30,7 +30,7 @@ export default function HomeScreen() {
     const features = [
         { icon: MapPin, title: 'Find Churches', subtitle: '50,000+ worldwide', route: '/churches', color: '#0ea5e9' },
         { icon: Heart, title: 'Prayer Wall', subtitle: 'Join the community', route: '/prayer-wall', color: '#ec4899' },
-        { icon: BookOpen, title: 'Prayer Library', subtitle: '2,000+ prayers', route: '/prayers', color: '#10b981' },
+        { icon: BookOpen, title: 'Prayer Library', subtitle: '4,000+ prayers', route: '/prayers', color: '#10b981' },
     ];
 
     return (

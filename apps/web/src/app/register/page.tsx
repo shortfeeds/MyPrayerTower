@@ -121,7 +121,7 @@ export default function RegisterPage() {
                             <p className="text-sm font-medium text-primary-900 mb-2">Free account includes:</p>
                             <ul className="space-y-1">
                                 {[
-                                    'Access to 2,000+ Catholic prayers',
+                                    'Access to 4,000+ Catholic prayers',
                                     'Prayer Wall participation',
                                     'Church finder & Mass times',
                                     'Daily saint & readings',

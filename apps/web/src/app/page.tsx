@@ -221,7 +221,7 @@ export default function HomePage() {
                             {
                                 icon: BookOpen,
                                 title: 'Prayer Library',
-                                desc: 'Access 2,000+ traditional and contemporary prayers for every occasion, need, and time of day.',
+                                desc: 'Access 4,000+ traditional and contemporary prayers for every occasion, need, and time of day.',
                                 link: '/prayers',
                                 iconBg: 'from-emerald-500 to-emerald-600',
                             },

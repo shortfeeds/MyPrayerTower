@@ -51,7 +51,7 @@ const ONBOARDING_STEPS = [
     },
     {
         id: 'library',
-        title: '2,000+ Prayers\nAt Your Fingertips',
+        title: '4,000+ Prayers\nAt Your Fingertips',
         subtitle: 'Traditional and contemporary Catholic prayers for every occasion and need.',
         icon: BookOpen,
         color: ['#059669', '#047857'],

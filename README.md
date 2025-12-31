@@ -17,7 +17,7 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 |---------|-------------|--------|
 | **Church Finder** | 10,000+ churches with Mass times, directions, and contact info | ✅ |
 | **Prayer Wall** | Share intentions and pray for others worldwide | ✅ |
-| **Prayer Library** | 2,000+ traditional and contemporary prayers | ✅ |
+| **Prayer Library** | 4,000+ traditional and contemporary prayers | ✅ |
 | **Rosary Guide** | Interactive rosary with all mysteries | ✅ |
 | **Daily Readings** | USCCB daily Mass readings | ✅ |
 | **Saint of the Day** | Learn about saints throughout the year | ✅ |

@@ -20,7 +20,7 @@ export default function RegisterScreen() {
     };
 
     const benefits = [
-        'Access 2,000+ prayers',
+        'Access 4,000+ prayers',
         'Prayer Wall participation',
         'Church finder worldwide',
         'Daily saints & readings',
