@@ -1,5 +1,3 @@
-'use server';
-
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@mpt/database';
 import { SignJWT } from 'jose';
@@ -10,6 +8,9 @@ const prisma = new PrismaClient();
 const JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || 'default-secret-key-change-this-in-prod'
 );
+
+// Admin email - only this email can access the admin panel
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'myprayertower2@gmail.com';
 
 export async function POST(request: NextRequest) {
     try {
@@ -22,20 +23,35 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Find admin user
-        const admin = await prisma.adminUser.findUnique({
-            where: { email },
+        // Check if this email is authorized as admin
+        if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+            return NextResponse.json(
+                { error: 'Unauthorized: This email is not an admin' },
+                { status: 403 }
+            );
+        }
+
+        // Find user in the User table
+        const user = await prisma.user.findUnique({
+            where: { email: email.toLowerCase() },
         });
 
-        if (!admin || !admin.isActive) {
+        if (!user) {
             return NextResponse.json(
-                { error: 'Invalid credentials' },
-                { status: 401 }
+                { error: 'User not found. Please register first.' },
+                { status: 404 }
             );
         }
 
         // Verify password
-        const isValid = await compare(password, admin.passwordHash);
+        if (!user.passwordHash) {
+            return NextResponse.json(
+                { error: 'Password not set for this account' },
+                { status: 400 }
+            );
+        }
+
+        const isValid = await compare(password, user.passwordHash);
 
         if (!isValid) {
             return NextResponse.json(
@@ -45,19 +61,20 @@ export async function POST(request: NextRequest) {
         }
 
         // Create session token (JWT)
-        const alg = 'HS256';
         const token = await new SignJWT({
-            id: admin.id,
-            email: admin.email,
-            role: admin.role,
+            id: user.id,
+            email: user.email,
+            name: user.displayName || user.firstName || 'Admin',
+            isAdmin: true,
         })
-            .setProtectedHeader({ alg })
+            .setProtectedHeader({ alg: 'HS256' })
             .setIssuedAt()
             .setExpirationTime('24h')
             .sign(JWT_SECRET);
 
         // Set cookie
-        cookies().set({
+        const cookieStore = await cookies();
+        cookieStore.set({
             name: 'admin_session',
             value: token,
             httpOnly: true,
@@ -67,13 +84,14 @@ export async function POST(request: NextRequest) {
             maxAge: 60 * 60 * 24, // 24 hours
         });
 
-        // Update last login
-        await prisma.adminUser.update({
-            where: { id: admin.id },
-            data: { lastLoginAt: new Date() },
+        return NextResponse.json({
+            success: true,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.displayName || user.firstName || 'Admin',
+            },
         });
-
-        return NextResponse.json({ success: true });
 
     } catch (error) {
         console.error('Login error:', error);
