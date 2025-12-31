@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Users, Heart, MapPin, DollarSign, TrendingUp, Calendar, BarChart3 } from 'lucide-react';
+import { useState } from 'react';
+import { TeamOutlined, HeartOutlined, EnvironmentOutlined, DollarOutlined, RiseOutlined, BarChartOutlined } from '@ant-design/icons';
 
 interface ChartData {
     label: string;
@@ -63,8 +63,8 @@ export default function AnalyticsDashboard() {
                                 key={range}
                                 onClick={() => setDateRange(range)}
                                 className={`px-4 py-2 rounded-md font-medium ${dateRange === range
-                                        ? 'bg-primary-600 text-white'
-                                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                    ? 'bg-primary-600 text-white'
+                                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                                     }`}
                             >
                                 {range}
@@ -76,16 +76,16 @@ export default function AnalyticsDashboard() {
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     {[
-                        { label: 'Total Users', value: stats.totalUsers.toLocaleString(), icon: Users, color: 'text-blue-500', trend: '+12%' },
-                        { label: 'Churches', value: stats.totalChurches.toLocaleString(), icon: MapPin, color: 'text-green-500', trend: '+5%' },
-                        { label: 'Prayers', value: stats.totalPrayers.toLocaleString(), icon: Heart, color: 'text-red-500', trend: '+23%' },
-                        { label: 'Donations', value: `$${(stats.totalDonations / 100).toLocaleString()}`, icon: DollarSign, color: 'text-amber-500', trend: '+18%' },
+                        { label: 'Total Users', value: stats.totalUsers.toLocaleString(), icon: TeamOutlined, color: 'text-blue-500', trend: '+12%' },
+                        { label: 'Churches', value: stats.totalChurches.toLocaleString(), icon: EnvironmentOutlined, color: 'text-green-500', trend: '+5%' },
+                        { label: 'Prayers', value: stats.totalPrayers.toLocaleString(), icon: HeartOutlined, color: 'text-red-500', trend: '+23%' },
+                        { label: 'Donations', value: `$${(stats.totalDonations / 100).toLocaleString()}`, icon: DollarOutlined, color: 'text-amber-500', trend: '+18%' },
                     ].map((stat, i) => (
                         <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
                             <div className="flex items-center justify-between mb-4">
                                 <stat.icon className={`w-8 h-8 ${stat.color}`} />
                                 <span className="text-green-500 text-sm font-medium flex items-center gap-1">
-                                    <TrendingUp className="w-4 h-4" />
+                                    <RiseOutlined className="w-4 h-4" />
                                     {stat.trend}
                                 </span>
                             </div>
@@ -99,7 +99,7 @@ export default function AnalyticsDashboard() {
                     {/* Prayer Activity Chart */}
                     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
                         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                            <BarChart3 className="w-5 h-5 text-primary-500" />
+                            <BarChartOutlined className="w-5 h-5 text-primary-500" />
                             Prayer Activity (Weekly)
                         </h3>
                         <div className="flex items-end justify-between h-48 gap-4">

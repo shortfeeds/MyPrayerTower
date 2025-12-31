@@ -1,6 +1,6 @@
 import { Card, Table, Tag, Button, Space, Steps, Descriptions, Modal, Input, message } from 'antd';
 import { useState } from 'react';
-import { CheckOutlined, CloseOutlined, MailOutlined, PhoneOutlined, FileOutlined } from '@ant-design/icons';
+import { MailOutlined, PhoneOutlined, FileOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 
@@ -37,7 +37,7 @@ export function ClaimReview() {
     const [selectedClaim, setSelectedClaim] = useState<any>(null);
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
 
-    const handleApprove = (id: string) => {
+    const handleApprove = (_id: string) => {
         message.success('Claim approved! Church is now verified.');
         setSelectedClaim(null);
     };

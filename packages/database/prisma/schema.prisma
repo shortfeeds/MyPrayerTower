@@ -1,214 +1,1118 @@
-// Prisma Schema for MyPrayerTower
-// All-in-One Catholic Services Platform
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// ============================================
-// USER & AUTHENTICATION
-// ============================================
+model AdminUser {
+  id           String    @id
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         AdminRole
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime
 
-model User {
-  id                String    @id @default(cuid())
-  email             String    @unique
-  emailVerified     Boolean   @default(false)
-  phone             String?
-  phoneVerified     Boolean   @default(false)
-  passwordHash      String?
-  
-  // Profile
-  firstName         String?
-  lastName          String?
-  displayName       String?
-  avatarUrl         String?
-  bio               String?
-  
-  // Settings
-  language          String    @default("en")
-  timezone          String    @default("UTC")
-  notificationsEnabled Boolean @default(true)
-  
-  // Subscription
-  subscriptionTier  SubscriptionTier @default(FREE)
-  subscriptionEnds  DateTime?
-  stripeCustomerId  String?
-  
-  // Church affiliation
-  homeChurchId      String?
-  homeChurch        Church?   @relation("HomeChurch", fields: [homeChurchId], references: [id])
-  
-  // Timestamps
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  lastLoginAt       DateTime?
-  
-  // Relations
-  prayerRequests    PrayerRequest[]
-  prayerActions     PrayerAction[]
-  churchClaims      ChurchClaim[]
-  notifications     Notification[]
-  sessions          Session[]
-  
-  // B2B Portal Relations
-  followedChurches  ChurchFollower[]
-  churchAdminRoles  ChurchAdmin[]
-  
   @@index([email])
-  @@index([homeChurchId])
 }
 
-model Session {
-  id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token         String   @unique
-  deviceInfo    String?
-  ipAddress     String?
-  expiresAt     DateTime
-  createdAt     DateTime @default(now())
-  
+model AppSettings {
+  id                  String   @id @default("app_settings")
+  siteName            String   @default("MyPrayerTower")
+  siteTagline         String   @default("All-in-One Catholic Services")
+  maintenanceMode     Boolean  @default(false)
+  registrationEnabled Boolean  @default(true)
+  prayerWallEnabled   Boolean  @default(true)
+  syncEnabled         Boolean  @default(true)
+  syncSchedule        String   @default("0 2 * * 0")
+  plusMonthlyPrice    Int      @default(499)
+  plusYearlyPrice     Int      @default(3999)
+  premiumMonthlyPrice Int      @default(999)
+  premiumYearlyPrice  Int      @default(7999)
+  lifetimePrice       Int      @default(14999)
+  updatedAt           DateTime
+}
+
+model BibleProgress {
+  id          String   @id
+  userId      String
+  book        String
+  chapter     Int
+  version     String   @default("en-kjv")
+  completedAt DateTime @default(now())
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, book, chapter, version])
   @@index([userId])
-  @@index([token])
 }
 
-enum SubscriptionTier {
-  FREE
-  PLUS
-  PREMIUM
-  LIFETIME
+model CanonLaw {
+  id              String            @id
+  number          Int               @unique
+  text            String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  CanonLawSection CanonLawSection[]
+
+  @@index([number])
 }
 
-// ============================================
-// CHURCH & DIOCESE
-// ============================================
+model CanonLawSection {
+  id            String   @id
+  canonLawId    String
+  sectionNumber Int?
+  text          String
+  CanonLaw      CanonLaw @relation(fields: [canonLawId], references: [id], onDelete: Cascade)
+
+  @@index([canonLawId])
+}
+
+model Cardinal {
+  id                    String   @id
+  rank                  Int      @unique
+  name                  String
+  country               String
+  born                  String?
+  order                 String?
+  consistory            String?
+  office                String?
+  papalConclaveEligible Boolean  @default(false)
+  createdCardinalBy     String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime
+
+  @@index([country])
+  @@index([papalConclaveEligible])
+}
+
+model CatechismParagraph {
+  id               String            @id
+  number           Int               @unique
+  content          String
+  inBrief          Boolean           @default(false)
+  references       String[]
+  crossReferences  Int[]
+  sectionId        String?
+  CatechismSection CatechismSection? @relation(fields: [sectionId], references: [id])
+
+  @@index([inBrief])
+  @@index([number])
+  @@index([sectionId])
+}
+
+model CatechismSection {
+  id                 String               @id
+  partNumber         Int
+  sectionNumber      Int?
+  chapterNumber      Int?
+  articleNumber      Int?
+  title              String
+  subtitle           String?
+  sortOrder          Int                  @default(0)
+  CatechismParagraph CatechismParagraph[]
+
+  @@unique([partNumber, sectionNumber, chapterNumber, articleNumber])
+  @@index([partNumber])
+  @@index([sortOrder])
+}
+
+model Church {
+  id                 String               @id
+  name               String
+  slug               String               @unique
+  type               ChurchType
+  denomination       String
+  address            String
+  city               String
+  state              String?
+  country            String
+  countryCode        String
+  postalCode         String?
+  latitude           Float?
+  longitude          Float?
+  phone              String?
+  email              String?
+  website            String?
+  dioceseId          String?
+  isVerified         Boolean              @default(false)
+  verifiedAt         DateTime?
+  claimedBy          String?
+  description        String?
+  shortDescription   String?
+  history            String?
+  primaryImageUrl    String?
+  virtualTourUrl     String?
+  massSchedule       Json?
+  confessionSchedule Json?
+  adorationSchedule  Json?
+  externalId         String?
+  lastSyncedAt       DateTime?
+  viewCount          Int                  @default(0)
+  followerCount      Int                  @default(0)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  calendarUrl        String?
+  Diocese            Diocese?             @relation(fields: [dioceseId], references: [id])
+  ChurchAdmin        ChurchAdmin[]
+  ChurchAnnouncement ChurchAnnouncement[]
+  ChurchClaim        ChurchClaim[]
+  ChurchEvent        ChurchEvent[]
+  ChurchFollower     ChurchFollower[]
+  ChurchImage        ChurchImage[]
+  ChurchStaff        ChurchStaff[]
+  ChurchSubscription ChurchSubscription?
+  PrayerRequest      PrayerRequest[]
+  SacramentRecord    SacramentRecord[]
+  User               User[]
+
+  @@index([city, country])
+  @@index([denomination])
+  @@index([isVerified])
+  @@index([latitude, longitude])
+  @@index([name])
+  @@index([slug])
+}
+
+model ChurchAdmin {
+  id                   String          @id
+  churchId             String
+  userId               String
+  role                 ChurchAdminRole @default(EDITOR)
+  canEditInfo          Boolean         @default(true)
+  canPostAnnouncements Boolean         @default(true)
+  canManageEvents      Boolean         @default(true)
+  canManageAdmins      Boolean         @default(false)
+  canViewAnalytics     Boolean         @default(true)
+  invitedBy            String?
+  invitedAt            DateTime        @default(now())
+  acceptedAt           DateTime?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime
+  Church               Church          @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  User                 User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([churchId, userId])
+  @@index([churchId])
+  @@index([userId])
+}
+
+model ChurchAnnouncement {
+  id          String    @id
+  churchId    String
+  title       String
+  content     String
+  imageUrl    String?
+  linkUrl     String?
+  linkText    String?
+  isPinned    Boolean   @default(false)
+  isPublished Boolean   @default(true)
+  publishedAt DateTime  @default(now())
+  expiresAt   DateTime?
+  pushSent    Boolean   @default(false)
+  pushSentAt  DateTime?
+  viewCount   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  Church      Church    @relation(fields: [churchId], references: [id], onDelete: Cascade)
+
+  @@index([churchId])
+  @@index([isPublished, publishedAt])
+}
+
+model ChurchClaim {
+  id                 String      @id
+  claimCode          String      @unique
+  churchId           String
+  userId             String
+  claimantName       String
+  claimantTitle      String
+  claimantEmail      String
+  claimantPhone      String
+  status             ClaimStatus @default(PENDING)
+  emailVerified      Boolean     @default(false)
+  emailVerifiedAt    DateTime?
+  smsVerified        Boolean     @default(false)
+  smsVerifiedAt      DateTime?
+  emailOtp           String?
+  emailOtpExpires    DateTime?
+  smsOtp             String?
+  smsOtpExpires      DateTime?
+  documentsSubmitted Boolean     @default(false)
+  documentsNotes     String?
+  reviewedBy         String?
+  reviewedAt         DateTime?
+  reviewNotes        String?
+  rejectionReason    String?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime
+  Church             Church      @relation(fields: [churchId], references: [id])
+  User               User        @relation(fields: [userId], references: [id])
+
+  @@index([churchId])
+  @@index([status])
+  @@index([userId])
+}
+
+model ChurchEvent {
+  id              String    @id
+  churchId        String
+  title           String
+  description     String?
+  eventType       EventType
+  startDate       DateTime
+  endDate         DateTime?
+  isAllDay        Boolean   @default(false)
+  isRecurring     Boolean   @default(false)
+  recurrence      Json?
+  location        String?
+  imageUrl        String?
+  registrationUrl String?
+  maxAttendees    Int?
+  isPublished     Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime
+  Church          Church    @relation(fields: [churchId], references: [id], onDelete: Cascade)
+
+  @@index([churchId])
+  @@index([startDate])
+}
+
+model ChurchFollower {
+  id            String   @id
+  churchId      String
+  userId        String
+  pushEnabled   Boolean  @default(true)
+  emailEnabled  Boolean  @default(false)
+  isParishioner Boolean  @default(false)
+  followedAt    DateTime @default(now())
+  Church        Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  User          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([churchId, userId])
+  @@index([churchId])
+  @@index([userId])
+}
+
+model ChurchImage {
+  id        String   @id
+  churchId  String
+  url       String
+  caption   String?
+  isPrimary Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  Church    Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
+
+  @@index([churchId])
+}
+
+model ChurchStaff {
+  id        String   @id
+  churchId  String
+  name      String
+  title     String
+  email     String?
+  phone     String?
+  imageUrl  String?
+  bio       String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Church    Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
+
+  @@index([churchId])
+}
+
+model ChurchSubscription {
+  id                 String     @id
+  churchId           String     @unique
+  tier               ChurchTier @default(UNCLAIMED)
+  paidAmount         Float?
+  paidAt             DateTime?
+  stripePaymentId    String?
+  announcementsLimit Int?
+  eventsLimit        Int?
+  adminsLimit        Int        @default(1)
+  isActive           Boolean    @default(false)
+  activatedAt        DateTime?
+  expiresAt          DateTime?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime
+  Church             Church     @relation(fields: [churchId], references: [id], onDelete: Cascade)
+
+  @@index([isActive])
+  @@index([tier])
+}
+
+model DailyQuote {
+  id        String   @id
+  date      DateTime @unique
+  content   String
+  author    String?
+  source    String?
+  category  String?
+  reference String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+
+  @@index([category])
+  @@index([date])
+}
+
+model DailyReading {
+  id               String   @id
+  date             DateTime @unique
+  liturgicalSeason String?
+  liturgicalColor  String?
+  feastName        String?
+  firstReading     String?
+  firstReadingRef  String?
+  psalm            String?
+  psalmRef         String?
+  secondReading    String?
+  secondReadingRef String?
+  gospel           String?
+  gospelRef        String?
+  reflection       String?
+  createdAt        DateTime @default(now())
+
+  @@index([date])
+}
+
+model DevotionalPoint {
+  id        String   @id
+  number    Int
+  content   String
+  book      String
+  chapter   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@unique([book, number])
+  @@index([book, number])
+}
 
 model Diocese {
-  id              String    @id @default(cuid())
-  name            String
-  type            DioceseType
-  country         String
-  countryCode     String
-  region          String    // Europe, North America, etc.
-  
-  // Bishop info
-  bishopName      String?
-  bishopTitle     String?
-  
-  // Contact
-  address         String?
-  phone           String?
-  email           String?
-  website         String?
-  
-  // Stats
-  catholicCount   Int?
-  parishCount     Int?
-  priestCount     Int?
-  
-  // Sync info
-  externalId      String?   @unique  // From GCatholic
-  lastSyncedAt    DateTime?
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  // Relations
-  churches        Church[]
-  
+  id            String      @id
+  name          String
+  type          DioceseType
+  country       String
+  countryCode   String
+  region        String
+  bishopName    String?
+  bishopTitle   String?
+  address       String?
+  phone         String?
+  email         String?
+  website       String?
+  catholicCount Int?
+  parishCount   Int?
+  priestCount   Int?
+  externalId    String?     @unique
+  lastSyncedAt  DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime
+  Church        Church[]
+
   @@index([country])
   @@index([region])
 }
 
-enum DioceseType {
-  ARCHDIOCESE
-  DIOCESE
-  EPARCHY
-  VICARIATE
-  PREFECTURE
-  ORDINARIATE
+model GIRMItem {
+  id        String   @id
+  number    Int      @unique
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([number])
+}
+
+model Ministry {
+  id               String       @id
+  name             String
+  slug             String       @unique
+  type             MinistryType @default(OTHER)
+  address          String?
+  city             String?
+  state            String?
+  country          String?
+  countryCode      String?
+  postalCode       String?
+  latitude         Float?
+  longitude        Float?
+  phone            String?
+  email            String?
+  website          String?
+  description      String?
+  missionStatement String?
+  imageUrl         String?
+  isVerified       Boolean      @default(false)
+  externalId       String?      @unique
+  lastSyncedAt     DateTime?
+  dataSource       String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime
+
+  @@index([state, city])
+  @@index([type])
+}
+
+model NewsArticle {
+  id          String   @id
+  externalId  String   @unique
+  source      String
+  title       String
+  summary     String?
+  content     String?
+  imageUrl    String?
+  linkUrl     String
+  author      String?
+  category    String?
+  publishedAt DateTime
+  fetchedAt   DateTime @default(now())
+
+  @@index([category])
+  @@index([publishedAt])
+  @@index([source])
+}
+
+model Notification {
+  id        String           @id
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  data      Json?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+  User      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isRead])
+  @@index([userId])
+}
+
+model PrayerAction {
+  id              String        @id
+  prayerRequestId String
+  userId          String
+  prayedAt        DateTime      @default(now())
+  PrayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
+  User            User          @relation(fields: [userId], references: [id])
+
+  @@unique([prayerRequestId, userId])
+  @@index([prayerRequestId])
+  @@index([userId])
+}
+
+model PrayerLibraryCategory {
+  id                          String                  @id
+  name                        String
+  slug                        String                  @unique
+  description                 String?
+  iconName                    String?
+  color                       String?
+  parentId                    String?
+  sortOrder                   Int                     @default(0)
+  createdAt                   DateTime                @default(now())
+  updatedAt                   DateTime
+  PrayerLibraryCategory       PrayerLibraryCategory?  @relation("PrayerLibraryCategoryToPrayerLibraryCategory", fields: [parentId], references: [id])
+  other_PrayerLibraryCategory PrayerLibraryCategory[] @relation("PrayerLibraryCategoryToPrayerLibraryCategory")
+
+  @@index([parentId])
+}
+
+model PrayerRequest {
+  id              String           @id
+  userId          String
+  title           String?
+  content         String
+  category        PrayerCategory
+  visibility      PrayerVisibility @default(PUBLIC)
+  isAnonymous     Boolean          @default(false)
+  churchId        String?
+  status          ModerationStatus @default(PENDING)
+  moderatedBy     String?
+  moderatedAt     DateTime?
+  moderationNotes String?
+  rejectionReason String?
+  prayerCount     Int              @default(0)
+  isAnswered      Boolean          @default(false)
+  answeredAt      DateTime?
+  testimony       String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime
+  PrayerAction    PrayerAction[]
+  Church          Church?          @relation(fields: [churchId], references: [id])
+  User            User             @relation(fields: [userId], references: [id])
+  PrayerUpdate    PrayerUpdate[]
+
+  @@index([category])
+  @@index([isAnswered])
+  @@index([status])
+  @@index([userId])
+  @@index([visibility])
+}
+
+model PrayerUpdate {
+  id              String        @id
+  prayerRequestId String
+  content         String
+  createdAt       DateTime      @default(now())
+  PrayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
+
+  @@index([prayerRequestId])
+}
+
+model SacramentRecord {
+  id             String          @id
+  churchId       String
+  userId         String?
+  type           SacramentType
+  candidateName  String
+  date           DateTime
+  minister       String?
+  status         SacramentStatus @default(SCHEDULED)
+  certificateUrl String?
+  notes          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime
+  Church         Church          @relation(fields: [churchId], references: [id])
+  User           User?           @relation(fields: [userId], references: [id])
+
+  @@index([churchId])
+  @@index([status])
+  @@index([type])
+  @@index([userId])
+}
+
+model Saint {
+  id              String    @id
+  name            String
+  slug            String    @unique
+  title           String?
+  feastDay        String?
+  feastMonth      Int?
+  feastDayOfMonth Int?
+  biography       String?
+  shortBio        String?
+  imageUrl        String?
+  patronOf        String[]
+  bornDate        String?
+  diedDate        String?
+  canonizedDate   String?
+  externalId      String?
+  lastSyncedAt    DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime
+
+  @@index([feastMonth, feastDayOfMonth])
+  @@index([name])
+  @@index([slug])
+}
+
+model Session {
+  id         String   @id
+  userId     String
+  token      String   @unique
+  deviceInfo String?
+  ipAddress  String?
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+model SponsoredContent {
+  id              String    @id
+  type            AdType
+  title           String
+  description     String?
+  imageUrl        String?
+  linkUrl         String?
+  placement       String
+  advertiser      String
+  advertiserEmail String?
+  startDate       DateTime
+  endDate         DateTime
+  impressions     Int       @default(0)
+  clicks          Int       @default(0)
+  paidAmount      Float?
+  stripePaymentId String?
+  isActive        Boolean   @default(false)
+  isApproved      Boolean   @default(false)
+  approvedBy      String?
+  approvedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime
+
+  // Ad source configuration (Google AdMob/AdSense vs Offline Sponsor)
+  adSource        AdSource  @default(OFFLINE)
+  googleAdUnitId  String?   // Google AdMob/AdSense unit ID
+  priority        Int       @default(0) // Higher priority shown first
+  targetPages     String[]  // Multiple pages targeting
+
+  @@index([placement, isActive])
+  @@index([startDate, endDate])
+  @@index([adSource, isActive])
+}
+
+model SyncLog {
+  id               String     @id
+  source           String
+  type             String
+  status           SyncStatus
+  startedAt        DateTime   @default(now())
+  completedAt      DateTime?
+  recordsProcessed Int        @default(0)
+  recordsCreated   Int        @default(0)
+  recordsUpdated   Int        @default(0)
+  recordsFailed    Int        @default(0)
+  errorMessage     String?
+  errorDetails     Json?
+  triggeredBy      String?
+
+  @@index([source])
+  @@index([startedAt])
+  @@index([status])
+}
+
+model User {
+  id                                         String            @id
+  email                                      String            @unique
+  emailVerified                              Boolean           @default(false)
+  phone                                      String?
+  phoneVerified                              Boolean           @default(false)
+  passwordHash                               String?
+  firstName                                  String?
+  lastName                                   String?
+  displayName                                String?
+  avatarUrl                                  String?
+  bio                                        String?
+  language                                   String            @default("en")
+  timezone                                   String            @default("UTC")
+  notificationsEnabled                       Boolean           @default(true)
+  subscriptionTier                           SubscriptionTier  @default(FREE)
+  subscriptionEnds                           DateTime?
+  stripeCustomerId                           String?
+  homeChurchId                               String?
+  createdAt                                  DateTime          @default(now())
+  updatedAt                                  DateTime
+  lastLoginAt                                DateTime?
+  lastConfessionAt                           DateTime?
+  lastStreakUpdate                           DateTime?
+  longestStreak                              Int               @default(0)
+  streakCount                                Int               @default(0)
+  BibleProgress                              BibleProgress[]
+  ChurchAdmin                                ChurchAdmin[]
+  ChurchClaim                                ChurchClaim[]
+  ChurchFollower                             ChurchFollower[]
+  Notification                               Notification[]
+  PrayerAction                               PrayerAction[]
+  PrayerRequest                              PrayerRequest[]
+  SacramentRecord                            SacramentRecord[]
+  Session                                    Session[]
+  Church                                     Church?           @relation(fields: [homeChurchId], references: [id])
+  UserBlock_UserBlock_blockedUserIdToUser    UserBlock[]       @relation("UserBlock_blockedUserIdToUser")
+  UserBlock_UserBlock_userIdToUser           UserBlock[]       @relation("UserBlock_userIdToUser")
+  UserReport_UserReport_reportedUserIdToUser UserReport[]      @relation("UserReport_reportedUserIdToUser")
+  UserReport_UserReport_reporterIdToUser     UserReport[]      @relation("UserReport_reporterIdToUser")
+  
+  // Mass Offerings & Donations
+  MassOffering                               MassOffering[]
+  PlatformDonation                           PlatformDonation[]
+  PrayerSubscription                         PrayerSubscription[]
+
+  @@index([email])
+  @@index([homeChurchId])
+}
+
+model UserBlock {
+  id                                 String   @id
+  userId                             String
+  blockedUserId                      String
+  createdAt                          DateTime @default(now())
+  User_UserBlock_blockedUserIdToUser User     @relation("UserBlock_blockedUserIdToUser", fields: [blockedUserId], references: [id])
+  User_UserBlock_userIdToUser        User     @relation("UserBlock_userIdToUser", fields: [userId], references: [id])
+
+  @@unique([userId, blockedUserId])
+  @@index([blockedUserId])
+  @@index([userId])
+}
+
+model UserReport {
+  id                                   String       @id
+  reporterId                           String
+  reportedUserId                       String
+  reason                               ReportReason
+  details                              String?
+  status                               ReportStatus @default(PENDING)
+  resolvedBy                           String?
+  resolvedAt                           DateTime?
+  createdAt                            DateTime     @default(now())
+  User_UserReport_reportedUserIdToUser User         @relation("UserReport_reportedUserIdToUser", fields: [reportedUserId], references: [id])
+  User_UserReport_reporterIdToUser     User         @relation("UserReport_reporterIdToUser", fields: [reporterId], references: [id])
+
+  @@index([reportedUserId])
+  @@index([reporterId])
+  @@index([status])
+}
+
+model Prayer {
+  id             BigInt    @id(map: "prayers_pkey") @default(autoincrement())
+  title          String
+  content        String
+  category       String
+  category_label String
+  tags           String[]
+  is_active      Boolean?  @default(true)
+  created_at     DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@index([is_active], map: "prayers_active_idx")
+  @@index([category], map: "prayers_category_idx")
+  @@index([tags], map: "prayers_tags_idx", type: Gin)
+}
+
+// =========================================
+// MASS OFFERINGS & DONATIONS SYSTEM
+// =========================================
+
+// Partner monasteries/parishes that fulfill Mass offerings
+model MassPartner {
+  id              String         @id @default(cuid())
+  name            String         // "Benedictine Monastery of..."
+  location        String?
+  country         String?
+  contactEmail    String?
+  contactName     String?
+  
+  // Payment terms
+  stipendAmount   Int            @default(800) // What we pay them per Mass (cents) - $8
+  paymentSchedule String         @default("monthly") // monthly, per-mass
+  
+  // Capacity
+  dailyCapacity   Int            @default(10) // Masses per day they can offer
+  
+  // Status
+  isActive        Boolean        @default(true)
+  notes           String?
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  MassOffering    MassOffering[]
+  
+  @@index([isActive])
+}
+
+// Mass Offering - Centralized system where MPT receives funds
+model MassOffering {
+  id                String              @id @default(cuid())
+  orderNumber       String              @unique @default(cuid()) // Human-readable order #
+  
+  // Offering Type & Pricing
+  offeringType      MassOfferingType    @default(REGULAR)
+  amount            Int                 // Amount paid in cents
+  currency          String              @default("usd")
+  
+  // Intention Details
+  intentionFor      String              // Primary name "John Smith"
+  additionalNames   String[]            // Additional people to include
+  isForLiving       Boolean             @default(false) // false = deceased
+  categories        IntentionCategory[] // Multi-select reasons (Thanksgiving, Healing, etc.)
+  specialIntention  String?             // Custom intention text
+  
+  // Tribute/Memorial
+  offeredBy         String?             // "Offered by Mary Smith"
+  inMemoryOf        String?             // "In loving memory of..."
+  inHonorOf         String?             // "In honor of..."
+  tributeMessage    String?             // Personal message for card
+  
+  // Purchaser Info
+  userId            String?             // Null for guest checkout
+  email             String              // Required for confirmation
+  name              String
+  phone             String?
+  
+  // Gift Option
+  isGift            Boolean             @default(false)
+  recipientEmail    String?             // Send card to recipient
+  recipientName     String?
+  giftMessage       String?
+  sendDate          DateTime?           // Scheduled delivery date for gift card
+  
+  // Status & Payment
+  status            MassOfferingStatus  @default(PENDING_PAYMENT)
+  stripePaymentId   String?
+  stripeSessionId   String?
+  cashfreePaymentId String?
+  cashfreeSessionId String?
+  paidAt            DateTime?
+  
+  // Fulfillment
+  partnerId         String?             // Assigned monastery/parish
+  celebrationDate   DateTime?           // When Mass will be/was offered
+  celebrant         String?             // Priest name (optional)
+  massTime          String?             // e.g., "9:00 AM"
+  
+  // Digital Deliverables
+  certificateUrl    String?             // Generated PDF Mass card
+  cardGeneratedAt   DateTime?
+  confirmationSent  Boolean             @default(false)
+  confirmationSentAt DateTime?
+  celebrationNotificationSent Boolean   @default(false)
+  
+  // Upsells/Add-ons
+  includesVirtualCandle   Boolean       @default(false)
+  virtualCandleAmount     Int           @default(0)
+  includesPrintedCard     Boolean       @default(false)
+  printedCardAmount       Int           @default(0)
+  printedCardShippingAddress String?
+  printedCardStatus       String?       // pending, shipped, delivered
+  includesFramedCertificate Boolean     @default(false)
+  framedCertificateAmount Int           @default(0)
+  
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  User              User?               @relation(fields: [userId], references: [id])
+  Partner           MassPartner?        @relation(fields: [partnerId], references: [id])
+  
+  @@index([status])
+  @@index([offeringType])
+  @@index([email])
+  @@index([userId])
+  @@index([partnerId])
+  @@index([celebrationDate])
+  @@index([createdAt])
+  @@index([orderNumber])
+}
+
+// Enhanced Donation model for centralized donations
+model PlatformDonation {
+  id              String          @id @default(cuid())
+  orderNumber     String          @unique @default(cuid())
+  
+  // Amount
+  amount          Int             // Amount in cents
+  currency        String          @default("usd")
+  tier            DonationTier    @default(CUSTOM)
+  
+  // Donor Info
+  userId          String?
+  email           String
+  name            String
+  phone           String?
+  isAnonymous     Boolean         @default(false)
+  
+  // Message & Intent
+  message         String?
+  intention       String?         // "For the missions", etc.
+  
+  // Tribute
+  inMemoryOf      String?
+  inHonorOf       String?
+  tributeMessage  String?
+  
+  // Recurring
+  isRecurring     Boolean         @default(false)
+  recurringPlan   PrayerPlan?     // Links to subscription plan
+  
+  // Payment
+  stripePaymentId String?
+  stripeSessionId String?
+  stripeSubscriptionId String?
+  cashfreePaymentId String?
+  cashfreeSessionId String?
+  cashfreeSubscriptionId String?
+  status          String          @default("PENDING")
+  paidAt          DateTime?
+  
+  // Cover processing fee option
+  coversFee       Boolean         @default(false)
+  feeAmount       Int             @default(0)
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  User            User?           @relation(fields: [userId], references: [id])
+  
+  @@index([status])
+  @@index([userId])
+  @@index([email])
+  @@index([isRecurring])
+  @@index([createdAt])
+}
+
+// Prayer Partner and other subscription plans
+model PrayerSubscription {
+  id                    String      @id @default(cuid())
+  userId                String
+  
+  plan                  PrayerPlan
+  status                SubscriptionStatus @default(ACTIVE)
+  
+  // Stripe
+  stripeSubscriptionId  String?     @unique
+  stripeCustomerId      String?
+  stripePriceId         String?
+  
+  // Cashfree
+  cashfreeSubscriptionId String?    @unique
+  cashfreePlanId         String?
+  
+  // Billing Dates
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAt              DateTime?
+  canceledAt            DateTime?
+  
+  // Benefits Tracking
+  massesThisMonth       Int         @default(0)
+  massesIncludedMonthly Int         @default(1) // Based on plan
+  lastMassRequestedAt   DateTime?
+  
+  // Discounts
+  discountPercent       Int         @default(10) // 10% off Mass offerings
+  
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  
+  User                  User        @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([status])
+  @@index([plan])
+}
+
+// =========================================
+// MASS OFFERINGS & DONATIONS ENUMS
+// =========================================
+
+enum MassOfferingType {
+  REGULAR           // Single Mass - $15
+  EXPEDITED         // Priority/faster scheduling - $25
+  NOVENA            // 9 consecutive Masses - $75
+  GREGORIAN         // 30 consecutive Masses - $250
+  PERPETUAL         // Enrolled forever in daily Masses - $100
+  MONTHLY_CLUB      // Included with subscription
+}
+
+enum IntentionCategory {
+  // For the Living
+  THANKSGIVING
+  GOOD_HEALTH
+  HEALING
+  BIRTHDAY_BLESSING
+  WEDDING_ANNIVERSARY
+  SAFE_TRAVEL
+  EXAM_SUCCESS
+  CAREER_SUCCESS
+  FAMILY_PEACE
+  FAMILY_UNITY
+  PROTECTION
+  CONVERSION
+  SPECIAL_GRACE
+  VOCATIONS
+  
+  // For the Deceased
+  REPOSE_OF_SOUL
+  ALL_SOULS
+  DEATH_ANNIVERSARY
+  RECENTLY_DECEASED
+  FORGOTTEN_SOULS
+  PURGATORY
+  
+  // Special Occasions
+  FEAST_DAY
+  ALL_SAINTS
+  CHRISTMAS
+  EASTER
+  MOTHERS_DAY
+  FATHERS_DAY
+  
+  // General
+  SPECIAL_INTENTION
   OTHER
 }
 
-model Church {
-  id              String    @id @default(cuid())
-  name            String
-  slug            String    @unique
-  type            ChurchType
-  denomination    String
-  
-  // Location
-  address         String
-  city            String
-  state           String?
-  country         String
-  countryCode     String
-  postalCode      String?
-  latitude        Float?
-  longitude       Float?
-  
-  // Contact
-  phone           String?
-  email           String?
-  website         String?
-  
-  // Diocese relation
-  dioceseId       String?
-  diocese         Diocese?  @relation(fields: [dioceseId], references: [id])
-  
-  // Verification
-  isVerified      Boolean   @default(false)
-  verifiedAt      DateTime?
-  claimedBy       String?   // User ID who claimed
-  
-  // Content
-  description     String?
-  shortDescription String?
-  history         String?
-  
-  // Media
-  primaryImageUrl String?
-  virtualTourUrl  String?
-  
-  // Mass schedule (JSON for flexibility)
-  massSchedule    Json?     // { "sunday": ["8:00 AM", "10:30 AM"], ... }
-  confessionSchedule Json?
-  adorationSchedule Json?
-  
-  // Sync info
-  externalId      String?   // From GCatholic
-  lastSyncedAt    DateTime?
-  
-  // Stats
-  viewCount       Int       @default(0)
-  followerCount   Int       @default(0)
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  // Relations
-  members         User[]    @relation("HomeChurch")
-  images          ChurchImage[]
-  events          ChurchEvent[]
-  claims          ChurchClaim[]
-  staff           ChurchStaff[]
-  prayerRequests  PrayerRequest[]
-  
-  // B2B Portal Relations
-  subscription    ChurchSubscription?
-  announcements   ChurchAnnouncement[]
-  followers       ChurchFollower[]
-  admins          ChurchAdmin[]
-  
-  @@index([city, country])
-  @@index([latitude, longitude])
-  @@index([denomination])
-  @@index([isVerified])
+enum MassOfferingStatus {
+  PENDING_PAYMENT   // Awaiting Stripe payment
+  PAID              // Payment received, awaiting assignment
+  ASSIGNED          // Assigned to partner monastery
+  SCHEDULED         // Mass date scheduled
+  OFFERED           // Mass has been celebrated
+  COMPLETED         // All notifications sent, complete
+  CANCELLED         // Cancelled
+  REFUNDED          // Refunded
+}
+
+enum DonationTier {
+  CANDLE            // $10 - Light a Candle
+  ROSARY            // $20 - Rosary Partner
+  SUPPORTER         // $50 - Parish Supporter
+  GUARDIAN          // $100 - Guardian Angel
+  BENEFACTOR        // $250 - Benefactor
+  PATRON            // $500 - Patron
+  CORNERSTONE       // $1000+ - Cornerstone
+  CUSTOM            // Any amount
+}
+
+enum PrayerPlan {
+  PRAYER_PARTNER    // $9.99/month - 1 Mass included
+  FAMILY_PLAN       // $19.99/month - 3 Masses included
+  PATRON_CIRCLE     // $49.99/month - Unlimited Masses
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  PAUSED
+  EXPIRED
+}
+
+enum AdType {
+  BANNER
+  NATIVE
+  NEWSLETTER
+  FEATURED
+}
+
+enum AdSource {
+  OFFLINE     // Custom sponsor image/link managed in admin
+  GOOGLE      // Google AdMob (mobile) or AdSense (web)
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  MODERATOR
+  CONTENT_EDITOR
+}
+
+enum ChurchAdminRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum ChurchTier {
+  UNCLAIMED
+  BASIC
+  PRO
+  CATHEDRAL
+  DIOCESE
 }
 
 enum ChurchType {
@@ -223,63 +1127,24 @@ enum ChurchType {
   OTHER
 }
 
-model ChurchImage {
-  id          String   @id @default(cuid())
-  churchId    String
-  church      Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  url         String
-  caption     String?
-  isPrimary   Boolean  @default(false)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  
-  @@index([churchId])
+enum ClaimStatus {
+  PENDING
+  EMAIL_VERIFIED
+  SMS_VERIFIED
+  DOCUMENTS_SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
 }
 
-model ChurchStaff {
-  id          String   @id @default(cuid())
-  churchId    String
-  church      Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  name        String
-  title       String   // Pastor, Priest, Deacon, etc.
-  email       String?
-  phone       String?
-  imageUrl    String?
-  bio         String?
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@index([churchId])
-}
-
-model ChurchEvent {
-  id          String   @id @default(cuid())
-  churchId    String
-  church      Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  
-  title       String
-  description String?
-  eventType   EventType
-  
-  startDate   DateTime
-  endDate     DateTime?
-  isAllDay    Boolean   @default(false)
-  isRecurring Boolean   @default(false)
-  recurrence  Json?     // Recurrence rules
-  
-  location    String?
-  imageUrl    String?
-  registrationUrl String?
-  maxAttendees Int?
-  
-  isPublished Boolean   @default(false)
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  @@index([churchId])
-  @@index([startDate])
+enum DioceseType {
+  ARCHDIOCESE
+  DIOCESE
+  EPARCHY
+  VICARIATE
+  PREFECTURE
+  ORDINARIATE
+  OTHER
 }
 
 enum EventType {
@@ -295,138 +1160,36 @@ enum EventType {
   OTHER
 }
 
-// ============================================
-// CHURCH CLAIM & VERIFICATION
-// ============================================
-
-model ChurchClaim {
-  id              String    @id @default(cuid())
-  claimCode       String    @unique @default(cuid())
-  
-  churchId        String
-  church          Church    @relation(fields: [churchId], references: [id])
-  userId          String
-  user            User      @relation(fields: [userId], references: [id])
-  
-  // Claimant info
-  claimantName    String
-  claimantTitle   String    // Pastor, Administrator, etc.
-  claimantEmail   String
-  claimantPhone   String
-  
-  // Verification status
-  status          ClaimStatus @default(PENDING)
-  emailVerified   Boolean   @default(false)
-  emailVerifiedAt DateTime?
-  smsVerified     Boolean   @default(false)
-  smsVerifiedAt   DateTime?
-  
-  // OTPs
-  emailOtp        String?
-  emailOtpExpires DateTime?
-  smsOtp          String?
-  smsOtpExpires   DateTime?
-  
-  // Documents
-  documentsSubmitted Boolean @default(false)
-  documentsNotes  String?
-  
-  // Admin review
-  reviewedBy      String?
-  reviewedAt      DateTime?
-  reviewNotes     String?
-  rejectionReason String?
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  @@index([churchId])
-  @@index([userId])
-  @@index([status])
+enum MinistryType {
+  NONPROFIT
+  CHARITY
+  EDUCATION
+  MEDIA
+  RETREAT_CENTER
+  RELIGIOUS_ORDER
+  YOUTH_GROUP
+  SUPPORT_GROUP
+  OTHER
 }
 
-enum ClaimStatus {
+enum ModerationStatus {
   PENDING
-  EMAIL_VERIFIED
-  SMS_VERIFIED
-  DOCUMENTS_SUBMITTED
-  UNDER_REVIEW
   APPROVED
   REJECTED
+  ON_HOLD
 }
 
-// ============================================
-// PRAYER REQUESTS & WALL
-// ============================================
-
-model PrayerRequest {
-  id              String    @id @default(cuid())
-  userId          String
-  user            User      @relation(fields: [userId], references: [id])
-  
-  // Content
-  title           String?
-  content         String
-  category        PrayerCategory
-  
-  // Visibility
-  visibility      PrayerVisibility @default(PUBLIC)
-  isAnonymous     Boolean   @default(false)
-  
-  // Church association (for CHURCH_ONLY visibility)
-  churchId        String?
-  church          Church?   @relation(fields: [churchId], references: [id])
-  
-  // Moderation
-  status          ModerationStatus @default(PENDING)
-  moderatedBy     String?
-  moderatedAt     DateTime?
-  moderationNotes String?
-  rejectionReason String?
-  
-  // Stats
-  prayerCount     Int       @default(0)
-  
-  // Answered
-  isAnswered      Boolean   @default(false)
-  answeredAt      DateTime?
-  testimony       String?
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  // Relations
-  prayerActions   PrayerAction[]
-  updates         PrayerUpdate[]
-  
-  @@index([userId])
-  @@index([status])
-  @@index([visibility])
-  @@index([category])
-  @@index([isAnswered])
-}
-
-model PrayerAction {
-  id              String    @id @default(cuid())
-  prayerRequestId String
-  prayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
-  userId          String
-  user            User      @relation(fields: [userId], references: [id])
-  prayedAt        DateTime  @default(now())
-  
-  @@unique([prayerRequestId, userId])
-  @@index([prayerRequestId])
-  @@index([userId])
-}
-
-model PrayerUpdate {
-  id              String    @id @default(cuid())
-  prayerRequestId String
-  prayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
-  content         String
-  createdAt       DateTime  @default(now())
-  
-  @@index([prayerRequestId])
+enum NotificationType {
+  PRAYER_RECEIVED
+  PRAYER_APPROVED
+  PRAYER_REJECTED
+  SOMEONE_PRAYED
+  PRAYER_ANSWERED
+  CHURCH_EVENT
+  CLAIM_STATUS
+  SYSTEM
+  DAILY_READING
+  NEW_DOCUMENT
 }
 
 enum PrayerCategory {
@@ -449,217 +1212,48 @@ enum PrayerVisibility {
   PRIVATE
 }
 
-enum ModerationStatus {
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  INAPPROPRIATE_CONTENT
+  IMPERSONATION
+  MALICIOUS_LINKS
+  OTHER
+}
+
+enum ReportStatus {
   PENDING
-  APPROVED
-  REJECTED
-  ON_HOLD
+  DISMISSED
+  WARNED
+  SUSPENDED
 }
 
-// ============================================
-// PRAYERS LIBRARY
-// ============================================
-
-model Prayer {
-  id              String    @id @default(cuid())
-  title           String
-  slug            String    @unique
-  content         String
-  
-  // Categorization
-  categoryId      String
-  category        PrayerLibraryCategory @relation(fields: [categoryId], references: [id])
-  
-  // Multi-language
-  language        String    @default("en")
-  
-  // Media
-  audioUrl        String?
-  audioDuration   Int?      // seconds
-  imageUrl        String?
-  
-  // Metadata
-  author          String?
-  source          String?
-  isPremium       Boolean   @default(false)
-  
-  // Stats
-  viewCount       Int       @default(0)
-  favoriteCount   Int       @default(0)
-  
-  isPublished     Boolean   @default(true)
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  @@index([categoryId])
-  @@index([language])
-  @@index([isPublished])
+enum SacramentStatus {
+  INQUIRY
+  PREPARATION
+  SCHEDULED
+  COMPLETED
+  RECORDED
+  CERTIFIED
+  CANCELLED
 }
 
-model PrayerLibraryCategory {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?
-  iconName    String?
-  color       String?
-  parentId    String?
-  parent      PrayerLibraryCategory? @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children    PrayerLibraryCategory[] @relation("CategoryHierarchy")
-  sortOrder   Int      @default(0)
-  
-  prayers     Prayer[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@index([parentId])
+enum SacramentType {
+  BAPTISM
+  CONFIRMATION
+  EUCHARIST
+  MARRIAGE
+  HOLY_ORDERS
+  ANOINTING_OF_THE_SICK
+  FUNERAL
+  RCIA_INITIATION
 }
 
-// ============================================
-// SAINTS & LITURGY
-// ============================================
-
-model Saint {
-  id              String    @id @default(cuid())
-  name            String
-  slug            String    @unique
-  title           String?   // Saint, Blessed, Venerable, etc.
-  
-  feastDay        String?   // "January 15" format
-  feastMonth      Int?
-  feastDayOfMonth Int?
-  
-  biography       String?
-  shortBio        String?
-  imageUrl        String?
-  
-  patronOf        String[]  // Array of patronages
-  
-  bornDate        String?
-  diedDate        String?
-  canonizedDate   String?
-  
-  externalId      String?   // From GCatholic
-  lastSyncedAt    DateTime?
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  @@index([feastMonth, feastDayOfMonth])
-}
-
-model DailyReading {
-  id              String    @id @default(cuid())
-  date            DateTime  @unique
-  
-  liturgicalSeason String?
-  liturgicalColor  String?
-  feastName       String?
-  
-  firstReading    String?
-  firstReadingRef String?   // "Isaiah 40:1-5"
-  
-  psalm           String?
-  psalmRef        String?
-  
-  secondReading   String?
-  secondReadingRef String?
-  
-  gospel          String?
-  gospelRef       String?
-  
-  reflection      String?
-  
-  createdAt       DateTime  @default(now())
-  
-  @@index([date])
-}
-
-// ============================================
-// NOTIFICATIONS
-// ============================================
-
-model Notification {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  type        NotificationType
-  title       String
-  body        String
-  data        Json?    // Additional data
-  
-  isRead      Boolean  @default(false)
-  readAt      DateTime?
-  
-  createdAt   DateTime @default(now())
-  
-  @@index([userId])
-  @@index([isRead])
-}
-
-enum NotificationType {
-  PRAYER_RECEIVED
-  PRAYER_APPROVED
-  PRAYER_REJECTED
-  SOMEONE_PRAYED
-  PRAYER_ANSWERED
-  CHURCH_EVENT
-  CLAIM_STATUS
-  SYSTEM
-}
-
-// ============================================
-// ADMIN & SYNC
-// ============================================
-
-model AdminUser {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  passwordHash String
-  name        String
-  role        AdminRole
-  
-  isActive    Boolean  @default(true)
-  lastLoginAt DateTime?
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@index([email])
-}
-
-enum AdminRole {
-  SUPER_ADMIN
-  ADMIN
-  MODERATOR
-  CONTENT_EDITOR
-}
-
-model SyncLog {
-  id          String   @id @default(cuid())
-  source      String   // "gcatholic"
-  type        String   // "dioceses", "churches", etc.
-  
-  status      SyncStatus
-  startedAt   DateTime @default(now())
-  completedAt DateTime?
-  
-  recordsProcessed Int   @default(0)
-  recordsCreated   Int   @default(0)
-  recordsUpdated   Int   @default(0)
-  recordsFailed    Int   @default(0)
-  
-  errorMessage String?
-  errorDetails Json?
-  
-  triggeredBy  String?  // "manual" or "cron"
-  
-  @@index([source])
-  @@index([status])
-  @@index([startedAt])
+enum SubscriptionTier {
+  FREE
+  PLUS
+  PREMIUM
+  LIFETIME
 }
 
 enum SyncStatus {
@@ -667,288 +1261,4 @@ enum SyncStatus {
   COMPLETED
   FAILED
   CANCELLED
-}
-
-model AppSettings {
-  id          String   @id @default("app_settings")
-  
-  // General
-  siteName    String   @default("MyPrayerTower")
-  siteTagline String   @default("All-in-One Catholic Services")
-  
-  // Features
-  maintenanceMode Boolean @default(false)
-  registrationEnabled Boolean @default(true)
-  prayerWallEnabled Boolean @default(true)
-  
-  // Sync settings
-  syncEnabled     Boolean @default(true)
-  syncSchedule    String  @default("0 2 * * 0") // Cron expression
-  
-  // Subscription prices (in cents)
-  plusMonthlyPrice Int @default(499)
-  plusYearlyPrice  Int @default(3999)
-  premiumMonthlyPrice Int @default(999)
-  premiumYearlyPrice  Int @default(7999)
-  lifetimePrice    Int @default(14999)
-  
-  updatedAt   DateTime @updatedAt
-}
-
-// ============================================
-// MINISTRIES & CHARITIES
-// ============================================
-
-model Ministry {
-  id              String    @id @default(cuid())
-  name            String
-  slug            String    @unique
-  type            MinistryType @default(OTHER)
-  
-  // Location
-  address         String?
-  city            String?
-  state           String?
-  country         String?
-  countryCode     String?
-  postalCode      String?
-  latitude        Float?
-  longitude       Float?
-  
-  // Contact
-  phone           String?
-  email           String?
-  website         String?
-  
-  // Content
-  description     String?
-  missionStatement String?
-  imageUrl        String?
-  
-  // Metadata
-  isVerified      Boolean   @default(false)
-  
-  // Sync info
-  externalId      String?   @unique // From NetMinistries
-  lastSyncedAt    DateTime?
-  dataSource      String?   // "netministries", etc.
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  @@index([state, city])
-  @@index([type])
-}
-
-enum MinistryType {
-  NONPROFIT
-  CHARITY
-  EDUCATION
-  MEDIA
-  RETREAT_CENTER
-  RELIGIOUS_ORDER
-  YOUTH_GROUP
-  SUPPORT_GROUP
-  OTHER
-}
-
-// ============================================
-// B2B CHURCH PORTAL (Monetization)
-// ============================================
-
-model ChurchSubscription {
-  id              String              @id @default(cuid())
-  churchId        String              @unique
-  church          Church              @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  
-  // Tier
-  tier            ChurchTier          @default(UNCLAIMED)
-  
-  // Payment
-  paidAmount      Float?
-  paidAt          DateTime?
-  stripePaymentId String?
-  
-  // Features
-  announcementsLimit Int?             // null = unlimited
-  eventsLimit     Int?                // null = unlimited
-  adminsLimit     Int                 @default(1)
-  
-  // Status
-  isActive        Boolean             @default(false)
-  activatedAt     DateTime?
-  expiresAt       DateTime?           // null = lifetime
-  
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  
-  @@index([tier])
-  @@index([isActive])
-}
-
-enum ChurchTier {
-  UNCLAIMED       // Free, no management features
-  BASIC           // $99 - Basic parish
-  PRO             // $249 - Pro parish  
-  CATHEDRAL       // $499 - Large parishes
-  DIOCESE         // $2499 - Diocese license
-}
-
-model ChurchAnnouncement {
-  id              String              @id @default(cuid())
-  churchId        String
-  church          Church              @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  
-  // Content
-  title           String
-  content         String
-  imageUrl        String?
-  linkUrl         String?
-  linkText        String?
-  
-  // Targeting
-  isPinned        Boolean             @default(false)
-  isPublished     Boolean             @default(true)
-  publishedAt     DateTime            @default(now())
-  expiresAt       DateTime?
-  
-  // Notifications
-  pushSent        Boolean             @default(false)
-  pushSentAt      DateTime?
-  
-  // Stats
-  viewCount       Int                 @default(0)
-  
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  
-  @@index([churchId])
-  @@index([isPublished, publishedAt])
-}
-
-model ChurchFollower {
-  id              String              @id @default(cuid())
-  churchId        String
-  church          Church              @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  userId          String
-  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Preferences
-  pushEnabled     Boolean             @default(true)
-  emailEnabled    Boolean             @default(false)
-  
-  // Status
-  isParishioner   Boolean             @default(false) // Official member vs visitor
-  
-  followedAt      DateTime            @default(now())
-  
-  @@unique([churchId, userId])
-  @@index([churchId])
-  @@index([userId])
-}
-
-model ChurchAdmin {
-  id              String              @id @default(cuid())
-  churchId        String
-  church          Church              @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  userId          String
-  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Role
-  role            ChurchAdminRole     @default(EDITOR)
-  
-  // Permissions (override role if needed)
-  canEditInfo     Boolean             @default(true)
-  canPostAnnouncements Boolean        @default(true)
-  canManageEvents Boolean             @default(true)
-  canManageAdmins Boolean             @default(false)
-  canViewAnalytics Boolean            @default(true)
-  
-  invitedBy       String?
-  invitedAt       DateTime            @default(now())
-  acceptedAt      DateTime?
-  
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  
-  @@unique([churchId, userId])
-  @@index([churchId])
-  @@index([userId])
-}
-
-enum ChurchAdminRole {
-  OWNER           // Full control, can transfer ownership
-  ADMIN           // Full control except transfer
-  EDITOR          // Can edit content, no admin management
-  VIEWER          // Read-only analytics access
-}
-
-// ============================================
-// RSS NEWS FEEDS
-// ============================================
-
-model NewsArticle {
-  id           String   @id @default(cuid())
-  externalId   String   @unique // RSS GUID
-  source       String   // CNA, Vatican, EWTN, etc.
-  title        String
-  summary      String?
-  content      String?
-  imageUrl     String?
-  linkUrl      String
-  author       String?
-  category     String?
-  publishedAt  DateTime
-  fetchedAt    DateTime @default(now())
-  
-  @@index([source])
-  @@index([publishedAt])
-  @@index([category])
-}
-
-// ============================================
-// SPONSORED CONTENT & ADVERTISING
-// ============================================
-
-model SponsoredContent {
-  id           String      @id @default(cuid())
-  type         AdType
-  title        String
-  description  String?
-  imageUrl     String
-  linkUrl      String
-  placement    String      // homepage, sidebar, prayer-wall, events
-  advertiser   String
-  advertiserEmail String?
-  
-  // Schedule
-  startDate    DateTime
-  endDate      DateTime
-  
-  // Stats
-  impressions  Int         @default(0)
-  clicks       Int         @default(0)
-  
-  // Payment
-  paidAmount   Float?
-  stripePaymentId String?
-  
-  // Status
-  isActive     Boolean     @default(false)
-  isApproved   Boolean     @default(false)
-  approvedBy   String?
-  approvedAt   DateTime?
-  
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  
-  @@index([placement, isActive])
-  @@index([startDate, endDate])
-}
-
-enum AdType {
-  BANNER       // Standard image banner
-  NATIVE       // Text + small image, blends with content
-  NEWSLETTER   // Email newsletter sponsor
-  FEATURED     // Featured listing boost
 }

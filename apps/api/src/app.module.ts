@@ -18,6 +18,16 @@ import { SaintsModule } from './modules/saints/saints.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { SyncModule } from './modules/sync/sync.module';
+import { ChurchPortalModule } from './modules/church-portal/church-portal.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { NewsModule } from './modules/news/news.module';
+import { LiturgicalModule } from './modules/liturgical/liturgical.module';
+import { ModerationModule } from './modules/moderation/moderation.module';
+
+// Mass Offerings & Donations
+import { MassOfferingsModule } from './modules/mass-offerings/mass-offerings.module';
+import { PlatformDonationsModule } from './modules/platform-donations/platform-donations.module';
+import { WebhooksModule } from './modules/webhooks/webhooks.module';
 
 @Module({
     imports: [
@@ -59,6 +69,18 @@ import { SyncModule } from './modules/sync/sync.module';
         NotificationsModule,
         AdminModule,
         SyncModule,
+        ChurchPortalModule,
+        PaymentsModule,
+        NewsModule,
+        LiturgicalModule,
+        ModerationModule,
+
+        // Mass Offerings & Donations (Centralized)
+        MassOfferingsModule,
+        PlatformDonationsModule,
+        WebhooksModule,
     ],
 })
 export class AppModule { }
+
+

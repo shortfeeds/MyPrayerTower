@@ -20,6 +20,7 @@ export default function DonatePage({ params }: { params: { churchId: string } })
     const [isRecurring, setIsRecurring] = useState(false);
     const [message, setMessage] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
+    const [donationType, setDonationType] = useState<'general' | 'mass_intention'>('general');
 
     const selectedAmount = customAmount ? parseFloat(customAmount) : amount;
 
@@ -69,8 +70,8 @@ export default function DonatePage({ params }: { params: { churchId: string } })
                                         setCustomAmount('');
                                     }}
                                     className={`py-4 rounded-xl font-semibold text-lg transition-all ${amount === amt && !customAmount
-                                            ? 'bg-green-600 text-white ring-2 ring-green-300'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        ? 'bg-green-600 text-white ring-2 ring-green-300'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                 >
                                     ${amt}
@@ -112,11 +113,71 @@ export default function DonatePage({ params }: { params: { churchId: string } })
                         </div>
                     </div>
 
+                    {/* Donation Type Selection */}
+                    <div className="mb-8">
+                        <label className="block text-sm font-bold text-gray-700 mb-3">Donation Type</label>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setDonationType('general')}
+                                className={`flex-1 py-3 px-4 rounded-xl border-2 font-medium transition-all ${donationType === 'general'
+                                    ? 'border-green-600 bg-green-50 text-green-700'
+                                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                                    }`}
+                            >
+                                General Support
+                            </button>
+                            <button
+                                onClick={() => setDonationType('mass_intention')}
+                                className={`flex-1 py-3 px-4 rounded-xl border-2 font-medium transition-all ${donationType === 'mass_intention'
+                                    ? 'border-green-600 bg-green-50 text-green-700'
+                                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                                    }`}
+                            >
+                                Mass Intention
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Mass Intention Fields */}
+                    {donationType === 'mass_intention' && (
+                        <div className="mb-8 bg-gray-50 p-6 rounded-xl space-y-4 animate-in fade-in slide-in-from-top-2">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Intention For</label>
+                                <input
+                                    type="text"
+                                    placeholder="Name of person(s)"
+                                    className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Type</label>
+                                <div className="flex gap-4">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="intention_type" className="text-green-600 focus:ring-green-500" defaultChecked />
+                                        <span>Deceased (Reviewing)</span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="intention_type" className="text-green-600 focus:ring-green-500" />
+                                        <span>Living (Healing/Special)</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Preferred Date (Optional)</label>
+                                <input
+                                    type="date"
+                                    className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Subject to parish availability.</p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Message */}
                     <div className="mb-8">
                         <h2 className="text-lg font-bold text-gray-900 mb-4">Add a Message (Optional)</h2>
                         <textarea
-                            placeholder="Leave an encouraging message for the church..."
+                            placeholder={donationType === 'mass_intention' ? "Any specific notes for the priest..." : "Leave an encouraging message for the church..."}
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200"

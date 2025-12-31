@@ -4,26 +4,52 @@
 
 Find Catholic churches worldwide, join a global prayer community, and grow in faith together.
 
+[![Website](https://img.shields.io/badge/Website-myprayertower.com-blue)](https://myprayertower.com)
+[![Play Store](https://img.shields.io/badge/Android-Play%20Store-green)](https://play.google.com/store/apps/details?id=com.myprayertower.app)
+[![License](https://img.shields.io/badge/License-Proprietary-red)](./LICENSE)
+
+---
+
 ## 📋 Features
 
-- 🏛️ **Church Finder** - 50,000+ churches with Mass times, directions, and events
-- 🙏 **Prayer Wall** - Share intentions and pray for others
+### Core Features
+- 🏛️ **Church Finder** - 10,000+ churches with Mass times, directions, and contact info
+- 🙏 **Prayer Wall** - Share intentions and pray for others worldwide
 - 📖 **Prayer Library** - 2,000+ traditional and contemporary prayers
-- ⛪ **Church Claims** - 3-step verification for church administrators
-- 👤 **User Profiles** - Track prayers, saved churches, and subscriptions
-- 🌍 **Multi-Language** - English, Spanish, and more
-- 📱 **Mobile Apps** - iOS and Android with offline support
+- 👤 **User Profiles** - Track prayers, saved churches, streaks, and badges
+- 📿 **Rosary Guide** - Interactive rosary with all mysteries
+- 📅 **Daily Readings** - USCCB daily Mass readings
+- ⛪ **Saint of the Day** - Learn about saints throughout the year
+
+### New Features (December 2024)
+- 🌙 **Dark Mode** - System-aware theme with manual toggle
+- 🎵 **Audio Prayer Player** - Listen to prayers with full playback controls
+- 🔥 **Prayer Streaks** - Gamification with streak tracking and badges
+- 🏆 **Badges & Achievements** - 12+ badges for prayer milestones
+- 📊 **Personal Analytics** - Dashboard with prayer stats and insights
+- 👥 **Prayer Groups** - Create and join prayer communities
+- ♿ **Accessibility** - Font size, high contrast, reduced motion options
 - 🔔 **Push Notifications** - Prayer reminders and community updates
+- 📱 **PWA Support** - Install on any device for offline access
+- 🔗 **Shareable Prayer Images** - Generate OG images for social sharing
+
+### SEO & Performance
+- 🗺️ **Dynamic Sitemap** - Auto-generated for all content
+- 🍞 **Breadcrumb Navigation** - With JSON-LD structured data
+- ⚡ **Edge Caching** - Database query caching for fast loads
+- 📦 **Image Optimization** - Sharp-powered image processing
+
+---
 
 ## 🏗️ Project Structure
 
 ```
 myprayertower/
 ├── apps/
-│   ├── api/          # NestJS Backend (REST + GraphQL)
-│   ├── web/          # Next.js 14 Web App
+│   ├── web/          # Next.js 14 Web App (Main Application)
 │   ├── admin/        # React Admin Panel
-│   ├── mobile/       # Expo React Native App
+│   ├── mobile/       # Expo React Native App (Optional)
+│   ├── api/          # NestJS Backend (Optional - see note below)
 │   └── scraper/      # GCatholic Data Scraper
 ├── packages/
 │   └── database/     # Prisma Schema & Migrations
@@ -31,13 +57,16 @@ myprayertower/
 └── turbo.json
 ```
 
+> **Note on API Backend**: The web app uses direct Prisma database access. The NestJS API backend is optional and only needed if you want REST/GraphQL endpoints for third-party integrations. The admin panel works independently.
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 20+
 - pnpm 8+
-- PostgreSQL 16+
-- Redis 7+
+- PostgreSQL 16+ (or Supabase)
 
 ### Installation
 
@@ -50,131 +79,145 @@ cd myprayertower
 pnpm install
 
 # Set up environment
-cp .env.example .env
-# Edit .env with your configuration
+cp apps/web/.env.example apps/web/.env.local
+# Edit .env.local with your configuration
 
-# Generate Prisma client
-pnpm prisma generate --schema=packages/database/prisma/schema.prisma
-
-# Push database schema
-pnpm prisma db push --schema=packages/database/prisma/schema.prisma
-
-# Start development
-pnpm dev
+# Start development (web only)
+pnpm --filter @mpt/web dev
 ```
-
-### Available Scripts
-
-| Script | Description |
-|--------|-------------|
-| `pnpm dev` | Start all apps in development mode |
-| `pnpm build` | Build all apps for production |
-| `pnpm lint` | Run ESLint across all apps |
-| `pnpm test` | Run tests |
-| `pnpm prisma studio` | Open Prisma Studio |
-
-## 🌐 Services
-
-| Service | URL | Description |
-|---------|-----|-------------|
-| Web App | http://localhost:3000 | Main website |
-| API | http://localhost:4000 | Backend API |
-| Admin | http://localhost:3001 | Admin panel |
-| GraphQL | http://localhost:4000/graphql | GraphQL playground |
-
-## 🔧 Configuration
 
 ### Environment Variables
 
-See `.env.example` for all available options:
+Create `apps/web/.env.local`:
 
 ```bash
-# Database
+# Database (Required)
 DATABASE_URL="postgresql://user:pass@localhost:5432/myprayertower"
 
-# JWT
-JWT_SECRET="your-secret-key"
-JWT_EXPIRES_IN="7d"
+# AdSense/AdMob (Required for ads)
+NEXT_PUBLIC_ADSENSE_CLIENT_ID="ca-pub-XXXXXXXXXXXXXXXX"
 
-# Services
-SENDGRID_API_KEY="your-sendgrid-key"
-STRIPE_SECRET_KEY="your-stripe-key"
-FIREBASE_SERVICE_ACCOUNT='{...}'
+# Push Notifications (Optional)
+NEXT_PUBLIC_VAPID_PUBLIC_KEY="your-vapid-public-key"
 ```
-
-## 📱 Mobile Development
-
-```bash
-# Start Expo development server
-cd apps/mobile
-pnpm start
-
-# Run on iOS simulator
-pnpm ios
-
-# Run on Android emulator
-pnpm android
-```
-
-## 🧪 Testing
-
-```bash
-# Unit tests
-pnpm test
-
-# E2E tests (Web)
-cd apps/web
-npx playwright test
-
-# Watch mode
-pnpm test:watch
-```
-
-## 🐳 Docker Deployment
-
-```bash
-# Build and start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f api
-
-# Stop services
-docker-compose down
-```
-
-## 📄 API Documentation
-
-- **REST API**: `/api/v1/` prefix
-- **GraphQL**: `/graphql` endpoint
-- **Swagger**: `/api/docs` (when enabled)
-
-## 🔒 Security
-
-- JWT authentication with refresh tokens
-- Rate limiting (100 req/min)
-- Prayer request moderation
-- Church 3-step verification (Email OTP, SMS OTP, Documents)
-- GDPR/CCPA compliant
-
-## 📜 Legal
-
-- [Terms of Service](/legal/terms-of-service.md)
-- [Privacy Policy](/legal/privacy-policy.md)
-- [Community Guidelines](/legal/community-guidelines.md)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📃 License
-
-Copyright © 2024 MyPrayerTower. All rights reserved.
 
 ---
 
-Made with ❤️ and 🙏
+## 📱 Mobile App (Android)
+
+The Android app is built using Expo React Native and shares data with the web app.
+
+### Automatic Content Updates
+✅ **Yes, website data updates automatically sync to the app!**
+
+The mobile app fetches data from the same database via API calls or direct database access. When you update:
+- Churches, Mass times, or contact info
+- Prayer library content
+- Saints information
+- Daily readings
+
+These changes are reflected in the app immediately or after the next app refresh. No APK update is required for content changes.
+
+> ⚠️ **APK Updates Required For**: Code changes, new features, UI updates, or native module updates.
+
+### Building for Production
+
+```bash
+cd apps/mobile
+
+# Build Android APK
+eas build --platform android --profile production
+
+# Build Android AAB (for Play Store)
+eas build --platform android --profile production-aab
+```
+
+---
+
+## 📄 Legal Pages
+
+All required legal pages are implemented:
+
+| Page | URL | Purpose |
+|------|-----|---------|
+| Privacy Policy | `/privacy` | GDPR/CCPA compliant data practices |
+| Terms of Service | `/terms` | User agreement and liability |
+| Cookie Policy | `/cookies` | Cookie usage disclosure |
+| Community Guidelines | `/guidelines` | Prayer wall and community rules |
+| DMCA Policy | `/dmca` | Copyright takedown procedures |
+
+---
+
+## 🛡️ Google Play Store Compliance
+
+### Required for Publishing
+
+1. **Privacy Policy URL**: https://myprayertower.com/privacy
+2. **Terms of Service URL**: https://myprayertower.com/terms
+3. **Ad Disclosure**: App uses Google AdMob (disclosed in Privacy Policy)
+4. **Data Safety Form**: Complete in Play Console
+5. **Content Rating**: Complete IARC questionnaire
+6. **App Signing**: Enroll in Google Play App Signing
+
+### AdMob Setup
+
+1. Add your AdMob App ID to `apps/mobile/app.json`:
+   ```json
+   {
+     "expo": {
+       "plugins": [
+         ["expo-ads-admob", { "appId": "ca-app-pub-XXXXXX~YYYYYY" }]
+       ]
+     }
+   }
+   ```
+
+2. For web, set in `.env.local`:
+   ```
+   NEXT_PUBLIC_ADSENSE_CLIENT_ID=ca-pub-XXXXXX
+   ```
+
+---
+
+## 🌐 Website Deployment
+
+### Recommended: Vercel
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+cd apps/web
+vercel --prod
+```
+
+### Environment Variables on Vercel
+Add the same variables from `.env.local` in Vercel Dashboard → Settings → Environment Variables.
+
+---
+
+## 🔒 Security
+
+- ✅ JWT authentication with refresh tokens
+- ✅ Rate limiting (100 req/min)
+- ✅ Prayer request moderation
+- ✅ Church 3-step verification
+- ✅ GDPR/CCPA compliant
+- ✅ SSL/TLS encryption
+- ✅ Secure password hashing (bcrypt)
+
+---
+
+## 📞 Support
+
+- **Email**: support@myprayertower.com
+- **Privacy**: privacy@myprayertower.com
+- **DMCA**: dmca@myprayertower.com
+- **Website**: https://myprayertower.com/contact
+
+---
+
+## 📃 License
+
+Copyright © 2026 MyPrayerTower. All rights reserved.

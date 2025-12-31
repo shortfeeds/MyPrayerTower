@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Form, Input, Switch, Button, message, Divider, Alert } from 'antd';
+import { Card, Form, Input, Switch, Button, message, Divider, Alert, Row, Col } from 'antd';
 import { SaveOutlined, SettingOutlined } from '@ant-design/icons';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
@@ -134,5 +134,4 @@ export function Settings() {
     );
 }
 
-// Add these imports at top of file, reusing existing ant imports
-import { Row, Col } from 'antd';
+

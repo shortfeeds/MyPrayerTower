@@ -1,8 +1,33 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
+import { Inter, Merriweather, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
+// Self-hosted fonts for performance
+const inter = Inter({
+    subsets: ['latin'],
+    variable: '--font-inter',
+    display: 'swap',
+});
+
+const merriweather = Merriweather({
+    subsets: ['latin'],
+    weight: ['300', '400', '700', '900'],
+    variable: '--font-merriweather',
+    display: 'swap',
+});
+
+const playfair = Playfair_Display({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700', '800', '900'],
+    variable: '--font-playfair',
+    display: 'swap',
+});
 
 export const metadata: Metadata = {
     title: 'MyPrayerTower - Find Churches, Share Prayers, Grow in Faith',
@@ -12,7 +37,8 @@ export const metadata: Metadata = {
     manifest: '/manifest.json',
     icons: {
         icon: '/favicon.ico',
-        apple: '/apple-touch-icon.png',
+        shortcut: '/favicon.ico',
+        apple: '/icon.png',
     },
     appleWebApp: {
         capable: true,
@@ -46,12 +72,50 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en">
-            <body className="min-h-screen bg-white text-gray-900 antialiased">
-                <Header />
-                <main className="flex-1">{children}</main>
-                <Footer />
+        <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
+            <head>
+                {/* Google AdSense Script - Replace ca-pub-XXXXXXXX with your actual publisher ID */}
+                {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
+                    <Script
+                        async
+                        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+                        crossOrigin="anonymous"
+                        strategy="afterInteractive"
+                    />
+                )}
+                {/* Cashfree Payments SDK */}
+                <Script
+                    src="https://sdk.cashfree.com/js/v3/cashfree.js"
+                    strategy="beforeInteractive"
+                />
+            </head>
+            <body className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
+                <ThemeProvider>
+                    <Header />
+                    <main className="flex-1">{children}</main>
+                    <Footer />
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify({
+                                '@context': 'https://schema.org',
+                                '@type': 'Organization',
+                                name: 'MyPrayerTower',
+                                url: 'https://myprayertower.com',
+                                logo: 'https://myprayertower.com/icon.svg',
+                                sameAs: [
+                                    'https://www.facebook.com/MyPrayerTower2',
+                                    'https://www.youtube.com/c/MyPrayerTower'
+                                ],
+                                description: 'The #1 All-in-One Catholic Services App. Find churches, prayer wall, and daily readings.',
+                            }),
+                        }}
+                    />
+                </ThemeProvider>
+                <Analytics />
+                <SpeedInsights />
             </body>
         </html>
     );
 }
+

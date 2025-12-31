@@ -21,6 +21,20 @@ module.exports = {
                     900: '#0f2554',
                     950: '#0a1835',
                 },
+                // Sacred Navy - Primary dark color for trust and faith
+                sacred: {
+                    50: '#f0f4f9',
+                    100: '#d9e2f0',
+                    200: '#b8c9e3',
+                    300: '#8ca7d1',
+                    400: '#5f82bc',
+                    500: '#1e3a5f',
+                    600: '#1a3354',
+                    700: '#152a47',
+                    800: '#11223b',
+                    900: '#0d1a2e',
+                    950: '#080f1a',
+                },
                 gold: {
                     50: '#fffbf0',
                     100: '#fef5d6',
@@ -47,14 +61,24 @@ module.exports = {
                     900: '#4c1d95',
                     950: '#2e1065',
                 },
+                // Warm Cream - Peaceful background color
                 cream: {
                     50: '#fdfbf7',
                     100: '#f8f5ed',
+                    200: '#f5f2eb',
+                    300: '#ebe7dc',
+                },
+                // Warm Brown - Earthly, grounded accent
+                earth: {
+                    500: '#8B4513',
+                    600: '#7a3d10',
+                    700: '#69350e',
                 },
             },
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
                 serif: ['Merriweather', 'Georgia', 'serif'],
+                display: ['Playfair Display', 'Georgia', 'serif'],
             },
             animation: {
                 'fade-in': 'fadeIn 0.6s ease-out',
@@ -62,6 +86,11 @@ module.exports = {
                 'slide-up': 'slideUp 0.5s ease-out',
                 'pulse-soft': 'pulseSoft 3s ease-in-out infinite',
                 'float': 'float 6s ease-in-out infinite',
+                'blob': 'blob 7s infinite',
+                'shimmer': 'shimmer 2s linear infinite',
+                'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+                'scale-in': 'scaleIn 0.3s ease-out',
+                'slide-in-right': 'slideInRight 0.5s ease-out',
             },
             keyframes: {
                 fadeIn: {
@@ -83,6 +112,28 @@ module.exports = {
                 float: {
                     '0%, 100%': { transform: 'translateY(0)' },
                     '50%': { transform: 'translateY(-10px)' },
+                },
+                blob: {
+                    '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                    '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                    '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                    '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                },
+                shimmer: {
+                    '0%': { backgroundPosition: '-200% 0' },
+                    '100%': { backgroundPosition: '200% 0' },
+                },
+                glowPulse: {
+                    '0%, 100%': { boxShadow: '0 0 15px rgba(212, 175, 55, 0.3)' },
+                    '50%': { boxShadow: '0 0 30px rgba(212, 175, 55, 0.6)' },
+                },
+                scaleIn: {
+                    '0%': { opacity: '0', transform: 'scale(0.95)' },
+                    '100%': { opacity: '1', transform: 'scale(1)' },
+                },
+                slideInRight: {
+                    '0%': { opacity: '0', transform: 'translateX(20px)' },
+                    '100%': { opacity: '1', transform: 'translateX(0)' },
                 },
             },
             backgroundImage: {

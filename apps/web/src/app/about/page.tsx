@@ -1,68 +1,117 @@
-import { Heart, Globe, Shield } from 'lucide-react';
+import { Heart, Globe, Shield, Church, BookOpen, Star, Users } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AboutPage() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero */}
             <section className="bg-primary-950 text-white py-24 text-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-primary-900 to-primary-950"></div>
+                {/* Decorative blobs */}
                 <div className="absolute top-0 right-0 w-96 h-96 bg-gold-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+
                 <div className="container mx-auto px-4 relative z-10">
-                    <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">Our Mission</h1>
+                    <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-gold-400 text-sm font-medium mb-6">
+                        Established 2024
+                    </span>
+                    <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">Serving the <span className="text-gold-400">Global Catholic</span> Community</h1>
                     <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-                        To build the world's most comprehensive digital platform for the Catholic faith,
-                        connecting believers with their parishes and each other.
+                        MyPrayerTower is the all-in-one digital companion for your faith journey.
+                        Connecting millions of believers to churches, prayers, and the daily rhythm of Catholic life.
                     </p>
                 </div>
             </section>
 
             {/* Content */}
-            <section className="py-20 bg-white">
+            <section className="py-20 bg-white dark:bg-gray-900">
                 <div className="container mx-auto px-4">
+                    {/* Mission Stats */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20">
+                        <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl">
+                            <div className="text-3xl font-bold text-primary-600 dark:text-gold-400 mb-2">55,000+</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Churches Listed</div>
+                        </div>
+                        <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl">
+                            <div className="text-3xl font-bold text-primary-600 dark:text-gold-400 mb-2">10,000+</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Daily Prayers</div>
+                        </div>
+                        <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl">
+                            <div className="text-3xl font-bold text-primary-600 dark:text-gold-400 mb-2">Global</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Community Reach</div>
+                        </div>
+                        <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl">
+                            <div className="text-3xl font-bold text-primary-600 dark:text-gold-400 mb-2">24/7</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Prayer Support</div>
+                        </div>
+                    </div>
+
                     <div className="max-w-4xl mx-auto">
-                        <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
-                            <div>
-                                <h2 className="text-3xl font-bold text-gray-900 mb-6">Who We Are</h2>
-                                <p className="text-gray-600 mb-4 leading-relaxed">
-                                    MyPrayerTower started with a simple observation: while technology connects us in many ways,
-                                    it often fails to support our spiritual lives meaningfully.
-                                </p>
-                                <p className="text-gray-600 leading-relaxed">
-                                    We are a team of Catholic developers, designers, and creatives dedicated to using
-                                    technology to serve the Church. We believe that digital tools, when built with intention,
-                                    can help deepen faith and foster community.
-                                </p>
-                            </div>
-                            <div className="bg-gray-100 rounded-3xl p-8 aspect-square flex items-center justify-center">
-                                {/* Placeholder for Team Image */}
-                                <div className="text-center text-gray-400">
-                                    <Globe className="w-16 h-16 mx-auto mb-4" />
-                                    <span className="font-medium">Global Team</span>
+                        <div className="mb-20">
+                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">Everything You Need to Grow</h2>
+                            <p className="text-gray-600 dark:text-gray-300 text-center max-w-2xl mx-auto mb-12">
+                                We've built a comprehensive ecosystem of tools designed to support every aspect of your spiritual life, from finding Mass times to deep daily devotion.
+                            </p>
+
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="p-6 border border-gray-100 dark:border-gray-700 rounded-2xl hover:shadow-lg transition-shadow">
+                                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center mb-4">
+                                        <Church className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Global Church Finder</h3>
+                                    <p className="text-gray-600 dark:text-gray-400">
+                                        Instantly locate Catholic churches anywhere in the world. Access Mass times, confession schedules, adoration hours, and contact details for parishes near you or while traveling.
+                                    </p>
+                                </div>
+
+                                <div className="p-6 border border-gray-100 dark:border-gray-700 rounded-2xl hover:shadow-lg transition-shadow">
+                                    <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center mb-4">
+                                        <Heart className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Living Prayer Wall</h3>
+                                    <p className="text-gray-600 dark:text-gray-400">
+                                        Join a vibrant community of prayer. Submit your intentions, light a virtual candle, and pray for others. Experience the power of collective intercession.
+                                    </p>
+                                </div>
+
+                                <div className="p-6 border border-gray-100 dark:border-gray-700 rounded-2xl hover:shadow-lg transition-shadow">
+                                    <div className="w-12 h-12 bg-gold-100 dark:bg-gold-900/30 text-gold-600 dark:text-gold-400 rounded-xl flex items-center justify-center mb-4">
+                                        <Star className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Daily Saints & Feasts</h3>
+                                    <p className="text-gray-600 dark:text-gray-400">
+                                        Walk with the saints. Discover the inspiring lives of holy men and women each day, learn about their patronage, and find inspiration for your own path to holiness.
+                                    </p>
+                                </div>
+
+                                <div className="p-6 border border-gray-100 dark:border-gray-700 rounded-2xl hover:shadow-lg transition-shadow">
+                                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center mb-4">
+                                        <BookOpen className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Readings & Devotionals</h3>
+                                    <p className="text-gray-600 dark:text-gray-400">
+                                        Stay grounded in the Word. Access daily Mass readings, reflections, and a vast library of traditional Catholic prayers including the Rosary and Divine Mercy Chaplet.
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-8 text-center">
-                            <div className="p-6">
-                                <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Heart className="w-6 h-6" />
+                        {/* CTA */}
+                        <div className="bg-gradient-to-br from-primary-900 to-sacred-900 rounded-3xl p-8 md:p-12 text-center text-white overflow-hidden relative">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                            <div className="relative z-10">
+                                <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
+                                <p className="text-blue-100 mb-8 max-w-xl mx-auto">
+                                    Start your spiritual journey today. Create a free account to track your prayers, save your favorite churches, and connect with believers worldwide.
+                                </p>
+                                <div className="flex gap-4 justify-center">
+                                    <Link href="/register" className="px-8 py-3 bg-gold-500 hover:bg-gold-400 text-white font-bold rounded-xl transition-colors shadow-lg shadow-gold-500/25">
+                                        Get Started Free
+                                    </Link>
+                                    <Link href="/contact" className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-colors backdrop-blur-sm">
+                                        Contact Us
+                                    </Link>
                                 </div>
-                                <h3 className="font-bold text-lg mb-2">Faith First</h3>
-                                <p className="text-gray-600 text-sm">Every feature is designed to support legitimate Catholic teaching and tradition.</p>
-                            </div>
-                            <div className="p-6">
-                                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Globe className="w-6 h-6" />
-                                </div>
-                                <h3 className="font-bold text-lg mb-2">Universal</h3>
-                                <p className="text-gray-600 text-sm">Serving the global Church with support for multiple languages and rites.</p>
-                            </div>
-                            <div className="p-6">
-                                <div className="w-12 h-12 bg-gold-100 text-gold-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Shield className="w-6 h-6" />
-                                </div>
-                                <h3 className="font-bold text-lg mb-2">Privacy Focused</h3>
-                                <p className="text-gray-600 text-sm">We don't sell your data. Your spiritual journey is personal and protected.</p>
                             </div>
                         </div>
                     </div>

@@ -17,7 +17,7 @@ export default function PricingPage() {
             {/* Pricing Cards */}
             <div className="container mx-auto px-4 -mt-16 pb-20 relative z-10">
                 <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {/* Basic */}
+                    {/* Free Tier */}
                     <div className="card-premium p-8 flex flex-col">
                         <div className="mb-4">
                             <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">Basic</span>
@@ -30,7 +30,8 @@ export default function PricingPage() {
                                 'Basic Church Profile',
                                 'Mass & Confession Times',
                                 'Contact Information',
-                                'Map Location'
+                                'Map Location',
+                                'Daily Readings (Basic)'
                             ].map((feature, i) => (
                                 <li key={i} className="flex items-center gap-3 text-gray-700">
                                     <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0">
@@ -46,25 +47,28 @@ export default function PricingPage() {
                         </Link>
                     </div>
 
-                    {/* Pro */}
+                    {/* Premium Tier */}
                     <div className="card-premium p-8 flex flex-col border-2 border-gold-400 relative transform md:-translate-y-4 shadow-xl">
                         <div className="absolute top-0 right-0 bg-gold-500 text-white px-4 py-1 rounded-bl-xl rounded-tr-lg text-sm font-bold">
-                            POPULAR
+                            RECOMMENDED
                         </div>
                         <div className="mb-4">
                             <span className="px-3 py-1 bg-gold-100 text-gold-700 rounded-full text-sm font-medium">Premium</span>
                         </div>
-                        <h2 className="text-4xl font-bold text-gray-900 mb-2">$29<span className="text-lg text-gray-500 font-normal">/mo</span></h2>
-                        <p className="text-gray-500 mb-8">Everything you need to grow.</p>
+                        <div className="flex items-baseline gap-1 mb-2">
+                            <h2 className="text-4xl font-bold text-gray-900">$4.99</h2>
+                            <span className="text-lg text-gray-500 font-normal">/mo</span>
+                        </div>
+                        <p className="text-sm text-gray-400 mb-8">or $49.99/year (Save ~15%)</p>
 
                         <ul className="space-y-4 mb-8 flex-1">
                             {[
                                 'Everything in Free',
-                                'Enhanced Profile Page',
-                                'Prayer Request Management',
-                                'Event Calendar',
-                                'Parish Announcements',
-                                'Weekly Analytics Report'
+                                'Ad-free Experience',
+                                'Full Daily Readings & Reflections',
+                                'Prayer Streak Tracking',
+                                'Custom Prayer Lists',
+                                'Exclusive Devotional Content'
                             ].map((feature, i) => (
                                 <li key={i} className="flex items-center gap-3 text-gray-700">
                                     <div className="w-5 h-5 rounded-full bg-gold-100 flex items-center justify-center text-gold-600 flex-shrink-0">
@@ -80,22 +84,22 @@ export default function PricingPage() {
                         </Link>
                     </div>
 
-                    {/* Diocese */}
+                    {/* White-Label / Enterprise */}
                     <div className="card-premium p-8 flex flex-col">
                         <div className="mb-4">
-                            <span className="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">Diocese</span>
+                            <span className="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">Enterprise</span>
                         </div>
                         <h2 className="text-4xl font-bold text-gray-900 mb-2">Custom</h2>
-                        <p className="text-gray-500 mb-8">For multi-parish management.</p>
+                        <p className="text-gray-500 mb-8">White-labeled apps for Parishes.</p>
 
                         <ul className="space-y-4 mb-8 flex-1">
                             {[
-                                'Multi-Parish Dashboard',
-                                'Centralized Reporting',
-                                'Staff Accounts',
-                                'Priority Support',
-                                'API Access',
-                                'Custom Integration'
+                                'Everything in Premium',
+                                'Custom Branded Mobile App',
+                                'Parishioner Management',
+                                'Donation Processing',
+                                'Push Notifications',
+                                'Dedicated Support Manager'
                             ].map((feature, i) => (
                                 <li key={i} className="flex items-center gap-3 text-gray-700">
                                     <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0">

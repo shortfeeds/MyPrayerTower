@@ -77,16 +77,16 @@ async function main() {
             // Run the heavy scripts
             // Note: We run them sequentially to avoid memory issues
             console.log('--- Step 1: GCatholic Dioceses ---');
-            await runCommand('npm run --prefix apps/scraper import:gcatholic:dioceses');
+            await runCommand('pnpm --filter @mpt/scraper run import:gcatholic:dioceses');
 
             console.log('--- Step 2: GCatholic Saints ---');
-            await runCommand('npm run --prefix apps/scraper import:gcatholic:saints:complete');
+            await runCommand('pnpm --filter @mpt/scraper run import:gcatholic:saints:complete');
 
             console.log('--- Step 3: GCatholic Churches ---');
-            await runCommand('npm run --prefix apps/scraper import:gcatholic:churches:complete');
+            await runCommand('pnpm --filter @mpt/scraper run import:gcatholic:churches:complete');
 
             console.log('--- Step 4: NetMinistries (Churches & Ministries) ---');
-            await runCommand('npm run --prefix apps/scraper import:netministries');
+            await runCommand('pnpm --filter @mpt/scraper run import:netministries');
 
             // Update log to completed
             const activeLog = await prisma.syncLog.findFirst({

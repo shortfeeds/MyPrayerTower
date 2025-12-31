@@ -11,7 +11,12 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "paths": {
+            "@mpt/database": [
+                "../../packages/database/src/index.ts"
+            ]
+        }
     },
     "include": [
         "src/**/*"

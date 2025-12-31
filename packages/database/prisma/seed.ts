@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, AdminRole } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -263,6 +263,24 @@ async function main() {
         saintCount++;
     }
     console.log(`✅ Created ${saintCount} saints`);
+
+    // Seed Admin User
+    console.log('\n👑 Creating admin user...');
+    await prisma.adminUser.upsert({
+        where: { id: 'admim' },
+        create: {
+            id: 'admim',
+            email: 'admin@myprayertower.com',
+            passwordHash: '$2a$10$5G0ouAFj7U8pbyKJbbjEv.K0gwlDu5ybTkpXH1raiGtQhGl9..WEe',
+            name: 'Admin User',
+            role: AdminRole.SUPER_ADMIN,
+        },
+        update: {
+            passwordHash: '$2a$10$5G0ouAFj7U8pbyKJbbjEv.K0gwlDu5ybTkpXH1raiGtQhGl9..WEe',
+            role: AdminRole.SUPER_ADMIN,
+        }
+    });
+    console.log('✅ Admin user ready');
 
     console.log('\n🎉 ========================================');
     console.log('🎉 DATABASE SEEDING COMPLETED!');

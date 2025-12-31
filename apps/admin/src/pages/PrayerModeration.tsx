@@ -25,7 +25,7 @@ export function PrayerModeration() {
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
 
-    const handleApprove = (id: string) => {
+    const handleApprove = (_id: string) => {
         message.success('Prayer approved and published');
         // TODO: Call API
     };

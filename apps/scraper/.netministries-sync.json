@@ -1,12 +1,12 @@
 {
   "churches": {
-    "lastPage": 1,
-    "totalImported": 60,
-    "lastRun": "2025-12-27T08:41:32.346Z"
+    "lastPage": 9,
+    "totalImported": 2186,
+    "lastRun": "2025-12-27T09:03:15.231Z"
   },
   "ministries": {
-    "lastPage": 40,
+    "lastPage": 69,
     "totalImported": 0,
-    "lastRun": "2025-12-27T08:53:53.131Z"
+    "lastRun": "2025-12-27T09:06:12.491Z"
   }
 }

@@ -1,8 +1,10 @@
-import { Mail, MessageSquare, Phone } from 'lucide-react';
+'use client';
+import React from 'react';
+import { Mail, Phone, Clock, MapPin } from 'lucide-react';
 
 export default function ContactPage() {
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50">
+        <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
             {/* Hero */}
             <section className="bg-primary-950 text-white py-24 text-center">
                 <div className="container mx-auto px-4">
@@ -19,62 +21,115 @@ export default function ContactPage() {
                     <div className="lg:col-span-1 space-y-6">
                         <div className="card-premium p-6">
                             <div className="flex items-center gap-4 mb-4">
-                                <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-600">
+                                <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center text-primary-600 dark:text-primary-400">
                                     <Mail className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900">Email Us</h3>
-                                    <p className="text-sm text-gray-500">support@myprayertower.com</p>
+                                    <h3 className="font-bold text-gray-900 dark:text-white">Email Us</h3>
+                                    <a href="mailto:info@myprayertower.com" className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600">info@myprayertower.com</a>
                                 </div>
                             </div>
-                            <p className="text-sm text-gray-600">For general inquiries and support tickets.</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">For general inquiries and support.</p>
                         </div>
 
                         <div className="card-premium p-6">
                             <div className="flex items-center gap-4 mb-4">
-                                <div className="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center text-gold-600">
-                                    <MessageSquare className="w-5 h-5" />
+                                <div className="w-10 h-10 bg-sacred-100 dark:bg-sacred-900 rounded-full flex items-center justify-center text-sacred-600 dark:text-sacred-400">
+                                    <Clock className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900">Live Chat</h3>
-                                    <p className="text-sm text-gray-500">Available Mon-Fri, 9am-5pm EST</p>
+                                    <h3 className="font-bold text-gray-900 dark:text-white">Response Time</h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">Within 24-48 hours</p>
                                 </div>
                             </div>
-                            <p className="text-sm text-gray-600">Chat directly with our support team.</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">We'll get back to you as soon as possible.</p>
                         </div>
                     </div>
 
                     {/* Contact Form */}
                     <div className="lg:col-span-2">
                         <div className="card-premium p-8 py-10">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a message</h2>
-                            <form className="space-y-6">
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                        <input type="text" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="John" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                        <input type="text" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="Doe" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                                    <input type="email" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="john@example.com" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                                    <textarea rows={5} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="How can we help you?"></textarea>
-                                </div>
-                                <button type="button" className="w-full py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-colors shadow-lg">
-                                    Send Message
-                                </button>
-                            </form>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send us a message</h2>
+                            <ContactForm />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    );
+}
+
+function ContactForm() {
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [status, setStatus] = React.useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setStatus(null);
+
+        const formData = new FormData(e.currentTarget);
+        const data = {
+            firstName: formData.get('firstName') as string,
+            lastName: formData.get('lastName') as string,
+            email: formData.get('email') as string,
+            message: formData.get('message') as string,
+        };
+
+        try {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setStatus({ type: 'success', message: result.message || 'Message sent successfully!' });
+                (e.target as HTMLFormElement).reset();
+            } else {
+                setStatus({ type: 'error', message: result.error || 'Failed to send message.' });
+            }
+        } catch (error) {
+            setStatus({ type: 'error', message: 'Network error. Please try again.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <form className="space-y-6" onSubmit={handleSubmit}>
+            {status && (
+                <div className={`p-4 rounded-xl ${status.type === 'success' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}`}>
+                    {status.message}
+                </div>
+            )}
+            <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name</label>
+                    <input name="firstName" required type="text" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="John" />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last Name</label>
+                    <input name="lastName" required type="text" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="Doe" />
+                </div>
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                <input name="email" required type="email" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="john@example.com" />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label>
+                <textarea name="message" required rows={5} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-none" placeholder="How can we help you?"></textarea>
+            </div>
+            <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                {isSubmitting ? 'Sending...' : 'Send Message'}
+            </button>
+        </form>
     );
 }

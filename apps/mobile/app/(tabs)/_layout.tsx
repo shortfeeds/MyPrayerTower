@@ -5,19 +5,24 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: '#0ea5e9',
+                tabBarActiveTintColor: '#d4af37',
                 tabBarInactiveTintColor: '#9ca3af',
                 tabBarStyle: {
-                    backgroundColor: '#ffffff',
-                    borderTopWidth: 1,
-                    borderTopColor: '#f3f4f6',
-                    paddingTop: 8,
-                    paddingBottom: 8,
-                    height: 64,
+                    backgroundColor: '#1e3a5f',
+                    borderTopWidth: 0,
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    height: 70,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: -4 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 12,
+                    elevation: 10,
                 },
                 tabBarLabelStyle: {
                     fontSize: 11,
-                    fontWeight: '500',
+                    fontWeight: '600',
+                    marginTop: 4,
                 },
                 headerShown: false,
             }}
@@ -60,3 +65,4 @@ export default function TabLayout() {
         </Tabs>
     );
 }
+

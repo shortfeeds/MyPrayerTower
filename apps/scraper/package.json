@@ -12,6 +12,7 @@
         "import:gcatholic:dioceses": "ts-node src/import-gcatholic-dioceses.ts",
         "import:gcatholic:saints:complete": "ts-node src/import-gcatholic-saints-complete.ts",
         "import:gcatholic:churches:complete": "ts-node src/import-gcatholic-churches-complete.ts",
+        "import:prayers:xls": "ts-node src/import-prayers-xls.ts",
         "scrape:all": "ts-node src/index.ts --full",
         "scheduler": "ts-node src/schedule-import.ts",
         "scheduler:force": "ts-node src/schedule-import.ts --force",
@@ -26,6 +27,7 @@
         "p-queue": "^8.0.0",
         "puppeteer": "^21.7.0",
         "winston": "^3.11.0",
+        "xlsx": "^0.18.5",
         "xml2js": "^0.6.2"
     },
     "devDependencies": {
