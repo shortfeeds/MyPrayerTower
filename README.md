@@ -12,32 +12,81 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 
 ## 📋 Features
 
-### Core Features
-- 🏛️ **Church Finder** - 10,000+ churches with Mass times, directions, and contact info
-- 🙏 **Prayer Wall** - Share intentions and pray for others worldwide
-- 📖 **Prayer Library** - 2,000+ traditional and contemporary prayers
-- 👤 **User Profiles** - Track prayers, saved churches, streaks, and badges
-- 📿 **Rosary Guide** - Interactive rosary with all mysteries
-- 📅 **Daily Readings** - USCCB daily Mass readings
-- ⛪ **Saint of the Day** - Learn about saints throughout the year
+### 🏛️ Core Features
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Church Finder** | 10,000+ churches with Mass times, directions, and contact info | ✅ |
+| **Prayer Wall** | Share intentions and pray for others worldwide | ✅ |
+| **Prayer Library** | 2,000+ traditional and contemporary prayers | ✅ |
+| **Rosary Guide** | Interactive rosary with all mysteries | ✅ |
+| **Daily Readings** | USCCB daily Mass readings | ✅ |
+| **Saint of the Day** | Learn about saints throughout the year | ✅ |
+| **Confession Guide** | Examination of conscience tool | ✅ |
+| **Bible Reader** | Full Bible with chapter navigation | ✅ |
 
-### New Features (December 2024)
-- 🌙 **Dark Mode** - System-aware theme with manual toggle
-- 🎵 **Audio Prayer Player** - Listen to prayers with full playback controls
-- 🔥 **Prayer Streaks** - Gamification with streak tracking and badges
-- 🏆 **Badges & Achievements** - 12+ badges for prayer milestones
-- 📊 **Personal Analytics** - Dashboard with prayer stats and insights
-- 👥 **Prayer Groups** - Create and join prayer communities
-- ♿ **Accessibility** - Font size, high contrast, reduced motion options
-- 🔔 **Push Notifications** - Prayer reminders and community updates
-- 📱 **PWA Support** - Install on any device for offline access
-- 🔗 **Shareable Prayer Images** - Generate OG images for social sharing
+### 📖 Faith Resources
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Catechism** | Full Catechism of the Catholic Church | ✅ |
+| **Stations of the Cross** | 14 Stations devotional guide | ✅ |
+| **Novenas** | Popular novena prayers | ✅ |
+| **Chaplets** | Divine Mercy and other chaplets | ✅ |
+| **Hymns** | Catholic hymn library | ✅ |
+| **Gregorian Chant** | Traditional chant resources | ✅ |
+| **Liturgical Calendar** | Feast days and observances | ✅ |
+| **Fasting Guide** | Fasting and abstinence rules | ✅ |
+| **Encyclicals** | Papal documents | ✅ |
+| **Vatican II Documents** | Council documents | ✅ |
+| **Summa Theologica** | St. Thomas Aquinas reference | ✅ |
+| **Canon Law** | Church law reference | ✅ |
 
-### SEO & Performance
-- 🗺️ **Dynamic Sitemap** - Auto-generated for all content
-- 🍞 **Breadcrumb Navigation** - With JSON-LD structured data
-- ⚡ **Edge Caching** - Database query caching for fast loads
-- 📦 **Image Optimization** - Sharp-powered image processing
+### 👤 User Features
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **User Dashboard** | Personal prayer stats and saved content | ✅ |
+| **Prayer Streaks** | Gamification with streak tracking | ✅ |
+| **Badges & Achievements** | 12+ badges for prayer milestones | ✅ |
+| **Prayer Groups** | Create and join prayer communities | ✅ |
+| **Sacrament Records** | Track personal sacrament history | ✅ |
+| **Order History** | Track Mass offerings and donations | ✅ |
+
+### 💳 Payments & Donations (Cashfree)
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Mass Offerings** | Request Masses for intentions | ✅ |
+| **Platform Donations** | One-time and recurring donations | ✅ |
+| **Prayer Subscriptions** | Monthly subscription plans | ✅ |
+| **International Payments** | USD support via Cashfree | ✅ |
+
+### 🏢 For Churches (B2B)
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Church Claiming** | 3-step verification to claim listing | ✅ |
+| **Church Dashboard** | Manage church information | ✅ |
+| **Event Management** | Post parish events | ✅ |
+| **Announcements** | Push notifications to followers | ✅ |
+| **Analytics** | View engagement stats | ✅ |
+
+### 🛠️ Platform Features
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Dark Mode** | System-aware theme with toggle | ✅ |
+| **PWA Support** | Install on any device | ✅ |
+| **Push Notifications** | Prayer reminders | ✅ |
+| **Dynamic Sitemap** | Auto-generated for SEO | ✅ |
+| **Social Sharing** | OG images for prayers | ✅ |
+| **Vercel Analytics** | Performance monitoring | ✅ |
+| **Speed Insights** | Core Web Vitals tracking | ✅ |
+
+### 📰 Content
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Catholic News** | Aggregated Catholic news feed | ✅ |
+| **Pilgrimages** | Holy site information | ✅ |
+| **Podcasts** | Catholic podcast directory | ✅ |
+| **Catholic Art** | Sacred art gallery | ✅ |
+| **Glossary** | Catholic terminology | ✅ |
+| **Quiz** | Faith knowledge quizzes | ✅ |
 
 ---
 
@@ -46,18 +95,16 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 ```
 myprayertower/
 ├── apps/
-│   ├── web/          # Next.js 14 Web App (Main Application)
-│   ├── admin/        # React Admin Panel
-│   ├── mobile/       # Expo React Native App (Optional)
-│   ├── api/          # NestJS Backend (Optional - see note below)
+│   ├── web/          # Next.js 14 Website (Main)
+│   ├── admin/        # React Admin Panel (Vite)
+│   ├── mobile/       # Expo React Native App
+│   ├── api/          # NestJS Backend (Optional)
 │   └── scraper/      # GCatholic Data Scraper
 ├── packages/
 │   └── database/     # Prisma Schema & Migrations
-├── docker-compose.yml
-└── turbo.json
+├── vercel.json       # Vercel deployment config
+└── turbo.json        # Turborepo config
 ```
-
-> **Note on API Backend**: The web app uses direct Prisma database access. The NestJS API backend is optional and only needed if you want REST/GraphQL endpoints for third-party integrations. The admin panel works independently.
 
 ---
 
@@ -72,152 +119,103 @@ myprayertower/
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/myprayertower.git
-cd myprayertower
+git clone https://github.com/shortfeeds/MyPrayerTower.git
+cd MyPrayerTower
 
 # Install dependencies
 pnpm install
 
 # Set up environment
 cp apps/web/.env.example apps/web/.env.local
-# Edit .env.local with your configuration
 
-# Start development (web only)
+# Start development
 pnpm --filter @mpt/web dev
 ```
 
 ### Environment Variables
 
-Create `apps/web/.env.local`:
-
 ```bash
 # Database (Required)
 DATABASE_URL="postgresql://user:pass@localhost:5432/myprayertower"
 
-# AdSense/AdMob (Required for ads)
-NEXT_PUBLIC_ADSENSE_CLIENT_ID="ca-pub-XXXXXXXXXXXXXXXX"
+# Cashfree Payments (Required for payments)
+CASHFREE_CLIENT_ID="your_app_id"
+CASHFREE_CLIENT_SECRET="your_secret_key"
+CASHFREE_ENVIRONMENT="sandbox"  # or "production"
 
-# Push Notifications (Optional)
-NEXT_PUBLIC_VAPID_PUBLIC_KEY="your-vapid-public-key"
+# AdSense (Optional)
+NEXT_PUBLIC_ADSENSE_CLIENT_ID="ca-pub-XXXXXXXXXXXXXXXX"
 ```
 
 ---
 
 ## 📱 Mobile App (Android)
 
-The Android app is built using Expo React Native and shares data with the web app.
+The Android app is built using Expo React Native.
 
 ### Automatic Content Updates
-✅ **Yes, website data updates automatically sync to the app!**
-
-The mobile app fetches data from the same database via API calls or direct database access. When you update:
-- Churches, Mass times, or contact info
-- Prayer library content
-- Saints information
-- Daily readings
-
-These changes are reflected in the app immediately or after the next app refresh. No APK update is required for content changes.
-
-> ⚠️ **APK Updates Required For**: Code changes, new features, UI updates, or native module updates.
+✅ Website data updates automatically sync to the app!
 
 ### Building for Production
 
 ```bash
 cd apps/mobile
-
-# Build Android APK
 eas build --platform android --profile production
+```
 
-# Build Android AAB (for Play Store)
-eas build --platform android --profile production-aab
+---
+
+## 🌐 Deployment
+
+### Vercel (Recommended)
+
+The `vercel.json` is pre-configured to build only `apps/web`:
+
+```json
+{
+    "buildCommand": "cd apps/web && pnpm run build",
+    "outputDirectory": "apps/web/.next",
+    "framework": "nextjs"
+}
+```
+
+### Cashfree Webhook URL
+```
+https://myprayertower.com/api/webhooks/cashfree
 ```
 
 ---
 
 ## 📄 Legal Pages
 
-All required legal pages are implemented:
-
-| Page | URL | Purpose |
-|------|-----|---------|
-| Privacy Policy | `/privacy` | GDPR/CCPA compliant data practices |
-| Terms of Service | `/terms` | User agreement and liability |
-| Cookie Policy | `/cookies` | Cookie usage disclosure |
-| Community Guidelines | `/guidelines` | Prayer wall and community rules |
-| DMCA Policy | `/dmca` | Copyright takedown procedures |
-
----
-
-## 🛡️ Google Play Store Compliance
-
-### Required for Publishing
-
-1. **Privacy Policy URL**: https://myprayertower.com/privacy
-2. **Terms of Service URL**: https://myprayertower.com/terms
-3. **Ad Disclosure**: App uses Google AdMob (disclosed in Privacy Policy)
-4. **Data Safety Form**: Complete in Play Console
-5. **Content Rating**: Complete IARC questionnaire
-6. **App Signing**: Enroll in Google Play App Signing
-
-### AdMob Setup
-
-1. Add your AdMob App ID to `apps/mobile/app.json`:
-   ```json
-   {
-     "expo": {
-       "plugins": [
-         ["expo-ads-admob", { "appId": "ca-app-pub-XXXXXX~YYYYYY" }]
-       ]
-     }
-   }
-   ```
-
-2. For web, set in `.env.local`:
-   ```
-   NEXT_PUBLIC_ADSENSE_CLIENT_ID=ca-pub-XXXXXX
-   ```
-
----
-
-## 🌐 Website Deployment
-
-### Recommended: Vercel
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-cd apps/web
-vercel --prod
-```
-
-### Environment Variables on Vercel
-Add the same variables from `.env.local` in Vercel Dashboard → Settings → Environment Variables.
+| Page | URL |
+|------|-----|
+| Privacy Policy | `/privacy` |
+| Terms of Service | `/terms` |
+| Cookie Policy | `/cookies` |
+| Community Guidelines | `/guidelines` |
+| DMCA Policy | `/dmca` |
 
 ---
 
 ## 🔒 Security
 
 - ✅ JWT authentication with refresh tokens
-- ✅ Rate limiting (100 req/min)
+- ✅ Cashfree webhook signature verification
 - ✅ Prayer request moderation
 - ✅ Church 3-step verification
 - ✅ GDPR/CCPA compliant
 - ✅ SSL/TLS encryption
-- ✅ Secure password hashing (bcrypt)
 
 ---
 
 ## 📞 Support
 
 - **Email**: support@myprayertower.com
-- **Privacy**: privacy@myprayertower.com
-- **DMCA**: dmca@myprayertower.com
 - **Website**: https://myprayertower.com/contact
 
 ---
 
 ## 📃 License
 
-Copyright © 2026 MyPrayerTower. All rights reserved.
+Copyright © 2025 MyPrayerTower. All rights reserved.
