@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, Calendar, MapPin, BookOpen, Share2, Heart, Loader2, Crown, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 
 interface Saint {
     id: string;
@@ -237,6 +238,13 @@ export default function SaintDetailPage({ params }: { params: { id: string } }) 
                                 )}
                             </dl>
                         </div>
+
+                        {/* Mass Offering CTA */}
+                        <MassOfferingCTA
+                            variant="sidebar"
+                            context="saint"
+                            intentionFor={`In honor of ${saint.name}`}
+                        />
 
                         {/* Sidebar Ad */}
                         <AdBanner />

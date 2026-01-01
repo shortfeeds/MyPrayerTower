@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Heart, Share2, Flag, CheckCircle, Filter, Loader2, MapPin, Clock, Facebook, Twitter, Copy, X, Globe, Sparkles } from 'lucide-react';
+import { Heart, Share2, Flag, CheckCircle, Filter, Loader2, MapPin, Clock, Facebook, Twitter, Copy, X, Globe, Sparkles, Church } from 'lucide-react';
 import { submitPrayerRequest, prayForRequest } from '@/app/actions/prayer';
+import Link from 'next/link';
+import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 
 export interface Prayer {
     id: string;
@@ -291,29 +293,42 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
 
                                 {/* Actions */}
                                 <div className="flex items-center justify-between border-t border-gray-100 pt-4">
-                                    <button
-                                        onClick={() => handlePray(prayer.id)}
-                                        disabled={prayedIds.has(prayer.id)}
-                                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold transition-all ${prayedIds.has(prayer.id)
+                                    <div className="flex flex-col">
+                                        <button
+                                            onClick={() => handlePray(prayer.id)}
+                                            disabled={prayedIds.has(prayer.id)}
+                                            className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold transition-all ${prayedIds.has(prayer.id)
                                                 ? 'bg-green-100 text-green-700 cursor-default'
                                                 : 'bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-white shadow-md hover:shadow-lg active:scale-95'
-                                            }`}
-                                    >
-                                        {prayedIds.has(prayer.id) ? (
-                                            <>
-                                                <CheckCircle className="w-4 h-4" />
-                                                <span>Prayed</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                🙏 <span>Pray Now</span>
-                                            </>
+                                                }`}
+                                        >
+                                            {prayedIds.has(prayer.id) ? (
+                                                <>
+                                                    <CheckCircle className="w-4 h-4" />
+                                                    <span>Prayed</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    🙏 <span>Pray Now</span>
+                                                </>
+                                            )}
+                                            <span className={`ml-1 px-2 py-0.5 rounded-full text-sm ${prayedIds.has(prayer.id) ? 'bg-green-200' : 'bg-white/20'
+                                                }`}>
+                                                {prayer.prayerCount}
+                                            </span>
+                                        </button>
+
+                                        {/* Subtle Mass Offering link after praying */}
+                                        {prayedIds.has(prayer.id) && (
+                                            <Link
+                                                href={`/mass-offerings?intention=${encodeURIComponent(prayer.content.substring(0, 100))}`}
+                                                className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 transition-colors mt-2"
+                                            >
+                                                <Church className="w-3.5 h-3.5" />
+                                                Request a Mass for this intention
+                                            </Link>
                                         )}
-                                        <span className={`ml-1 px-2 py-0.5 rounded-full text-sm ${prayedIds.has(prayer.id) ? 'bg-green-200' : 'bg-white/20'
-                                            }`}>
-                                            {prayer.prayerCount}
-                                        </span>
-                                    </button>
+                                    </div>
 
                                     <div className="flex items-center gap-2">
                                         <button
@@ -366,6 +381,11 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
                         )))}
                 </div>
 
+                {/* Mass Offering CTA Banner */}
+                <div className="max-w-2xl mx-auto mt-10">
+                    <MassOfferingCTA variant="banner" context="prayer" />
+                </div>
+
                 {/* Load More */}
                 {filteredPrayers.length >= 10 && (
                     <div className="text-center mt-8">
@@ -377,124 +397,126 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
             </div>
 
             {/* Submit Modal */}
-            {showSubmitModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in">
-                    <div className="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto animate-scale-in">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-display font-bold text-gray-900">Submit Prayer Request</h2>
-                            <button onClick={() => setShowSubmitModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-                                <X className="w-5 h-5 text-gray-500" />
-                            </button>
-                        </div>
+            {
+                showSubmitModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in">
+                        <div className="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto animate-scale-in">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-display font-bold text-gray-900">Submit Prayer Request</h2>
+                                <button onClick={() => setShowSubmitModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                                    <X className="w-5 h-5 text-gray-500" />
+                                </button>
+                            </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            {/* Name Field */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <form onSubmit={handleSubmit} className="space-y-5">
+                                {/* Name Field */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            First Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="firstName"
+                                            placeholder="Your name"
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Country
+                                        </label>
+                                        <select
+                                            name="country"
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent bg-white"
+                                        >
+                                            <option value="">Select country</option>
+                                            {COUNTRIES.map((country) => (
+                                                <option key={country} value={country}>{country}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        First Name
+                                        Your Prayer Intention *
                                     </label>
-                                    <input
-                                        type="text"
-                                        name="firstName"
-                                        placeholder="Your name"
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent"
+                                    <textarea
+                                        name="content"
+                                        required
+                                        minLength={5}
+                                        rows={4}
+                                        placeholder="Share your prayer request with our global community..."
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent resize-none"
                                     />
                                 </div>
+
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Country
+                                        Category
                                     </label>
-                                    <select
-                                        name="country"
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent bg-white"
-                                    >
-                                        <option value="">Select country</option>
-                                        {COUNTRIES.map((country) => (
-                                            <option key={country} value={country}>{country}</option>
+                                    <select name="category" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent bg-white">
+                                        {categories.filter(c => c !== 'All').map((cat) => (
+                                            <option key={cat} value={cat}>{cat}</option>
                                         ))}
                                     </select>
                                 </div>
-                            </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Your Prayer Intention *
-                                </label>
-                                <textarea
-                                    name="content"
-                                    required
-                                    minLength={5}
-                                    rows={4}
-                                    placeholder="Share your prayer request with our global community..."
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent resize-none"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Category
-                                </label>
-                                <select name="category" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent bg-white">
-                                    {categories.filter(c => c !== 'All').map((cat) => (
-                                        <option key={cat} value={cat}>{cat}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Visibility
-                                </label>
-                                <div className="space-y-2">
-                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
-                                        <input type="radio" name="visibility" value="public" defaultChecked className="text-sacred-600 focus:ring-sacred-500" />
-                                        <div>
-                                            <span className="font-medium">🌍 Public</span>
-                                            <p className="text-sm text-gray-500">Visible to everyone with your name</p>
-                                        </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Visibility
                                     </label>
-                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
-                                        <input type="radio" name="visibility" value="anonymous" className="text-sacred-600 focus:ring-sacred-500" />
-                                        <div>
-                                            <span className="font-medium">👤 Anonymous</span>
-                                            <p className="text-sm text-gray-500">Visible to everyone, name hidden</p>
-                                        </div>
-                                    </label>
-                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
-                                        <input type="radio" name="visibility" value="private" className="text-sacred-600 focus:ring-sacred-500" />
-                                        <div>
-                                            <span className="font-medium">🔒 Private</span>
-                                            <p className="text-sm text-gray-500">Only you and admins can see</p>
-                                        </div>
-                                    </label>
+                                    <div className="space-y-2">
+                                        <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                                            <input type="radio" name="visibility" value="public" defaultChecked className="text-sacred-600 focus:ring-sacred-500" />
+                                            <div>
+                                                <span className="font-medium">🌍 Public</span>
+                                                <p className="text-sm text-gray-500">Visible to everyone with your name</p>
+                                            </div>
+                                        </label>
+                                        <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                                            <input type="radio" name="visibility" value="anonymous" className="text-sacred-600 focus:ring-sacred-500" />
+                                            <div>
+                                                <span className="font-medium">👤 Anonymous</span>
+                                                <p className="text-sm text-gray-500">Visible to everyone, name hidden</p>
+                                            </div>
+                                        </label>
+                                        <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                                            <input type="radio" name="visibility" value="private" className="text-sacred-600 focus:ring-sacred-500" />
+                                            <div>
+                                                <span className="font-medium">🔒 Private</span>
+                                                <p className="text-sm text-gray-500">Only you and admins can see</p>
+                                            </div>
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="flex gap-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowSubmitModal(false)}
-                                    className="flex-1 py-3 border border-gray-200 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="flex-1 py-3 bg-gradient-to-r from-sacred-600 to-sacred-700 hover:from-sacred-500 hover:to-sacred-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md"
-                                >
-                                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Submit Request'}
-                                </button>
-                            </div>
-                        </form>
+                                <div className="flex gap-3 pt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowSubmitModal(false)}
+                                        className="flex-1 py-3 border border-gray-200 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="flex-1 py-3 bg-gradient-to-r from-sacred-600 to-sacred-700 hover:from-sacred-500 hover:to-sacred-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md"
+                                    >
+                                        {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Submit Request'}
+                                    </button>
+                                </div>
+                            </form>
 
-                        <p className="text-xs text-gray-500 text-center mt-4">
-                            All prayer requests are reviewed by our team before publishing.
-                        </p>
+                            <p className="text-xs text-gray-500 text-center mt-4">
+                                All prayer requests are reviewed by our team before publishing.
+                            </p>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

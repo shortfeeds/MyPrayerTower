@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { updateLastConfessionDate } from '@/actions/user';
 import guideData from '@/data/confession-guide.json';
+import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 
 type Commandment = typeof guideData.commandments[0];
 
@@ -261,6 +262,11 @@ export default function ConfessionPage() {
                     <p className="mt-4 text-xs text-gray-400">
                         Note: For privacy, your specific sins are never saved to the server. Only the date of your confession is recorded.
                     </p>
+                </div>
+
+                {/* Mass Offering CTA */}
+                <div className="mt-8">
+                    <MassOfferingCTA variant="inline" context="confession" />
                 </div>
             </div>
         </div >

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CircleDot, ChevronRight, ChevronLeft, Heart, Sun, Crown, Star, Play, Pause } from 'lucide-react';
+import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 
 type MysterySet = 'joyful' | 'sorrowful' | 'glorious' | 'luminous';
 
@@ -106,8 +107,8 @@ export default function RosaryPage() {
                                 key={key}
                                 onClick={() => { setSelectedSet(key); setCurrentMystery(0); }}
                                 className={`px-6 py-3 rounded-2xl font-medium flex items-center gap-2 transition-all ${selectedSet === key
-                                        ? `bg-gradient-to-r ${set.color} text-white shadow-lg`
-                                        : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+                                    ? `bg-gradient-to-r ${set.color} text-white shadow-lg`
+                                    : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
                                     }`}
                             >
                                 {set.icon}
@@ -180,11 +181,15 @@ export default function RosaryPage() {
                                 key={i}
                                 onClick={() => setCurrentMystery(i)}
                                 className={`w-4 h-4 rounded-full transition-all ${i === currentMystery
-                                        ? `bg-gradient-to-r ${currentSetData.color} scale-125`
-                                        : i < currentMystery ? 'bg-gray-400' : 'bg-gray-200'
+                                    ? `bg-gradient-to-r ${currentSetData.color} scale-125`
+                                    : i < currentMystery ? 'bg-gray-400' : 'bg-gray-200'
                                     }`}
                             />
                         ))}
+                    </div>
+                    {/* Mass Offering CTA */}
+                    <div className="mt-10">
+                        <MassOfferingCTA variant="inline" context="rosary" />
                     </div>
                 </div>
             </div>

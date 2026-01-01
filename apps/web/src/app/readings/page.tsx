@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { BookOpen, Calendar, ChevronLeft, ChevronRight, Sun, Share2, ExternalLink, Volume2, Clock, Loader2, Sparkles } from 'lucide-react';
 import { format, addDays, subDays, isToday } from 'date-fns';
 import Link from 'next/link';
+import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 
 interface Reading {
     type: string;
@@ -338,6 +339,11 @@ export default function ReadingsPage() {
                                 Share a Prayer
                             </Link>
                         </div>
+                    </div>
+
+                    {/* Mass Offering CTA */}
+                    <div className="mt-8">
+                        <MassOfferingCTA variant="inline" context="reading" />
                     </div>
                 </div>
             </div>
