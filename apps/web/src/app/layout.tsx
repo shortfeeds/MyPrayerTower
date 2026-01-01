@@ -30,6 +30,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+    metadataBase: new URL('https://myprayertower.com'),
     title: 'MyPrayerTower - Find Churches, Share Prayers, Grow in Faith',
     description: 'The #1 All-in-One Catholic Services App. Find churches near you, join the prayer wall, explore saints, and deepen your spiritual journey.',
     keywords: 'Catholic, church finder, prayer, rosary, saints, Mass times, confession, Catholic app',
