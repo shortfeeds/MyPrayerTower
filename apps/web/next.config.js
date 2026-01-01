@@ -145,7 +145,8 @@ const nextConfig = {
                         key: 'Content-Security-Policy',
                         value: [
                             "default-src 'self'",
-                            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://www.googleadservices.com https://sdk.cashfree.com https://va.vercel-scripts.com",
+                            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://www.googleadservices.com https://sdk.cashfree.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
+                            "script-src-elem 'self' 'unsafe-inline' https://js.stripe.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://www.googleadservices.com https://sdk.cashfree.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
                             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
                             "font-src 'self' https://fonts.gstatic.com",
                             "img-src 'self' data: https: blob:",

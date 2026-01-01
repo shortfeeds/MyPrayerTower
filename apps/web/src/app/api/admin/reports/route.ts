@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
@@ -20,20 +22,28 @@ export async function GET(request: NextRequest) {
                 orderBy: { createdAt: 'desc' },
                 select: {
                     id: true,
-                    type: true,
+                    reporterId: true,
+                    reportedUserId: true,
                     reason: true,
-                    description: true,
+                    details: true,
                     status: true,
                     createdAt: true,
-                    reporter: {
+                    resolvedBy: true,
+                    resolvedAt: true,
+                    User_UserReport_reporterIdToUser: {
                         select: {
                             id: true,
-                            name: true,
+                            displayName: true,
                             email: true
                         }
                     },
-                    targetType: true,
-                    targetId: true
+                    User_UserReport_reportedUserIdToUser: {
+                        select: {
+                            id: true,
+                            displayName: true,
+                            email: true
+                        }
+                    }
                 }
             }),
             db.userReport.count({ where })
@@ -41,8 +51,24 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({
             reports: reports.map(r => ({
-                ...r,
-                createdAt: r.createdAt.toISOString()
+                id: r.id,
+                reason: r.reason,
+                description: r.details,
+                status: r.status,
+                createdAt: r.createdAt.toISOString(),
+                reporter: r.User_UserReport_reporterIdToUser ? {
+                    id: r.User_UserReport_reporterIdToUser.id,
+                    name: r.User_UserReport_reporterIdToUser.displayName,
+                    email: r.User_UserReport_reporterIdToUser.email
+                } : null,
+                reported: r.User_UserReport_reportedUserIdToUser ? {
+                    id: r.User_UserReport_reportedUserIdToUser.id,
+                    name: r.User_UserReport_reportedUserIdToUser.displayName,
+                    email: r.User_UserReport_reportedUserIdToUser.email
+                } : null,
+                type: 'USER_REPORT',
+                targetType: 'user',
+                targetId: r.reportedUserId
             })),
             total,
             page,
