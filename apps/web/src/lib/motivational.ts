@@ -3,7 +3,7 @@
  * Provides daily Catholic inspirational quotes from saints, scripture, and Church teachings
  */
 
-import { prisma } from './db';
+import { db } from './db';
 
 export interface Quote {
     content: string;
@@ -274,7 +274,7 @@ export async function getDailyQuote(date: Date = new Date()): Promise<Quote> {
 
     // Try to get from database first
     try {
-        const dbQuote = await prisma.dailyQuote.findUnique({
+        const dbQuote = await db.dailyQuote.findUnique({
             where: { date: new Date(dateStr) },
         });
 
@@ -334,7 +334,7 @@ export function getQuotesBySource(source: 'saint' | 'bible' | 'pope'): Quote[] {
  * Save a new quote to the database
  */
 export async function saveQuote(date: Date, quote: Quote): Promise<void> {
-    await prisma.dailyQuote.upsert({
+    await db.dailyQuote.upsert({
         where: { date },
         update: {
             content: quote.content,
@@ -344,6 +344,7 @@ export async function saveQuote(date: Date, quote: Quote): Promise<void> {
             reference: quote.reference,
         },
         create: {
+            id: `quote-${formatDateString(date)}`,
             date,
             content: quote.content,
             author: quote.author,

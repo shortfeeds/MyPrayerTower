@@ -2,7 +2,7 @@
     "$schema": "https://openapi.vercel.sh/vercel.json",
     "version": 2,
     "installCommand": "pnpm install",
-    "buildCommand": "pnpm --filter @mpt/database build && pnpm --filter @mpt/web build",
+    "buildCommand": "cd packages/database && npx prisma generate --schema=./prisma/schema.prisma && pnpm build && cd ../.. && pnpm --filter @mpt/web build",
     "outputDirectory": "apps/web/.next",
     "framework": "nextjs"
 }

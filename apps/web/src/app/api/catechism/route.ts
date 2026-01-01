@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { db } from '@/lib/db';
 
 // Catechism structure outline for browsing
 const CCC_STRUCTURE = {
@@ -105,9 +105,8 @@ export async function GET(request: Request) {
 
             // Try to get from database
             try {
-                const dbParagraph = await prisma.catechismParagraph.findUnique({
+                const dbParagraph = await db.catechismParagraph.findUnique({
                     where: { number: paragraphNum },
-                    include: { section: true },
                 });
 
                 if (dbParagraph) {
@@ -130,7 +129,7 @@ export async function GET(request: Request) {
         if (query) {
             // Try database search
             try {
-                const results = await prisma.catechismParagraph.findMany({
+                const results = await db.catechismParagraph.findMany({
                     where: {
                         content: {
                             contains: query,
@@ -139,7 +138,6 @@ export async function GET(request: Request) {
                     },
                     take: 20,
                     orderBy: { number: 'asc' },
-                    include: { section: true },
                 });
 
                 if (results.length > 0) {

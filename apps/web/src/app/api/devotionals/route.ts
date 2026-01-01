@@ -1,6 +1,6 @@
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { db } from '@/lib/db';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
             // We have 50 points currently, so we'll mod by 50
             const pointNumber = (dayOfYear % 50) + 1;
 
-            const point = await prisma.devotionalPoint.findUnique({
+            const point = await db.devotionalPoint.findUnique({
                 where: {
                     book_number: {
                         book,
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
         }
 
         if (all) {
-            const points = await prisma.devotionalPoint.findMany({
+            const points = await db.devotionalPoint.findMany({
                 where: { book },
                 orderBy: { number: 'asc' }
             });
@@ -42,7 +42,7 @@ export async function GET(request: Request) {
 
         if (number) {
             const num = parseInt(number);
-            const point = await prisma.devotionalPoint.findUnique({
+            const point = await db.devotionalPoint.findUnique({
                 where: {
                     book_number: {
                         book,
