@@ -41,22 +41,35 @@ export async function PUT(request: NextRequest) {
         const body = await request.json();
         const { settings } = body;
 
+        // Only extract fields that exist in AppSettings model
+        const validFields = {
+            siteName: settings.appName || settings.siteName || 'MyPrayerTower',
+            siteTagline: settings.tagline || settings.siteTagline || 'All-in-One Catholic Services',
+            maintenanceMode: settings.maintenanceMode ?? false,
+            registrationEnabled: settings.registrationEnabled ?? true,
+            prayerWallEnabled: settings.enablePrayerWall ?? settings.prayerWallEnabled ?? true,
+            syncEnabled: settings.syncEnabled ?? true,
+            syncSchedule: settings.syncSchedule || '0 2 * * 0',
+            plusMonthlyPrice: settings.plusMonthlyPrice ?? 499,
+            plusYearlyPrice: settings.plusYearlyPrice ?? 3999,
+            premiumMonthlyPrice: settings.premiumMonthlyPrice ?? 999,
+            premiumYearlyPrice: settings.premiumYearlyPrice ?? 7999,
+            lifetimePrice: settings.lifetimePrice ?? 14999,
+            updatedAt: new Date()
+        };
+
         const updatedSettings = await db.appSettings.upsert({
             where: { id: 'app_settings' },
-            update: {
-                ...settings,
-                updatedAt: new Date()
-            },
+            update: validFields,
             create: {
                 id: 'app_settings',
-                ...settings,
-                updatedAt: new Date()
+                ...validFields
             }
         });
 
         return NextResponse.json({ success: true, settings: updatedSettings });
     } catch (error: any) {
         console.error('Settings PUT Error:', error);
-        return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to update settings', message: error.message }, { status: 500 });
     }
 }
