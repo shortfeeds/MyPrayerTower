@@ -45,12 +45,6 @@ export const metadata: Metadata = {
         statusBarStyle: 'default',
         title: 'MyPrayerTower',
     },
-    viewport: {
-        width: 'device-width',
-        initialScale: 1,
-        maximumScale: 1,
-        userScalable: false,
-    },
     openGraph: {
         title: 'MyPrayerTower - All-in-One Catholic Services',
         description: 'Find churches, share prayers, and grow in faith with the global Catholic community.',
@@ -63,6 +57,13 @@ export const metadata: Metadata = {
         title: 'MyPrayerTower',
         description: 'The #1 All-in-One Catholic Services App',
     },
+};
+
+export const viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
 };
 
 

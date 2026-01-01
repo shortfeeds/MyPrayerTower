@@ -49,8 +49,10 @@ const menuItems: MenuItem[] = [
     { name: 'Prayer Wall', href: '/admin/prayers', icon: Heart },
     { name: 'Daily Readings', href: '/admin/readings', icon: BookOpen },
     { name: 'Advertisements', href: '/admin/ads', icon: Image },
+    { name: 'Mass Offerings', href: '/admin/mass-offerings', icon: Heart },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { name: 'Reports', href: '/admin/reports', icon: Shield },
+    { name: 'Audit Log', href: '/admin/audit', icon: Bell },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
@@ -130,8 +132,8 @@ export function AdminSidebar() {
                                     <button
                                         onClick={() => toggleMenu(item.name)}
                                         className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all ${active
-                                                ? 'bg-amber-500/10 text-amber-400'
-                                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                            ? 'bg-amber-500/10 text-amber-400'
+                                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -145,8 +147,8 @@ export function AdminSidebar() {
                                         href={item.href}
                                         onClick={() => setIsOpen(false)}
                                         className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${active
-                                                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/25'
-                                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                            ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/25'
+                                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                             }`}
                                     >
                                         <Icon className="w-5 h-5" />
@@ -168,8 +170,8 @@ export function AdminSidebar() {
                                                 href={child.href}
                                                 onClick={() => setIsOpen(false)}
                                                 className={`block px-4 py-2 rounded-lg text-sm transition-colors ${pathname === child.href
-                                                        ? 'bg-gray-800 text-amber-400'
-                                                        : 'text-gray-500 hover:text-white hover:bg-gray-800/50'
+                                                    ? 'bg-gray-800 text-amber-400'
+                                                    : 'text-gray-500 hover:text-white hover:bg-gray-800/50'
                                                     }`}
                                             >
                                                 {child.name}
@@ -193,7 +195,13 @@ export function AdminSidebar() {
                             <p className="text-xs text-gray-500 truncate">admin@myprayertower.com</p>
                         </div>
                     </div>
-                    <button className="w-full flex items-center gap-3 px-4 py-3 mt-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-xl transition-colors">
+                    <button
+                        onClick={async () => {
+                            await fetch('/api/admin/auth/logout', { method: 'POST' });
+                            window.location.href = '/admin/login';
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 mt-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-xl transition-colors"
+                    >
                         <LogOut className="w-5 h-5" />
                         <span className="font-medium">Sign Out</span>
                     </button>

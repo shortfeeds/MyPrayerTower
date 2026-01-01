@@ -9,9 +9,6 @@ const JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || 'default-secret-key-change-this-in-prod'
 );
 
-// Admin email - only this email can access the admin panel
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'myprayertower2@gmail.com';
-
 export async function POST(request: NextRequest) {
     try {
         const { email, password } = await request.json();
@@ -23,34 +20,26 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Check if this email is authorized as admin
-        if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-            return NextResponse.json(
-                { error: 'Unauthorized: This email is not an admin' },
-                { status: 403 }
-            );
-        }
-
-        // Find user in the User table
-        const user = await prisma.user.findUnique({
+        // Find user in the AdminUser table
+        const user = await prisma.adminUser.findUnique({
             where: { email: email.toLowerCase() },
         });
 
         if (!user) {
             return NextResponse.json(
-                { error: 'User not found. Please register first.' },
-                { status: 404 }
+                { error: 'Invalid credentials' },
+                { status: 401 }
+            );
+        }
+
+        if (!user.isActive) {
+            return NextResponse.json(
+                { error: 'Account is disabled' },
+                { status: 403 }
             );
         }
 
         // Verify password
-        if (!user.passwordHash) {
-            return NextResponse.json(
-                { error: 'Password not set for this account' },
-                { status: 400 }
-            );
-        }
-
         const isValid = await compare(password, user.passwordHash);
 
         if (!isValid) {
@@ -64,8 +53,9 @@ export async function POST(request: NextRequest) {
         const token = await new SignJWT({
             id: user.id,
             email: user.email,
-            name: user.displayName || user.firstName || 'Admin',
+            name: user.name,
             isAdmin: true,
+            role: user.role,
         })
             .setProtectedHeader({ alg: 'HS256' })
             .setIssuedAt()
@@ -89,7 +79,8 @@ export async function POST(request: NextRequest) {
             user: {
                 id: user.id,
                 email: user.email,
-                name: user.displayName || user.firstName || 'Admin',
+                name: user.name,
+                role: user.role,
             },
         });
 

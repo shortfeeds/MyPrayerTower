@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function PUT(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -14,21 +16,22 @@ export async function PUT(
             case 'approve':
                 await db.prayerRequest.update({
                     where: { id },
-                    data: { isApproved: true, isFlagged: false }
+                    data: { status: 'APPROVED', moderatedAt: new Date(), updatedAt: new Date() }
                 });
                 break;
 
             case 'reject':
                 await db.prayerRequest.update({
                     where: { id },
-                    data: { isApproved: false }
+                    data: { status: 'REJECTED', moderatedAt: new Date(), updatedAt: new Date() }
                 });
                 break;
 
             case 'flag':
+                // Flag by setting status to REJECTED with notes
                 await db.prayerRequest.update({
                     where: { id },
-                    data: { isFlagged: true }
+                    data: { status: 'REJECTED', moderationNotes: 'Flagged by admin', updatedAt: new Date() }
                 });
                 break;
 
@@ -40,7 +43,7 @@ export async function PUT(
                 return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
         }
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ success: true, action });
     } catch (error: any) {
         console.error('Admin Prayer Action Error:', error);
         return NextResponse.json({ error: 'Failed to perform action', message: error.message }, { status: 500 });

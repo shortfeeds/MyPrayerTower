@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { ModerationStatus } from '@mpt/database';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -22,11 +23,11 @@ export async function GET(request: NextRequest) {
         }
 
         if (status === 'pending') {
-            where.status = ModerationStatus.PENDING;
+            where.status = 'PENDING';
         } else if (status === 'approved') {
-            where.status = ModerationStatus.APPROVED;
+            where.status = 'APPROVED';
         } else if (status === 'rejected') {
-            where.status = ModerationStatus.REJECTED;
+            where.status = 'REJECTED';
         }
 
         const [prayers, total] = await Promise.all([
@@ -61,7 +62,8 @@ export async function GET(request: NextRequest) {
                 title: p.title,
                 content: p.content,
                 isAnonymous: p.isAnonymous,
-                status: p.status,
+                isApproved: p.status === 'APPROVED',
+                isFlagged: p.status === 'REJECTED', // Map REJECTED to flagged for UI
                 prayerCount: p.prayerCount,
                 createdAt: p.createdAt.toISOString(),
                 user: p.User ? { id: p.User.id, name: p.User.displayName, email: p.User.email } : null
@@ -75,4 +77,3 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to fetch prayers', prayers: [], total: 0 }, { status: 500 });
     }
 }
-

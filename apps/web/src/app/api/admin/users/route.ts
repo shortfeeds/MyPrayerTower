@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const search = searchParams.get('search') || '';
-    const tier = searchParams.get('tier') || '';
+    const role = searchParams.get('role') || '';
 
     try {
         const skip = (page - 1) * limit;
@@ -22,8 +24,13 @@ export async function GET(request: NextRequest) {
             ];
         }
 
-        if (tier) {
-            where.subscriptionTier = tier;
+        // Filter by role (map to subscriptionTier for ADMIN check)
+        if (role && role !== 'all') {
+            if (role === 'ADMIN') {
+                where.subscriptionTier = 'PREMIUM'; // Treat premium as admin-level
+            } else if (role === 'USER') {
+                where.subscriptionTier = 'FREE';
+            }
         }
 
         const [users, total] = await Promise.all([
@@ -51,18 +58,27 @@ export async function GET(request: NextRequest) {
             db.user.count({ where })
         ]);
 
-        // Transform data
-        const transformedUsers = users.map(user => ({
-            id: user.id,
-            name: user.displayName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown',
-            email: user.email,
-            tier: user.subscriptionTier,
-            isVerified: !!user.emailVerified,
-            avatarUrl: user.avatarUrl,
-            createdAt: user.createdAt.toISOString(),
-            lastLoginAt: user.lastLoginAt?.toISOString() || null,
-            prayerCount: user._count.PrayerRequest
-        }));
+        // Transform data to match client expectations
+        const transformedUsers = users.map(user => {
+            // Map subscription tier to role for UI
+            let role = 'USER';
+            if (user.subscriptionTier === 'PREMIUM' || user.subscriptionTier === 'PLUS') {
+                role = 'PREMIUM';
+            }
+
+            return {
+                id: user.id,
+                name: user.displayName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || null,
+                email: user.email,
+                role: role,
+                isVerified: !!user.emailVerified,
+                isBanned: false, // We don't have a banned field yet, default to false
+                avatarUrl: user.avatarUrl,
+                createdAt: user.createdAt.toISOString(),
+                lastLoginAt: user.lastLoginAt?.toISOString() || null,
+                prayerRequests: user._count.PrayerRequest
+            };
+        });
 
         return NextResponse.json({
             users: transformedUsers,
@@ -75,4 +91,3 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to fetch users', users: [], total: 0 }, { status: 500 });
     }
 }
-

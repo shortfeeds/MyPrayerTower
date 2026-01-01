@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { db } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 async function DashboardStats() {
     const currentDate = new Date();
     const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);

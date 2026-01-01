@@ -1,20 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Settings,
     Globe,
     Bell,
     Shield,
     Palette,
-    Database,
     Mail,
     Save,
     RefreshCw,
     CheckCircle,
     AlertTriangle,
-    Eye,
-    Lock,
+    DollarSign,
     Zap
 } from 'lucide-react';
 
@@ -27,6 +25,7 @@ interface SettingSection {
 
 const sections: SettingSection[] = [
     { id: 'general', name: 'General', icon: Settings, description: 'App name, branding, and basic settings' },
+    { id: 'pricing', name: 'Pricing', icon: DollarSign, description: 'Mass offerings and subscription prices' },
     { id: 'features', name: 'Features', icon: Zap, description: 'Enable or disable app features' },
     { id: 'notifications', name: 'Notifications', icon: Bell, description: 'Email and push notification settings' },
     { id: 'security', name: 'Security', icon: Shield, description: 'Authentication and security options' },
@@ -38,12 +37,23 @@ export default function AdminSettingsPage() {
     const [activeSection, setActiveSection] = useState('general');
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const [settings, setSettings] = useState({
         // General
         appName: 'MyPrayerTower',
-        tagline: 'Catholic Services',
+        tagline: 'All-in-One Catholic Services',
         contactEmail: 'support@myprayertower.com',
+
+        // Pricing (in cents for storage, displayed in dollars)
+        massOfferingPrice: 1500, // $15.00
+        novenaPrice: 2500, // $25.00
+        gregorianMassPrice: 50000, // $500.00
+        plusMonthlyPrice: 499, // $4.99
+        plusYearlyPrice: 3999, // $39.99
+        premiumMonthlyPrice: 999, // $9.99
+        premiumYearlyPrice: 7999, // $79.99
+        lifetimePrice: 14999, // $149.99
 
         // Features
         enablePrayerWall: true,
@@ -54,6 +64,7 @@ export default function AdminSettingsPage() {
         enableConfessionGuide: true,
         requireEmailVerification: true,
         allowAnonymousPrayers: true,
+        requirePrayerModeration: true,
 
         // Notifications
         sendWelcomeEmail: true,
@@ -77,18 +88,47 @@ export default function AdminSettingsPage() {
         fromName: 'MyPrayerTower'
     });
 
+    useEffect(() => {
+        fetchSettings();
+    }, []);
+
+    const fetchSettings = async () => {
+        try {
+            const res = await fetch('/api/admin/settings');
+            const data = await res.json();
+            if (data.settings) {
+                setSettings(prev => ({ ...prev, ...data.settings }));
+            }
+        } catch (err) {
+            console.error('Failed to fetch settings:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleSave = async () => {
         setSaving(true);
-        // Simulate API call
-        await new Promise(r => setTimeout(r, 1000));
-        setSaving(false);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
+        try {
+            await fetch('/api/admin/settings', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ settings })
+            });
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
+        } catch (err) {
+            console.error('Failed to save settings:', err);
+        } finally {
+            setSaving(false);
+        }
     };
 
     const updateSetting = (key: string, value: any) => {
         setSettings(prev => ({ ...prev, [key]: value }));
     };
+
+    const formatPrice = (cents: number) => (cents / 100).toFixed(2);
+    const parsePrice = (dollars: string) => Math.round(parseFloat(dollars) * 100) || 0;
 
     return (
         <div className="space-y-6">
@@ -123,8 +163,8 @@ export default function AdminSettingsPage() {
                                 key={section.id}
                                 onClick={() => setActiveSection(section.id)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${activeSection === section.id
-                                        ? 'bg-amber-50 text-amber-700'
-                                        : 'text-gray-600 hover:bg-gray-50'
+                                    ? 'bg-amber-50 text-amber-700'
+                                    : 'text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
                                 <section.icon className="w-5 h-5" />
@@ -177,6 +217,111 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
+                    {activeSection === 'pricing' && (
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-900 mb-1">Pricing Settings</h2>
+                                <p className="text-gray-500">Set prices for Mass offerings and subscriptions</p>
+                            </div>
+
+                            <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl">
+                                <p className="text-amber-800 text-sm">
+                                    <strong>Note:</strong> Changes will take effect immediately on the app and website.
+                                </p>
+                            </div>
+
+                            <div className="space-y-6">
+                                <h3 className="font-semibold text-gray-900 border-b pb-2">Mass Offerings</h3>
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Single Mass ($)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={formatPrice(settings.massOfferingPrice)}
+                                            onChange={(e) => updateSetting('massOfferingPrice', parsePrice(e.target.value))}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Novena (9 Masses) ($)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={formatPrice(settings.novenaPrice)}
+                                            onChange={(e) => updateSetting('novenaPrice', parsePrice(e.target.value))}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Gregorian (30 Masses) ($)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={formatPrice(settings.gregorianMassPrice)}
+                                            onChange={(e) => updateSetting('gregorianMassPrice', parsePrice(e.target.value))}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                        />
+                                    </div>
+                                </div>
+
+                                <h3 className="font-semibold text-gray-900 border-b pb-2 mt-8">Subscription Plans</h3>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Plus Monthly ($)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={formatPrice(settings.plusMonthlyPrice)}
+                                            onChange={(e) => updateSetting('plusMonthlyPrice', parsePrice(e.target.value))}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Plus Yearly ($)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={formatPrice(settings.plusYearlyPrice)}
+                                            onChange={(e) => updateSetting('plusYearlyPrice', parsePrice(e.target.value))}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Premium Monthly ($)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={formatPrice(settings.premiumMonthlyPrice)}
+                                            onChange={(e) => updateSetting('premiumMonthlyPrice', parsePrice(e.target.value))}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Premium Yearly ($)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={formatPrice(settings.premiumYearlyPrice)}
+                                            onChange={(e) => updateSetting('premiumYearlyPrice', parsePrice(e.target.value))}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="mt-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Lifetime Access ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.lifetimePrice)}
+                                        onChange={(e) => updateSetting('lifetimePrice', parsePrice(e.target.value))}
+                                        className="w-full max-w-xs px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {activeSection === 'features' && (
                         <div className="space-y-6">
                             <div>
@@ -194,6 +339,7 @@ export default function AdminSettingsPage() {
                                     { key: 'enableConfessionGuide', label: 'Confession Guide', desc: 'Examination of conscience tool' },
                                     { key: 'requireEmailVerification', label: 'Require Email Verification', desc: 'Users must verify email to access features' },
                                     { key: 'allowAnonymousPrayers', label: 'Anonymous Prayers', desc: 'Allow anonymous prayer submissions' },
+                                    { key: 'requirePrayerModeration', label: 'Prayer Moderation', desc: 'Prayers require admin approval before publishing' },
                                 ].map(feature => (
                                     <div key={feature.key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                                         <div>
@@ -259,7 +405,7 @@ export default function AdminSettingsPage() {
                                 <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
                                 <div>
                                     <p className="font-medium text-yellow-800">Security Notice</p>
-                                    <p className="text-sm text-yellow-700">Changes to security settings may affect all users. Proceed with caution.</p>
+                                    <p className="text-sm text-yellow-700">Changes to security settings may affect all users.</p>
                                 </div>
                             </div>
 

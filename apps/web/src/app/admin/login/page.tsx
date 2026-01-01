@@ -6,7 +6,7 @@ import { Lock, Mail, AlertCircle } from 'lucide-react';
 
 export default function AdminLoginPage() {
     const router = useRouter();
-    const [email, setEmail] = useState('myprayertower2@gmail.com');
+    const [email, setEmail] = useState('admin@myprayertower.com');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);

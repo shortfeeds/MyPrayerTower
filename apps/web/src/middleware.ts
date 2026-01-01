@@ -49,7 +49,7 @@ function isRateLimited(key: string): boolean {
     return false;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     if (
@@ -82,12 +82,10 @@ export function middleware(request: NextRequest) {
         response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
     }
 
-    // Admin Authentication (TEMPORARILY DISABLED FOR TESTING)
-    // To re-enable: uncomment the auth check below
-    /*
+    // Admin Authentication
     if (pathname.startsWith('/admin')) {
         if (pathname === '/admin/login' || pathname.startsWith('/_next')) {
-            return NextResponse.next();
+            return response;
         }
 
         const token = request.cookies.get('admin_session')?.value;
@@ -98,9 +96,21 @@ export function middleware(request: NextRequest) {
             return NextResponse.redirect(url);
         }
 
-        // Ideally verify token here with 'jose' once available
+        try {
+            const secret = new TextEncoder().encode(
+                process.env.JWT_SECRET || 'default-secret-key-change-this-in-prod'
+            );
+            const { payload } = await import('jose').then(m => m.jwtVerify(token, secret));
+
+            if (!payload || !payload.isAdmin) {
+                throw new Error('Unauthorized');
+            }
+        } catch (error) {
+            const url = request.nextUrl.clone();
+            url.pathname = '/admin/login';
+            return NextResponse.redirect(url);
+        }
     }
-    */
 
     return response;
 }

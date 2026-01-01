@@ -4,6 +4,8 @@ import { TodaysReadingCard, SaintOfTheDayCard, QuickPrayerButtons, PersonalizedG
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay, getUserHomeStreamData } from '@/app/actions/home';
 import { Suspense } from 'react';
 
+export const dynamic = 'force-dynamic';
+
 // --- Async Wrappers for Suspense ---
 
 async function AsyncPersonalizedGreeting() {

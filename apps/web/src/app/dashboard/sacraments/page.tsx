@@ -1,6 +1,8 @@
 import { getSacramentRecords, getSacramentStats } from '@/actions/sacraments';
 import SacramentsClient from './SacramentsClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SacramentsPage() {
     // TODO: Get real church ID from session
     const demoChurchId = 'demo-church-1';
