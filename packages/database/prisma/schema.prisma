@@ -500,6 +500,20 @@ model Notification {
   @@index([userId])
 }
 
+model NewsletterSubscriber {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  isActive      Boolean  @default(true)
+  subscribedAt  DateTime @default(now())
+  unsubscribedAt DateTime?
+  source        String?  @default("footer")
+  
+  @@index([email])
+  @@index([isActive])
+  @@index([subscribedAt])
+}
+
 model PrayerAction {
   id              String        @id
   prayerRequestId String

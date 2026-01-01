@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 /**
  * Newsletter Subscription API
  * 
- * This endpoint handles newsletter subscriptions.
- * In production, you would integrate with:
- * - Mailchimp
- * - SendGrid
- * - ConvertKit
- * - or your own email service
+ * Handles newsletter subscriptions with database storage.
  */
 
 export async function POST(request: NextRequest) {
     try {
-        const { email, name } = await request.json();
+        const { email, name, source } = await request.json();
 
         if (!email || !email.includes('@')) {
             return NextResponse.json(
@@ -22,22 +20,44 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // In production, integrate with your email service
-        // For now, we'll store in a simple way and/or send to your email
+        // Check if already subscribed
+        const existing = await prisma.newsletterSubscriber.findUnique({
+            where: { email: email.toLowerCase() }
+        });
 
-        // Option 1: Send notification email to admin
-        const adminEmail = 'myprayertower2@gmail.com';
+        if (existing) {
+            if (existing.isActive) {
+                return NextResponse.json({
+                    success: true,
+                    message: 'You are already subscribed to our newsletter!',
+                });
+            } else {
+                // Reactivate subscription
+                await prisma.newsletterSubscriber.update({
+                    where: { email: email.toLowerCase() },
+                    data: {
+                        isActive: true,
+                        unsubscribedAt: null,
+                        name: name || existing.name
+                    }
+                });
+                return NextResponse.json({
+                    success: true,
+                    message: 'Welcome back! Your subscription has been reactivated.',
+                });
+            }
+        }
 
-        // Using mailto fallback for client-side (actual implementation would use NodeMailer or SendGrid)
+        // Create new subscriber
+        await prisma.newsletterSubscriber.create({
+            data: {
+                email: email.toLowerCase(),
+                name: name || null,
+                source: source || 'footer'
+            }
+        });
+
         console.log(`New newsletter subscription: ${email} (${name || 'No name'})`);
-
-        // Option 2: Store in database (if using Prisma)
-        // await prisma.newsletterSubscriber.create({
-        //     data: { email, name, subscribedAt: new Date() }
-        // });
-
-        // Option 3: Add to Mailchimp/SendGrid list
-        // await addToMailingList(email, name);
 
         return NextResponse.json({
             success: true,

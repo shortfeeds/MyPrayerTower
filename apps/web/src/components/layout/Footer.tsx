@@ -98,7 +98,7 @@ export function Footer() {
         { href: '/churches', label: 'Churches', icon: Church },
         { href: '/prayer-wall', label: 'Prayers', icon: Heart },
         { href: '/saints', label: 'Saints', icon: Star },
-        { href: '/mass-offerings', label: 'Giving', icon: Gift },
+        { href: '/mass-offerings', label: 'Mass Offering', icon: Gift },
     ];
 
     const isActive = (path: string) => path === '/' ? pathname === '/' : pathname?.startsWith(path);

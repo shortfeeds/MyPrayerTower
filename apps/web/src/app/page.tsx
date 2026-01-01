@@ -3,6 +3,7 @@ import { Church, Heart, BookOpen, Star, MapPin, ArrowRight, Shield, Clock, Spark
 import { TodaysReadingCard, SaintOfTheDayCard, QuickPrayerButtons, PersonalizedGreeting, ChurchSearchWidget, TestimonialsSection } from '@/components/home';
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay, getUserHomeStreamData } from '@/app/actions/home';
 import { Suspense } from 'react';
+import { MassOfferingCTA, DonationFAB } from '@/components/giving/MassOfferingCTA';
 
 export const dynamic = 'force-dynamic';
 
@@ -184,6 +185,18 @@ export default function HomePage() {
                     </div>
                 </div>
             </section>
+
+            {/* Mass Offering CTA Section */}
+            <section className="py-12 bg-cream-50">
+                <div className="container mx-auto px-4">
+                    <div className="max-w-4xl mx-auto">
+                        <MassOfferingCTA variant="banner" context="general" />
+                    </div>
+                </div>
+            </section>
+
+            {/* Floating Action Button for Mobile */}
+            <DonationFAB />
 
             {/* Features Grid */}
             <section className="py-24 bg-white">

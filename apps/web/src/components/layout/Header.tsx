@@ -241,7 +241,7 @@ export function Header() {
                 </div>
 
                 {/* Mobile Menu Content */}
-                <div className="overflow-y-auto h-[calc(100%-80px)] p-4">
+                <div className="overflow-y-auto h-[calc(100vh-80px)] pb-safe p-4">
                     <nav className="flex flex-col gap-1">
                         {/* Main links */}
                         {mainNavLinks.map((link) => (
