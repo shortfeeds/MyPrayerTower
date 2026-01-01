@@ -45,7 +45,7 @@ export function ChurchSearchWidget() {
                     </div>
                     <div>
                         <h3 className="font-display text-2xl font-bold">Find Mass Near You</h3>
-                        <p className="text-sm text-blue-100/80">50,000+ Catholic churches worldwide</p>
+                        <p className="text-sm text-blue-100/80">10,000+ Catholic churches worldwide</p>
                     </div>
                 </div>
 

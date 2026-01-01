@@ -76,7 +76,7 @@ export default function AdvertisePage() {
                     <div className="flex flex-wrap gap-6 text-sm">
                         <div className="flex items-center gap-2">
                             <Eye className="w-5 h-5 text-gold-400" />
-                            <span>50,000+ Monthly Visitors</span>
+                            <span>10,000+ Monthly Visitors</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Users className="w-5 h-5 text-gold-400" />
@@ -106,8 +106,8 @@ export default function AdvertisePage() {
                             key={placement.name}
                             onClick={() => setSelectedPlacement(placement.name)}
                             className={`bg-white rounded-2xl p-6 shadow-sm border-2 cursor-pointer transition-all ${selectedPlacement === placement.name
-                                    ? 'border-primary-500 ring-4 ring-primary-100'
-                                    : 'border-gray-100 hover:border-primary-200'
+                                ? 'border-primary-500 ring-4 ring-primary-100'
+                                : 'border-gray-100 hover:border-primary-200'
                                 }`}
                         >
                             <div className="flex justify-between items-start mb-4">

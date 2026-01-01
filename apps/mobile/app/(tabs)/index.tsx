@@ -28,7 +28,7 @@ export default function HomeScreen() {
     const [reading, setReading] = useState({ title: 'The Holy Family', reference: 'Luke 2:22-40' });
 
     const features = [
-        { icon: MapPin, title: 'Find Churches', subtitle: '50,000+ worldwide', route: '/churches', color: '#0ea5e9' },
+        { icon: MapPin, title: 'Find Churches', subtitle: '10,000+ worldwide', route: '/churches', color: '#0ea5e9' },
         { icon: Heart, title: 'Prayer Wall', subtitle: 'Join the community', route: '/prayer-wall', color: '#ec4899' },
         { icon: BookOpen, title: 'Prayer Library', subtitle: '4,000+ prayers', route: '/prayers', color: '#10b981' },
     ];

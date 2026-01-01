@@ -38,7 +38,7 @@ const ONBOARDING_STEPS = [
     {
         id: 'churches',
         title: 'Find Churches\nNear You',
-        subtitle: '50,000+ Catholic churches worldwide with Mass times, confession schedules, and directions.',
+        subtitle: '10,000+ Catholic churches worldwide with Mass times, confession schedules, and directions.',
         icon: MapPin,
         color: ['#0891b2', '#0e7490'],
     },

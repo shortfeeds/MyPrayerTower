@@ -12,7 +12,7 @@ test.describe('Home Page', () => {
         await expect(page.getByRole('link', { name: /Prayer Wall/i })).toBeVisible();
 
         // Check stats section
-        await expect(page.getByText('50,000+')).toBeVisible();
+        await expect(page.getByText('10,000+')).toBeVisible();
         await expect(page.getByText('4,000+')).toBeVisible();
     });
 

@@ -90,7 +90,7 @@ export default function HomePage() {
 
                         {/* Sub-headline */}
                         <p className="text-xl md:text-2xl text-blue-100/90 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            Daily prayers, Mass readings, 50,000+ church locations, and a global prayer community —
+                            Daily prayers, Mass readings, 10,000+ church locations, and a global prayer community —
                             everything you need to deepen your Catholic faith journey.
                         </p>
 
@@ -120,7 +120,7 @@ export default function HomePage() {
                             </div>
                             <div className="flex items-center gap-2 text-blue-100/80">
                                 <Church className="w-5 h-5 text-gold-400" />
-                                <span className="font-semibold">50,000+ Churches</span>
+                                <span className="font-semibold">10,000+ Churches</span>
                             </div>
                             <div className="flex items-center gap-2 text-blue-100/80">
                                 <Star className="w-5 h-5 text-gold-400 fill-gold-400" />
@@ -207,7 +207,7 @@ export default function HomePage() {
                             {
                                 icon: Church,
                                 title: 'Church Finder',
-                                desc: 'Find Mass times, confession schedules, and adoration chapels at 50,000+ Catholic churches worldwide.',
+                                desc: 'Find Mass times, confession schedules, and adoration chapels at 10,000+ Catholic churches worldwide.',
                                 link: '/churches',
                                 iconBg: 'from-sacred-500 to-sacred-600',
                             },
