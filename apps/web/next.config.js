@@ -106,6 +106,7 @@ const nextConfig = {
     // Experimental optimizations
     experimental: {
         optimizePackageImports: ['lucide-react', '@headlessui/react'],
+        serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
     },
 
     // Headers for caching
