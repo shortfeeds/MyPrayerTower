@@ -82,6 +82,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    transpilePackages: ['@mpt/database'],
     reactStrictMode: true,
     typescript: {
         ignoreBuildErrors: true,
