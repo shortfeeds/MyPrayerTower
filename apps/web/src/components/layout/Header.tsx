@@ -320,7 +320,22 @@ export function Header() {
                             </Link>
                         ))}
 
-                        <hr className="my-4 border-gray-200" />
+                        {/* Profile Link in Mobile Menu */}
+                        <Link
+                            href="/profile"
+                            className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors ${isActive('/profile')
+                                ? 'bg-sacred-50 text-sacred-700 font-semibold'
+                                : 'text-gray-700 hover:bg-gray-50'
+                                }`}
+                            onClick={() => setIsMenuOpen(false)}
+                        >
+                            <div className={`p-2 rounded-lg ${isActive('/profile') ? 'bg-sacred-100 text-sacred-600' : 'bg-gray-100 text-gray-500'}`}>
+                                <User className="w-5 h-5" />
+                            </div>
+                            My Profile
+                        </Link>
+
+                        <div className="my-4 border-t border-gray-200" />
 
                         {/* Auth Buttons */}
                         <div className="flex flex-col gap-3">
@@ -340,7 +355,7 @@ export function Header() {
                             </Link>
                         </div>
 
-                        <hr className="my-4 border-gray-200" />
+                        <div className="my-4 border-t border-gray-200" />
 
                         {/* Social Links */}
                         <div className="px-2 pb-6">

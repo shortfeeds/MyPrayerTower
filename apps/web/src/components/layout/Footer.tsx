@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, PlayCircle, Smartphone } from 'lucide-react';
+import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, PlayCircle, Smartphone, Gift } from 'lucide-react';
 
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
 
@@ -98,7 +98,7 @@ export function Footer() {
         { href: '/churches', label: 'Churches', icon: Church },
         { href: '/prayer-wall', label: 'Prayers', icon: Heart },
         { href: '/saints', label: 'Saints', icon: Star },
-        { href: '/profile', label: 'Profile', icon: User },
+        { href: '/mass-offerings', label: 'Giving', icon: Gift },
     ];
 
     const isActive = (path: string) => path === '/' ? pathname === '/' : pathname?.startsWith(path);

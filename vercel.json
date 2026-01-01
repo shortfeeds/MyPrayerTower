@@ -4,6 +4,5 @@
     "installCommand": "pnpm install",
     "buildCommand": "cd ../.. && pnpm --filter @mpt/database exec prisma generate --schema=./prisma/schema.prisma && pnpm --filter @mpt/database build && pnpm --filter @mpt/web build",
     "outputDirectory": ".next",
-    "framework": "nextjs",
-    "rootDirectory": "apps/web"
+    "framework": "nextjs"
 }
