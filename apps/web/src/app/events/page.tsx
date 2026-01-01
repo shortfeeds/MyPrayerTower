@@ -29,8 +29,8 @@ const eventTypes = [
 const demoEvents: Event[] = [
     { id: '1', title: 'Advent Parish Mission', eventType: 'RETREAT', startDate: '2024-12-28T18:00:00', location: 'Parish Hall', church: { name: 'St. Patrick Cathedral', city: 'New York', state: 'NY' } },
     { id: '2', title: 'New Year\'s Vigil Mass', eventType: 'MASS', startDate: '2024-12-31T23:00:00', location: 'Main Church', church: { name: 'Holy Family Church', city: 'Chicago', state: 'IL' } },
-    { id: '3', title: 'Youth Conference 2025', eventType: 'CONFERENCE', startDate: '2025-01-15T09:00:00', location: 'Convention Center', church: { name: 'Diocese of Phoenix', city: 'Phoenix', state: 'AZ' } },
-    { id: '4', title: 'Lourdes Pilgrimage Info Night', eventType: 'PILGRIMAGE', startDate: '2025-01-20T19:00:00', location: 'Parish Center', church: { name: 'Our Lady of Lourdes', city: 'Denver', state: 'CO' } },
+    { id: '3', title: 'Youth Conference 2026', eventType: 'CONFERENCE', startDate: '2026-01-15T09:00:00', location: 'Convention Center', church: { name: 'Diocese of Phoenix', city: 'Phoenix', state: 'AZ' } },
+    { id: '4', title: 'Lourdes Pilgrimage Info Night', eventType: 'PILGRIMAGE', startDate: '2026-01-20T19:00:00', location: 'Parish Center', church: { name: 'Our Lady of Lourdes', city: 'Denver', state: 'CO' } },
 ];
 
 export default function EventsPage() {

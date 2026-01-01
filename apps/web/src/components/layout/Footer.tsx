@@ -77,7 +77,7 @@ function NewsletterForm() {
 }
 
 export function Footer() {
-    const [currentYear, setCurrentYear] = React.useState(2025);
+    const [currentYear, setCurrentYear] = React.useState(2026);
     const pathname = usePathname();
 
     React.useEffect(() => {
