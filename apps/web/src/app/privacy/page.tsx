@@ -90,12 +90,19 @@ export default function PrivacyPolicyPage() {
                             We use the following third-party services that may collect information:
                         </p>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+                            <li><strong>Google Play Billing:</strong> In-app purchases and subscriptions on Android (see Google's Privacy Policy)</li>
+                            <li><strong>Cashfree Payments:</strong> Web payment processing (see Cashfree's Privacy Policy)</li>
                             <li><strong>Google AdMob:</strong> Advertising services (see Google's Privacy Policy)</li>
                             <li><strong>Google Analytics:</strong> Usage analytics and insights</li>
                             <li><strong>Firebase:</strong> Push notifications and authentication</li>
                             <li><strong>Supabase:</strong> Database and authentication services</li>
                             <li><strong>Google Maps:</strong> Church location and directions</li>
                         </ul>
+
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Payment Information</h3>
+                        <p className="text-gray-600 dark:text-gray-400">
+                            When you make purchases (subscriptions, donations, Mass offerings, virtual candles), payment is processed through Google Play Billing (Android app) or Cashfree (web). We do not store your full credit card details. We receive confirmation of payment and limited billing information to fulfill your order.
+                        </p>
                     </section>
 
                     {/* Data Retention */}

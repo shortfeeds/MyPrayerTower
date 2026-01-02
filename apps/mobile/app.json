@@ -41,7 +41,16 @@
                     "icon": "./assets/notification-icon.png",
                     "color": "#0ea5e9"
                 }
-            ]
+            ],
+            [
+                "react-native-iap",
+                {
+                    "android": {
+                        "supportLibraryVersion": "7.0.0"
+                    }
+                }
+            ],
+            "react-native-webview"
         ],
         "scheme": "myprayertower"
     }

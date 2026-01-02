@@ -721,7 +721,13 @@ model User {
   notificationsEnabled                       Boolean           @default(true)
   subscriptionTier                           SubscriptionTier  @default(FREE)
   subscriptionEnds                           DateTime?
+  subscriptionSource                         PaymentSource?
   stripeCustomerId                           String?
+  
+  // Google Play Billing
+  googlePlayPurchaseToken                    String?
+  googlePlaySubscriptionId                   String?
+  googlePlayOrderId                          String?
   homeChurchId                               String?
   createdAt                                  DateTime          @default(now())
   updatedAt                                  DateTime
@@ -771,6 +777,9 @@ model User {
   // Virtual Candles & Bouquets
   VirtualCandle                              VirtualCandle[]
   SpiritualBouquet                           SpiritualBouquet[]
+  
+  // Purchase Events
+  PurchaseEvent                              PurchaseEvent[]
 
   @@index([email])
   @@index([homeChurchId])
@@ -1629,4 +1638,57 @@ enum CandleDuration {
   THREE_DAYS
   SEVEN_DAYS
   THIRTY_DAYS
+}
+
+enum PaymentSource {
+  CASHFREE_WEB
+  CASHFREE_MOBILE
+  GOOGLE_PLAY
+  APPLE_APPSTORE
+  STRIPE
+}
+
+// =========================================
+// PURCHASE EVENTS (Google Play, App Store)
+// =========================================
+
+model PurchaseEvent {
+  id                    String        @id @default(cuid())
+  userId                String
+  
+  // Product Info
+  source                PaymentSource
+  productId             String        // e.g., "plus_monthly", "premium_yearly"
+  productType           String        @default("subscription") // subscription, one_time
+  
+  // Platform-Specific Tokens
+  purchaseToken         String?       // Google Play purchase token
+  transactionId         String?       // Platform transaction ID
+  orderId               String?       // Order ID from platform
+  originalTransactionId String?       // For subscription renewals
+  
+  // Status & Amounts
+  status                String        @default("PENDING") // PENDING, COMPLETED, REFUNDED, CANCELLED
+  amount                Int?          // Amount in cents
+  currency              String?       @default("USD")
+  
+  // Timing
+  purchasedAt           DateTime      @default(now())
+  expiresAt             DateTime?     // For subscriptions
+  acknowledgedAt        DateTime?     // When purchase was acknowledged
+  cancelledAt           DateTime?     // If cancelled
+  
+  // Raw Data
+  rawPayload            Json?         // Full response from platform
+  
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  
+  User                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([source])
+  @@index([purchaseToken])
+  @@index([productId])
+  @@index([status])
 }

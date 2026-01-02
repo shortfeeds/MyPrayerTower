@@ -116,12 +116,36 @@ export default function TermsOfServicePage() {
                             <CreditCard className="w-6 h-6 text-sacred-600" />
                             7. Subscriptions & Payments
                         </h2>
+
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-4 mb-3">Subscription Plans</h3>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li>Some features may require a paid subscription</li>
-                            <li>Subscriptions auto-renew unless cancelled before the renewal date</li>
-                            <li>You may cancel your subscription at any time</li>
-                            <li>Refunds are handled according to the Google Play/App Store policies</li>
-                            <li>Prices are subject to change with notice</li>
+                            <li><strong>Free:</strong> Basic features with advertisements</li>
+                            <li><strong>Plus:</strong> $4.99/month or $39.99/year - Ad-free, offline mode, 2 family members</li>
+                            <li><strong>Premium:</strong> $9.99/month or $79.99/year - All Plus features + AI suggestions, 5 family members</li>
+                            <li><strong>Lifetime:</strong> $149.99 one-time payment - All Premium features forever</li>
+                        </ul>
+
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Payment Processing</h3>
+                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+                            <li><strong>Android App:</strong> Payments are processed via Google Play Billing</li>
+                            <li><strong>Web:</strong> Payments are processed via Cashfree</li>
+                            <li>Subscriptions purchased on one platform are valid across all platforms when logged in</li>
+                        </ul>
+
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Auto-Renewal & Cancellation</h3>
+                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+                            <li>Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period</li>
+                            <li>You may cancel your subscription at any time through Google Play Store or your account settings</li>
+                            <li>After cancellation, you retain access until the end of your billing period</li>
+                            <li>Refunds are handled according to Google Play Store or Cashfree policies</li>
+                        </ul>
+
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">One-Time Purchases</h3>
+                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+                            <li><strong>Virtual Candles:</strong> Digital prayer candles with set durations (1-30 days)</li>
+                            <li><strong>Mass Offerings:</strong> Requests for Masses to be offered for specific intentions</li>
+                            <li><strong>Donations:</strong> One-time or recurring contributions to support our mission</li>
+                            <li><strong>Spiritual Bouquets:</strong> Gift packages of prayers sent to loved ones</li>
                         </ul>
                     </section>
 

@@ -29,6 +29,9 @@ import { MassOfferingsModule } from './modules/mass-offerings/mass-offerings.mod
 import { PlatformDonationsModule } from './modules/platform-donations/platform-donations.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 
+// In-App Purchases (Google Play)
+import { PurchasesModule } from './modules/purchases/purchases.module';
+
 @Module({
     imports: [
         // Configuration
@@ -79,6 +82,9 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
         MassOfferingsModule,
         PlatformDonationsModule,
         WebhooksModule,
+
+        // In-App Purchases
+        PurchasesModule,
     ],
 })
 export class AppModule { }
