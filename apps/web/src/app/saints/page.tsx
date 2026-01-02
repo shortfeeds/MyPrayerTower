@@ -111,7 +111,7 @@ export default function SaintsPage() {
                     <div className="absolute bottom-10 right-10 w-80 h-80 bg-rose-400 rounded-full blur-3xl animate-pulse delay-700" />
                 </div>
 
-                <div className="relative z-10 pt-28 pb-20 px-4">
+                <div className="relative z-10 pt-32 pb-20 px-4">
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/15 backdrop-blur-md rounded-full text-white/90 text-sm font-medium mb-8 border border-white/20">
                             <Crown className="w-4 h-4 text-yellow-200" />
@@ -225,17 +225,15 @@ export default function SaintsPage() {
                                         key={saint.id}
                                         className="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1"
                                     >
-                                        <div className="h-52 bg-gradient-to-br from-amber-50 to-orange-100 relative overflow-hidden">
+                                        <div className="h-32 bg-gradient-to-br from-amber-50 to-orange-100 relative overflow-hidden flex items-center justify-center">
                                             {saint.imageUrl ? (
                                                 <img src={saint.imageUrl} alt={saint.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <User className="w-24 h-24 text-amber-200" />
-                                                </div>
+                                                <User className="w-16 h-16 text-amber-200" />
                                             )}
 
                                             {badge && (
-                                                <span className={`absolute top-4 left-4 px-3 py-1.5 text-xs font-bold rounded-full text-white bg-gradient-to-r ${badge.gradient} shadow-lg`}>
+                                                <span className={`absolute top-3 left-3 px-2 py-1 text-xs font-bold rounded-full text-white bg-gradient-to-r ${badge.gradient} shadow-lg`}>
                                                     {badge.text}
                                                 </span>
                                             )}

@@ -15,7 +15,7 @@ const securityHeaders = {
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "img-src 'self' data: blob: https: http:",
         "font-src 'self' https://fonts.gstatic.com",
-        "connect-src 'self' https://*.stripe.com https://*.supabase.co https://*.googleapis.com https://*.google-analytics.com https://*.googlesyndication.com https://*.cashfree.com https://*.vercel-scripts.com https://*.vercel-insights.com https://*.neon.tech",
+        "connect-src 'self' https://*.stripe.com https://*.supabase.co https://*.googleapis.com https://*.google-analytics.com https://*.googlesyndication.com https://*.gstatic.com https://*.adtrafficquality.google https://*.cashfree.com https://*.vercel-scripts.com https://*.vercel-insights.com https://*.neon.tech",
         "frame-src 'self' https://*.stripe.com https://*.google.com https://*.youtube.com https://*.vimeo.com https://*.doubleclick.net https://*.googlesyndication.com https://*.cashfree.com",
         "media-src 'self' https: blob:",
         "object-src 'none'",

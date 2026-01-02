@@ -3,22 +3,21 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, PlayCircle, Smartphone, Gift } from 'lucide-react';
-
+import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, Smartphone } from 'lucide-react';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
 
 // App Store Button Component
 function AppStoreButton({ store }: { store: 'apple' | 'google' }) {
     return (
-        <a href="#" className="flex items-center gap-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-600 transition-all px-4 py-2.5 rounded-xl group w-full sm:w-auto">
+        <a href="#" className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 px-3 py-2 rounded-lg group">
             {store === 'apple' ? (
-                <Apple className="w-8 h-8 text-white fill-current" />
+                <Apple className="w-6 h-6 text-white fill-current" />
             ) : (
-                <Smartphone className="w-8 h-8 text-white" />
+                <Smartphone className="w-6 h-6 text-white" />
             )}
             <span className="flex flex-col items-start leading-none">
-                <span className="text-[10px] text-gray-400 uppercase tracking-wide">Download on the</span>
-                <span className="text-sm font-bold text-white group-hover:text-gold-400 transition-colors">
+                <span className="text-[9px] text-gray-400 uppercase">Get on</span>
+                <span className="text-xs font-bold text-white">
                     {store === 'apple' ? 'App Store' : 'Google Play'}
                 </span>
             </span>
@@ -50,28 +49,24 @@ function NewsletterForm() {
     };
 
     return (
-        <div className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-2xl border border-gray-800">
-            <h4 className="text-white font-serif font-bold mb-2">Join our Newsletter</h4>
-            <p className="text-gray-400 text-sm mb-4">Daily readings, prayer updates, and community news.</p>
-            <form onSubmit={handleSubmit} className="relative">
-                <Mail className="absolute left-3.5 top-3 w-4 h-4 text-gray-500" />
+        <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+            <h4 className="text-white font-bold text-sm mb-2">Newsletter</h4>
+            <form onSubmit={handleSubmit} className="flex gap-2">
                 <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-all"
+                    placeholder="Your email"
+                    className="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold-500"
                 />
                 <button
                     type="submit"
                     disabled={status === 'loading'}
-                    className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-medium text-xs rounded-lg transition-all disabled:opacity-70 flex items-center gap-2"
+                    className="px-3 py-2 bg-gold-500 hover:bg-gold-400 text-white text-xs font-bold rounded-lg"
                 >
-                    {status === 'loading' ? <Loader2 className="w-3 h-3 animate-spin" /> : status === 'success' ? <Check className="w-3 h-3" /> : 'Subscribe'}
+                    {status === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : status === 'success' ? <Check className="w-4 h-4" /> : 'Join'}
                 </button>
             </form>
-            {status === 'success' && <p className="text-green-400 text-xs mt-2 flex items-center gap-1"><Check className="w-3 h-3" /> Subscribed successfully!</p>}
-            {status === 'error' && <p className="text-red-400 text-xs mt-2">Failed to subscribe. Please try again.</p>}
         </div>
     );
 }
@@ -98,170 +93,159 @@ export function Footer() {
         { href: '/churches', label: 'Churches', icon: Church },
         { href: '/prayer-wall', label: 'Prayers', icon: Heart },
         { href: '/saints', label: 'Saints', icon: Star },
-        { href: '/mass-offerings', label: 'Mass Offering', icon: Gift },
+        { href: '/dashboard', label: 'Account', icon: User },
     ];
 
-    const isActive = (path: string) => path === '/' ? pathname === '/' : pathname?.startsWith(path);
+    const isActive = (path: string) => pathname === path;
 
     return (
         <>
-            <footer className="bg-[#0B1120] text-gray-300 pb-24 md:pb-0 font-sans border-t border-gray-800 relative overflow-hidden" suppressHydrationWarning>
-                {/* Background Decor */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold-500/50 to-transparent opacity-50"></div>
-                <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-900/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+            {/* Desktop Footer - Compact Single Row */}
+            <footer className="hidden lg:block bg-gradient-to-b from-gray-900 to-black text-gray-300 relative overflow-hidden">
+                <div className="absolute inset-0 opacity-5">
+                    <div className="absolute inset-0 bg-[url('/pattern.svg')] bg-repeat opacity-30" />
+                </div>
 
-                {/* Desktop Footer Content */}
-                <div className="hidden lg:block">
-                    <div className="container mx-auto px-4 py-16 relative z-10">
-                        <div className="grid grid-cols-12 gap-12">
-                            {/* Brand Column (4 cols) */}
-                            <div className="col-span-4 space-y-8">
-                                <Link href="/" className="inline-flex items-center gap-3 group">
-                                    <span className="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-600 rounded-xl flex items-center justify-center shadow-lg shadow-gold-900/20 group-hover:scale-105 transition-transform">
-                                        <span className="text-white font-serif font-bold text-xl">M</span>
-                                    </span>
-                                    <span className="flex flex-col">
-                                        <span className="text-xl font-serif font-bold text-white block leading-none mb-1 group-hover:text-gold-400 transition-colors">MyPrayerTower</span>
-                                        <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Catholic Services</span>
-                                    </span>
-                                </Link>
-
-                                <p className="text-gray-400 leading-relaxed">
-                                    Your digital sanctuary for prayer, community, and finding local Catholic parishes. Join thousands of faithful members worldwide.
-                                </p>
-
-                                <div className="flex gap-3">
-                                    {socialLinks.map((s) => (
-                                        <a
-                                            key={s.label}
-                                            href={s.href}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="w-10 h-10 flex items-center justify-center bg-gray-800/50 hover:bg-gold-500 hover:text-white rounded-full transition-all border border-gray-800 hover:border-gold-500 group"
-                                            title={s.label}
-                                        >
-                                            <s.icon className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Links Column (2 cols) */}
-                            <div className="col-span-2">
-                                <h3 className="font-bold text-white mb-6 flex items-center gap-2">
-                                    Platform
-                                </h3>
-                                <ul className="space-y-4 text-sm text-gray-400">
-                                    <li><Link href="/churches" className="hover:text-gold-400 transition-colors flex items-center gap-2">Church Finder</Link></li>
-                                    <li><Link href="/prayer-wall" className="hover:text-gold-400 transition-colors flex items-center gap-2">Prayer Wall</Link></li>
-                                    <li><Link href="/prayers" className="hover:text-gold-400 transition-colors flex items-center gap-2">Prayer Library</Link></li>
-                                    <li><Link href="/saints" className="hover:text-gold-400 transition-colors flex items-center gap-2">Daily Saints</Link></li>
-                                    <li><Link href="/readings" className="hover:text-gold-400 transition-colors flex items-center gap-2">Readings</Link></li>
-                                </ul>
-                            </div>
-
-                            {/* Links Column (2 cols) */}
-                            <div className="col-span-2">
-                                <h3 className="font-bold text-white mb-6">Company</h3>
-                                <ul className="space-y-4 text-sm text-gray-400">
-                                    <li><Link href="/about" className="hover:text-gold-400 transition-colors">About Us</Link></li>
-                                    <li><Link href="/contact" className="hover:text-gold-400 transition-colors">Contact</Link></li>
-                                    <li><Link href="/donate" className="hover:text-gold-400 transition-colors">Donate</Link></li>
-                                    <li><Link href="/privacy" className="hover:text-gold-400 transition-colors">Privacy Policy</Link></li>
-                                    <li><Link href="/terms" className="hover:text-gold-400 transition-colors">Terms of Service</Link></li>
-                                </ul>
-                            </div>
-
-                            {/* Newsletter & App Column (4 cols) */}
-                            <div className="col-span-4 space-y-8">
-                                <NewsletterForm />
-
-                                <div>
-                                    <h5 className="text-white text-sm font-semibold mb-4">Get the App</h5>
-                                    <div className="flex gap-3 flex-wrap">
-                                        <AppStoreButton store="apple" />
-                                        <AppStoreButton store="google" />
-                                    </div>
-                                </div>
+                <div className="container mx-auto px-4 py-10 relative z-10">
+                    <div className="flex flex-wrap items-start justify-between gap-8">
+                        {/* Brand */}
+                        <div className="w-56">
+                            <Link href="/" className="inline-flex items-center gap-2 mb-3">
+                                <span className="w-8 h-8 bg-gradient-to-br from-gold-400 to-gold-600 rounded-lg flex items-center justify-center">
+                                    <span className="text-white font-serif font-bold">M</span>
+                                </span>
+                                <span className="font-serif font-bold text-white">MyPrayerTower</span>
+                            </Link>
+                            <p className="text-gray-400 text-xs mb-3">Your digital sanctuary for prayer and faith.</p>
+                            <div className="flex gap-1.5">
+                                {socialLinks.map((s) => (
+                                    <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-7 h-7 flex items-center justify-center bg-gray-800 hover:bg-gold-500 rounded-full transition-colors" title={s.label}>
+                                        <s.icon className="w-3.5 h-3.5 text-gray-400 hover:text-white" />
+                                    </a>
+                                ))}
                             </div>
                         </div>
-                    </div>
 
-                    {/* Bottom Bar */}
-                    <div className="border-t border-gray-800/50 bg-black/20">
-                        <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                            <p className="text-xs text-gray-500">
-                                © {currentYear} MyPrayerTower. All rights reserved. •
-                                <span className="mx-2 text-gray-700">Ad Majorem Dei Gloriam</span>
-                            </p>
-                            <div className="flex gap-6 text-xs text-gray-600 font-medium">
-                                <Link href="/privacy" className="hover:text-gray-400 transition-colors">Privacy</Link>
-                                <span className="text-gray-800">•</span>
-                                <Link href="/terms" className="hover:text-gray-400 transition-colors">Terms</Link>
-                                <span className="text-gray-800">•</span>
-                                <Link href="/sitemap" className="hover:text-gray-400 transition-colors">Sitemap</Link>
+                        {/* Link Columns - All in one row */}
+                        <div className="flex gap-8 text-xs">
+                            <div>
+                                <h4 className="font-semibold text-white mb-2">Platform</h4>
+                                <ul className="space-y-1 text-gray-400">
+                                    <li><Link href="/churches" className="hover:text-gold-400">Churches</Link></li>
+                                    <li><Link href="/prayer-wall" className="hover:text-gold-400">Prayer Wall</Link></li>
+                                    <li><Link href="/prayers" className="hover:text-gold-400">Prayers</Link></li>
+                                    <li><Link href="/candles" className="hover:text-gold-400">Candles</Link></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-white mb-2">Daily</h4>
+                                <ul className="space-y-1 text-gray-400">
+                                    <li><Link href="/readings" className="hover:text-gold-400">Readings</Link></li>
+                                    <li><Link href="/saints" className="hover:text-gold-400">Saints</Link></li>
+                                    <li><Link href="/examen" className="hover:text-gold-400">Examen</Link></li>
+                                    <li><Link href="/challenges" className="hover:text-gold-400">Challenges</Link></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-white mb-2">Community</h4>
+                                <ul className="space-y-1 text-gray-400">
+                                    <li><Link href="/partners" className="hover:text-gold-400">Partners</Link></li>
+                                    <li><Link href="/leaderboard" className="hover:text-gold-400">Leaderboard</Link></li>
+                                    <li><Link href="/wallpapers" className="hover:text-gold-400">Wallpapers</Link></li>
+                                    <li><Link href="/bouquets" className="hover:text-gold-400">Bouquets</Link></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-white mb-2">Support</h4>
+                                <ul className="space-y-1 text-gray-400">
+                                    <li><Link href="/mass-offerings" className="hover:text-gold-400">Mass Offerings</Link></li>
+                                    <li><Link href="/donate" className="hover:text-gold-400">Donate</Link></li>
+                                    <li><Link href="/about" className="hover:text-gold-400">About</Link></li>
+                                    <li><Link href="/contact" className="hover:text-gold-400">Contact</Link></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-white mb-2">Legal</h4>
+                                <ul className="space-y-1 text-gray-400">
+                                    <li><Link href="/privacy" className="hover:text-gold-400">Privacy</Link></li>
+                                    <li><Link href="/terms" className="hover:text-gold-400">Terms</Link></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Newsletter & Apps */}
+                        <div className="w-64">
+                            <NewsletterForm />
+                            <div className="mt-3 flex gap-2">
+                                <AppStoreButton store="apple" />
+                                <AppStoreButton store="google" />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Mobile/Tablet Footer */}
-                <div className="lg:hidden">
-                    <div className="container mx-auto px-4 py-10 relative z-10">
-                        <div className="text-center mb-8">
-                            <Link href="/" className="inline-flex items-center gap-2 mb-4">
-                                <span className="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-600 rounded-xl flex items-center justify-center">
-                                    <span className="text-white font-serif font-bold">M</span>
-                                </span>
-                                <span className="text-white font-serif font-bold text-xl">MyPrayerTower</span>
-                            </Link>
-                            <p className="text-gray-500 text-sm max-w-xs mx-auto">
-                                Join our community of prayer and faith.
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-8 mb-10 border-t border-gray-800/50 pt-8">
-                            <div>
-                                <h3 className="font-bold text-white mb-4 text-sm">Features</h3>
-                                <ul className="space-y-3 text-sm text-gray-400">
-                                    <li><Link href="/churches">Church Finder</Link></li>
-                                    <li><Link href="/prayer-wall">Prayer Wall</Link></li>
-                                    <li><Link href="/saints">Daily Saints</Link></li>
-                                    <li><Link href="/readings">Readings</Link></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-white mb-4 text-sm">Support</h3>
-                                <ul className="space-y-3 text-sm text-gray-400">
-                                    <li><Link href="/about">About Us</Link></li>
-                                    <li><Link href="/contact">Contact</Link></li>
-                                    <li><Link href="/privacy">Privacy</Link></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="mb-10">
-                            <NewsletterForm />
-                        </div>
-
-                        <div className="flex flex-col items-center gap-6 border-t border-gray-800 pt-8">
-                            <div className="flex flex-wrap justify-center gap-3">
-                                {socialLinks.map((s) => (
-                                    <a
-                                        key={s.label}
-                                        href={s.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full text-gray-400 hover:text-white"
-                                    >
-                                        <s.icon className="w-5 h-5" />
-                                    </a>
-                                ))}
-                            </div>
-                            <p className="text-xs text-gray-600">© {currentYear} MyPrayerTower</p>
+                {/* Bottom Bar */}
+                <div className="border-t border-gray-800 bg-black/30">
+                    <div className="container mx-auto px-4 py-4 flex justify-between items-center text-xs text-gray-500">
+                        <p>© {currentYear} MyPrayerTower. All rights reserved. <span className="text-gray-600 ml-2">AMDG</span></p>
+                        <div className="flex gap-3">
+                            <Link href="/privacy" className="hover:text-gray-400">Privacy</Link>
+                            <Link href="/terms" className="hover:text-gray-400">Terms</Link>
+                            <Link href="/sitemap" className="hover:text-gray-400">Sitemap</Link>
                         </div>
                     </div>
+                </div>
+            </footer>
+
+            {/* Mobile Footer */}
+            <footer className="lg:hidden bg-gray-900">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="text-center mb-6">
+                        <Link href="/" className="inline-flex items-center gap-2 mb-3">
+                            <span className="w-8 h-8 bg-gradient-to-br from-gold-400 to-gold-600 rounded-lg flex items-center justify-center">
+                                <span className="text-white font-serif font-bold">M</span>
+                            </span>
+                            <span className="text-white font-serif font-bold">MyPrayerTower</span>
+                        </Link>
+                        <p className="text-gray-500 text-sm">Your digital sanctuary for prayer.</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+                        <div>
+                            <h4 className="font-semibold text-white mb-2">Features</h4>
+                            <ul className="space-y-1 text-gray-400">
+                                <li><Link href="/churches" className="hover:text-gold-400">Churches</Link></li>
+                                <li><Link href="/prayer-wall" className="hover:text-gold-400">Prayer Wall</Link></li>
+                                <li><Link href="/candles" className="hover:text-gold-400">Candles</Link></li>
+                                <li><Link href="/challenges" className="hover:text-gold-400">Challenges</Link></li>
+                                <li><Link href="/examen" className="hover:text-gold-400">Examen</Link></li>
+                                <li><Link href="/partners" className="hover:text-gold-400">Partners</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold text-white mb-2">More</h4>
+                            <ul className="space-y-1 text-gray-400">
+                                <li><Link href="/saints" className="hover:text-gold-400">Saints</Link></li>
+                                <li><Link href="/readings" className="hover:text-gold-400">Readings</Link></li>
+                                <li><Link href="/leaderboard" className="hover:text-gold-400">Leaderboard</Link></li>
+                                <li><Link href="/mass-offerings" className="hover:text-gold-400">Mass Offerings</Link></li>
+                                <li><Link href="/about" className="hover:text-gold-400">About</Link></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-gray-800 pt-6">
+                        <NewsletterForm />
+                    </div>
+
+                    <div className="flex flex-wrap justify-center gap-2 mt-6 border-t border-gray-800 pt-6">
+                        {socialLinks.map((s) => (
+                            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center bg-gray-800 rounded-full text-gray-400 hover:text-white">
+                                <s.icon className="w-4 h-4" />
+                            </a>
+                        ))}
+                    </div>
+                    <p className="text-center text-xs text-gray-600 mt-4">© {currentYear} MyPrayerTower</p>
                 </div>
             </footer>
 
@@ -272,10 +256,10 @@ export function Footer() {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex flex-col items-center gap-1.5 px-3 py-1 rounded-xl transition-colors ${isActive(item.href) ? 'text-blue-600 dark:text-gold-400' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                            className={`flex flex-col items-center gap-1.5 px-3 py-1 rounded-xl transition-colors ${isActive(item.href) ? 'text-blue-600 dark:text-gold-400' : 'text-gray-400'}`}
                         >
                             <item.icon className="w-5 h-5" strokeWidth={isActive(item.href) ? 2.5 : 2} />
-                            <span className="text-[10px] font-medium tracking-tight">{item.label}</span>
+                            <span className="text-[10px] font-medium">{item.label}</span>
                         </Link>
                     ))}
                 </div>

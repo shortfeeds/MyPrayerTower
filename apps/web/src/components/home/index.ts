@@ -5,3 +5,5 @@ export { QuickPrayerButtons } from './QuickPrayerButtons';
 export { PersonalizedGreeting } from './PersonalizedGreeting';
 export { ChurchSearchWidget } from './ChurchSearchWidget';
 export { TestimonialsSection } from './TestimonialsSection';
+export { PrayerOfTheDayWidget } from './PrayerOfTheDayWidget';
+export { ActiveChallengesWidget } from './ActiveChallengesWidget';

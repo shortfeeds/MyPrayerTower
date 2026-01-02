@@ -68,6 +68,16 @@ export function Header() {
         { href: '/saints', label: 'Saints', icon: Star },
     ];
 
+    // New feature links added from implementation
+    const moreFeatureLinks = [
+        { href: '/candles', label: 'Prayer Candles', icon: Sparkles, description: 'Light a virtual candle' },
+        { href: '/challenges', label: 'Challenges', icon: Star, description: 'Join prayer challenges' },
+        { href: '/partners', label: 'Prayer Partners', icon: Heart, description: 'Find prayer partners' },
+        { href: '/examen', label: 'Daily Examen', icon: BookOpen, description: 'Ignatian examination' },
+        { href: '/wallpapers', label: 'Wallpapers', icon: Star, description: 'Liturgical wallpapers' },
+        { href: '/leaderboard', label: 'Leaderboard', icon: Star, description: 'Top prayer warriors' },
+    ];
+
     const isActive = (path: string) => pathname?.startsWith(path);
     const isScriptureActive = scriptureLinks.some(link => pathname?.startsWith(link.href));
 
@@ -85,8 +95,12 @@ export function Header() {
                     <div className="flex items-center justify-between">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-3 group">
-                            <div className="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-gold-500/50 transition-all duration-300 transform group-hover:scale-105">
-                                <span className="text-white font-serif font-bold text-xl">M</span>
+                            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg group-hover:shadow-gold-500/50 transition-all duration-300 transform group-hover:scale-105">
+                                <img
+                                    src="/icon.png"
+                                    alt="MyPrayerTower"
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <span className={`font-serif font-bold text-lg leading-tight transition-colors ${scrolled ? 'text-white' : 'text-white'}`}>
@@ -169,6 +183,18 @@ export function Header() {
                                     {link.label}
                                 </Link>
                             ))}
+
+                            {/* More Features Link */}
+                            <Link
+                                href="/candles"
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive('/candles')
+                                    ? 'bg-white text-sacred-900 shadow-md'
+                                    : 'text-white hover:bg-white/20'
+                                    }`}
+                            >
+                                <Sparkles className={`w-4 h-4 ${isActive('/candles') ? 'text-gold-600' : ''}`} />
+                                Candles
+                            </Link>
                         </nav>
 
                         {/* Right Actions */}
@@ -319,6 +345,31 @@ export function Header() {
                                 {link.label}
                             </Link>
                         ))}
+
+                        {/* New Features Section */}
+                        <div className="my-3 border-t border-gray-200" />
+                        <p className="px-4 text-xs uppercase tracking-wider text-gray-400 mb-2">Features</p>
+                        {moreFeatureLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive(link.href)
+                                    ? 'bg-amber-50 text-amber-700 font-semibold'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                    }`}
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <div className={`p-2 rounded-lg ${isActive(link.href) ? 'bg-amber-100 text-amber-600' : 'bg-amber-50 text-amber-500'}`}>
+                                    <link.icon className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <div className="font-medium">{link.label}</div>
+                                    <div className="text-xs text-gray-400">{link.description}</div>
+                                </div>
+                            </Link>
+                        ))}
+
+                        <div className="my-3 border-t border-gray-200" />
 
                         {/* Profile Link in Mobile Menu */}
                         <Link

@@ -171,6 +171,7 @@ model Church {
   PrayerRequest      PrayerRequest[]
   SacramentRecord    SacramentRecord[]
   User               User[]
+  ConfessionLog      ConfessionLog[]
 
   @@index([city, country])
   @@index([denomination])
@@ -568,6 +569,8 @@ model PrayerRequest {
   Church          Church?          @relation(fields: [churchId], references: [id])
   User            User             @relation(fields: [userId], references: [id])
   PrayerUpdate    PrayerUpdate[]
+  PrayerComment   PrayerComment[]
+  PrayerFollowing PrayerFollowing[]
 
   @@index([category])
   @@index([isAnswered])
@@ -746,6 +749,28 @@ model User {
   MassOffering                               MassOffering[]
   PlatformDonation                           PlatformDonation[]
   PrayerSubscription                         PrayerSubscription[]
+  
+  // Gamification
+  UserChallenge                              UserChallenge[]
+  UserAchievement                            UserAchievement[]
+  Leaderboard                                Leaderboard[]
+  UserDailyGoal                              UserDailyGoal?
+  
+  // Community
+  PrayerComment                              PrayerComment[]
+  PrayerFollowing                            PrayerFollowing[]
+  PrayerPartnership_User1                    PrayerPartnership[] @relation("PartnerUser1")
+  PrayerPartnership_User2                    PrayerPartnership[] @relation("PartnerUser2")
+  
+  // Confession & Personalization
+  ExamenEntry                                ExamenEntry[]
+  ConfessionLog                              ConfessionLog[]
+  UserPrayerHistory                          UserPrayerHistory[]
+  UserReminder                               UserReminder[]
+  
+  // Virtual Candles & Bouquets
+  VirtualCandle                              VirtualCandle[]
+  SpiritualBouquet                           SpiritualBouquet[]
 
   @@index([email])
   @@index([homeChurchId])
@@ -791,10 +816,286 @@ model Prayer {
   tags           String[]
   is_active      Boolean?  @default(true)
   created_at     DateTime? @default(now()) @db.Timestamptz(6)
+  
+  // Relations
+  UserPrayerHistory UserPrayerHistory[]
 
   @@index([is_active], map: "prayers_active_idx")
   @@index([category], map: "prayers_category_idx")
   @@index([tags], map: "prayers_tags_idx", type: Gin)
+}
+
+// =========================================
+// GAMIFICATION SYSTEM
+// =========================================
+
+model PrayerChallenge {
+  id               String        @id @default(cuid())
+  name             String
+  slug             String        @unique
+  description      String
+  shortDescription String?
+  imageUrl         String?
+  type             ChallengeType
+  duration         Int           // Days
+  startDate        DateTime?
+  endDate          DateTime?
+  isActive         Boolean       @default(true)
+  isPremium        Boolean       @default(false)
+  dailyAction      String        // e.g., "Pray the Rosary"
+  reward           String?       // Badge or benefit
+  participantCount Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  
+  UserChallenge    UserChallenge[]
+  
+  @@index([type, isActive])
+  @@index([slug])
+}
+
+model UserChallenge {
+  id            String          @id @default(cuid())
+  userId        String
+  challengeId   String
+  joinedAt      DateTime        @default(now())
+  completedAt   DateTime?
+  currentDay    Int             @default(0)
+  lastCheckIn   DateTime?
+  streakCount   Int             @default(0)
+  status        ChallengeStatus @default(IN_PROGRESS)
+  
+  User          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Challenge     PrayerChallenge @relation(fields: [challengeId], references: [id])
+  CheckIns      ChallengeCheckIn[]
+  
+  @@unique([userId, challengeId])
+  @@index([userId])
+  @@index([challengeId])
+  @@index([status])
+}
+
+model ChallengeCheckIn {
+  id              String        @id @default(cuid())
+  userChallengeId String
+  day             Int
+  completedAt     DateTime      @default(now())
+  notes           String?
+  
+  UserChallenge   UserChallenge @relation(fields: [userChallengeId], references: [id], onDelete: Cascade)
+  
+  @@unique([userChallengeId, day])
+  @@index([userChallengeId])
+}
+
+model UserAchievement {
+  id            String          @id @default(cuid())
+  userId        String
+  achievementId String
+  tier          AchievementTier @default(BRONZE)
+  progress      Int             @default(0)
+  maxProgress   Int             @default(100)
+  unlockedAt    DateTime?
+  createdAt     DateTime        @default(now())
+  
+  User          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
+
+model Leaderboard {
+  id        String   @id @default(cuid())
+  userId    String
+  period    String   // "weekly_2026_01" or "monthly_2026_01"
+  score     Int      @default(0)
+  rank      Int?
+  
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, period])
+  @@index([period, score(sort: Desc)])
+}
+
+model UserDailyGoal {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  prayerGoal      Int      @default(3) // Prayers per day
+  readingGoal     Boolean  @default(true) // Daily reading
+  rosaryGoal      Boolean  @default(false)
+  examenGoal      Boolean  @default(false)
+  
+  User            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// =========================================
+// COMMUNITY FEATURES
+// =========================================
+
+model PrayerPartnership {
+  id            String            @id @default(cuid())
+  user1Id       String
+  user2Id       String
+  status        PartnershipStatus @default(PENDING)
+  createdAt     DateTime          @default(now())
+  acceptedAt    DateTime?
+  
+  User1         User              @relation("PartnerUser1", fields: [user1Id], references: [id])
+  User2         User              @relation("PartnerUser2", fields: [user2Id], references: [id])
+  
+  @@unique([user1Id, user2Id])
+  @@index([user1Id])
+  @@index([user2Id])
+}
+
+model PrayerComment {
+  id              String        @id @default(cuid())
+  prayerRequestId String
+  userId          String
+  content         String
+  isEncouragement Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  
+  PrayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
+  User            User          @relation(fields: [userId], references: [id])
+  
+  @@index([prayerRequestId])
+  @@index([userId])
+}
+
+model PrayerFollowing {
+  id              String        @id @default(cuid())
+  userId          String
+  prayerRequestId String
+  createdAt       DateTime      @default(now())
+  
+  User            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  PrayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, prayerRequestId])
+}
+
+// =========================================
+// CONFESSION & EXAMEN
+// =========================================
+
+model ExamenEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @default(now())
+  gratitude String?
+  review    String?
+  sorrow    String?
+  tomorrow  String?
+  createdAt DateTime @default(now())
+  
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, date])
+}
+
+model ConfessionLog {
+  id            String   @id @default(cuid())
+  userId        String
+  date          DateTime
+  churchId      String?
+  notes         String?  // Private notes
+  createdAt     DateTime @default(now())
+  
+  User          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Church        Church?  @relation(fields: [churchId], references: [id])
+  
+  @@index([userId])
+}
+
+// =========================================
+// PERSONALIZATION
+// =========================================
+
+model UserPrayerHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  prayerId  BigInt
+  viewedAt  DateTime @default(now())
+  
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Prayer    Prayer   @relation(fields: [prayerId], references: [id])
+  
+  @@index([userId])
+}
+
+model UserReminder {
+  id          String       @id @default(cuid())
+  userId      String
+  type        ReminderType
+  time        String       // "07:00"
+  days        String[]     // ["Mon", "Tue", ...]
+  isEnabled   Boolean      @default(true)
+  
+  User        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+// =========================================
+// VIRTUAL CANDLES & SPIRITUAL BOUQUETS
+// =========================================
+
+model VirtualCandle {
+  id            String         @id @default(cuid())
+  userId        String?
+  intention     String
+  isAnonymous   Boolean        @default(false)
+  name          String?
+  email         String?
+  amount        Int            // Cents
+  duration      CandleDuration
+  litAt         DateTime       @default(now())
+  expiresAt     DateTime
+  isActive      Boolean        @default(true)
+  
+  // Payment
+  paymentId     String?
+  paymentStatus String         @default("PENDING")
+  
+  User          User?          @relation(fields: [userId], references: [id])
+  
+  @@index([isActive, expiresAt])
+  @@index([userId])
+}
+
+model SpiritualBouquet {
+  id              String    @id @default(cuid())
+  creatorId       String?
+  creatorName     String
+  creatorEmail    String
+  recipientName   String
+  recipientEmail  String
+  occasion        String?
+  message         String?
+  
+  // Contents
+  massesCount     Int       @default(0)
+  rosariesCount   Int       @default(0)
+  prayersCount    Int       @default(0)
+  candlesCount    Int       @default(0)
+  
+  // Delivery
+  sendDate        DateTime?
+  sentAt          DateTime?
+  cardUrl         String?
+  
+  // Payment
+  amount          Int
+  paymentId       String?
+  paymentStatus   String    @default("PENDING")
+  
+  createdAt       DateTime  @default(now())
+  
+  User            User?     @relation(fields: [creatorId], references: [id])
+  
+  @@index([creatorId])
+  @@index([sendDate])
 }
 
 // =========================================
@@ -1276,4 +1577,56 @@ enum SyncStatus {
   COMPLETED
   FAILED
   CANCELLED
+}
+
+// =========================================
+// NEW FEATURE ENUMS
+// =========================================
+
+enum ChallengeType {
+  ROSARY
+  NOVENA
+  LENT
+  ADVENT
+  MARIAN_CONSECRATION
+  DIVINE_MERCY
+  STATIONS
+  CUSTOM
+}
+
+enum ChallengeStatus {
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+}
+
+enum AchievementTier {
+  BRONZE
+  SILVER
+  GOLD
+  SAINT
+}
+
+enum PartnershipStatus {
+  PENDING
+  ACTIVE
+  DECLINED
+  ENDED
+}
+
+enum ReminderType {
+  MORNING_PRAYER
+  ANGELUS
+  EVENING_PRAYER
+  ROSARY
+  EXAMEN
+  CONFESSION
+  CUSTOM
+}
+
+enum CandleDuration {
+  ONE_DAY
+  THREE_DAYS
+  SEVEN_DAYS
+  THIRTY_DAYS
 }

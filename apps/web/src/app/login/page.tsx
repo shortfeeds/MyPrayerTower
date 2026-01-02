@@ -2,17 +2,44 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Call API
-        console.log('Login:', { email, password });
+        setError('');
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                // Redirect to dashboard or home
+                router.push('/');
+                router.refresh();
+            } else {
+                setError(data.message || 'Invalid email or password');
+            }
+        } catch (err) {
+            setError('Something went wrong. Please try again.');
+            console.error('Login error:', err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -33,9 +60,16 @@ export default function LoginPage() {
                     <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
                         Welcome Back
                     </h1>
-                    <p className="text-gray-600 text-center mb-8">
+                    <p className="text-gray-600 text-center mb-6">
                         Sign in to continue your spiritual journey
                     </p>
+
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm text-center">
+                            {error}
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
@@ -91,9 +125,17 @@ export default function LoginPage() {
 
                         <button
                             type="submit"
-                            className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors"
+                            disabled={isLoading}
+                            className="w-full py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
                         >
-                            Sign In
+                            {isLoading ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Signing in...
+                                </>
+                            ) : (
+                                'Sign In'
+                            )}
                         </button>
                     </form>
 

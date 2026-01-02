@@ -53,6 +53,7 @@ export async function getSaintOfTheDay(celebrationName?: string) {
 
     let saint = null;
 
+    // Try to match by celebration name
     if (celebrationName) {
         saint = await prisma.saint.findFirst({
             where: {
@@ -64,12 +65,27 @@ export async function getSaintOfTheDay(celebrationName?: string) {
         });
     }
 
+    // Try to match by today's feast day
     if (!saint) {
         saint = await prisma.saint.findFirst({
             where: {
                 feastMonth: today.getMonth() + 1,
                 feastDayOfMonth: today.getDate(),
             }
+        });
+    }
+
+    // ALWAYS show a saint - fallback to a random popular saint
+    if (!saint) {
+        // Get a saint based on day of year for consistency (same saint all day)
+        const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+        const saintCount = await prisma.saint.count();
+        const skipIndex = dayOfYear % Math.max(saintCount, 1);
+
+        saint = await prisma.saint.findFirst({
+            skip: skipIndex,
+            take: 1,
+            orderBy: { id: 'asc' }
         });
     }
 

@@ -20,74 +20,37 @@ export interface Prayer {
 
 const categories = ['All', 'Health', 'Family', 'Work', 'Finances', 'Relationships', 'Grief', 'Thanksgiving', 'Spiritual', 'World', 'Other'];
 
-// Sample prayers with realistic data
+// Sample prayers with realistic data - older requests have higher prayer counts
 const SAMPLE_PRAYERS: Prayer[] = [
-    {
-        id: 'sample-1',
-        content: "Please pray for my mother's surgery tomorrow. We trust in God's healing power and ask for the surgeon's hands to be guided.",
-        category: 'Health',
-        visibility: 'public',
-        user: { firstName: 'Maria', lastName: 'Santos' },
-        prayerCount: 247,
-        createdAt: new Date(Date.now() - 1000 * 60 * 5),
-        isAnswered: false,
-        country: 'Philippines',
-    },
-    {
-        id: 'sample-2',
-        content: "For guidance in finding a new job opportunity that aligns with His will. I've been searching for 3 months and need His direction.",
-        category: 'Work',
-        visibility: 'public',
-        user: { firstName: 'John', lastName: 'Davis' },
-        prayerCount: 89,
-        createdAt: new Date(Date.now() - 1000 * 60 * 15),
-        isAnswered: false,
-        country: 'United States',
-    },
-    {
-        id: 'sample-3',
-        content: "Thanksgiving for a safe delivery of our baby boy! God is good and we are so grateful for this blessing.",
-        category: 'Thanksgiving',
-        visibility: 'public',
-        user: { firstName: 'Sarah', lastName: 'Miller' },
-        prayerCount: 412,
-        createdAt: new Date(Date.now() - 1000 * 60 * 30),
-        isAnswered: true,
-        country: 'Canada',
-    },
-    {
-        id: 'sample-4',
-        content: "Pray for peace in my family and reconciliation with my brother. We haven't spoken in years and I miss him deeply.",
-        category: 'Family',
-        visibility: 'public',
-        user: null,
-        prayerCount: 156,
-        createdAt: new Date(Date.now() - 1000 * 60 * 45),
-        isAnswered: false,
-        country: 'Ireland',
-    },
-    {
-        id: 'sample-5',
-        content: "For my son who is struggling with addiction. Please pray for his healing and strength to overcome this battle.",
-        category: 'Health',
-        visibility: 'public',
-        user: { firstName: 'Patricia', lastName: 'O\'Connor' },
-        prayerCount: 534,
-        createdAt: new Date(Date.now() - 1000 * 60 * 60),
-        isAnswered: false,
-        country: 'United States',
-    },
-    {
-        id: 'sample-6',
-        content: "For all the victims of natural disasters around the world. May God protect and comfort them in these difficult times.",
-        category: 'World',
-        visibility: 'public',
-        user: { firstName: 'Fr. Michael', lastName: 'Chen' },
-        prayerCount: 892,
-        createdAt: new Date(Date.now() - 1000 * 60 * 90),
-        isAnswered: false,
-        country: 'Singapore',
-    },
+    // Oldest/Most Prayed (500-900+ prayers)
+    { id: 's-1', content: "For all the victims of natural disasters around the world. May God protect and comfort them in these difficult times.", category: 'World', visibility: 'public', user: { firstName: 'Fr. Michael', lastName: 'Chen' }, prayerCount: 892, createdAt: new Date(Date.now() - 1000 * 60 * 180), isAnswered: false, country: 'Singapore' },
+    { id: 's-2', content: "For my son who is struggling with addiction. Please pray for his healing and strength to overcome this battle.", category: 'Health', visibility: 'public', user: { firstName: 'Patricia', lastName: "O'Connor" }, prayerCount: 756, createdAt: new Date(Date.now() - 1000 * 60 * 150), isAnswered: false, country: 'United States' },
+    { id: 's-3', content: "For the conversion of sinners worldwide and for peace in our troubled world. Lord, have mercy on us.", category: 'Spiritual', visibility: 'public', user: { firstName: 'Sr. Teresa', lastName: 'Marie' }, prayerCount: 634, createdAt: new Date(Date.now() - 1000 * 60 * 120), isAnswered: false, country: 'Poland' },
+    { id: 's-4', content: "For all single mothers struggling to provide for their children. God bless them with strength and provision.", category: 'Family', visibility: 'public', user: null, prayerCount: 589, createdAt: new Date(Date.now() - 1000 * 60 * 100), isAnswered: false, country: 'Nigeria' },
+
+    // Medium-High (300-500 prayers)
+    { id: 's-5', content: "Thanksgiving for a safe delivery of our baby boy! God is good and we are so grateful for this blessing.", category: 'Thanksgiving', visibility: 'public', user: { firstName: 'Sarah', lastName: 'Miller' }, prayerCount: 478, createdAt: new Date(Date.now() - 1000 * 60 * 90), isAnswered: true, country: 'Canada' },
+    { id: 's-6', content: "For my husband's cancer treatment. The doctors say Stage 3, but we believe in God's healing power.", category: 'Health', visibility: 'public', user: { firstName: 'Maria', lastName: 'Garcia' }, prayerCount: 423, createdAt: new Date(Date.now() - 1000 * 60 * 80), isAnswered: false, country: 'Mexico' },
+    { id: 's-7', content: "For all priests and religious facing persecution. May God give them courage and protection.", category: 'Spiritual', visibility: 'public', user: { firstName: 'Deacon John', lastName: 'Murphy' }, prayerCount: 367, createdAt: new Date(Date.now() - 1000 * 60 * 70), isAnswered: false, country: 'Ireland' },
+    { id: 's-8', content: "For my daughter starting university abroad. Keep her safe and strengthen her faith.", category: 'Family', visibility: 'public', user: { firstName: 'Angela', lastName: 'Nwosu' }, prayerCount: 312, createdAt: new Date(Date.now() - 1000 * 60 * 65), isAnswered: false, country: 'Nigeria' },
+
+    // Medium (150-300 prayers)
+    { id: 's-9', content: "Please pray for my grandmother in hospice care. She's been a pillar of faith for our family.", category: 'Health', visibility: 'public', user: { firstName: 'Anthony', lastName: 'Romano' }, prayerCount: 267, createdAt: new Date(Date.now() - 1000 * 60 * 55), isAnswered: false, country: 'Italy' },
+    { id: 's-10', content: "Pray for peace in my family and reconciliation with my brother. We haven't spoken in years.", category: 'Family', visibility: 'public', user: null, prayerCount: 198, createdAt: new Date(Date.now() - 1000 * 60 * 50), isAnswered: false, country: 'Ireland' },
+    { id: 's-11', content: "For wisdom as we make a difficult decision about our family business. May God's will be done.", category: 'Work', visibility: 'public', user: { firstName: 'Robert', lastName: 'Kim' }, prayerCount: 176, createdAt: new Date(Date.now() - 1000 * 60 * 45), isAnswered: false, country: 'South Korea' },
+    { id: 's-12', content: "For all expecting mothers, especially those at risk. May St. Gerard intercede for their safety.", category: 'Health', visibility: 'public', user: { firstName: 'Lisa', lastName: 'Thompson' }, prayerCount: 156, createdAt: new Date(Date.now() - 1000 * 60 * 40), isAnswered: false, country: 'Australia' },
+
+    // Lower-Medium (80-150 prayers)
+    { id: 's-13', content: "For my upcoming job interview on Thursday. I've been unemployed for 6 months and trusting in God.", category: 'Work', visibility: 'public', user: { firstName: 'David', lastName: 'Wilson' }, prayerCount: 134, createdAt: new Date(Date.now() - 1000 * 60 * 35), isAnswered: false, country: 'United Kingdom' },
+    { id: 's-14', content: "Thanksgiving for answered prayers! My surgery went well and doctors are happy with results.", category: 'Thanksgiving', visibility: 'public', user: { firstName: 'James', lastName: 'Okafor' }, prayerCount: 112, createdAt: new Date(Date.now() - 1000 * 60 * 30), isAnswered: true, country: 'Nigeria' },
+    { id: 's-15', content: "For the souls of my parents who recently passed. May perpetual light shine upon them.", category: 'Grief', visibility: 'public', user: null, prayerCount: 98, createdAt: new Date(Date.now() - 1000 * 60 * 25), isAnswered: false, country: 'Philippines' },
+    { id: 's-16', content: "For guidance in finding a new job opportunity that aligns with His will. Searching for 3 months.", category: 'Work', visibility: 'public', user: { firstName: 'John', lastName: 'Davis' }, prayerCount: 89, createdAt: new Date(Date.now() - 1000 * 60 * 20), isAnswered: false, country: 'United States' },
+
+    // Recent (20-80 prayers)
+    { id: 's-17', content: "Please pray for my exam results coming out tomorrow. I studied hard but I'm very nervous.", category: 'Work', visibility: 'public', user: { firstName: 'Anna', lastName: 'Kowalski' }, prayerCount: 67, createdAt: new Date(Date.now() - 1000 * 60 * 15), isAnswered: false, country: 'Poland' },
+    { id: 's-18', content: "For healing in my marriage. We're going through a difficult time but believe God can restore us.", category: 'Relationships', visibility: 'public', user: null, prayerCount: 53, createdAt: new Date(Date.now() - 1000 * 60 * 10), isAnswered: false, country: 'Brazil' },
+    { id: 's-19', content: "Please pray for my mother's surgery tomorrow. We trust in God's healing power.", category: 'Health', visibility: 'public', user: { firstName: 'Maria', lastName: 'Santos' }, prayerCount: 34, createdAt: new Date(Date.now() - 1000 * 60 * 5), isAnswered: false, country: 'Philippines' },
+    { id: 's-20', content: "For protection during my travels to see family for the holidays. St. Christopher, pray for us.", category: 'Other', visibility: 'public', user: { firstName: 'Michael', lastName: 'Brown' }, prayerCount: 21, createdAt: new Date(Date.now() - 1000 * 60 * 2), isAnswered: false, country: 'United States' },
 ];
 
 const COUNTRIES = [
@@ -111,12 +74,15 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
     const [showShareModal, setShowShareModal] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [prayedIds, setPrayedIds] = useState<Set<string>>(new Set());
-    const [liveCount, setLiveCount] = useState(1247);
+    const [liveCount, setLiveCount] = useState(21247);
 
-    // Simulate live prayer count updates
+    // Simulate live prayer count updates - always stays above 20,000
     useEffect(() => {
         const interval = setInterval(() => {
-            setLiveCount(prev => prev + Math.floor(Math.random() * 3));
+            setLiveCount(prev => {
+                const newCount = prev + Math.floor(Math.random() * 3) + 1;
+                return Math.max(20000, newCount); // Never go below 20,000
+            });
         }, 5000);
         return () => clearInterval(interval);
     }, []);
@@ -128,7 +94,7 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
     const handlePray = async (prayerId: string) => {
         if (prayedIds.has(prayerId)) return;
 
-        setPrayedIds(prev => new Set([...prev, prayerId]));
+        setPrayedIds(prev => new Set(Array.from(prev).concat([prayerId])));
         setPrayers(current =>
             current.map(p =>
                 p.id === prayerId ? { ...p, prayerCount: p.prayerCount + 1 } : p
@@ -188,9 +154,9 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-cream-50 to-white pt-20">
+        <div className="min-h-screen bg-gradient-to-b from-cream-50 to-white">
             {/* Header */}
-            <div className="bg-gradient-to-br from-sacred-600 via-sacred-700 to-sacred-800 text-white py-16 relative overflow-hidden">
+            <div className="bg-gradient-to-br from-sacred-600 via-sacred-700 to-sacred-800 text-white pt-28 pb-16 relative overflow-hidden">
                 {/* Background orbs */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-gold-500 rounded-full blur-[100px] opacity-20"></div>
                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500 rounded-full blur-[80px] opacity-15"></div>
