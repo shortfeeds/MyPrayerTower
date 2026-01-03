@@ -1,11 +1,44 @@
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { Bell, Search, Menu } from 'lucide-react';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { jwtVerify } from 'jose';
 
-export default function AdminLayout({
+const JWT_SECRET = new TextEncoder().encode(
+    process.env.JWT_SECRET || 'default-secret-key-change-this-in-prod'
+);
+
+async function verifyAdminSession() {
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get('admin_session');
+
+    if (!sessionToken?.value) {
+        return null;
+    }
+
+    try {
+        const { payload } = await jwtVerify(sessionToken.value, JWT_SECRET);
+        if (payload.isAdmin) {
+            return payload;
+        }
+        return null;
+    } catch (error) {
+        return null;
+    }
+}
+
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    // Verify admin session - redirect to login if not authenticated
+    const session = await verifyAdminSession();
+
+    if (!session) {
+        redirect('/admin/login');
+    }
+
     return (
         <div className="flex min-h-screen bg-gray-50">
             <AdminSidebar />
@@ -36,11 +69,13 @@ export default function AdminLayout({
                         <div className="h-8 w-px bg-gray-200" />
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center">
-                                <span className="text-white font-bold text-sm">A</span>
+                                <span className="text-white font-bold text-sm">
+                                    {(session.name as string)?.[0] || 'A'}
+                                </span>
                             </div>
                             <div className="hidden sm:block">
-                                <p className="text-sm font-medium text-gray-900">Admin</p>
-                                <p className="text-xs text-gray-500">Super Admin</p>
+                                <p className="text-sm font-medium text-gray-900">{session.name as string || 'Admin'}</p>
+                                <p className="text-xs text-gray-500">{session.role as string || 'Administrator'}</p>
                             </div>
                         </div>
                     </div>

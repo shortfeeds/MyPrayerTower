@@ -93,7 +93,7 @@ export function Footer() {
         { href: '/churches', label: 'Churches', icon: Church },
         { href: '/prayer-wall', label: 'Prayers', icon: Heart },
         { href: '/saints', label: 'Saints', icon: Star },
-        { href: '/dashboard', label: 'Account', icon: User },
+        { href: '/mass-offerings', label: 'Offerings', icon: Heart },
     ];
 
     const isActive = (path: string) => pathname === path;
