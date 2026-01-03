@@ -144,6 +144,68 @@ h6 {
   }
 }
 
+/* Realistic Candle Flame Animations */
+@keyframes flicker {
+  0% {
+    transform: scale(1) rotate(-1deg);
+  }
+
+  25% {
+    transform: scale(1.02) rotate(0.5deg);
+  }
+
+  50% {
+    transform: scale(0.98) rotate(-0.5deg);
+  }
+
+  75% {
+    transform: scale(1.01) rotate(1deg);
+  }
+
+  100% {
+    transform: scale(0.99) rotate(-1deg);
+  }
+}
+
+@keyframes flickerTip {
+  0% {
+    transform: translateX(-50%) scale(1, 1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translateX(-50%) scale(0.9, 1.1);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateX(-50%) scale(0.8, 1.2);
+    opacity: 0.4;
+  }
+}
+
+@keyframes flameGlow {
+
+  0%,
+  100% {
+    opacity: 0.6;
+    filter: blur(12px);
+  }
+
+  50% {
+    opacity: 0.8;
+    filter: blur(15px);
+  }
+}
+
+.animate-flicker {
+  animation: flicker 0.3s ease-in-out infinite alternate;
+}
+
+.animate-flame-glow {
+  animation: flameGlow 2s ease-in-out infinite;
+}
+
 /* Hide scrollbar but keep functionality */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -278,13 +340,16 @@ h6 {
 
 /* Main content area with proper spacing for fixed header/footer */
 main {
-  padding-top: 64px; /* Header height */
-  padding-bottom: 80px; /* Mobile bottom nav height */
+  padding-top: 64px;
+  /* Header height */
+  padding-bottom: 80px;
+  /* Mobile bottom nav height */
 }
 
 @media (min-width: 768px) {
   main {
-    padding-bottom: 0; /* No bottom nav on desktop */
+    padding-bottom: 0;
+    /* No bottom nav on desktop */
   }
 }
 
@@ -311,9 +376,11 @@ main {
   .text-responsive-xs {
     font-size: 0.75rem;
   }
+
   .text-responsive-sm {
     font-size: 0.875rem;
   }
+
   .text-responsive-base {
     font-size: 1rem;
   }
@@ -381,7 +448,8 @@ main {
 
 /* Touch-friendly button sizes on mobile */
 @media (max-width: 639px) {
-  button, 
+
+  button,
   a[role="button"],
   .btn {
     min-height: 44px;
@@ -396,7 +464,8 @@ main {
 }
 
 /* Prevent horizontal overflow on mobile */
-html, body {
+html,
+body {
   overflow-x: hidden;
   max-width: 100vw;
 }
@@ -410,7 +479,9 @@ html, body {
 
 /* Better tap highlight on mobile */
 @media (max-width: 1023px) {
-  a, button {
+
+  a,
+  button {
     -webkit-tap-highlight-color: rgba(212, 175, 55, 0.1);
   }
 }
@@ -420,6 +491,7 @@ html, body {
   .h-screen {
     height: 100dvh;
   }
+
   .min-h-screen {
     min-height: 100dvh;
   }

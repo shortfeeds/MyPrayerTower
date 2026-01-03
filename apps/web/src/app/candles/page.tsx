@@ -666,80 +666,325 @@ export default function CandleWallPage() {
     );
 }
 
-// Premium Candle Card Component
-function CandleCard({ candle, onPray, isPremium = false }: { candle: Candle; onPray: (id: string) => void; isPremium?: boolean }) {
-    const colors = CANDLE_COLORS[candle.color];
+// ========================================
+// BEAUTIFUL CANDLE COMPONENTS - Design 2
+// ========================================
+
+// Candle tier configurations with premium designs
+const CANDLE_TIERS = {
+    premium: {
+        waxColor: 'from-red-800 via-red-700 to-red-900',
+        waxHighlight: 'from-red-600/40 to-transparent',
+        flameColor: 'from-white via-yellow-200 to-orange-400',
+        flameGlow: 'rgba(255, 215, 0, 0.8)',
+        holderStyle: 'gold-ornate',
+        glowColor: 'amber-500',
+        glowIntensity: 'blur-3xl opacity-60',
+        sparkles: true,
+        rays: true,
+    },
+    standard: {
+        waxColor: 'from-amber-100 via-yellow-50 to-amber-200',
+        waxHighlight: 'from-white/60 to-transparent',
+        flameColor: 'from-yellow-100 via-orange-300 to-orange-500',
+        flameGlow: 'rgba(255, 165, 0, 0.6)',
+        holderStyle: 'silver-cross',
+        glowColor: 'orange-400',
+        glowIntensity: 'blur-2xl opacity-50',
+        sparkles: true,
+        rays: false,
+    },
+    basic: {
+        waxColor: 'from-gray-100 via-white to-gray-200',
+        waxHighlight: 'from-white/50 to-transparent',
+        flameColor: 'from-yellow-200 via-orange-400 to-orange-600',
+        flameGlow: 'rgba(255, 140, 0, 0.5)',
+        holderStyle: 'brass-simple',
+        glowColor: 'yellow-400',
+        glowIntensity: 'blur-xl opacity-40',
+        sparkles: false,
+        rays: false,
+    },
+    free: {
+        waxColor: 'from-stone-100 via-stone-50 to-stone-200',
+        waxHighlight: 'from-white/30 to-transparent',
+        flameColor: 'from-yellow-300 via-orange-400 to-red-500',
+        flameGlow: 'rgba(255, 120, 0, 0.4)',
+        holderStyle: 'simple-dish',
+        glowColor: 'orange-300',
+        glowIntensity: 'blur-lg opacity-30',
+        sparkles: false,
+        rays: false,
+    },
+};
+
+// Realistic Flame Component
+function RealisticFlame({ tier, size = 'normal' }: { tier: keyof typeof CANDLE_TIERS; size?: 'normal' | 'small' }) {
+    const config = CANDLE_TIERS[tier];
+    const isSmall = size === 'small';
 
     return (
-        <div className={`group relative rounded-2xl p-4 backdrop-blur transition-all duration-300 ${isPremium
-            ? 'bg-gradient-to-b from-amber-900/30 to-slate-900/50 border border-amber-500/30 hover:border-amber-400/50 hover:shadow-xl hover:shadow-amber-500/10'
-            : 'bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50'
+        <div className="relative flex flex-col items-center">
+            {/* Divine rays for premium */}
+            {config.rays && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 pointer-events-none">
+                    {[...Array(8)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="absolute w-0.5 bg-gradient-to-t from-amber-400/80 to-transparent animate-pulse"
+                            style={{
+                                height: `${20 + Math.random() * 15}px`,
+                                transform: `rotate(${i * 45}deg)`,
+                                transformOrigin: 'bottom center',
+                                animationDelay: `${i * 0.1}s`,
+                                opacity: 0.6,
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
+
+            {/* Outer glow */}
+            <div
+                className={`absolute ${isSmall ? '-top-2 w-8 h-8' : '-top-4 w-16 h-16'} rounded-full bg-${config.glowColor} ${config.glowIntensity}`}
+                style={{ filter: 'blur(12px)' }}
+            />
+
+            {/* Sparkle particles for premium tiers */}
+            {config.sparkles && !isSmall && (
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-12 pointer-events-none">
+                    {[...Array(6)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="absolute w-1 h-1 rounded-full bg-yellow-200 animate-ping"
+                            style={{
+                                left: `${20 + Math.random() * 60}%`,
+                                top: `${Math.random() * 60}%`,
+                                animationDuration: `${1.5 + Math.random()}s`,
+                                animationDelay: `${Math.random() * 2}s`,
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
+
+            {/* Main flame */}
+            <div className="relative">
+                {/* Flame outer layer */}
+                <div
+                    className={`${isSmall ? 'w-3 h-6' : 'w-5 h-10'} rounded-full bg-gradient-to-t ${config.flameColor} relative`}
+                    style={{
+                        animation: 'flicker 0.3s ease-in-out infinite alternate',
+                        boxShadow: `0 0 ${isSmall ? '15px 5px' : '30px 10px'} ${config.flameGlow}`,
+                        borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%',
+                    }}
+                >
+                    {/* Flame inner bright core */}
+                    <div
+                        className={`absolute bottom-1 left-1/2 -translate-x-1/2 ${isSmall ? 'w-1.5 h-3' : 'w-2.5 h-5'} rounded-full bg-gradient-to-t from-yellow-100 via-white to-white animate-pulse`}
+                        style={{
+                            borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%',
+                        }}
+                    />
+                </div>
+
+                {/* Flame tip wisp */}
+                <div
+                    className={`absolute -top-1 left-1/2 -translate-x-1/2 ${isSmall ? 'w-1 h-2' : 'w-1.5 h-3'} rounded-full bg-gradient-to-t from-orange-300 to-transparent`}
+                    style={{
+                        animation: 'flickerTip 0.4s ease-in-out infinite alternate',
+                    }}
+                />
+            </div>
+        </div>
+    );
+}
+
+// Ornate Candle Holder Component
+function CandleHolder({ tier, size = 'normal' }: { tier: keyof typeof CANDLE_TIERS; size?: 'normal' | 'small' }) {
+    const isSmall = size === 'small';
+
+    if (tier === 'premium') {
+        // Ornate gold cathedral holder
+        return (
+            <div className="relative flex flex-col items-center">
+                {/* Base plate */}
+                <div className={`${isSmall ? 'w-10 h-1.5' : 'w-16 h-2'} rounded-full bg-gradient-to-b from-amber-300 via-yellow-500 to-amber-600 shadow-lg`}>
+                    <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-yellow-200/50 to-transparent rounded-t-full" />
+                </div>
+                {/* Decorative stem */}
+                <div className={`${isSmall ? 'w-4 h-2' : 'w-6 h-3'} -mt-0.5 bg-gradient-to-b from-amber-400 to-amber-600 rounded-b-lg relative`}>
+                    <div className="absolute inset-x-1 top-0.5 h-0.5 bg-yellow-300/60 rounded-full" />
+                </div>
+                {/* Bottom base */}
+                <div className={`${isSmall ? 'w-12 h-1' : 'w-20 h-2'} rounded-full bg-gradient-to-b from-amber-500 via-yellow-600 to-amber-700 shadow-md`}>
+                    <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-yellow-300/30 to-transparent rounded-t-full" />
+                </div>
+            </div>
+        );
+    }
+
+    if (tier === 'standard') {
+        // Silver holder with cross detail
+        return (
+            <div className="relative flex flex-col items-center">
+                <div className={`${isSmall ? 'w-8 h-1' : 'w-12 h-1.5'} rounded-full bg-gradient-to-b from-gray-200 via-gray-400 to-gray-500 shadow-md`}>
+                    <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/40 to-transparent rounded-t-full" />
+                </div>
+                <div className={`${isSmall ? 'w-10 h-1' : 'w-14 h-1.5'} rounded-full bg-gradient-to-b from-gray-300 to-gray-500`} />
+            </div>
+        );
+    }
+
+    // Simple brass dish for basic/free
+    return (
+        <div className={`${isSmall ? 'w-8 h-1' : 'w-12 h-1.5'} rounded-full bg-gradient-to-b from-amber-200 via-amber-400 to-amber-500 shadow-sm`}>
+            <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-yellow-100/40 to-transparent rounded-t-full" />
+        </div>
+    );
+}
+
+// Realistic Wax Candle Body
+function CandleBody({ tier, size = 'normal' }: { tier: keyof typeof CANDLE_TIERS; size?: 'normal' | 'small' }) {
+    const config = CANDLE_TIERS[tier];
+    const isSmall = size === 'small';
+
+    // Height varies by tier
+    const heights = {
+        premium: isSmall ? 'h-16' : 'h-24',
+        standard: isSmall ? 'h-14' : 'h-20',
+        basic: isSmall ? 'h-12' : 'h-16',
+        free: isSmall ? 'h-10' : 'h-14',
+    };
+
+    return (
+        <div className="relative flex flex-col items-center">
+            {/* Wick */}
+            <div className={`${isSmall ? 'w-0.5 h-1.5' : 'w-1 h-2'} bg-gradient-to-t from-gray-800 to-gray-600 rounded-full`} />
+
+            {/* Main candle body */}
+            <div className={`relative ${isSmall ? 'w-6' : 'w-10'} ${heights[tier]} rounded-b-lg overflow-hidden`}>
+                {/* Base wax gradient */}
+                <div className={`absolute inset-0 bg-gradient-to-b ${config.waxColor}`} />
+
+                {/* Wax highlight (left side reflection) */}
+                <div className={`absolute left-0 top-0 bottom-0 w-1/3 bg-gradient-to-r ${config.waxHighlight}`} />
+
+                {/* Wax drips for premium */}
+                {tier === 'premium' && !isSmall && (
+                    <>
+                        <div className="absolute -right-0.5 top-8 w-1.5 h-4 bg-gradient-to-b from-red-700 to-red-800 rounded-b-full" />
+                        <div className="absolute -left-0.5 top-12 w-1 h-3 bg-gradient-to-b from-red-700 to-red-800 rounded-b-full" />
+                        <div className="absolute -right-0.5 top-16 w-1 h-2 bg-gradient-to-b from-red-700 to-red-800 rounded-b-full" />
+                    </>
+                )}
+
+                {/* Decorative patterns for premium */}
+                {tier === 'premium' && !isSmall && (
+                    <div className="absolute inset-x-2 top-1/4 flex flex-col items-center gap-2 opacity-60">
+                        {/* Sacred heart outline */}
+                        <div className="w-4 h-4 border border-amber-400/50 rounded-full" />
+                        {/* Cross */}
+                        <div className="relative w-3 h-5">
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-full bg-amber-400/40" />
+                            <div className="absolute top-1 left-0 w-full h-0.5 bg-amber-400/40" />
+                        </div>
+                    </div>
+                )}
+
+                {/* Texture lines */}
+                <div className="absolute inset-0 opacity-10">
+                    {[...Array(isSmall ? 3 : 5)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="absolute w-full h-px bg-black/20"
+                            style={{ top: `${20 + i * 15}%` }}
+                        />
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Premium Candle Card Component - REDESIGNED
+function CandleCard({ candle, onPray, isPremium = false }: { candle: Candle; onPray: (id: string) => void; isPremium?: boolean }) {
+    return (
+        <div className={`group relative rounded-2xl p-4 backdrop-blur-sm transition-all duration-300 ${isPremium
+            ? 'bg-gradient-to-b from-amber-950/40 via-slate-900/60 to-slate-900/80 border border-amber-500/40 hover:border-amber-400/60 hover:shadow-2xl hover:shadow-amber-500/20'
+            : 'bg-gradient-to-b from-slate-800/60 to-slate-900/80 border border-slate-700/50 hover:bg-slate-800/80 hover:border-slate-600/60'
             }`}>
             {isPremium && (
-                <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-amber-400 to-orange-500 text-[9px] font-bold text-white rounded-full shadow-lg flex items-center gap-1">
+                <div className="absolute -top-2 -right-2 px-2.5 py-1 bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-500 text-[9px] font-bold text-amber-900 rounded-full shadow-lg shadow-amber-500/30 flex items-center gap-1">
                     <Crown className="w-3 h-3" /> FEATURED
                 </div>
             )}
 
-            <div className="relative flex flex-col items-center">
-                <div className={`absolute top-0 w-16 h-16 rounded-full blur-2xl ${colors.glow}`} />
-                <div
-                    className="w-8 h-14 rounded-full animate-pulse mb-1 relative z-10"
-                    style={{
-                        background: `linear-gradient(to top, ${colors.flame}, #fff8dc)`,
-                        boxShadow: `0 0 25px 8px ${colors.flame}50`
-                    }}
-                />
-                <div className={`w-12 h-20 rounded-b-lg bg-gradient-to-b ${colors.bg} shadow-lg relative z-10`} />
+            {/* Candle Assembly */}
+            <div className="relative flex flex-col items-center py-2">
+                <RealisticFlame tier={candle.tier} />
+                <CandleBody tier={candle.tier} />
+                <CandleHolder tier={candle.tier} />
             </div>
 
+            {/* Info Section */}
             <div className="mt-3 text-center">
                 <p className="text-xs text-gray-200 font-medium truncate">{candle.userName}</p>
-                <p className="text-[10px] text-gray-400 line-clamp-2 mt-1 min-h-[24px]">{candle.intention}</p>
+                <p className="text-[10px] text-gray-400 line-clamp-2 mt-1 min-h-[24px] italic">"{candle.intention}"</p>
                 <div className="flex items-center justify-center gap-1 mt-2 text-[10px] text-gray-500">
                     <Clock className="w-3 h-3" />
-                    <span>{candle.remainingHours}h left</span>
+                    <span>{candle.remainingHours}h remaining</span>
                 </div>
             </div>
 
+            {/* Pray Button */}
             <button
                 onClick={() => onPray(candle.id)}
-                className={`w-full mt-3 py-2 flex items-center justify-center gap-1.5 rounded-lg transition-all text-xs font-medium ${isPremium
-                    ? 'bg-gradient-to-r from-rose-500/30 to-pink-500/30 hover:from-rose-500 hover:to-pink-500 text-rose-300 hover:text-white'
+                className={`w-full mt-3 py-2.5 flex items-center justify-center gap-1.5 rounded-xl transition-all text-xs font-semibold ${isPremium
+                    ? 'bg-gradient-to-r from-rose-500/40 to-pink-500/40 hover:from-rose-500 hover:to-pink-500 text-rose-200 hover:text-white shadow-lg shadow-rose-500/10 hover:shadow-rose-500/30'
                     : 'bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white'
                     }`}
             >
-                <Heart className="w-3 h-3" />
-                <span>{candle.prayerCount.toLocaleString()}</span>
+                <Heart className="w-3.5 h-3.5" />
+                <span>{candle.prayerCount.toLocaleString()} prayers</span>
             </button>
         </div>
     );
 }
 
-// Small Candle Card for Free/Basic Section
+// Small Candle Card for Free/Basic Section - REDESIGNED
 function CandleCardSmall({ candle, onPray }: { candle: Candle; onPray: (id: string) => void }) {
-    const colors = CANDLE_COLORS[candle.color];
-
     return (
-        <div className="bg-slate-800/30 rounded-xl p-3 border border-slate-700/30 transition-all hover:bg-slate-700/30">
-            <div className="flex flex-col items-center">
-                <div
-                    className="w-5 h-8 rounded-full animate-pulse mb-1"
-                    style={{
-                        background: `linear-gradient(to top, ${colors.flame}, #fff8dc)`,
-                        boxShadow: `0 0 10px 3px ${colors.flame}40`
-                    }}
-                />
-                <div className={`w-7 h-12 rounded-b-lg bg-gradient-to-b ${colors.bg}`} />
+        <div className="bg-gradient-to-b from-slate-800/40 to-slate-900/60 rounded-xl p-3 border border-slate-700/40 transition-all hover:bg-slate-800/60 hover:border-slate-600/50">
+            {/* Small Candle Assembly */}
+            <div className="flex flex-col items-center py-1">
+                <RealisticFlame tier={candle.tier} size="small" />
+                <CandleBody tier={candle.tier} size="small" />
+                <CandleHolder tier={candle.tier} size="small" />
             </div>
+
             <p className="text-[9px] text-gray-400 text-center mt-2 truncate">{candle.userName}</p>
             <button
                 onClick={() => onPray(candle.id)}
-                className="w-full mt-2 py-1.5 flex items-center justify-center gap-1 bg-rose-500/10 hover:bg-rose-500/30 text-rose-400 text-[10px] rounded-lg"
+                className="w-full mt-2 py-1.5 flex items-center justify-center gap-1 bg-rose-500/15 hover:bg-rose-500/40 text-rose-400 hover:text-rose-200 text-[10px] font-medium rounded-lg transition-all"
             >
                 <Heart className="w-2.5 h-2.5" />
-                {candle.prayerCount}
+                {candle.prayerCount.toLocaleString()}
             </button>
         </div>
     );
 }
+
+// CSS Keyframes (add to global styles or use inline)
+const candleStyles = `
+@keyframes flicker {
+    0% { transform: scale(1) rotate(-1deg); }
+    50% { transform: scale(1.02) rotate(0.5deg); }
+    100% { transform: scale(0.98) rotate(1deg); }
+}
+@keyframes flickerTip {
+    0% { transform: translateX(-50%) scale(1, 1); opacity: 0.8; }
+    100% { transform: translateX(-50%) scale(0.8, 1.2); opacity: 0.4; }
+}
+`;
+
