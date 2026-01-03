@@ -7,3 +7,7 @@ export { ChurchSearchWidget } from './ChurchSearchWidget';
 export { TestimonialsSection } from './TestimonialsSection';
 export { PrayerOfTheDayWidget } from './PrayerOfTheDayWidget';
 export { ActiveChallengesWidget } from './ActiveChallengesWidget';
+export { VerseOfTheDay } from './VerseOfTheDay';
+export { LiveStatsBar, LiveStatsCompact } from './LiveStatsBar';
+export { QuickAccessBar, QuickAccessCompact } from './QuickAccessBar';
+export { TrendingPrayers, TrendingPrayersCompact } from './TrendingPrayers';

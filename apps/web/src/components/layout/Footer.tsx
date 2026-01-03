@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, Smartphone } from 'lucide-react';
+import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, Smartphone, Gift } from 'lucide-react';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
 
 // App Store Button Component
@@ -93,7 +93,7 @@ export function Footer() {
         { href: '/churches', label: 'Churches', icon: Church },
         { href: '/prayer-wall', label: 'Prayers', icon: Heart },
         { href: '/saints', label: 'Saints', icon: Star },
-        { href: '/mass-offerings', label: 'Offerings', icon: Heart },
+        { href: '/mass-offerings', label: 'Mass Offering', icon: Gift },
     ];
 
     const isActive = (path: string) => pathname === path;

@@ -5,12 +5,12 @@ import { Star, ChevronRight } from 'lucide-react';
 
 interface Saint {
     name: string;
-    feastDay?: string;
-    title?: string;
-    shortBio?: string;
-    imageUrl?: string;
+    feastDay?: string | null;
+    title?: string | null;
+    shortBio?: string | null;
+    imageUrl?: string | null;
     // Map from DB model fields if different
-    biography?: string;
+    biography?: string | null;
 }
 
 interface SaintOfTheDayCardProps {

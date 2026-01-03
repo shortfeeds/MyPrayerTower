@@ -91,10 +91,10 @@ export default function RootLayout({
                     strategy="beforeInteractive"
                 />
             </head>
-            <body className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
+            <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
                 <ThemeProvider>
                     <Header />
-                    <main className="flex-1">{children}</main>
+                    <main className="flex-1 w-full">{children}</main>
                     <Footer />
                     <script
                         type="application/ld+json"
