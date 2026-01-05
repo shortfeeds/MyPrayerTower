@@ -57,11 +57,11 @@ export function GoogleAdUnit({
     if (!slot) return null;
 
     return (
-        <div className={`adsense-container ${className}`} style={style}>
+        <div className={`adsense-container ${className}`} style={{ minHeight: '100px', ...style }}>
             <ins
                 ref={adRef}
                 className="adsbygoogle"
-                style={{ display: 'block', ...style }}
+                style={{ display: 'block', width: '100%', ...style }}
                 data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-XXXXXXXXXXXXXXXX'}
                 data-ad-slot={slot}
                 data-ad-format={format}
