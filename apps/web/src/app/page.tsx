@@ -11,7 +11,7 @@ import {
     ActiveChallengesWidget,
 } from '@/components/home';
 import { VerseOfTheDay } from '@/components/home/VerseOfTheDay';
-import { LiveStatsBar, LiveStatsCompact } from '@/components/home/LiveStatsBar';
+import { LiveStatsBar } from '@/components/home/LiveStatsBar';
 import { QuickAccessBar } from '@/components/home/QuickAccessBar';
 import { TrendingPrayers } from '@/components/home/TrendingPrayers';
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay, getUserHomeStreamData } from '@/app/actions/home';
@@ -204,7 +204,7 @@ function LoggedOutHomePage() {
                 {/* Cross Pattern Overlay */}
                 <div className="absolute inset-0 opacity-5 bg-hero-pattern"></div>
 
-                <div className="container mx-auto px-4 relative z-10 pt-16 md:pt-20">
+                <div className="container mx-auto px-4 relative z-10 pt-16 md:pt-20 pb-20">
                     <div className="max-w-4xl mx-auto text-center">
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 animate-fade-in">
@@ -248,15 +248,10 @@ function LoggedOutHomePage() {
                             </Link>
                         </div>
 
-                        {/* Social Proof & Live Stats Compact */}
-                        <div className="flex flex-wrap justify-center gap-6 mt-12 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-                            <div className="flex items-center gap-2 text-blue-100/80 text-sm">
-                                <Users className="w-4 h-4 text-gold-400" />
-                                <span className="font-semibold">1M+ Faithful Users</span>
-                            </div>
-                            <div className="hidden sm:block w-px h-4 bg-white/20"></div>
-                            {/* Live Stats Compact - NEW */}
-                            <LiveStatsCompact />
+                        {/* Social Proof */}
+                        <div className="flex items-center justify-center gap-2 mt-12 animate-fade-in-up text-blue-100/80 text-sm" style={{ animationDelay: '0.6s' }}>
+                            <Users className="w-4 h-4 text-gold-400" />
+                            <span className="font-semibold">1M+ Faithful Users</span>
                         </div>
                     </div>
                 </div>
@@ -273,19 +268,19 @@ function LoggedOutHomePage() {
                         <PrayerOfTheDayWidget />
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* Trending Prayers Section - NEW */}
-            <section className="py-16 bg-white border-t border-gray-100">
+            < section className="py-16 bg-white border-t border-gray-100" >
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto">
                         <TrendingPrayers />
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* Features Grid - Compact */}
-            <section className="py-16 bg-cream-50">
+            < section className="py-16 bg-cream-50" >
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12 max-w-2xl mx-auto">
                         <h2 className="font-display text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -317,10 +312,10 @@ function LoggedOutHomePage() {
                         ))}
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* Prayer Wall Preview - Compact */}
-            <section className="py-16 bg-sacred-800 text-white relative overflow-hidden">
+            < section className="py-16 bg-sacred-800 text-white relative overflow-hidden" >
                 <div className="absolute inset-0 opacity-5 bg-hero-pattern"></div>
                 <div className="container mx-auto px-4 relative">
                     <div className="text-center max-w-2xl mx-auto mb-10">
@@ -331,7 +326,6 @@ function LoggedOutHomePage() {
                         <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
                             Join <span className="text-gold-400">20,000+</span> People Praying Right Now
                         </h2>
-                        <LiveStatsCompact />
                         <p className="text-blue-100 mt-4">Share your intentions and experience the power of united prayer.</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -350,17 +344,17 @@ function LoggedOutHomePage() {
                         </Link>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* Testimonials */}
-            <section className="py-16 bg-cream-50">
+            < section className="py-16 bg-cream-50" >
                 <div className="container mx-auto px-4">
                     <TestimonialsSection />
                 </div>
-            </section>
+            </section >
 
             {/* Final CTA with App Download */}
-            <section className="py-16 bg-white">
+            < section className="py-16 bg-white" >
                 <div className="container mx-auto px-4">
                     <div className="bg-gradient-to-br from-sacred-600 via-sacred-700 to-sacred-800 rounded-3xl p-10 md:p-16 text-center relative overflow-hidden shadow-2xl max-w-4xl mx-auto">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-gold-500 rounded-full blur-[100px] opacity-20"></div>
@@ -390,11 +384,11 @@ function LoggedOutHomePage() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* Floating Action Button for Mobile */}
-            <DonationFAB />
-        </div>
+            < DonationFAB />
+        </div >
     );
 }
 

@@ -73,6 +73,10 @@ export async function middleware(request: NextRequest) {
     }
 
     const response = NextResponse.next();
+
+    // Add pathname header for server components to detect current route
+    response.headers.set('x-pathname', pathname);
+
     Object.entries(securityHeaders).forEach(([key, value]) => {
         response.headers.set(key, value);
     });

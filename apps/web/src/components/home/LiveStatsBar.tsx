@@ -87,11 +87,11 @@ export function LiveStatsBar() {
     ];
 
     return (
-        <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-y border-gray-200 dark:border-gray-700 py-3 relative z-30">
+        <div className="bg-sacred-900/95 backdrop-blur-md border-b border-white/10 py-4 relative z-30">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-center gap-6 sm:gap-12 flex-wrap">
                     {statItems.map((item, i) => (
-                        <div key={i} className="flex items-center gap-2.5">
+                        <div key={i} className="flex items-center gap-3">
                             <div className="relative">
                                 <item.icon className={`w-5 h-5 ${item.color}`} />
                                 {item.pulse && (
@@ -99,10 +99,10 @@ export function LiveStatsBar() {
                                 )}
                             </div>
                             <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
-                                <span className="font-display font-bold text-lg text-gray-900 dark:text-white tabular-nums leading-none">
+                                <span className="font-display font-bold text-lg text-white tabular-nums leading-none">
                                     {item.value.toLocaleString()}
                                 </span>
-                                <span className="text-xs uppercase tracking-wider font-semibold text-gray-500 dark:text-gray-400">{item.label}</span>
+                                <span className="text-xs uppercase tracking-wider font-semibold text-white/60">{item.label}</span>
                             </div>
                         </div>
                     ))}

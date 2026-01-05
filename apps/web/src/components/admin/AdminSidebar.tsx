@@ -20,7 +20,8 @@ import {
     ChevronDown,
     Search,
     Moon,
-    Sun
+    Sun,
+    Flame
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -46,6 +47,7 @@ const menuItems: MenuItem[] = [
         ]
     },
     { name: 'Saints', href: '/admin/saints', icon: Crown },
+    { name: 'Virtual Candles', href: '/admin/candles', icon: Flame },
     { name: 'Prayer Wall', href: '/admin/prayers', icon: Heart },
     { name: 'Daily Readings', href: '/admin/readings', icon: BookOpen },
     { name: 'Advertisements', href: '/admin/ads', icon: Image },

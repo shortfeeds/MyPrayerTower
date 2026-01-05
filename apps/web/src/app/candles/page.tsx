@@ -485,10 +485,10 @@ export default function CandleWallPage() {
                     <h3 className="text-2xl font-bold text-white mb-2">Want More Prayers for Your Intention?</h3>
                     <p className="text-amber-200/80 mb-6">Featured candles stay lit for 30 days and receive the most prayers from our global community.</p>
                     <button
-                        onClick={() => { setSelectedDuration('THIRTY_DAYS'); setShowLightModal(true); }}
+                        onClick={() => { setSelectedDuration('THREE_DAYS'); setShowLightModal(true); }}
                         className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full hover:shadow-lg hover:shadow-orange-500/30 transition-all"
                     >
-                        Light Featured Candle - $14.99
+                        Light a Candle - Starts at $2.99
                     </button>
                 </div>
             </div>

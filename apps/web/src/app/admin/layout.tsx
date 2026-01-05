@@ -1,6 +1,6 @@
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { Bell, Search, Menu } from 'lucide-react';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { jwtVerify } from 'jose';
 
@@ -27,11 +27,26 @@ async function verifyAdminSession() {
     }
 }
 
+// Check if the current path is the login page
+async function isLoginPage() {
+    const headersList = await headers();
+    const pathname = headersList.get('x-pathname') || '';
+    return pathname === '/admin/login';
+}
+
 export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    // Check if we're on the login page first
+    const onLoginPage = await isLoginPage();
+
+    // If on login page, render without auth check and without sidebar
+    if (onLoginPage) {
+        return <>{children}</>;
+    }
+
     // Verify admin session - redirect to login if not authenticated
     const session = await verifyAdminSession();
 

@@ -27,17 +27,50 @@ model AppSettings {
   id                  String   @id @default("app_settings")
   siteName            String   @default("MyPrayerTower")
   siteTagline         String   @default("All-in-One Catholic Services")
+  
+  // System Settings
   maintenanceMode     Boolean  @default(false)
   registrationEnabled Boolean  @default(true)
   prayerWallEnabled   Boolean  @default(true)
   syncEnabled         Boolean  @default(true)
   syncSchedule        String   @default("0 2 * * 0")
+  
+  // Subscription Pricing (in cents)
   plusMonthlyPrice    Int      @default(499)
   plusYearlyPrice     Int      @default(3999)
   premiumMonthlyPrice Int      @default(999)
   premiumYearlyPrice  Int      @default(7999)
   lifetimePrice       Int      @default(14999)
-  updatedAt           DateTime
+  
+  // Candle Pricing (in cents)
+  candleOneDayPrice       Int  @default(100)    // $1.00
+  candleThreeDayPrice     Int  @default(300)    // $3.00
+  candleSevenDayPrice     Int  @default(500)    // $5.00
+  candleThirtyDayPrice    Int  @default(1500)   // $15.00 Featured
+  
+  // Mass Offering Pricing (in cents)
+  massRegularPrice        Int  @default(1500)   // $15.00
+  massExpeditedPrice      Int  @default(2500)   // $25.00
+  massNovenaPrice         Int  @default(7500)   // $75.00
+  massGregorianPrice      Int  @default(25000)  // $250.00
+  massPerpetualPrice      Int  @default(10000)  // $100.00
+  
+  // Spiritual Bouquet Pricing (in cents)
+  bouquetBasePrice        Int  @default(1000)   // $10.00
+  bouquetMassAddOn        Int  @default(500)    // $5.00 per Mass
+  bouquetCandleAddOn      Int  @default(200)    // $2.00 per Candle
+  
+  // Feature Toggles
+  candlesEnabled            Boolean @default(true)
+  massOfferingsEnabled      Boolean @default(true)
+  donationsEnabled          Boolean @default(true)
+  spiritualBouquetsEnabled  Boolean @default(true)
+  challengesEnabled         Boolean @default(true)
+  leaderboardEnabled        Boolean @default(true)
+  nativeAdsEnabled          Boolean @default(true)
+  rewardedAdsEnabled        Boolean @default(true)
+  
+  updatedAt           DateTime @updatedAt
 }
 
 model BibleProgress {

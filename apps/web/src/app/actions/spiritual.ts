@@ -253,3 +253,73 @@ export async function getConfessionLogs() {
 
     return logs;
 }
+
+// ==========================================
+// ADMIN FUNCTIONS
+// ==========================================
+
+export async function getAdminCandleStats() {
+    // 1. Total Revenue
+    const revenue = await prisma.virtualCandle.aggregate({
+        _sum: { amount: true },
+        where: { paymentStatus: 'PAID' }
+    });
+
+    // 2. Counts
+    const totalCandles = await prisma.virtualCandle.count();
+    const activeCandles = await prisma.virtualCandle.count({
+        where: {
+            isActive: true,
+            expiresAt: { gt: new Date() }
+        }
+    });
+
+    // 3. Revenue by Tier (Duration)
+    const tiers = await prisma.virtualCandle.groupBy({
+        by: ['duration'],
+        _sum: { amount: true },
+        _count: true,
+        where: { paymentStatus: 'PAID' }
+    });
+
+    return {
+        totalRevenue: revenue._sum.amount || 0,
+        totalCandles,
+        activeCandles,
+        expiredCandles: totalCandles - activeCandles,
+        byTier: tiers.map(t => ({
+            duration: t.duration,
+            count: t._count,
+            revenue: t._sum.amount || 0
+        }))
+    };
+}
+
+export async function getCandlesForAdmin(page = 1, limit = 50) {
+    const candles = await prisma.virtualCandle.findMany({
+        orderBy: { litAt: 'desc' },
+        take: limit,
+        skip: (page - 1) * limit,
+        select: {
+            id: true,
+            name: true,
+            intention: true,
+            duration: true,
+            amount: true,
+            isActive: true, // This field exists in create, assuming schema matches
+            litAt: true,
+            expiresAt: true,
+            paymentStatus: true,
+            isAnonymous: true
+        }
+    });
+
+    // Manual check for "active" status logic regarding expiry if db field isn't auto-updated
+    const now = new Date();
+    return candles.map(c => ({
+        ...c,
+        isExpired: new Date(c.expiresAt) < now,
+        // Ensure name is properly resolved
+        displayName: c.isAnonymous ? 'Anonymous' : (c.name || 'Unknown')
+    }));
+}
