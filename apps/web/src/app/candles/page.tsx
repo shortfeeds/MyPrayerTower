@@ -154,13 +154,18 @@ function generateSampleCandles(): Candle[] {
     return candles; // Already sorted by tier (premium first)
 }
 
-const SAMPLE_CANDLES = generateSampleCandles();
-
 export default function CandleWallPage() {
-    const [candles, setCandles] = useState<Candle[]>(SAMPLE_CANDLES);
+    const [candles, setCandles] = useState<Candle[]>([]); // Start empty to prevent hydration mismatch
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+        setCandles(generateSampleCandles());
+    }, []);
+
     const [showLightModal, setShowLightModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
-    const [selectedDuration, setSelectedDuration] = useState('THIRTY_DAYS'); // Default to premium
+    const [selectedDuration, setSelectedDuration] = useState('ONE_DAY'); // Default to free
     const [intention, setIntention] = useState('');
     const [userName, setUserName] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
@@ -213,7 +218,7 @@ export default function CandleWallPage() {
                         const tierOrder = { premium: 0, standard: 1, basic: 2, free: 3 };
                         return tierOrder[a.tier] - tierOrder[b.tier];
                     });
-                    setCandles([...sortedUserCandles, ...SAMPLE_CANDLES]);
+                    setCandles([...sortedUserCandles, ...generateSampleCandles()]);
                 }
             } catch (error) {
                 console.error('Failed to load candles:', error);
@@ -485,10 +490,10 @@ export default function CandleWallPage() {
                     <h3 className="text-2xl font-bold text-white mb-2">Want More Prayers for Your Intention?</h3>
                     <p className="text-amber-200/80 mb-6">Featured candles stay lit for 30 days and receive the most prayers from our global community.</p>
                     <button
-                        onClick={() => { setSelectedDuration('THREE_DAYS'); setShowLightModal(true); }}
+                        onClick={() => { setSelectedDuration('ONE_DAY'); setShowLightModal(true); }}
                         className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full hover:shadow-lg hover:shadow-orange-500/30 transition-all"
                     >
-                        Light a Candle - Starts at $2.99
+                        Light a Candle - Start for Free
                     </button>
                 </div>
             </div>
