@@ -12,7 +12,13 @@ class PrayersRepository {
 
   PrayersRepository(this._supabase);
 
-  Future<List<Prayer>> getPrayers({String? category, int page = 1}) async {
+  /// Fetch prayers with optional pagination
+  /// Set [limit] to -1 to fetch all prayers
+  Future<List<Prayer>> getPrayers({
+    String? category,
+    int page = 1,
+    int limit = 50,
+  }) async {
     try {
       var query = _supabase.from('Prayer').select();
 
@@ -20,84 +26,191 @@ class PrayersRepository {
         query = query.ilike('category', category);
       }
 
-      // Pagination: 20 items per page
-      final from = (page - 1) * 20;
-      final to = from + 19;
-
-      final data = await query.range(from, to);
-
-      return (data as List).map((json) => Prayer.fromJson(json)).toList();
+      if (limit > 0) {
+        // Pagination
+        final from = (page - 1) * limit;
+        final to = from + limit - 1;
+        final data = await query.range(from, to).order('title');
+        return (data as List).map((json) => Prayer.fromJson(json)).toList();
+      } else {
+        // Fetch all
+        final data = await query.order('title');
+        return (data as List).map((json) => Prayer.fromJson(json)).toList();
+      }
     } catch (e) {
-      // Fallback to mock data on error
-      return _getMockPrayers(category);
+      // Return empty list on error
+      return [];
     }
   }
 
-  List<Prayer> _getMockPrayers(String? category) {
-    final allPrayers = [
-      const Prayer(
-        id: 1,
-        title: 'The Lord\'s Prayer',
-        content: 'Our Father, who art in heaven...',
-        category: 'Common Prayers',
-        tags: ['Basic', 'Daily'],
-      ),
-      const Prayer(
-        id: 2,
-        title: 'Hail Mary',
-        content: 'Hail Mary, full of grace...',
-        category: 'Marian',
-        tags: ['Rosary', 'Mary'],
-      ),
-      const Prayer(
-        id: 3,
-        title: 'Glory Be',
-        content: 'Glory be to the Father, and to the Son...',
-        category: 'Common Prayers',
-        tags: ['Basic', 'Doxology'],
-      ),
-      const Prayer(
-        id: 4,
-        title: 'Act of Contrition',
-        content: 'O my God, I am heartily sorry...',
-        category: 'Confession',
-        tags: ['Forigveness', 'Sacrament'],
-      ),
-      const Prayer(
-        id: 5,
-        title: 'Angel of God',
-        content: 'Angel of God, my guardian dear...',
-        category: 'Daily',
-        tags: ['Guardian Angel', 'Morning', 'Evening'],
-      ),
-      const Prayer(
-        id: 6,
-        title: 'Come Holy Spirit',
-        content: 'Come Holy Spirit, fill the hearts of your faithful...',
-        category: 'Holy Spirit',
-        tags: ['Pentecost', 'GUIDANCE'],
-      ),
-      const Prayer(
-        id: 7,
-        title: 'St. Michael Prayer',
-        content: 'St. Michael the Archangel, defend us in battle...',
-        category: 'Saints',
-        tags: ['Protection', 'Archangel'],
-      ),
-      const Prayer(
-        id: 8,
-        title: 'Memorare',
-        content: 'Remember, O most gracious Virgin Mary...',
-        category: 'Marian',
-        tags: ['Petition', 'Mary'],
-      ),
-    ];
+  /// Fetch all distinct categories with prayer counts
+  Future<List<PrayerCategory>> getCategories() async {
+    try {
+      // Fetch all prayers to count by category
+      final data = await _supabase
+          .from('Prayer')
+          .select('category, category_label')
+          .eq('is_active', true);
 
-    if (category != null && category != 'ALL') {
-      return allPrayers
-          .where((p) => p.category.toUpperCase() == category.toUpperCase())
-          .toList();
+      // Group by category
+      final categoryMap = <String, PrayerCategory>{};
+      for (final row in data as List) {
+        final cat = row['category'] as String? ?? 'other';
+        final label = row['category_label'] as String? ?? cat;
+
+        if (categoryMap.containsKey(cat)) {
+          categoryMap[cat] = categoryMap[cat]!.copyWith(
+            count: categoryMap[cat]!.count + 1,
+          );
+        } else {
+          categoryMap[cat] = PrayerCategory(
+            id: cat,
+            name: label,
+            icon: _getCategoryIcon(cat),
+            count: 1,
+          );
+        }
+      }
+
+      // Sort by count (highest first)
+      final categories = categoryMap.values.toList()
+        ..sort((a, b) => b.count.compareTo(a.count));
+
+      return categories;
+    } catch (e) {
+      return [];
     }
-    return allPrayers;
+  }
+
+  /// Fetch prayers by category with infinite scroll support
+  Future<List<Prayer>> getPrayersByCategory(
+    String categoryId, {
+    int page = 1,
+    int limit = 30,
+  }) async {
+    try {
+      final from = (page - 1) * limit;
+      final to = from + limit - 1;
+
+      final data = await _supabase
+          .from('Prayer')
+          .select()
+          .ilike('category', categoryId)
+          .eq('is_active', true)
+          .order('title')
+          .range(from, to);
+
+      return (data as List).map((json) => Prayer.fromJson(json)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<Prayer?> getPrayerById(int id) async {
+    try {
+      final data = await _supabase
+          .from('Prayer')
+          .select()
+          .eq('id', id)
+          .single();
+      return Prayer.fromJson(data);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Search prayers by title or content
+  Future<List<Prayer>> searchPrayers(String query) async {
+    if (query.isEmpty) return [];
+
+    try {
+      final data = await _supabase
+          .from('Prayer')
+          .select()
+          .or('title.ilike.%$query%,content.ilike.%$query%')
+          .eq('is_active', true)
+          .limit(50);
+
+      return (data as List).map((json) => Prayer.fromJson(json)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  String _getCategoryIcon(String category) {
+    switch (category.toLowerCase()) {
+      case 'morning':
+        return '🌅';
+      case 'evening':
+        return '🌙';
+      case 'rosary':
+        return '📿';
+      case 'novenas':
+        return '🕯️';
+      case 'saints':
+        return '⭐';
+      case 'marian':
+        return '🌹';
+      case 'mass':
+        return '⛪';
+      case 'confession':
+        return '🛐';
+      case 'divine-mercy':
+        return '❤️';
+      case 'stations':
+        return '✝️';
+      case 'psalms':
+        return '📖';
+      case 'litanies':
+        return '🙏';
+      case 'common':
+        return '📜';
+      case 'healing':
+        return '💚';
+      case 'thanksgiving':
+        return '🙌';
+      case 'protection':
+        return '🛡️';
+      case 'family':
+        return '👨‍👩‍👧‍👦';
+      case 'children':
+        return '👶';
+      case 'deceased':
+        return '🕊️';
+      case 'mental':
+        return '🧠';
+      case 'other':
+      default:
+        return '🙏';
+    }
+  }
+}
+
+/// Category model for prayer categories
+class PrayerCategory {
+  final String id;
+  final String name;
+  final String icon;
+  final int count;
+
+  const PrayerCategory({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.count,
+  });
+
+  PrayerCategory copyWith({
+    String? id,
+    String? name,
+    String? icon,
+    int? count,
+  }) {
+    return PrayerCategory(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      icon: icon ?? this.icon,
+      count: count ?? this.count,
+    );
   }
 }

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../widgets/app_bar_menu_button.dart';
+import '../../library/screens/web_document_screen.dart';
 
 /// Catechism of the Catholic Church screen
 class CatechismScreen extends ConsumerStatefulWidget {
@@ -89,6 +91,10 @@ class _CatechismScreenState extends ConsumerState<CatechismScreen> {
     return Scaffold(
       backgroundColor: AppTheme.sacredNavy950,
       appBar: AppBar(
+        leading: const AppBarMenuButton(
+          iconColor: Colors.white,
+          showBackground: false,
+        ),
         title: Text(
           'Catechism',
           style: GoogleFonts.merriweather(fontWeight: FontWeight.bold),
@@ -279,10 +285,14 @@ class _CatechismScreenState extends ConsumerState<CatechismScreen> {
   }
 
   void _openSection(_CatechismSection section) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Opening ${section.title}...'),
-        backgroundColor: AppTheme.gold500,
+    // Open in internal Web Document Viewer
+    // For now, point to the main index as we don't have deep links in our model yet
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => WebDocumentScreen(
+          title: section.title,
+          url: 'https://www.vatican.va/archive/ENG0015/_INDEX.HTM',
+        ),
       ),
     );
   }

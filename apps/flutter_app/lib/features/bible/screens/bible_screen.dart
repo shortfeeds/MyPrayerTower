@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../widgets/app_bar_menu_button.dart';
 
 class BibleScreen extends ConsumerStatefulWidget {
   const BibleScreen({super.key});
@@ -110,6 +111,7 @@ class _BibleScreenState extends ConsumerState<BibleScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const AppBarMenuButton(iconColor: Colors.white),
         title: const Text('Bible'),
         actions: [
           IconButton(icon: const Icon(LucideIcons.search), onPressed: () {}),

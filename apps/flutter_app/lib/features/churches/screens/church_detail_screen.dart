@@ -32,9 +32,9 @@ class ChurchDetailScreen extends ConsumerWidget {
                 background: Stack(
                   fit: StackFit.expand,
                   children: [
-                    if (church.imageUrl != null)
+                    if (church.primaryImageUrl != null)
                       Image.network(
-                        church.imageUrl!,
+                        church.primaryImageUrl!,
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => Container(
                           color: AppTheme.primaryDark,

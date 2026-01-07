@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../widgets/app_bar_menu_button.dart';
 
-class RosaryScreen extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../auth/providers/auth_provider.dart';
+
+class RosaryScreen extends ConsumerStatefulWidget {
   const RosaryScreen({super.key});
 
   @override
-  State<RosaryScreen> createState() => _RosaryScreenState();
+  ConsumerState<RosaryScreen> createState() => _RosaryScreenState();
 }
 
-class _RosaryScreenState extends State<RosaryScreen> {
+class _RosaryScreenState extends ConsumerState<RosaryScreen> {
   int _selectedMystery = -1;
 
   final List<_Mystery> _mysteries = [
@@ -70,7 +74,13 @@ class _RosaryScreenState extends State<RosaryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rosary Guide')),
+      appBar: AppBar(
+        leading: const AppBarMenuButton(
+          iconColor: Colors.white,
+          showBackground: false,
+        ),
+        title: const Text('Rosary Guide'),
+      ),
       body: _selectedMystery == -1
           ? _buildMysterySelection()
           : _buildMysteryDetail(_mysteries[_selectedMystery]),
@@ -287,15 +297,34 @@ class _RosaryScreenState extends State<RosaryScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () {
+              onPressed: () async {
+                // Determine if user is logged in
+                final authState = ref.read(authProvider);
+                if (authState.value == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please login to track streaks'),
+                    ),
+                  );
+                  return;
+                }
+
+                // Update streak
+                await ref.read(authProvider.notifier).updateStreak();
+
+                if (!mounted) return;
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Interactive Rosary coming soon!'),
+                    content: Text('Prayer recorded! Streak updated 🔥'),
+                    backgroundColor: AppTheme.gold500,
                   ),
                 );
+                // Optionally go back
+                setState(() => _selectedMystery = -1);
               },
-              icon: const Icon(LucideIcons.play, size: 18),
-              label: const Text('Begin Praying'),
+              icon: const Icon(LucideIcons.check, size: 18),
+              label: const Text('Mark as Prayed'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: mystery.color,
                 padding: const EdgeInsets.symmetric(vertical: 16),

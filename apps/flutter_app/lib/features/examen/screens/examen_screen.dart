@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../widgets/app_bar_menu_button.dart';
 
 class ExamenScreen extends StatefulWidget {
   const ExamenScreen({super.key});
@@ -47,10 +48,20 @@ class _ExamenScreenState extends State<ExamenScreen> {
   ];
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.darkBg,
       appBar: AppBar(
+        leading: const AppBarMenuButton(
+          iconColor: Colors.white,
+          showBackground: false,
+        ),
         title: const Text('Daily Examen'),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -68,7 +79,11 @@ class _ExamenScreenState extends State<ExamenScreen> {
             child: PageView.builder(
               controller: _pageController,
               itemCount: _steps.length,
-              onPageChanged: (index) => setState(() => _currentPage = index),
+              onPageChanged: (index) {
+                if (mounted) {
+                  setState(() => _currentPage = index);
+                }
+              },
               itemBuilder: (context, index) {
                 final step = _steps[index];
                 return Padding(

@@ -14,10 +14,10 @@ _$SaintImpl _$$SaintImplFromJson(Map<String, dynamic> json) => _$SaintImpl(
   feastDay: json['feastDay'] as String?,
   feastMonth: (json['feastMonth'] as num?)?.toInt(),
   feastDayOfMonth: (json['feastDayOfMonth'] as num?)?.toInt(),
-  bio: json['biography'] as String?,
-  shortDescription: json['shortBio'] as String?,
+  biography: json['biography'] as String?,
+  shortBio: json['shortBio'] as String?,
   imageUrl: json['imageUrl'] as String?,
-  patronage: (json['patronOf'] as List<dynamic>?)
+  patronOf: (json['patronOf'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
   prayer: json['prayer'] as String?,
@@ -32,9 +32,9 @@ Map<String, dynamic> _$$SaintImplToJson(_$SaintImpl instance) =>
       'feastDay': instance.feastDay,
       'feastMonth': instance.feastMonth,
       'feastDayOfMonth': instance.feastDayOfMonth,
-      'biography': instance.bio,
-      'shortBio': instance.shortDescription,
+      'biography': instance.biography,
+      'shortBio': instance.shortBio,
       'imageUrl': instance.imageUrl,
-      'patronOf': instance.patronage,
+      'patronOf': instance.patronOf,
       'prayer': instance.prayer,
     };

@@ -1,7 +1,7 @@
 name: myprayertower_app
 description: "MyPrayerTower - The All-in-One Catholic Services App"
 publish_to: 'none'
-version: 2.0.0+1
+version: 1.0.3+10
 
 environment:
   sdk: ^3.8.1
@@ -34,10 +34,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   lucide_icons: ^0.257.0
   
-  # Maps & Location
-  google_maps_flutter: ^2.9.0
-  geolocator: ^12.0.0
-  geocoding: ^3.0.0
+  # Maps & Location - REMOVED to reduce app size
+  # google_maps_flutter: ^2.9.0
+  # geolocator: ^12.0.0
+  # geocoding: ^3.0.0
   
   # Payments (Google Play Billing)
   in_app_purchase: ^3.2.0
@@ -54,10 +54,11 @@ dependencies:
   supabase_flutter: ^2.12.0
   
   # Notifications
-  firebase_messaging: ^15.2.4
-  firebase_core: ^3.13.0
+  # firebase_messaging: ^15.2.4
+  # firebase_core: ^3.13.0
   flutter_local_notifications: ^19.5.0
   timezone: ^0.10.1
+  webview_flutter: ^4.8.0
   http: ^1.6.0
 
 dev_dependencies:

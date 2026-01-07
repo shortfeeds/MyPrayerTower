@@ -28,8 +28,7 @@ mixin _$Church {
   String get city => throw _privateConstructorUsedError;
   String? get state => throw _privateConstructorUsedError;
   String? get country => throw _privateConstructorUsedError;
-  @JsonKey(name: 'primaryImageUrl')
-  String? get imageUrl => throw _privateConstructorUsedError;
+  String? get primaryImageUrl => throw _privateConstructorUsedError;
   String? get website => throw _privateConstructorUsedError;
   String? get phone => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
@@ -62,7 +61,7 @@ abstract class $ChurchCopyWith<$Res> {
     String city,
     String? state,
     String? country,
-    @JsonKey(name: 'primaryImageUrl') String? imageUrl,
+    String? primaryImageUrl,
     String? website,
     String? phone,
     String type,
@@ -96,7 +95,7 @@ class _$ChurchCopyWithImpl<$Res, $Val extends Church>
     Object? city = null,
     Object? state = freezed,
     Object? country = freezed,
-    Object? imageUrl = freezed,
+    Object? primaryImageUrl = freezed,
     Object? website = freezed,
     Object? phone = freezed,
     Object? type = null,
@@ -136,9 +135,9 @@ class _$ChurchCopyWithImpl<$Res, $Val extends Church>
                 ? _value.country
                 : country // ignore: cast_nullable_to_non_nullable
                       as String?,
-            imageUrl: freezed == imageUrl
-                ? _value.imageUrl
-                : imageUrl // ignore: cast_nullable_to_non_nullable
+            primaryImageUrl: freezed == primaryImageUrl
+                ? _value.primaryImageUrl
+                : primaryImageUrl // ignore: cast_nullable_to_non_nullable
                       as String?,
             website: freezed == website
                 ? _value.website
@@ -194,7 +193,7 @@ abstract class _$$ChurchImplCopyWith<$Res> implements $ChurchCopyWith<$Res> {
     String city,
     String? state,
     String? country,
-    @JsonKey(name: 'primaryImageUrl') String? imageUrl,
+    String? primaryImageUrl,
     String? website,
     String? phone,
     String type,
@@ -227,7 +226,7 @@ class __$$ChurchImplCopyWithImpl<$Res>
     Object? city = null,
     Object? state = freezed,
     Object? country = freezed,
-    Object? imageUrl = freezed,
+    Object? primaryImageUrl = freezed,
     Object? website = freezed,
     Object? phone = freezed,
     Object? type = null,
@@ -267,9 +266,9 @@ class __$$ChurchImplCopyWithImpl<$Res>
             ? _value.country
             : country // ignore: cast_nullable_to_non_nullable
                   as String?,
-        imageUrl: freezed == imageUrl
-            ? _value.imageUrl
-            : imageUrl // ignore: cast_nullable_to_non_nullable
+        primaryImageUrl: freezed == primaryImageUrl
+            ? _value.primaryImageUrl
+            : primaryImageUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
         website: freezed == website
             ? _value.website
@@ -319,7 +318,7 @@ class _$ChurchImpl implements _Church {
     required this.city,
     this.state,
     this.country,
-    @JsonKey(name: 'primaryImageUrl') this.imageUrl,
+    this.primaryImageUrl,
     this.website,
     this.phone,
     this.type = 'PARISH',
@@ -349,8 +348,7 @@ class _$ChurchImpl implements _Church {
   @override
   final String? country;
   @override
-  @JsonKey(name: 'primaryImageUrl')
-  final String? imageUrl;
+  final String? primaryImageUrl;
   @override
   final String? website;
   @override
@@ -388,7 +386,7 @@ class _$ChurchImpl implements _Church {
 
   @override
   String toString() {
-    return 'Church(id: $id, name: $name, slug: $slug, address: $address, city: $city, state: $state, country: $country, imageUrl: $imageUrl, website: $website, phone: $phone, type: $type, isVerified: $isVerified, latitude: $latitude, longitude: $longitude, massSchedule: $massSchedule, confessionSchedule: $confessionSchedule)';
+    return 'Church(id: $id, name: $name, slug: $slug, address: $address, city: $city, state: $state, country: $country, primaryImageUrl: $primaryImageUrl, website: $website, phone: $phone, type: $type, isVerified: $isVerified, latitude: $latitude, longitude: $longitude, massSchedule: $massSchedule, confessionSchedule: $confessionSchedule)';
   }
 
   @override
@@ -403,8 +401,8 @@ class _$ChurchImpl implements _Church {
             (identical(other.city, city) || other.city == city) &&
             (identical(other.state, state) || other.state == state) &&
             (identical(other.country, country) || other.country == country) &&
-            (identical(other.imageUrl, imageUrl) ||
-                other.imageUrl == imageUrl) &&
+            (identical(other.primaryImageUrl, primaryImageUrl) ||
+                other.primaryImageUrl == primaryImageUrl) &&
             (identical(other.website, website) || other.website == website) &&
             (identical(other.phone, phone) || other.phone == phone) &&
             (identical(other.type, type) || other.type == type) &&
@@ -435,7 +433,7 @@ class _$ChurchImpl implements _Church {
     city,
     state,
     country,
-    imageUrl,
+    primaryImageUrl,
     website,
     phone,
     type,
@@ -469,7 +467,7 @@ abstract class _Church implements Church {
     required final String city,
     final String? state,
     final String? country,
-    @JsonKey(name: 'primaryImageUrl') final String? imageUrl,
+    final String? primaryImageUrl,
     final String? website,
     final String? phone,
     final String type,
@@ -497,8 +495,7 @@ abstract class _Church implements Church {
   @override
   String? get country;
   @override
-  @JsonKey(name: 'primaryImageUrl')
-  String? get imageUrl;
+  String? get primaryImageUrl;
   @override
   String? get website;
   @override

@@ -28,6 +28,9 @@ mixin _$User {
   String get subscriptionStatus =>
       throw _privateConstructorUsedError; // FREE, PLUS, PREMIUM, LIFETIME
   bool get isEmailVerified => throw _privateConstructorUsedError;
+  int get streakCount => throw _privateConstructorUsedError;
+  int get longestStreak => throw _privateConstructorUsedError;
+  DateTime? get lastStreakUpdate => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this User to a JSON map.
@@ -51,6 +54,9 @@ abstract class $UserCopyWith<$Res> {
     String? avatarUrl,
     String subscriptionStatus,
     bool isEmailVerified,
+    int streakCount,
+    int longestStreak,
+    DateTime? lastStreakUpdate,
     DateTime? createdAt,
   });
 }
@@ -76,6 +82,9 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? avatarUrl = freezed,
     Object? subscriptionStatus = null,
     Object? isEmailVerified = null,
+    Object? streakCount = null,
+    Object? longestStreak = null,
+    Object? lastStreakUpdate = freezed,
     Object? createdAt = freezed,
   }) {
     return _then(
@@ -104,6 +113,18 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
                 ? _value.isEmailVerified
                 : isEmailVerified // ignore: cast_nullable_to_non_nullable
                       as bool,
+            streakCount: null == streakCount
+                ? _value.streakCount
+                : streakCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            longestStreak: null == longestStreak
+                ? _value.longestStreak
+                : longestStreak // ignore: cast_nullable_to_non_nullable
+                      as int,
+            lastStreakUpdate: freezed == lastStreakUpdate
+                ? _value.lastStreakUpdate
+                : lastStreakUpdate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
             createdAt: freezed == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -129,6 +150,9 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
     String? avatarUrl,
     String subscriptionStatus,
     bool isEmailVerified,
+    int streakCount,
+    int longestStreak,
+    DateTime? lastStreakUpdate,
     DateTime? createdAt,
   });
 }
@@ -151,6 +175,9 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? avatarUrl = freezed,
     Object? subscriptionStatus = null,
     Object? isEmailVerified = null,
+    Object? streakCount = null,
+    Object? longestStreak = null,
+    Object? lastStreakUpdate = freezed,
     Object? createdAt = freezed,
   }) {
     return _then(
@@ -179,6 +206,18 @@ class __$$UserImplCopyWithImpl<$Res>
             ? _value.isEmailVerified
             : isEmailVerified // ignore: cast_nullable_to_non_nullable
                   as bool,
+        streakCount: null == streakCount
+            ? _value.streakCount
+            : streakCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        longestStreak: null == longestStreak
+            ? _value.longestStreak
+            : longestStreak // ignore: cast_nullable_to_non_nullable
+                  as int,
+        lastStreakUpdate: freezed == lastStreakUpdate
+            ? _value.lastStreakUpdate
+            : lastStreakUpdate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
         createdAt: freezed == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -198,6 +237,9 @@ class _$UserImpl implements _User {
     this.avatarUrl,
     this.subscriptionStatus = 'FREE',
     this.isEmailVerified = false,
+    this.streakCount = 0,
+    this.longestStreak = 0,
+    this.lastStreakUpdate,
     this.createdAt,
   });
 
@@ -220,11 +262,19 @@ class _$UserImpl implements _User {
   @JsonKey()
   final bool isEmailVerified;
   @override
+  @JsonKey()
+  final int streakCount;
+  @override
+  @JsonKey()
+  final int longestStreak;
+  @override
+  final DateTime? lastStreakUpdate;
+  @override
   final DateTime? createdAt;
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, name: $name, avatarUrl: $avatarUrl, subscriptionStatus: $subscriptionStatus, isEmailVerified: $isEmailVerified, createdAt: $createdAt)';
+    return 'User(id: $id, email: $email, name: $name, avatarUrl: $avatarUrl, subscriptionStatus: $subscriptionStatus, isEmailVerified: $isEmailVerified, streakCount: $streakCount, longestStreak: $longestStreak, lastStreakUpdate: $lastStreakUpdate, createdAt: $createdAt)';
   }
 
   @override
@@ -241,6 +291,12 @@ class _$UserImpl implements _User {
                 other.subscriptionStatus == subscriptionStatus) &&
             (identical(other.isEmailVerified, isEmailVerified) ||
                 other.isEmailVerified == isEmailVerified) &&
+            (identical(other.streakCount, streakCount) ||
+                other.streakCount == streakCount) &&
+            (identical(other.longestStreak, longestStreak) ||
+                other.longestStreak == longestStreak) &&
+            (identical(other.lastStreakUpdate, lastStreakUpdate) ||
+                other.lastStreakUpdate == lastStreakUpdate) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -255,6 +311,9 @@ class _$UserImpl implements _User {
     avatarUrl,
     subscriptionStatus,
     isEmailVerified,
+    streakCount,
+    longestStreak,
+    lastStreakUpdate,
     createdAt,
   );
 
@@ -280,6 +339,9 @@ abstract class _User implements User {
     final String? avatarUrl,
     final String subscriptionStatus,
     final bool isEmailVerified,
+    final int streakCount,
+    final int longestStreak,
+    final DateTime? lastStreakUpdate,
     final DateTime? createdAt,
   }) = _$UserImpl;
 
@@ -297,6 +359,12 @@ abstract class _User implements User {
   String get subscriptionStatus; // FREE, PLUS, PREMIUM, LIFETIME
   @override
   bool get isEmailVerified;
+  @override
+  int get streakCount;
+  @override
+  int get longestStreak;
+  @override
+  DateTime? get lastStreakUpdate;
   @override
   DateTime? get createdAt;
 

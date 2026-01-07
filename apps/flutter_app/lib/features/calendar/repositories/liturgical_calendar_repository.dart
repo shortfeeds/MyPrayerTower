@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -71,9 +72,16 @@ class LiturgicalCalendarRepository {
   Future<List<LiturgicalDay>> getCalendarForYear(int year) async {
     try {
       // Using the free litcal API
-      final url = Uri.parse(
-        'https://litcal.johnromanodorazio.com/api/v3/calendar/$year?nationalcalendar=USA&locale=en',
-      );
+      // Using the free litcal API
+      var urlString =
+          'https://litcal.johnromanodorazio.com/api/v3/calendar/$year?nationalcalendar=USA&locale=en';
+
+      // Use CORS proxy for Web
+      if (kIsWeb) {
+        urlString = 'https://corsproxy.io/?${Uri.encodeComponent(urlString)}';
+      }
+
+      final url = Uri.parse(urlString);
 
       final response = await _client.get(
         url,
@@ -100,7 +108,7 @@ class LiturgicalCalendarRepository {
       }
     } catch (e) {
       // Log error for debugging
-      print('LitCal API Error: $e');
+      debugPrint('LitCal API Error: $e');
     }
     return [];
   }
@@ -109,9 +117,14 @@ class LiturgicalCalendarRepository {
   Future<LiturgicalDay?> getToday() async {
     try {
       final now = DateTime.now();
-      final url = Uri.parse(
-        'https://litcal.johnromanodorazio.com/api/v3/calendar/${now.year}?nationalcalendar=USA&locale=en',
-      );
+      var urlString =
+          'https://litcal.johnromanodorazio.com/api/v3/calendar/${now.year}?nationalcalendar=USA&locale=en';
+
+      if (kIsWeb) {
+        urlString = 'https://corsproxy.io/?${Uri.encodeComponent(urlString)}';
+      }
+
+      final url = Uri.parse(urlString);
 
       final response = await _client.get(
         url,
@@ -138,7 +151,7 @@ class LiturgicalCalendarRepository {
         }
       }
     } catch (e) {
-      print('LitCal Today Error: $e');
+      debugPrint('LitCal Today Error: $e');
     }
     return null;
   }
@@ -162,7 +175,7 @@ class LiturgicalCalendarRepository {
           .take(10)
           .toList();
     } catch (e) {
-      print('LitCal Upcoming Error: $e');
+      debugPrint('LitCal Upcoming Error: $e');
     }
     return [];
   }

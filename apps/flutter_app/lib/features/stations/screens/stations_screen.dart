@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../widgets/app_bar_menu_button.dart';
 
 class StationsScreen extends ConsumerStatefulWidget {
   const StationsScreen({super.key});
@@ -133,6 +134,10 @@ class _StationsScreenState extends ConsumerState<StationsScreen> {
     return Scaffold(
       backgroundColor: Colors.black, // Immersive dark mode
       appBar: AppBar(
+        leading: const AppBarMenuButton(
+          iconColor: Colors.white,
+          showBackground: false,
+        ),
         title: const Text('Stations of the Cross'),
         backgroundColor: Colors.transparent,
         elevation: 0,

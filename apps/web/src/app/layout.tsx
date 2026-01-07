@@ -7,6 +7,9 @@ import { Footer } from '@/components/layout/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { GlobalEngagement } from '@/components/GlobalEngagement';
+import { BackToTop } from '@/components/ui/BackToTop';
+import { SkipToContent } from '@/components/ui/SkipToContent';
 
 // Self-hosted fonts for performance
 const inter = Inter({
@@ -55,11 +58,13 @@ export const metadata: Metadata = {
         type: 'website',
         locale: 'en_US',
         url: 'https://myprayertower.com',
+        images: ['/og-image.png'],
     },
     twitter: {
         card: 'summary_large_image',
         title: 'MyPrayerTower',
         description: 'The #1 All-in-One Catholic Services App',
+        images: ['/og-image.png'],
     },
 };
 
@@ -95,9 +100,15 @@ export default function RootLayout({
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
                 <ThemeProvider>
+                    <SkipToContent />
                     <Header />
-                    <main className="flex-1 w-full">{children}</main>
+                    <main id="main-content" className="flex-1 w-full">{children}</main>
                     <Footer />
+
+                    {/* Global Engagement Components */}
+                    <GlobalEngagement />
+                    <BackToTop />
+
                     <script
                         type="application/ld+json"
                         dangerouslySetInnerHTML={{

@@ -118,7 +118,7 @@ export default function RegisterPage() {
 
                         {/* Benefits */}
                         <div className="bg-primary-50 rounded-xl p-4">
-                            <p className="text-sm font-medium text-primary-900 mb-2">Free account includes:</p>
+                            <p className="text-sm font-medium text-primary-900 mb-2">Your account includes:</p>
                             <ul className="space-y-1">
                                 {[
                                     'Access to 4,000+ Catholic prayers',
@@ -148,7 +148,7 @@ export default function RegisterPage() {
                             type="submit"
                             className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors"
                         >
-                            Create Free Account
+                            Create Account
                         </button>
                     </form>
                 </div>

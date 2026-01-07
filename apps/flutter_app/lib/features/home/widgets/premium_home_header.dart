@@ -4,7 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/providers/scaffold_key_provider.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../../widgets/app_bar_menu_button.dart';
 
 class PremiumHomeHeader extends ConsumerWidget {
   const PremiumHomeHeader({super.key});
@@ -19,8 +20,11 @@ class PremiumHomeHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final streak = authState.value?.streakCount ?? 0;
+
     return SliverAppBar(
-      expandedHeight: 240.0,
+      expandedHeight: 260.0,
       floating: false,
       pinned: true,
       backgroundColor: AppTheme.sacredNavy950,
@@ -84,7 +88,7 @@ class PremiumHomeHeader extends ConsumerWidget {
             // Content
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 70, 20, 20),
+                padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -130,12 +134,15 @@ class PremiumHomeHeader extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          Text(
-                            _getFormattedDate(),
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white.withValues(alpha: 0.9),
+                          Flexible(
+                            child: Text(
+                              _getFormattedDate(),
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white.withValues(alpha: 0.9),
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -169,53 +176,111 @@ class PremiumHomeHeader extends ConsumerWidget {
         ),
       ),
       // Fixed hamburger menu button
-      leading: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-          ),
-          child: IconButton(
-            icon: const Icon(LucideIcons.menu, color: Colors.white, size: 20),
-            onPressed: () => ref.openDrawer(),
-          ),
-        ),
+      leading: const AppBarMenuButton(
+        iconColor: Colors.white,
+        showBackground: true,
       ),
       actions: [
+        // Streak Counter
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppTheme.gold500,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.gold500.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  LucideIcons.flame,
-                  size: 16,
-                  color: AppTheme.sacredNavy900,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '7',
-                  style: GoogleFonts.inter(
-                    color: AppTheme.sacredNavy900,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+          child: GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: AppTheme.sacredNavy900,
+                  title: Row(
+                    children: [
+                      const Icon(LucideIcons.flame, color: AppTheme.gold500),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Prayer Streak',
+                        style: GoogleFonts.merriweather(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppTheme.gold500.withValues(alpha: 0.1),
+                          border: Border.all(color: AppTheme.gold500, width: 2),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              '$streak',
+                              style: GoogleFonts.inter(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.gold500,
+                              ),
+                            ),
+                            Text(
+                              'Days',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Keep praying daily to grow your streak!',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Close'),
+                    ),
+                  ],
                 ),
-              ],
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppTheme.gold500,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.gold500.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    LucideIcons.flame,
+                    size: 16,
+                    color: AppTheme.sacredNavy900,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$streak',
+                    style: GoogleFonts.inter(
+                      color: AppTheme.sacredNavy900,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -223,7 +288,7 @@ class PremiumHomeHeader extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: GestureDetector(
-            onTap: () => context.push('/profile'),
+            onTap: () => context.push('/login'),
             child: const CircleAvatar(
               radius: 18,
               backgroundColor: AppTheme.sacredNavy800,

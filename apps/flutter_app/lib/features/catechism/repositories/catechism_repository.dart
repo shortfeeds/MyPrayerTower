@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -46,7 +47,7 @@ class CatechismRepository {
         return _cachedParagraphs!;
       }
     } catch (e) {
-      print('Catechism API Error: $e');
+      debugPrint('Catechism API Error: $e');
     }
     return [];
   }

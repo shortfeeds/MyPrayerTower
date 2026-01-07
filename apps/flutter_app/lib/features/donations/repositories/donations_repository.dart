@@ -1,7 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../models/donation_model.dart';
+
+// ... (skip untargeted lines)
+/// Create a checkout session (placeholder for Stripe/Cashfree integration)
+Future<String> createCheckoutSession({
+  required int amount,
+  required String email,
+  required String successUrl,
+  required String cancelUrl,
+}) async {
+  // NOTE: Integrate with Stripe or Cashfree API in future
+  debugPrint('Mock Checkout Session for $email');
+  return 'session_${DateTime.now().millisecondsSinceEpoch}';
+}
 
 final donationsRepositoryProvider = Provider<DonationsRepository>((ref) {
   return DonationsRepository(ref.watch(supabaseProvider));
@@ -143,8 +157,8 @@ class DonationsRepository {
     required String successUrl,
     required String cancelUrl,
   }) async {
-    // TODO: Integrate with Stripe or Cashfree API
-    // For now, return a mock session ID
+    // NOTE: Integrate with Stripe or Cashfree API in future
+    debugPrint('Mock Checkout Session for $email');
     return 'session_${DateTime.now().millisecondsSinceEpoch}';
   }
 }

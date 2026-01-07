@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../core/theme/app_theme.dart';
+import '../core/services/config_service.dart';
 
 class AppDrawer extends ConsumerStatefulWidget {
   const AppDrawer({super.key});
@@ -19,6 +20,8 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final flags = ref.watch(featureFlagsProvider);
+
     return Drawer(
       backgroundColor: Colors.transparent,
       child: ClipRRect(
@@ -51,39 +54,47 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                             label: 'Home',
                             onTap: () => _navigate(context, '/'),
                           ),
-                          _DrawerItem(
-                            icon: LucideIcons.heart,
-                            label: 'Prayer Wall',
-                            onTap: () => _navigate(context, '/prayer-wall'),
-                            badge: 'Live',
-                            badgeColor: Colors.pink,
-                          ),
+                          if (isFeatureEnabled(flags, 'prayer_wall_enabled'))
+                            _DrawerItem(
+                              icon: LucideIcons.heart,
+                              label: 'Prayer Wall',
+                              onTap: () => _navigate(context, '/prayer-wall'),
+                              badge: 'Live',
+                              badgeColor: Colors.pink,
+                            ),
                         ],
                       ),
 
                       // Scripture Section (Expandable)
-                      _DrawerExpandableSection(
-                        icon: LucideIcons.bookOpen,
-                        title: 'Scripture',
-                        isExpanded: _scriptureExpanded,
-                        onToggle: () => setState(
-                          () => _scriptureExpanded = !_scriptureExpanded,
+                      if (isFeatureEnabled(flags, 'bible_enabled') ||
+                          isFeatureEnabled(flags, 'daily_readings_enabled'))
+                        _DrawerExpandableSection(
+                          icon: LucideIcons.bookOpen,
+                          title: 'Scripture',
+                          isExpanded: _scriptureExpanded,
+                          onToggle: () => setState(
+                            () => _scriptureExpanded = !_scriptureExpanded,
+                          ),
+                          children: [
+                            if (isFeatureEnabled(flags, 'bible_enabled'))
+                              _DrawerSubItem(
+                                icon: LucideIcons.book,
+                                label: 'Bible',
+                                description: 'Holy Scripture',
+                                onTap: () => _navigate(context, '/bible'),
+                              ),
+                            if (isFeatureEnabled(
+                              flags,
+                              'daily_readings_enabled',
+                            ))
+                              _DrawerSubItem(
+                                icon: LucideIcons.calendar,
+                                label: 'Daily Readings',
+                                description: 'Mass readings',
+                                onTap: () => _navigate(context, '/readings'),
+                              ),
+                          ],
                         ),
-                        children: [
-                          _DrawerSubItem(
-                            icon: LucideIcons.book,
-                            label: 'Bible',
-                            description: 'Holy Scripture',
-                            onTap: () => _navigate(context, '/bible'),
-                          ),
-                          _DrawerSubItem(
-                            icon: LucideIcons.calendar,
-                            label: 'Daily Readings',
-                            description: 'Mass readings',
-                            onTap: () => _navigate(context, '/readings'),
-                          ),
-                        ],
-                      ),
 
                       // Prayer & Devotion
                       _DrawerSection(
@@ -94,32 +105,34 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                             label: 'Prayers',
                             onTap: () => _navigate(context, '/prayers'),
                           ),
-                          _DrawerItem(
-                            icon: LucideIcons.star,
-                            label: 'Saints',
-                            onTap: () => _navigate(context, '/saints'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.flame,
-                            label: 'Candles',
-                            onTap: () => _navigate(context, '/candles'),
-                            isHighlight: true,
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.circleEllipsis,
-                            label: 'Rosary',
-                            onTap: () => _navigate(context, '/rosary'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.cross,
-                            label: 'Stations of the Cross',
-                            onTap: () => _navigate(context, '/stations'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.calendarDays,
-                            label: 'Novenas',
-                            onTap: () => _navigate(context, '/novenas'),
-                          ),
+                          if (isFeatureEnabled(flags, 'candles_enabled'))
+                            _DrawerItem(
+                              icon: LucideIcons.flame,
+                              label: 'Candles',
+                              onTap: () => _navigate(context, '/candles'),
+                              isHighlight: true,
+                            ),
+                          if (isFeatureEnabled(flags, 'rosary_enabled'))
+                            _DrawerItem(
+                              icon: LucideIcons.circleEllipsis,
+                              label: 'Rosary',
+                              onTap: () => _navigate(context, '/rosary'),
+                            ),
+                          if (isFeatureEnabled(
+                            flags,
+                            'stations_of_cross_enabled',
+                          ))
+                            _DrawerItem(
+                              icon: LucideIcons.cross,
+                              label: 'Stations of the Cross',
+                              onTap: () => _navigate(context, '/stations'),
+                            ),
+                          if (isFeatureEnabled(flags, 'novenas_enabled'))
+                            _DrawerItem(
+                              icon: LucideIcons.calendarDays,
+                              label: 'Novenas',
+                              onTap: () => _navigate(context, '/novenas'),
+                            ),
                         ],
                       ),
 
@@ -127,46 +140,48 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                       _DrawerSection(
                         title: 'Features',
                         children: [
-                          _DrawerItem(
-                            icon: LucideIcons.trophy,
-                            label: 'Challenges',
-                            onTap: () => _navigate(context, '/challenges'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.book,
-                            label: 'Catechism',
-                            onTap: () => _navigate(context, '/catechism'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.search,
-                            label: 'Daily Examen',
-                            onTap: () => _navigate(context, '/examen'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.shield,
-                            label: 'Confession Guide',
-                            onTap: () => _navigate(context, '/confession'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.library,
-                            label: 'Library',
-                            onTap: () => _navigate(context, '/library'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.calendar,
-                            label: 'Liturgical Calendar',
-                            onTap: () => _navigate(context, '/calendar'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.image,
-                            label: 'Wallpapers',
-                            onTap: () => _navigate(context, '/wallpapers'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.award,
-                            label: 'Leaderboard',
-                            onTap: () => _navigate(context, '/leaderboard'),
-                          ),
+                          if (isFeatureEnabled(flags, 'challenges_enabled'))
+                            _DrawerItem(
+                              icon: LucideIcons.trophy,
+                              label: 'Challenges',
+                              onTap: () => _navigate(context, '/challenges'),
+                            ),
+                          if (isFeatureEnabled(flags, 'catechism_enabled'))
+                            _DrawerItem(
+                              icon: LucideIcons.book,
+                              label: 'Catechism',
+                              onTap: () => _navigate(context, '/catechism'),
+                            ),
+                          if (isFeatureEnabled(flags, 'examen_enabled'))
+                            _DrawerItem(
+                              icon: LucideIcons.search,
+                              label: 'Daily Examen',
+                              onTap: () => _navigate(context, '/examen'),
+                            ),
+                          if (isFeatureEnabled(
+                            flags,
+                            'confession_guide_enabled',
+                          ))
+                            _DrawerItem(
+                              icon: LucideIcons.shield,
+                              label: 'Confession Guide',
+                              onTap: () => _navigate(context, '/confession'),
+                            ),
+                          if (isFeatureEnabled(flags, 'library_enabled'))
+                            _DrawerItem(
+                              icon: LucideIcons.library,
+                              label: 'Library',
+                              onTap: () => _navigate(context, '/library'),
+                            ),
+                          if (isFeatureEnabled(
+                            flags,
+                            'liturgical_calendar_enabled',
+                          ))
+                            _DrawerItem(
+                              icon: LucideIcons.calendar,
+                              label: 'Liturgical Calendar',
+                              onTap: () => _navigate(context, '/calendar'),
+                            ),
                         ],
                       ),
 
@@ -174,16 +189,21 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                       _DrawerSection(
                         title: 'Giving',
                         children: [
-                          _DrawerItem(
-                            icon: LucideIcons.gift,
-                            label: 'Spiritual Bouquets',
-                            onTap: () => _navigate(context, '/bouquets'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.heart,
-                            label: 'Donate',
-                            onTap: () => _navigate(context, '/donate'),
-                          ),
+                          if (isFeatureEnabled(
+                            flags,
+                            'spiritual_bouquets_enabled',
+                          ))
+                            _DrawerItem(
+                              icon: LucideIcons.gift,
+                              label: 'Spiritual Bouquets',
+                              onTap: () => _navigate(context, '/bouquets'),
+                            ),
+                          if (isFeatureEnabled(flags, 'donations_enabled'))
+                            _DrawerItem(
+                              icon: LucideIcons.heart,
+                              label: 'Donate',
+                              onTap: () => _navigate(context, '/donate'),
+                            ),
                         ],
                       ),
 
@@ -196,32 +216,12 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                           _DrawerItem(
                             icon: LucideIcons.user,
                             label: 'My Profile',
-                            onTap: () => _navigate(context, '/profile'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.crown,
-                            label: 'Premium Subscription',
-                            onTap: () => _navigate(context, '/subscription'),
-                            isHighlight: true,
-                            badge: 'PRO',
-                            badgeColor: AppTheme.gold500,
+                            onTap: () => _navigate(context, '/login'),
                           ),
                           _DrawerItem(
                             icon: LucideIcons.settings,
                             label: 'Settings',
                             onTap: () => _navigate(context, '/settings'),
-                          ),
-                          _DrawerItem(
-                            icon: LucideIcons.helpCircle,
-                            label: 'Help & Support',
-                            onTap: () {
-                              Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Support coming soon!'),
-                                ),
-                              );
-                            },
                           ),
                         ],
                       ),
@@ -381,7 +381,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
           ),
           const SizedBox(height: 16),
           Text(
-            '© 2024 MyPrayerTower • v1.0.0',
+            '© 2026 MyPrayerTower • v1.0.0',
             style: GoogleFonts.inter(color: Colors.white38, fontSize: 10),
           ),
         ],

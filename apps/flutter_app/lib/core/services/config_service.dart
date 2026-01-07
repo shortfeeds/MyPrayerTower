@@ -88,6 +88,20 @@ class ConfigService {
       'leaderboard_enabled': config.leaderboardEnabled,
       'native_ads_enabled': config.nativeAdsEnabled,
       'rewarded_ads_enabled': config.rewardedAdsEnabled,
+
+      // New Features
+      'rosary_enabled': config.rosaryEnabled,
+      'bible_enabled': config.bibleEnabled,
+      'daily_readings_enabled': config.dailyReadingsEnabled,
+      'confession_guide_enabled': config.confessionGuideEnabled,
+      'examen_enabled': config.examenEnabled,
+      'stations_of_cross_enabled': config.stationsOfCrossEnabled,
+      'novenas_enabled': config.novenasEnabled,
+      'catechism_enabled': config.catechismEnabled,
+      'library_enabled': config.libraryEnabled,
+      'liturgical_calendar_enabled': config.liturgicalCalendarEnabled,
+      'quiz_enabled': config.quizEnabled,
+      'saint_of_the_day_enabled': config.saintOfTheDayEnabled,
     };
   }
 }
@@ -106,6 +120,20 @@ class AppConfig {
   final bool leaderboardEnabled;
   final bool nativeAdsEnabled;
   final bool rewardedAdsEnabled;
+
+  // New Features
+  final bool rosaryEnabled;
+  final bool bibleEnabled;
+  final bool dailyReadingsEnabled;
+  final bool confessionGuideEnabled;
+  final bool examenEnabled;
+  final bool stationsOfCrossEnabled;
+  final bool novenasEnabled;
+  final bool catechismEnabled;
+  final bool libraryEnabled;
+  final bool liturgicalCalendarEnabled;
+  final bool quizEnabled;
+  final bool saintOfTheDayEnabled;
 
   // Pricing (in cents)
   final int plusMonthlyPrice;
@@ -142,6 +170,20 @@ class AppConfig {
     required this.leaderboardEnabled,
     required this.nativeAdsEnabled,
     required this.rewardedAdsEnabled,
+
+    // New Features
+    required this.rosaryEnabled,
+    required this.bibleEnabled,
+    required this.dailyReadingsEnabled,
+    required this.confessionGuideEnabled,
+    required this.examenEnabled,
+    required this.stationsOfCrossEnabled,
+    required this.novenasEnabled,
+    required this.catechismEnabled,
+    required this.libraryEnabled,
+    required this.liturgicalCalendarEnabled,
+    required this.quizEnabled,
+    required this.saintOfTheDayEnabled,
 
     required this.plusMonthlyPrice,
     required this.plusYearlyPrice,
@@ -180,6 +222,20 @@ class AppConfig {
       nativeAdsEnabled: json['nativeAdsEnabled'] ?? true,
       rewardedAdsEnabled: json['rewardedAdsEnabled'] ?? true,
 
+      // New Features
+      rosaryEnabled: json['rosaryEnabled'] ?? true,
+      bibleEnabled: json['bibleEnabled'] ?? true,
+      dailyReadingsEnabled: json['dailyReadingsEnabled'] ?? true,
+      confessionGuideEnabled: json['confessionGuideEnabled'] ?? true,
+      examenEnabled: json['examenEnabled'] ?? true,
+      stationsOfCrossEnabled: json['stationsOfCrossEnabled'] ?? true,
+      novenasEnabled: json['novenasEnabled'] ?? true,
+      catechismEnabled: json['catechismEnabled'] ?? true,
+      libraryEnabled: json['libraryEnabled'] ?? true,
+      liturgicalCalendarEnabled: json['liturgicalCalendarEnabled'] ?? true,
+      quizEnabled: json['quizEnabled'] ?? true,
+      saintOfTheDayEnabled: json['saintOfTheDayEnabled'] ?? true,
+
       plusMonthlyPrice: json['plusMonthlyPrice'] ?? 499,
       plusYearlyPrice: json['plusYearlyPrice'] ?? 3999,
       premiumMonthlyPrice: json['premiumMonthlyPrice'] ?? 999,
@@ -217,6 +273,20 @@ class AppConfig {
       leaderboardEnabled: true,
       nativeAdsEnabled: true,
       rewardedAdsEnabled: true,
+
+      // New Features
+      rosaryEnabled: true,
+      bibleEnabled: true,
+      dailyReadingsEnabled: true,
+      confessionGuideEnabled: true,
+      examenEnabled: true,
+      stationsOfCrossEnabled: true,
+      novenasEnabled: true,
+      catechismEnabled: true,
+      libraryEnabled: true,
+      liturgicalCalendarEnabled: true,
+      quizEnabled: true,
+      saintOfTheDayEnabled: true,
 
       plusMonthlyPrice: 499,
       plusYearlyPrice: 3999,
@@ -325,6 +395,20 @@ final featureFlagsProvider = Provider<Map<String, bool>>((ref) {
       'leaderboard_enabled': config.leaderboardEnabled,
       'native_ads_enabled': config.nativeAdsEnabled,
       'rewarded_ads_enabled': config.rewardedAdsEnabled,
+
+      // New Features
+      'rosary_enabled': config.rosaryEnabled,
+      'bible_enabled': config.bibleEnabled,
+      'daily_readings_enabled': config.dailyReadingsEnabled,
+      'confession_guide_enabled': config.confessionGuideEnabled,
+      'examen_enabled': config.examenEnabled,
+      'stations_of_cross_enabled': config.stationsOfCrossEnabled,
+      'novenas_enabled': config.novenasEnabled,
+      'catechism_enabled': config.catechismEnabled,
+      'library_enabled': config.libraryEnabled,
+      'liturgical_calendar_enabled': config.liturgicalCalendarEnabled,
+      'quiz_enabled': config.quizEnabled,
+      'saint_of_the_day_enabled': config.saintOfTheDayEnabled,
     },
     loading: () => {
       /* return safe defaults while loading */

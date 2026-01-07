@@ -108,9 +108,9 @@ class SaintDetailScreen extends ConsumerWidget {
                         ),
                       ),
                     const SizedBox(height: 24),
-                    if (saint.bio != null)
+                    if (saint.biography != null)
                       Text(
-                        saint.bio!,
+                        saint.biography!,
                         style: GoogleFonts.inter(
                           fontSize: 16,
                           color: AppTheme.textPrimary,

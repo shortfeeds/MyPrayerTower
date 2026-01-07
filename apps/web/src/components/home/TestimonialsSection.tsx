@@ -61,83 +61,92 @@ export function TestimonialsSection() {
     const testimonial = TESTIMONIALS[currentIndex];
 
     return (
-        <div className="relative">
-            <div className="text-center mb-10">
-                <span className="text-gold-600 font-bold uppercase tracking-widest text-sm mb-4 block">
-                    Trusted by Faithful Users
-                </span>
-                <h2 className="font-display text-3xl md:text-4xl font-bold text-gray-900">
-                    What Our Community Says
-                </h2>
-            </div>
+        <div className="relative py-20 overflow-hidden">
+            {/* Background Decorations */}
+            <div className="absolute top-1/2 left-0 w-64 h-64 bg-gold-100/30 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2"></div>
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-sacred-50/50 rounded-full blur-3xl translate-y-1/2 translate-x-1/2"></div>
 
-            <div className="relative max-w-3xl mx-auto">
-                {/* Quote Icon */}
-                <div className="absolute -top-4 left-8 text-gold-200">
-                    <Quote className="w-16 h-16 fill-current" />
+            <div className="container mx-auto px-4 relative z-10">
+                <div className="text-center mb-16">
+                    <span className="inline-block px-4 py-1.5 bg-gold-100 text-gold-700 text-sm font-bold rounded-full mb-4">
+                        TRUSTED BY FAITHFUL USERS
+                    </span>
+                    <h2 className="font-display text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+                        What Our Community Says
+                    </h2>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Join thousands of Catholics who have found peace, community, and spiritual growth.
+                    </p>
                 </div>
 
-                <div className="bg-white rounded-3xl p-8 md:p-12 shadow-lg border border-gray-100 relative overflow-hidden">
-                    {/* Background Pattern */}
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-gold-50 to-transparent rounded-bl-full opacity-50"></div>
+                <div className="relative max-w-4xl mx-auto">
+                    {/* Big Quote Icon */}
+                    <div className="absolute -top-10 -left-10 text-gold-100 hidden md:block">
+                        <Quote className="w-32 h-32 fill-current" />
+                    </div>
 
-                    <div className="relative z-10">
-                        {/* Stars */}
-                        <div className="flex gap-1 mb-6">
-                            {[...Array(testimonial.rating)].map((_, i) => (
-                                <Star key={i} className="w-5 h-5 text-gold-500 fill-gold-500" />
+                    <div className="bg-white rounded-[2.5rem] p-8 md:p-16 shadow-xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-gold-500/10">
+                        {/* Decorative gradient line */}
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-gold-300 via-sacred-500 to-gold-300"></div>
+
+                        <div className="relative z-10 flex flex-col items-center text-center">
+                            {/* Stars */}
+                            <div className="flex gap-1.5 mb-8">
+                                {[...Array(testimonial.rating)].map((_, i) => (
+                                    <Star key={i} className="w-6 h-6 text-gold-400 fill-gold-400 drop-shadow-sm" />
+                                ))}
+                            </div>
+
+                            {/* Quote */}
+                            <blockquote className="text-xl md:text-3xl text-gray-800 leading-relaxed mb-10 font-medium font-serif italic">
+                                "{testimonial.text}"
+                            </blockquote>
+
+                            {/* Author */}
+                            <div className="flex items-center gap-5">
+                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-500 to-sacred-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg ring-4 ring-sacred-50">
+                                    {testimonial.author.charAt(0)}
+                                </div>
+                                <div className="text-left">
+                                    <div className="font-bold text-gray-900 text-lg">{testimonial.author}</div>
+                                    <div className="text-gray-500">{testimonial.location}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="flex items-center justify-center gap-6 mt-12">
+                        <button
+                            onClick={goToPrev}
+                            className="p-4 rounded-full bg-white border border-gray-200 hover:border-gold-300 hover:bg-gold-50 transition-all shadow-sm hover:shadow-md group"
+                            aria-label="Previous testimonial"
+                        >
+                            <ChevronLeft className="w-6 h-6 text-gray-400 group-hover:text-gold-600" />
+                        </button>
+
+                        <div className="flex gap-3">
+                            {TESTIMONIALS.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => { setIsAutoPlaying(false); setCurrentIndex(index); }}
+                                    className={`h-2 rounded-full transition-all duration-300 ${index === currentIndex
+                                        ? 'w-8 bg-gold-500'
+                                        : 'w-2 bg-gray-300 hover:bg-gray-400'
+                                        }`}
+                                    aria-label={`Go to testimonial ${index + 1}`}
+                                />
                             ))}
                         </div>
 
-                        {/* Quote */}
-                        <blockquote className="text-lg md:text-xl text-gray-700 leading-relaxed mb-8 font-medium">
-                            "{testimonial.text}"
-                        </blockquote>
-
-                        {/* Author */}
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sacred-500 to-sacred-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
-                                {testimonial.author.charAt(0)}
-                            </div>
-                            <div>
-                                <div className="font-bold text-gray-900">{testimonial.author}</div>
-                                <div className="text-sm text-gray-500">{testimonial.location}</div>
-                            </div>
-                        </div>
+                        <button
+                            onClick={goToNext}
+                            className="p-4 rounded-full bg-white border border-gray-200 hover:border-gold-300 hover:bg-gold-50 transition-all shadow-sm hover:shadow-md group"
+                            aria-label="Next testimonial"
+                        >
+                            <ChevronRight className="w-6 h-6 text-gray-400 group-hover:text-gold-600" />
+                        </button>
                     </div>
-                </div>
-
-                {/* Navigation */}
-                <div className="flex items-center justify-center gap-4 mt-8">
-                    <button
-                        onClick={goToPrev}
-                        className="p-2 rounded-full bg-white border border-gray-200 hover:border-gold-300 hover:bg-gold-50 transition-colors shadow-sm"
-                        aria-label="Previous testimonial"
-                    >
-                        <ChevronLeft className="w-5 h-5 text-gray-600" />
-                    </button>
-
-                    <div className="flex gap-2">
-                        {TESTIMONIALS.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => { setIsAutoPlaying(false); setCurrentIndex(index); }}
-                                className={`w-2 h-2 rounded-full transition-all ${index === currentIndex
-                                        ? 'w-6 bg-gold-500'
-                                        : 'bg-gray-300 hover:bg-gray-400'
-                                    }`}
-                                aria-label={`Go to testimonial ${index + 1}`}
-                            />
-                        ))}
-                    </div>
-
-                    <button
-                        onClick={goToNext}
-                        className="p-2 rounded-full bg-white border border-gray-200 hover:border-gold-300 hover:bg-gold-50 transition-colors shadow-sm"
-                        aria-label="Next testimonial"
-                    >
-                        <ChevronRight className="w-5 h-5 text-gray-600" />
-                    </button>
                 </div>
             </div>
         </div>

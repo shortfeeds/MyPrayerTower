@@ -1,3 +1,4 @@
+// Refresh IDE
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'church_model.freezed.dart';
@@ -13,7 +14,7 @@ class Church with _$Church {
     required String city,
     String? state,
     String? country,
-    @JsonKey(name: 'primaryImageUrl') String? imageUrl,
+    String? primaryImageUrl,
     String? website,
     String? phone,
     @Default('PARISH') String type,

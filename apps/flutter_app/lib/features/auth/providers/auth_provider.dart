@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
 import '../repositories/auth_repository.dart';
@@ -48,6 +49,29 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     } catch (e, st) {
       state = AsyncValue.error(e, st);
       rethrow;
+    }
+  }
+
+  Future<void> updateStreak() async {
+    try {
+      final data = await _repository.updateStreak();
+      // Update local state with new streak info
+      state.whenData((user) {
+        if (user != null) {
+          state = AsyncValue.data(
+            user.copyWith(
+              streakCount: data['streakCount'],
+              longestStreak: data['longestStreak'],
+              lastStreakUpdate: data['lastStreakUpdate'] != null
+                  ? DateTime.parse(data['lastStreakUpdate'])
+                  : null,
+            ),
+          );
+        }
+      });
+    } catch (e) {
+      // Fail silently for streak updates, don't block UI
+      debugPrint('Failed to update streak: $e');
     }
   }
 

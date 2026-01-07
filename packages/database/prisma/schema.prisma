@@ -43,16 +43,16 @@ model AppSettings {
   lifetimePrice       Int      @default(14999)
   
   // Candle Pricing (in cents)
-  candleOneDayPrice       Int  @default(100)    // $1.00
-  candleThreeDayPrice     Int  @default(300)    // $3.00
-  candleSevenDayPrice     Int  @default(500)    // $5.00
-  candleThirtyDayPrice    Int  @default(1500)   // $15.00 Featured
+  candleOneDayPrice       Int  @default(0)      // Free
+  candleThreeDayPrice     Int  @default(299)    // $2.99
+  candleSevenDayPrice     Int  @default(599)    // $5.99
+  candleThirtyDayPrice    Int  @default(1499)   // $14.99 Featured
   
   // Mass Offering Pricing (in cents)
-  massRegularPrice        Int  @default(1500)   // $15.00
+  massRegularPrice        Int  @default(1000)   // $10.00
   massExpeditedPrice      Int  @default(2500)   // $25.00
   massNovenaPrice         Int  @default(7500)   // $75.00
-  massGregorianPrice      Int  @default(25000)  // $250.00
+  massGregorianPrice      Int  @default(20000)  // $200.00
   massPerpetualPrice      Int  @default(10000)  // $100.00
   
   // Spiritual Bouquet Pricing (in cents)
@@ -69,6 +69,20 @@ model AppSettings {
   leaderboardEnabled        Boolean @default(true)
   nativeAdsEnabled          Boolean @default(true)
   rewardedAdsEnabled        Boolean @default(true)
+  
+  // Additional Feature Toggles
+  rosaryEnabled             Boolean @default(true)
+  bibleEnabled              Boolean @default(true)
+  dailyReadingsEnabled      Boolean @default(true)
+  confessionGuideEnabled    Boolean @default(true)
+  examenEnabled             Boolean @default(true)
+  stationsOfCrossEnabled    Boolean @default(true)
+  novenasEnabled            Boolean @default(true)
+  catechismEnabled          Boolean @default(true)
+  libraryEnabled            Boolean @default(true)
+  liturgicalCalendarEnabled Boolean @default(true)
+  quizEnabled               Boolean @default(true)
+  saintOfTheDayEnabled      Boolean @default(true)
   
   updatedAt           DateTime @updatedAt
 }

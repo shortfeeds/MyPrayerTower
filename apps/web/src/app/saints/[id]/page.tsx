@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, Calendar, MapPin, BookOpen, Share2, Heart, Loader2, Crown, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
+import { ShareButtons } from '@/components/social/ShareButtons';
+import { generateSaintSchema } from '@/lib/seo/structuredData';
 
 interface Saint {
     id: string;
@@ -154,9 +156,22 @@ export default function SaintDetailPage({ params }: { params: { id: string } }) 
                                 >
                                     <Heart className={`w-6 h-6 ${isFavorite ? 'fill-rose-500' : ''}`} />
                                 </button>
-                                <button className="p-4 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 rounded-2xl border border-white/20 transition-all shadow-lg">
-                                    <Share2 className="w-6 h-6" />
-                                </button>
+                                <ShareButtons
+                                    url={typeof window !== 'undefined' ? window.location.href : `https://myprayertower.com/saints/${saint.id}`}
+                                    title={saint.name}
+                                    description={`Learn about ${saint.name}, ${saint.title || 'Saint'} - Patron of ${saint.patronOf?.join(', ') || 'the faithful'}`}
+                                    variant="compact"
+                                />
+                                <script
+                                    type="application/ld+json"
+                                    dangerouslySetInnerHTML={{
+                                        __html: JSON.stringify(generateSaintSchema({
+                                            ...saint,
+                                            slug: saint.slug || '',
+                                            patronOf: saint.patronOf || undefined
+                                        }))
+                                    }}
+                                />
                             </div>
                         </div>
                     </div>

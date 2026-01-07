@@ -4,6 +4,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Share2, BookOpen, Tag, Heart, Sparkles, Copy, ChevronRight } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { ShareButtons } from '@/components/social/ShareButtons';
+import { generatePrayerSchema } from '@/lib/seo/structuredData';
 
 const prisma = new PrismaClient();
 
@@ -133,19 +135,29 @@ export default async function PrayerDetailPage({ params }: Props) {
                             {/* Actions */}
                             <div className="bg-gradient-to-r from-gray-50 to-white px-8 md:px-12 py-6 border-t border-gray-100">
                                 <div className="flex flex-wrap items-center justify-between gap-4">
-                                    <div className="flex items-center gap-3">
-                                        <button className="inline-flex items-center gap-2 px-5 py-2.5 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all font-medium">
-                                            <Copy size={18} />
-                                            <span>Copy</span>
-                                        </button>
-                                        <button className="inline-flex items-center gap-2 px-5 py-2.5 text-gray-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all font-medium">
+                                    <div className="flex items-center gap-3 w-full">
+                                        <ShareButtons
+                                            url={`https://myprayertower.com/prayers/${prayer.id}`}
+                                            title={prayer.title}
+                                            description={prayer.content.substring(0, 100) + '...'}
+                                            variant="default"
+                                        />
+                                        <button className="inline-flex items-center gap-2 px-5 py-2.5 text-gray-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all font-medium ml-auto">
                                             <Heart size={18} />
                                             <span>Save</span>
                                         </button>
-                                        <button className="inline-flex items-center gap-2 px-5 py-2.5 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all font-medium">
-                                            <Share2 size={18} />
-                                            <span>Share</span>
-                                        </button>
+                                        <script
+                                            type="application/ld+json"
+                                            dangerouslySetInnerHTML={{
+                                                __html: JSON.stringify(generatePrayerSchema({
+                                                    id: prayer.id,
+                                                    title: prayer.title,
+                                                    content: prayer.content,
+                                                    category: prayer.category,
+                                                    category_label: prayer.category_label || undefined
+                                                }))
+                                            }}
+                                        />
                                     </div>
                                     <span className="text-sm text-gray-400">
                                         Prayer #{prayer.id.toString()}

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -65,7 +66,7 @@ class LibraryRepository {
         return _cachedCanonLaw!;
       }
     } catch (e) {
-      print('Canon Law API Error: $e');
+      debugPrint('Canon Law API Error: $e');
     }
     return [];
   }

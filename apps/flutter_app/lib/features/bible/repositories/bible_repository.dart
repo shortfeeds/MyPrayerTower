@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -91,7 +92,7 @@ class BibleRepository {
         return BibleChapter.fromJson(data);
       }
     } catch (e) {
-      print('Bible API Error: $e');
+      debugPrint('Bible API Error: $e');
     }
     return null;
   }
@@ -114,7 +115,7 @@ class BibleRepository {
         return BibleChapter.fromJson(data);
       }
     } catch (e) {
-      print('Bible API Verse Error: $e');
+      debugPrint('Bible API Verse Error: $e');
     }
     return null;
   }
@@ -152,7 +153,7 @@ class BibleRepository {
         return BibleChapter.fromJson(data);
       }
     } catch (e) {
-      print('Bible API Random Error: $e');
+      debugPrint('Bible API Random Error: $e');
     }
     return null;
   }

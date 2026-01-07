@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
 import '../repositories/library_repository.dart';
+import 'web_document_screen.dart';
 
 class LibraryScreen extends ConsumerWidget {
   const LibraryScreen({super.key});
@@ -122,13 +123,6 @@ class LibraryScreen extends ConsumerWidget {
             subtitle: 'US Conference of Catholic Bishops',
             url: 'https://www.usccb.org',
             color: Colors.blue,
-          ),
-          const _QuickLinkCard(
-            icon: LucideIcons.fileText,
-            title: 'Catholic Answers',
-            subtitle: 'Apologetics and faith resources',
-            url: 'https://www.catholic.com',
-            color: Colors.purple,
           ),
 
           const SizedBox(height: 100),
@@ -278,14 +272,19 @@ class _DocumentCard extends StatelessWidget {
   }
 
   void _openDocument(BuildContext context) async {
-    // Navigate to appropriate screen or open external link
+    // Navigate to appropriate screen
     if (document.id == 'catechism') {
       Navigator.of(context).pushNamed('/catechism');
+    } else if (document.id == 'canon_law') {
+      Navigator.of(context).pushNamed('/canon_law');
     } else if (document.source.startsWith('http')) {
-      final uri = Uri.parse(document.source);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
+      // Open in internal Web Document Viewer
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) =>
+              WebDocumentScreen(title: document.title, url: document.source),
+        ),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

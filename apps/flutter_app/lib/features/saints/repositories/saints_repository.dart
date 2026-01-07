@@ -50,11 +50,11 @@ class SaintsRepository {
         name: 'St. Francis of Assisi',
         slug: 'st-francis-of-assisi',
         title: 'Patron of Animals',
-        bio:
+        biography:
             'Saint Francis of Assisi was a Catholic friar who gave up a life of wealth to live in poverty. He founded the Franciscan Order and is known for his love of nature and animals.',
         imageUrl:
             'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Saint_Francis_of_Assisi_by_Cigoli.jpg/800px-Saint_Francis_of_Assisi_by_Cigoli.jpg',
-        patronage: ['Animals', 'Environment', 'Merchants'],
+        patronOf: ['Animals', 'Environment', 'Merchants'],
         prayer: 'Lord, make me an instrument of your peace...',
         feastDay: 'October 4',
       ),
@@ -63,11 +63,11 @@ class SaintsRepository {
         name: 'St. Therese of Lisieux',
         slug: 'st-therese-lisieux',
         title: 'The Little Flower',
-        bio:
+        biography:
             'St. Thérèse of Lisieux was a French Catholic Discalced Carmelite nun who is widely venerated in modern times.',
         imageUrl:
             'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Th%C3%A9r%C3%A8se_de_Lisieux.jpg/800px-Th%C3%A9r%C3%A8se_de_Lisieux.jpg',
-        patronage: ['Missionaries', 'Florists', 'Pilots'],
+        patronOf: ['Missionaries', 'Florists', 'Pilots'],
         prayer:
             'My God, I choose all! I do not want to be a saint by halves...',
         feastDay: 'October 1',
@@ -77,11 +77,11 @@ class SaintsRepository {
         name: 'St. Anthony of Padua',
         slug: 'st-anthony-padua',
         title: 'Finder of Lost Things',
-        bio:
+        biography:
             'Saint Anthony of Padua was a Portuguese Catholic priest and friar of the Franciscan Order.',
         imageUrl:
             'https://upload.wikimedia.org/wikipedia/commons/4/4f/Saint_Anthony_of_Padua_-_Murillo.jpg',
-        patronage: ['Lost Things', 'Poor People', 'Travelers'],
+        patronOf: ['Lost Things', 'Poor People', 'Travelers'],
         prayer: 'O Holy St. Anthony, gentlest of Saints, your love for God...',
         feastDay: 'June 13',
       ),
@@ -90,10 +90,10 @@ class SaintsRepository {
         name: 'St. Jude Thaddeus',
         slug: 'st-jude',
         title: 'Patron of Hopeless Causes',
-        bio: 'Saint Jude was one of the Twelve Apostles of Jesus.',
+        biography: 'Saint Jude was one of the Twelve Apostles of Jesus.',
         imageUrl:
             'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/San_Judas_Tadeo_%28El_Greco%29.jpg/800px-San_Judas_Tadeo_%28El_Greco%29.jpg',
-        patronage: ['Desperate Situations', 'Forgotten Causes'],
+        patronOf: ['Desperate Situations', 'Forgotten Causes'],
         feastDay: 'October 28',
       ),
       const Saint(
@@ -101,11 +101,11 @@ class SaintsRepository {
         name: 'St. Padre Pio',
         slug: 'st-padre-pio',
         title: 'The Stigmatist',
-        bio:
+        biography:
             'Pio of Pietrelcina was an Italian Franciscan Capuchin, friar, priest, stigmatist, and mystic.',
         imageUrl:
             'https://upload.wikimedia.org/wikipedia/commons/6/60/Pio_of_Pietrelcina.jpg',
-        patronage: ['Civil Defense Volunteers', 'Adolescents'],
+        patronOf: ['Civil Defense Volunteers', 'Adolescents'],
         prayer:
             'Stay with me, Lord, for it is necessary to have You present...',
         feastDay: 'September 23',

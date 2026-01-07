@@ -32,6 +32,20 @@ export async function GET() {
                     syncEnabled: true,
                     syncSchedule: '0 2 * * 0',
 
+                    // Additional Features
+                    rosaryEnabled: true,
+                    bibleEnabled: true,
+                    dailyReadingsEnabled: true,
+                    confessionGuideEnabled: true,
+                    examenEnabled: true,
+                    stationsOfCrossEnabled: true,
+                    novenasEnabled: true,
+                    catechismEnabled: true,
+                    libraryEnabled: true,
+                    liturgicalCalendarEnabled: true,
+                    quizEnabled: true,
+                    saintOfTheDayEnabled: true,
+
                     // Subscription Pricing
                     plusMonthlyPrice: 499,
                     plusYearlyPrice: 3999,
@@ -40,16 +54,16 @@ export async function GET() {
                     lifetimePrice: 14999,
 
                     // Candle Pricing
-                    candleOneDayPrice: 100,
-                    candleThreeDayPrice: 300,
-                    candleSevenDayPrice: 500,
-                    candleThirtyDayPrice: 1500,
+                    candleOneDayPrice: 0,
+                    candleThreeDayPrice: 299,
+                    candleSevenDayPrice: 599,
+                    candleThirtyDayPrice: 1499,
 
                     // Mass Offering Pricing
-                    massRegularPrice: 1500,
+                    massRegularPrice: 1000,
                     massExpeditedPrice: 2500,
                     massNovenaPrice: 7500,
-                    massGregorianPrice: 25000,
+                    massGregorianPrice: 20000,
                     massPerpetualPrice: 10000,
 
                     // Spiritual Bouquet Pricing
@@ -93,6 +107,20 @@ export async function PUT(request: NextRequest) {
             syncEnabled: settings.syncEnabled ?? true,
             syncSchedule: settings.syncSchedule || '0 2 * * 0',
 
+            // Additional Features
+            rosaryEnabled: settings.rosaryEnabled ?? true,
+            bibleEnabled: settings.bibleEnabled ?? true,
+            dailyReadingsEnabled: settings.dailyReadingsEnabled ?? true,
+            confessionGuideEnabled: settings.confessionGuideEnabled ?? true,
+            examenEnabled: settings.examenEnabled ?? true,
+            stationsOfCrossEnabled: settings.stationsOfCrossEnabled ?? true,
+            novenasEnabled: settings.novenasEnabled ?? true,
+            catechismEnabled: settings.catechismEnabled ?? true,
+            libraryEnabled: settings.libraryEnabled ?? true,
+            liturgicalCalendarEnabled: settings.liturgicalCalendarEnabled ?? true,
+            quizEnabled: settings.quizEnabled ?? true,
+            saintOfTheDayEnabled: settings.saintOfTheDayEnabled ?? true,
+
             // Subscription Pricing
             plusMonthlyPrice: settings.plusMonthlyPrice ?? 499,
             plusYearlyPrice: settings.plusYearlyPrice ?? 3999,
@@ -101,16 +129,16 @@ export async function PUT(request: NextRequest) {
             lifetimePrice: settings.lifetimePrice ?? 14999,
 
             // Candle Pricing
-            candleOneDayPrice: settings.candleOneDayPrice ?? 100,
-            candleThreeDayPrice: settings.candleThreeDayPrice ?? 300,
-            candleSevenDayPrice: settings.candleSevenDayPrice ?? 500,
-            candleThirtyDayPrice: settings.candleThirtyDayPrice ?? 1500,
+            candleOneDayPrice: settings.candleOneDayPrice ?? 0,
+            candleThreeDayPrice: settings.candleThreeDayPrice ?? 299,
+            candleSevenDayPrice: settings.candleSevenDayPrice ?? 599,
+            candleThirtyDayPrice: settings.candleThirtyDayPrice ?? 1499,
 
             // Mass Offering Pricing
-            massRegularPrice: settings.massRegularPrice ?? 1500,
+            massRegularPrice: settings.massRegularPrice ?? 1000,
             massExpeditedPrice: settings.massExpeditedPrice ?? 2500,
             massNovenaPrice: settings.massNovenaPrice ?? 7500,
-            massGregorianPrice: settings.massGregorianPrice ?? 25000,
+            massGregorianPrice: settings.massGregorianPrice ?? 20000,
             massPerpetualPrice: settings.massPerpetualPrice ?? 10000,
 
             // Spiritual Bouquet Pricing

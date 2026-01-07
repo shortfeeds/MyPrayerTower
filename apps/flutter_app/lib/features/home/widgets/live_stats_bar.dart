@@ -111,81 +111,93 @@ class _LiveStatsBarState extends ConsumerState<LiveStatsBar>
           ),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          // Live indicator
-          AnimatedBuilder(
-            animation: _pulseAnimation,
-            builder: (context, child) {
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.green.withValues(alpha: 0.3),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            // Live indicator
+            AnimatedBuilder(
+              animation: _pulseAnimation,
+              builder: (context, child) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
                   ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.green,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.green.withValues(
-                              alpha: _pulseAnimation.value * 0.6,
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.green.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.green,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.withValues(
+                                alpha: _pulseAnimation.value * 0.6,
+                              ),
+                              blurRadius: 6,
+                              spreadRadius: 2,
                             ),
-                            blurRadius: 6,
-                            spreadRadius: 2,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'LIVE',
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                        letterSpacing: 1,
+                      const SizedBox(width: 6),
+                      Text(
+                        'LIVE',
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                          letterSpacing: 1,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+                    ],
+                  ),
+                );
+              },
+            ),
 
-          // Stats
-          _StatItem(
-            icon: LucideIcons.users,
-            value: _formatNumber(_usersOnline),
-            label: 'Online',
-            color: AppTheme.info,
-          ),
-          _StatItem(
-            icon: LucideIcons.heart,
-            value: _formatNumber(_prayersToday),
-            label: 'Prayers',
-            color: Colors.pink,
-          ),
-          _StatItem(
-            icon: LucideIcons.flame,
-            value: _formatNumber(_candlesLit),
-            label: 'Candles',
-            color: AppTheme.gold500,
-          ),
-        ],
+            const SizedBox(
+              width: 16,
+            ), // Add spacing explicitly since spaceEvenly might not work well inside FittedBox/Row combo if width is unconstrained?
+            // Actually FittedBox takes child size. Row with min/max?
+            // If mainAxisSize is max (default), Row tries to be infinite? No, Row takes constrained width...
+            // If inside FittedBox?
+            // Let's use specific spacing instead of spaceEvenly inside a FittedBox
+            // Stats
+            _StatItem(
+              icon: LucideIcons.users,
+              value: _formatNumber(_usersOnline),
+              label: 'Online',
+              color: AppTheme.info,
+            ),
+            const SizedBox(width: 16),
+            _StatItem(
+              icon: LucideIcons.heart,
+              value: _formatNumber(_prayersToday),
+              label: 'Prayers',
+              color: Colors.pink,
+            ),
+            const SizedBox(width: 16),
+            _StatItem(
+              icon: LucideIcons.flame,
+              value: _formatNumber(_candlesLit),
+              label: 'Candles',
+              color: AppTheme.gold500,
+            ),
+          ],
+        ),
       ),
     );
   }

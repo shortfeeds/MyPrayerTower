@@ -389,45 +389,60 @@ export default function CandleWallPage() {
             )}
 
             {/* Header with Warm Gradient */}
-            <div className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-600/20 via-orange-500/20 to-rose-500/20" />
-                <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5" />
+            <div className="relative overflow-hidden min-h-[500px] flex items-center justify-center">
+                {/* Background Layer */}
+                <div className="absolute inset-0 bg-[url('/images/candle-bg-pattern.png')] bg-cover opacity-10 mix-blend-overlay" />
+                <div className="absolute inset-0 bg-gradient-to-b from-amber-900/40 via-purple-900/40 to-slate-900" />
 
-                <div className="relative pt-24 pb-16 text-center">
-                    <div className="container mx-auto px-4">
-                        <Link href="/" className="inline-flex items-center gap-2 text-amber-300 hover:text-amber-200 mb-6 transition-colors">
-                            <ChevronLeft className="w-4 h-4" />
-                            Back to Home
-                        </Link>
-                        <div className="flex items-center justify-center gap-3 mb-4">
-                            <div className="relative">
-                                <Flame className="w-12 h-12 text-amber-400 animate-pulse" />
-                                <div className="absolute inset-0 blur-xl bg-amber-400/50 -z-10" />
-                            </div>
-                            <h1 className="text-4xl md:text-5xl font-bold text-white">Virtual Prayer Candles</h1>
+                {/* Animated Particles/Glow */}
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-[100px] animate-pulse" />
+                <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-rose-500/20 rounded-full blur-[80px]" />
+
+                <div className="relative z-10 text-center px-4 w-full max-w-4xl mx-auto">
+                    <Link href="/" className="inline-flex items-center gap-2 text-amber-200/80 hover:text-white mb-8 transition-colors bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">
+                        <ChevronLeft className="w-4 h-4" />
+                        Back to Home
+                    </Link>
+
+                    <div className="flex flex-col items-center justify-center mb-6">
+                        <div className="relative mb-6">
+                            <div className="absolute inset-0 blur-2xl bg-amber-500/30 rounded-full animate-pulse" />
+                            <Flame className="w-20 h-20 text-amber-400 relative z-10 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]" />
                         </div>
-                        <p className="text-amber-200/80 text-lg max-w-2xl mx-auto mb-2">
-                            Light a candle for your intentions and join thousands praying together.
-                        </p>
-                        <p className="text-amber-300/60 text-sm">
-                            Premium candles receive <span className="text-amber-300 font-semibold">4x more prayers</span> from our global community
-                        </p>
-
-                        <button
-                            onClick={() => setShowLightModal(true)}
-                            className="mt-8 px-10 py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-orange-500/30 transition-all transform hover:scale-105"
-                        >
-                            🕯️ Light Your Candle
-                        </button>
+                        <h1 className="font-serif text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg tracking-tight">
+                            Virtual Prayer Candles
+                        </h1>
                     </div>
+
+                    <p className="text-xl md:text-2xl text-amber-100/90 max-w-2xl mx-auto mb-8 font-light leading-relaxed">
+                        Light a candle for your intentions and join a global community of faith united in prayer.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+                        <div className="px-6 py-2 bg-black/30 rounded-full border border-amber-500/20 backdrop-blur-md text-amber-200 text-sm">
+                            Premium candles receive <span className="text-white font-bold">4x more prayers</span>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => setShowLightModal(true)}
+                        className="group relative px-10 py-5 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white rounded-full font-bold text-lg shadow-[0_0_30px_rgba(245,158,11,0.3)] hover:shadow-[0_0_50px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                        <span className="relative flex items-center gap-3">
+                            <Flame className="w-6 h-6 fill-current" />
+                            Light Your Candle
+                        </span>
+                    </button>
                 </div>
             </div>
 
             {/* Stats Bar */}
-            <div className="bg-black/30 border-y border-white/10 py-6">
+            <div className="bg-slate-900/50 border-y border-white/5 backdrop-blur-md">
                 <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto">
+                    <div className="grid grid-cols-3 divide-x divide-white/10 max-w-4xl mx-auto">
                         {[
+
                             { icon: Flame, label: 'Active Candles', value: candles.length, color: 'text-amber-400' },
                             { icon: Heart, label: 'Total Prayers', value: totalPrayers.toLocaleString(), color: 'text-rose-400' },
                             { icon: Users, label: 'People Praying', value: peopleCount.toLocaleString(), color: 'text-sky-400' },

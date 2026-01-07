@@ -86,6 +86,20 @@ export default function AdminSettingsPage() {
         leaderboardEnabled: true,
         nativeAdsEnabled: true,
         rewardedAdsEnabled: true,
+
+        // Additional Features
+        rosaryEnabled: true,
+        bibleEnabled: true,
+        dailyReadingsEnabled: true,
+        confessionGuideEnabled: true,
+        examenEnabled: true,
+        stationsOfCrossEnabled: true,
+        novenasEnabled: true,
+        catechismEnabled: true,
+        libraryEnabled: true,
+        liturgicalCalendarEnabled: true,
+        quizEnabled: true,
+        saintOfTheDayEnabled: true,
     });
 
     useEffect(() => {
@@ -449,6 +463,20 @@ export default function AdminSettingsPage() {
                                     { key: 'nativeAdsEnabled', label: 'Native Ads', desc: 'Show native advertisements' },
                                     { key: 'rewardedAdsEnabled', label: 'Rewarded Ads', desc: 'Show rewarded video ads' },
                                     { key: 'syncEnabled', label: 'Auto Data Sync', desc: 'Background data synchronization' },
+
+                                    // New Features
+                                    { key: 'rosaryEnabled', label: 'Holy Rosary', desc: 'Rosary prayer guide' },
+                                    { key: 'bibleEnabled', label: 'Holy Bible', desc: 'Scripture reader' },
+                                    { key: 'dailyReadingsEnabled', label: 'Daily Readings', desc: 'Mass readings for the day' },
+                                    { key: 'confessionGuideEnabled', label: 'Confession Guide', desc: 'Examination of conscience' },
+                                    { key: 'examenEnabled', label: 'Daily Examen', desc: 'Ignatian Examen' },
+                                    { key: 'stationsOfCrossEnabled', label: 'Stations of the Cross', desc: 'Way of the Cross' },
+                                    { key: 'novenasEnabled', label: 'Novenas', desc: '9-day prayer devotionals' },
+                                    { key: 'catechismEnabled', label: 'Catechism', desc: 'CCC Reference' },
+                                    { key: 'libraryEnabled', label: 'Catholic Library', desc: 'Documents and prayers' },
+                                    { key: 'liturgicalCalendarEnabled', label: 'Liturgical Calendar', desc: 'Feast days and seasons' },
+                                    { key: 'quizEnabled', label: 'Catholic Quiz', desc: 'Trivia game' },
+                                    { key: 'saintOfTheDayEnabled', label: 'Saint of the Day', desc: 'Daily saint bio' },
                                 ].map(feature => (
                                     <div key={feature.key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
                                         <div>

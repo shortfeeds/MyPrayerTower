@@ -31,8 +31,8 @@ class SubscriptionService {
 
   /// Check if user has premium access (active subscription)
   Future<bool> hasPremiumAccess() async {
-    final subscription = await getCurrentSubscription();
-    return subscription != null && subscription.isActive;
+    // Phase 1: Unlock all features for free (Ad-supported model)
+    return true;
   }
 
   /// Get subscription benefits based on plan

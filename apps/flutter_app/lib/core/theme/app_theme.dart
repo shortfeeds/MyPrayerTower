@@ -47,6 +47,12 @@ class AppTheme {
     end: Alignment.bottomRight,
   );
 
+  // Missing colors required by screens
+  static const Color flameOrange = Color(0xFFEA580C);
+  static const Color sacredRed = Color(0xFFE11D48);
+  static const Color royalPurple = Color(0xFF7C3AED);
+  static const Color cardBackground = sacredNavy900;
+
   static const LinearGradient goldGradient = LinearGradient(
     colors: [gold400, gold500],
     begin: Alignment.topLeft,

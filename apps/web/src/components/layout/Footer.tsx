@@ -127,32 +127,35 @@ export function Footer() {
                         </div>
 
                         {/* Link Columns - All in one row */}
+                        {/* Link Columns - All in one row */}
                         <div className="flex gap-8 text-xs">
                             <div>
-                                <h4 className="font-semibold text-white mb-2">Platform</h4>
+                                <h4 className="font-semibold text-white mb-2">Spiritual Growth</h4>
                                 <ul className="space-y-1 text-gray-400">
-                                    <li><Link href="/churches" className="hover:text-gold-400">Churches</Link></li>
-                                    <li><Link href="/prayer-wall" className="hover:text-gold-400">Prayer Wall</Link></li>
-                                    <li><Link href="/prayers" className="hover:text-gold-400">Prayers</Link></li>
-                                    <li><Link href="/candles" className="hover:text-gold-400">Candles</Link></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="font-semibold text-white mb-2">Daily</h4>
-                                <ul className="space-y-1 text-gray-400">
-                                    <li><Link href="/readings" className="hover:text-gold-400">Readings</Link></li>
-                                    <li><Link href="/saints" className="hover:text-gold-400">Saints</Link></li>
-                                    <li><Link href="/examen" className="hover:text-gold-400">Examen</Link></li>
+                                    <li><Link href="/journey" className="hover:text-gold-400 text-gold-200">My Journey</Link></li>
                                     <li><Link href="/challenges" className="hover:text-gold-400">Challenges</Link></li>
+                                    <li><Link href="/readings" className="hover:text-gold-400">Bible Readings</Link></li>
+                                    <li><Link href="/examen" className="hover:text-gold-400">Daily Examen</Link></li>
+                                    <li><Link href="/saints" className="hover:text-gold-400">Saints</Link></li>
                                 </ul>
                             </div>
                             <div>
                                 <h4 className="font-semibold text-white mb-2">Community</h4>
                                 <ul className="space-y-1 text-gray-400">
+                                    <li><Link href="/sessions" className="hover:text-gold-400 text-gold-200">Live Sessions</Link></li>
+                                    <li><Link href="/prayer-wall" className="hover:text-gold-400">Prayer Wall</Link></li>
                                     <li><Link href="/partners" className="hover:text-gold-400">Partners</Link></li>
+                                    <li><Link href="/candles" className="hover:text-gold-400">Candles</Link></li>
                                     <li><Link href="/leaderboard" className="hover:text-gold-400">Leaderboard</Link></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-white mb-2">Resources</h4>
+                                <ul className="space-y-1 text-gray-400">
+                                    <li><Link href="/churches" className="hover:text-gold-400">Find Churches</Link></li>
+                                    <li><Link href="/prayers" className="hover:text-gold-400">Common Prayers</Link></li>
                                     <li><Link href="/wallpapers" className="hover:text-gold-400">Wallpapers</Link></li>
-                                    <li><Link href="/bouquets" className="hover:text-gold-400">Bouquets</Link></li>
+                                    <li><Link href="/bouquets" className="hover:text-gold-400">Spiritual Bouquets</Link></li>
                                 </ul>
                             </div>
                             <div>
@@ -160,7 +163,7 @@ export function Footer() {
                                 <ul className="space-y-1 text-gray-400">
                                     <li><Link href="/mass-offerings" className="hover:text-gold-400">Mass Offerings</Link></li>
                                     <li><Link href="/donate" className="hover:text-gold-400">Donate</Link></li>
-                                    <li><Link href="/about" className="hover:text-gold-400">About</Link></li>
+                                    <li><Link href="/about" className="hover:text-gold-400">About Us</Link></li>
                                     <li><Link href="/contact" className="hover:text-gold-400">Contact</Link></li>
                                 </ul>
                             </div>

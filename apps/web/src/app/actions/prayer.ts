@@ -3,6 +3,7 @@
 import { PrismaClient } from '@mpt/database';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
 
@@ -30,7 +31,7 @@ export async function getPrayerRequests(page = 1, limit = 10, category?: string)
         const prayers = await prisma.prayerRequest.findMany({
             where: whereClause,
             include: {
-                user: {
+                User: { // Relation name is User
                     select: {
                         firstName: true,
                         lastName: true,
@@ -38,7 +39,7 @@ export async function getPrayerRequests(page = 1, limit = 10, category?: string)
                     }
                 },
                 _count: {
-                    select: { prayerActions: true }
+                    select: { PrayerAction: true } // Relation name is PrayerAction
                 }
             },
             orderBy: { createdAt: 'desc' },
@@ -53,8 +54,8 @@ export async function getPrayerRequests(page = 1, limit = 10, category?: string)
                 content: p.content,
                 category: p.category.charAt(0) + p.category.slice(1).toLowerCase(),
                 visibility: p.visibility.toLowerCase(),
-                user: p.isAnonymous ? null : p.user,
-                prayerCount: p.prayerCount + p._count.prayerActions, // approximate
+                user: p.isAnonymous ? null : p.User, // Use p.User
+                prayerCount: p.prayerCount + (p._count?.PrayerAction || 0), // Use p._count.PrayerAction
                 createdAt: p.createdAt,
                 isAnswered: p.isAnswered,
             })),
@@ -80,11 +81,13 @@ export async function submitPrayerRequest(prevState: any, formData: FormData) {
 
         const prayer = await prisma.prayerRequest.create({
             data: {
+                id: randomUUID(),
                 content,
                 category: categoryEnum as any,
                 visibility: visibilityEnum as any,
                 userId: userId, // Mock user ID for now
-                status: 'APPROVED', // Auto-approve for demo
+                status: 'PENDING', // Moderated by admin
+                updatedAt: new Date(),
             }
         });
 
@@ -118,6 +121,7 @@ export async function prayForRequest(prayerId: string) {
         await prisma.$transaction([
             prisma.prayerAction.create({
                 data: {
+                    id: randomUUID(),
                     prayerRequestId: prayerId,
                     userId
                 }

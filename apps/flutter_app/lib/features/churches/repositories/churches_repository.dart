@@ -81,7 +81,7 @@ class ChurchesRepository {
         slug: 'st-marys-cathedral',
         city: 'San Francisco',
         country: 'USA',
-        imageUrl:
+        primaryImageUrl:
             'https://images.unsplash.com/photo-1548625361-e88c60eb8314?auto=format&fit=crop&q=80',
         website: 'https://stmaryscathedral.org',
         phone: '+1 415-567-2020',
@@ -101,7 +101,7 @@ class ChurchesRepository {
         slug: 'st-patricks-cathedral',
         city: 'New York',
         country: 'USA',
-        imageUrl:
+        primaryImageUrl:
             'https://images.unsplash.com/photo-1548544149-4835e62ee5b3?auto=format&fit=crop&q=80',
         website: 'https://saintpatrickscathedral.org',
         phone: '+1 212-753-2261',
@@ -120,7 +120,7 @@ class ChurchesRepository {
         slug: 'basilica-national-shrine',
         city: 'Washington DC',
         country: 'USA',
-        imageUrl:
+        primaryImageUrl:
             'https://images.unsplash.com/photo-1627918342289-4b68e734c20b?auto=format&fit=crop&q=80',
         // Mocking coordinates if needed, but model handles it
         massSchedule: {
@@ -133,7 +133,7 @@ class ChurchesRepository {
         slug: 'holy-name-cathedral',
         city: 'Chicago',
         country: 'USA',
-        imageUrl:
+        primaryImageUrl:
             'https://images.unsplash.com/photo-1574606703531-18e3d810f63b?auto=format&fit=crop&q=80',
         massSchedule: {
           'Sunday': ['8:00 AM', '10:00 AM'],
@@ -145,7 +145,7 @@ class ChurchesRepository {
         slug: 'cathedral-our-lady-angels',
         city: 'Los Angeles',
         country: 'USA',
-        imageUrl:
+        primaryImageUrl:
             'https://images.unsplash.com/photo-1590403375836-8c8375ae200b?auto=format&fit=crop&q=80',
         massSchedule: {
           'Sunday': ['8:00 AM', '10:00 AM'],

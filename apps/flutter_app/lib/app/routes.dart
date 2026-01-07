@@ -4,14 +4,14 @@ import 'package:go_router/go_router.dart';
 
 // Feature screens
 import '../features/home/screens/home_screen.dart';
+import '../features/offerings/screens/offerings_screen.dart';
 import '../features/prayers/screens/prayers_screen.dart';
 import '../features/prayers/screens/prayer_detail_screen.dart';
 import '../features/prayers/screens/prayer_list_screen.dart';
 import '../features/prayer_wall/screens/prayer_wall_screen.dart';
 import '../features/rosary/screens/rosary_screen.dart';
 import '../features/readings/screens/readings_screen.dart';
-import '../features/saints/screens/saints_screen.dart';
-import '../features/saints/screens/saint_detail_screen.dart';
+
 import '../features/candles/screens/candles_screen.dart';
 import '../features/candles/screens/light_candle_screen.dart';
 import '../features/bible/screens/bible_screen.dart';
@@ -27,19 +27,19 @@ import '../features/examen/screens/examen_screen.dart';
 import '../features/stations/screens/stations_screen.dart';
 import '../features/novenas/screens/novenas_screen.dart';
 import '../features/library/screens/library_screen.dart';
+import '../features/library/screens/canon_law_screen.dart';
 import '../features/calendar/screens/calendar_screen.dart';
 import '../features/donations/screens/donation_screen.dart';
 import '../features/bouquets/screens/spiritual_bouquet_screen.dart';
 
 import '../features/catechism/screens/catechism_screen.dart';
 import '../features/challenges/screens/challenges_screen.dart';
-import '../features/wallpapers/screens/wallpapers_screen.dart';
-import '../features/wallpapers/screens/wallpapers_screen.dart';
 import '../features/leaderboard/screens/leaderboard_screen.dart';
-import '../features/churches/screens/churches_screen.dart';
-import '../features/churches/screens/church_detail_screen.dart';
-import '../features/quiz/screens/quiz_screen.dart';
-import '../features/settings/screens/notification_settings_screen.dart';
+
+// Quiz feature removed
+// import '../features/quiz/screens/quiz_screen.dart';
+
+import '../features/settings/screens/settings_screen.dart';
 import '../features/mass_offering/screens/mass_offering_screen.dart';
 import '../widgets/main_scaffold.dart';
 
@@ -129,17 +129,11 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+
           GoRoute(
-            path: '/saints',
+            path: '/offerings',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(child: SaintsScreen()),
-            routes: [
-              GoRoute(
-                path: ':id',
-                builder: (context, state) =>
-                    SaintDetailScreen(saintId: state.pathParameters['id']!),
-              ),
-            ],
+                const NoTransitionPage(child: OfferingsScreen()),
           ),
           GoRoute(
             path: '/candles',
@@ -177,36 +171,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                 const NoTransitionPage(child: ChallengesScreen()),
           ),
           GoRoute(
-            path: '/wallpapers',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: WallpapersScreen()),
-          ),
-          GoRoute(
             path: '/leaderboard',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: LeaderboardScreen()),
           ),
           GoRoute(
-            path: '/churches',
+            path: '/canon_law',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ChurchesScreen()),
-            routes: [
-              GoRoute(
-                path: ':id',
-                builder: (context, state) =>
-                    ChurchDetailScreen(churchId: state.pathParameters['id']!),
-              ),
-            ],
+                const NoTransitionPage(child: CanonLawScreen()),
           ),
-          GoRoute(
-            path: '/quiz',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: QuizScreen()),
-          ),
+
           GoRoute(
             path: '/settings',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(child: NotificationSettingsScreen()),
+                const NoTransitionPage(child: SettingsScreen()),
           ),
           GoRoute(
             path: '/mass-offering',
@@ -226,8 +204,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       GoRoute(
         path: '/prayer/:id',
-        builder: (context, state) =>
-            PrayerDetailScreen(prayerId: state.pathParameters['id']!),
+        builder: (context, state) {
+          final idString = state.pathParameters['id']!;
+          final id = int.tryParse(idString) ?? 0;
+          return PrayerDetailScreen(prayerId: id);
+        },
       ),
       GoRoute(
         path: '/prayers/:category',

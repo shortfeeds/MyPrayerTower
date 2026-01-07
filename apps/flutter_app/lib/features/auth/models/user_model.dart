@@ -1,3 +1,4 @@
+// Refresh IDE
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'user_model.freezed.dart';
@@ -12,6 +13,9 @@ class User with _$User {
     String? avatarUrl,
     @Default('FREE') String subscriptionStatus, // FREE, PLUS, PREMIUM, LIFETIME
     @Default(false) bool isEmailVerified,
+    @Default(0) int streakCount,
+    @Default(0) int longestStreak,
+    DateTime? lastStreakUpdate,
     DateTime? createdAt,
   }) = _User;
 

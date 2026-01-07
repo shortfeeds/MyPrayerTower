@@ -83,6 +83,17 @@ class AuthRepository {
     await _storage.clearToken();
   }
 
+  Future<Map<String, dynamic>> updateStreak() async {
+    try {
+      final response = await _dio.post(
+        '/api/users/streak', // Using relative path as base URL is set in Dio
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
   String _handleDioError(DioException error) {
     if (error.response?.data != null &&
         error.response?.data['message'] != null) {

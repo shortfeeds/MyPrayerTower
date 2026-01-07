@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/prayer_request_model.dart';
+import '../repositories/prayer_request_repository.dart';
 import '../../../core/theme/app_theme.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class PrayerRequestCard extends StatelessWidget {
-  final PrayerRequest request;
+class PrayerRequestCard extends StatefulWidget {
+  final PrayerRequestData request;
   final VoidCallback onPray;
   final bool isOptimistic; // visual state only
 
@@ -14,6 +14,39 @@ class PrayerRequestCard extends StatelessWidget {
     required this.onPray,
     this.isOptimistic = false,
   });
+
+  @override
+  State<PrayerRequestCard> createState() => _PrayerRequestCardState();
+}
+
+class _PrayerRequestCardState extends State<PrayerRequestCard> {
+  late int _count;
+  bool _hasPrayed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _count = widget.request.prayerCount;
+  }
+
+  @override
+  void didUpdateWidget(PrayerRequestCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.request.prayerCount != oldWidget.request.prayerCount) {
+      _count = widget.request.prayerCount;
+    }
+  }
+
+  void _handlePray() {
+    if (_hasPrayed) return;
+
+    setState(() {
+      _hasPrayed = true;
+      _count++;
+    });
+
+    widget.onPray();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +77,7 @@ class PrayerRequestCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        request.content,
+                        widget.request.intention,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -54,7 +87,7 @@ class PrayerRequestCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          if (request.category != null) ...[
+                          if (widget.request.category != null) ...[
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8,
@@ -67,7 +100,7 @@ class PrayerRequestCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                request.category!,
+                                widget.request.category!,
                                 style: const TextStyle(
                                   color: AppTheme.primaryBlue,
                                   fontSize: 10,
@@ -78,9 +111,9 @@ class PrayerRequestCard extends StatelessWidget {
                             const SizedBox(width: 8),
                           ],
                           Text(
-                            request.isAnonymous
+                            widget.request.isAnonymous
                                 ? 'Anonymous'
-                                : 'Community Member',
+                                : widget.request.userName,
                             style: const TextStyle(
                               color: Colors.white38,
                               fontSize: 12,
@@ -106,16 +139,16 @@ class PrayerRequestCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       LucideIcons.flame,
                       size: 16,
-                      color: AppTheme.accentGold,
+                      color: _hasPrayed ? Colors.orange : AppTheme.accentGold,
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      '${request.prayCount} prayers',
-                      style: const TextStyle(
-                        color: AppTheme.accentGold,
+                      '$_count prayers',
+                      style: TextStyle(
+                        color: _hasPrayed ? Colors.orange : AppTheme.accentGold,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -123,14 +156,19 @@ class PrayerRequestCard extends StatelessWidget {
                   ],
                 ),
                 ElevatedButton.icon(
-                  onPressed: onPray,
-                  icon: const Icon(LucideIcons.heart, size: 16),
-                  label: const Text('Pray'),
+                  onPressed: _hasPrayed ? null : _handlePray,
+                  icon: Icon(
+                    _hasPrayed ? LucideIcons.check : LucideIcons.heart,
+                    size: 16,
+                  ),
+                  label: Text(_hasPrayed ? 'Prayed' : 'Pray'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accentGold.withValues(
-                      alpha: 0.15,
-                    ),
-                    foregroundColor: AppTheme.accentGold,
+                    backgroundColor: _hasPrayed
+                        ? Colors.green.withValues(alpha: 0.2)
+                        : AppTheme.accentGold.withValues(alpha: 0.15),
+                    foregroundColor: _hasPrayed
+                        ? Colors.green
+                        : AppTheme.accentGold,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,

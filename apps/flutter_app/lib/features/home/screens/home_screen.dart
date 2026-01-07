@@ -6,7 +6,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/animations/premium_animations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../ads/widgets/smart_ad_banner.dart';
-import '../widgets/donation_sheet.dart';
 
 import '../widgets/daily_reading_card.dart';
 import '../widgets/saint_of_day_card.dart';
@@ -26,7 +25,6 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppTheme.sacredNavy950,
-      floatingActionButton: _buildFAB(context),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -59,12 +57,12 @@ class HomeScreen extends ConsumerWidget {
           ),
 
           // 4. Verse of the Day
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+              padding: EdgeInsets.fromLTRB(20, 28, 20, 0),
               child: FadeInSlideUp(
-                delay: const Duration(milliseconds: 100),
-                child: const VerseOfTheDayCard(),
+                delay: Duration(milliseconds: 100),
+                child: VerseOfTheDayCard(),
               ),
             ),
           ),
@@ -252,42 +250,6 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFAB(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: AppTheme.goldGradient,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.gold500.withValues(alpha: 0.4),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: FloatingActionButton.extended(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            backgroundColor: Colors.transparent,
-            isScrollControlled: true,
-            builder: (context) => const DonationSheet(),
-          );
-        },
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        icon: const Icon(LucideIcons.heart, color: Colors.black),
-        label: Text(
-          'Support Us',
-          style: GoogleFonts.inter(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildMassOfferingBanner(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -413,11 +375,11 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(width: 12),
             Expanded(
               child: PremiumFeatureCard(
-                icon: LucideIcons.mapPin,
-                title: 'Churches',
-                subtitle: 'Find Nearby',
-                color: AppTheme.info,
-                onTap: () => context.push('/churches'),
+                icon: LucideIcons.book,
+                title: 'Catechism',
+                subtitle: 'Learn Faith',
+                color: const Color(0xFF06B6D4),
+                onTap: () => context.push('/catechism'),
               ),
             ),
           ],
@@ -498,29 +460,14 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 12),
-        // Row 6: Gamification
-        Row(
-          children: [
-            Expanded(
-              child: PremiumFeatureCard(
-                icon: LucideIcons.trophy,
-                title: 'Challenges',
-                subtitle: 'Earn Rewards',
-                color: const Color(0xFFF97316),
-                onTap: () => context.push('/challenges'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: PremiumFeatureCard(
-                icon: LucideIcons.helpCircle,
-                title: 'Quiz',
-                subtitle: 'Test Faith',
-                color: const Color(0xFF22C55E),
-                onTap: () => context.push('/quiz'),
-              ),
-            ),
-          ],
+        // Row 6: Gamification (Challenges only - Quiz removed)
+        PremiumFeatureCard(
+          icon: LucideIcons.trophy,
+          title: 'Challenges',
+          subtitle: 'Earn Rewards & Badges',
+          color: const Color(0xFFF97316),
+          onTap: () => context.push('/challenges'),
+          isLarge: true,
         ),
         const SizedBox(height: 12),
         // Row 7
@@ -528,11 +475,11 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: PremiumFeatureCard(
-                icon: LucideIcons.book,
-                title: 'Catechism',
-                subtitle: 'Learn Faith',
-                color: const Color(0xFF06B6D4),
-                onTap: () => context.push('/catechism'),
+                icon: LucideIcons.gift,
+                title: 'Donate',
+                subtitle: 'Support Us',
+                color: AppTheme.gold500,
+                onTap: () => context.push('/donate'),
               ),
             ),
             const SizedBox(width: 12),

@@ -20,6 +20,170 @@ class _ChallengesScreenState extends ConsumerState<ChallengesScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _leaderboard = _generateLeaderboard();
+  }
+
+  List<_LeaderboardEntry> _generateLeaderboard() {
+    final names = [
+      'Maria G.',
+      'John P.',
+      'Sarah L.',
+      'Michael K.',
+      'Anna R.',
+      'David S.',
+      'Grace C.',
+      'Peter M.',
+      'Teresa B.',
+      'James H.',
+      'Elizabeth T.',
+      'Joseph W.',
+      'Catherine D.',
+      'Francis X.',
+      'Clare A.',
+      'Anthony V.',
+      'Rose M.',
+      'Benedict P.',
+      'Monica L.',
+      'Augustine J.',
+      'Lucy F.',
+      'Paul R.',
+      'Rita C.',
+      'Stephen K.',
+      'Agnes W.',
+      'Dominic G.',
+      'Bernadette S.',
+      'Jerome H.',
+      'Cecilia B.',
+      'Patrick O.',
+      'Bridget M.',
+      'Thomas A.',
+      'Veronica L.',
+      'Simon P.',
+      'Jude T.',
+      'Martha K.',
+      'Luke D.',
+      'Matthew R.',
+      'Mark B.',
+      'Andrew G.',
+      'Philip H.',
+      'Bartholomew J.',
+      'Ignatius L.',
+      'Xavier P.',
+      'Therese M.',
+      'Faustina K.',
+      'Maximilian Kolbe',
+      'Gianna M.',
+      'Pier G.',
+      'Chiara L.',
+      'Carlo A.',
+      'Kateri T.',
+      'Juan Diego',
+      'Leo G.',
+      'Gregory H.',
+      'Ambrose B.',
+      'Jerome C.',
+      'Basil D.',
+      'Cyril E.',
+      'Hilary F.',
+      'Athanasius G.',
+      'Ephrem H.',
+      'Albert I.',
+      'Bonaventure J.',
+      'Robert K.',
+      'Lawrence L.',
+      'Sebastian M.',
+      'George N.',
+      'Christopher O.',
+      'Blaise P.',
+      'Valentine Q.',
+      'Patrick R.',
+      'Nicholas S.',
+      'Martin T.',
+      'Hubert U.',
+      'Vincent V.',
+      'William W.',
+      'Edward X.',
+      'Charles Y.',
+      'Henry Z.',
+      'Louis A.',
+      'Fernando B.',
+      'Isabella C.',
+      'Sofia D.',
+      'Mateo E.',
+      'Lucas F.',
+      'Elena G.',
+      'Diego H.',
+      'Valentina I.',
+      'Santiago J.',
+      'Camila K.',
+      'Gabriel L.',
+      'Victoria M.',
+      'Samuel N.',
+      'Daniel O.',
+      'Hannah P.',
+      'Isaac Q.',
+      'Rachel R.',
+      'Caleb S.',
+      'Leah T.',
+      'Joshua U.',
+      'Miriam V.',
+      'Ethan W.',
+      'Abigail X.',
+    ];
+
+    List<_LeaderboardEntry> entries = [];
+    int basePoints = 5000;
+
+    // Top users
+    for (int i = 0; i < names.length; i++) {
+      // Decrease points realistically
+      basePoints -= (i < 10 ? 150 : (i < 50 ? 50 : 20));
+      if (basePoints < 0) basePoints = 100;
+
+      entries.add(
+        _LeaderboardEntry(
+          rank: i + 1,
+          name: names[i],
+          points:
+              basePoints + (DateTime.now().millisecond % 50), // Add variance
+          isCurrentUser: false,
+        ),
+      );
+    }
+
+    // Insert current user around rank 25 for motivation
+    entries.insert(
+      25,
+      _LeaderboardEntry(
+        rank: 26,
+        name: 'You',
+        points: entries[24].points - 10,
+        isCurrentUser: true,
+      ),
+    );
+
+    // Re-rank after insertion
+    for (int i = 0; i < entries.length; i++) {
+      // We can't modify final fields, but we created a new list locally first inside the function logic if we wanted to be pure.
+      // But _LeaderboardEntry has final fields. So we constructed them correctly in the loop above for the static ones.
+      // For the user insertion, we need to adjust subsequent ranks.
+      // Since this is a simple mock, just rebuilding the list with correct ranks is easier or just accepting the offset.
+      // Let's just return the list as is, but we need to ensure the ranks are sequential visually if we display them from index + 1.
+    }
+    // Actually, let's just regenerate the whole list properly with the user included in the source data "sort of".
+    // Or just manually fix the ranks in the builder.
+    // The builder uses `_getRankEmoji(entry.rank)`.
+    // Let's just fix the rank in the object for the user and subsequent.
+
+    return List.generate(entries.length, (index) {
+      final e = entries[index];
+      return _LeaderboardEntry(
+        rank: index + 1,
+        name: e.name,
+        points: e.points,
+        isCurrentUser: e.isCurrentUser,
+      );
+    });
   }
 
   @override
@@ -34,88 +198,141 @@ class _ChallengesScreenState extends ConsumerState<ChallengesScreen>
       title: 'Daily Rosary',
       description: 'Pray the Rosary every day for 7 days',
       icon: '📿',
-      progress: 5,
+      progress: 0,
       total: 7,
       reward: 100,
-      daysLeft: 2,
+      daysLeft: 7,
     ),
     _Challenge(
       id: '2',
       title: 'Scripture Reader',
       description: 'Read 3 Bible chapters this week',
       icon: '📖',
-      progress: 1,
+      progress: 0,
       total: 3,
       reward: 50,
-      daysLeft: 5,
+      daysLeft: 7,
     ),
     _Challenge(
       id: '3',
       title: 'Prayer Warrior',
       description: 'Open the app 14 days in a row',
       icon: '🔥',
-      progress: 9,
+      progress: 0,
       total: 14,
       reward: 200,
-      daysLeft: 5,
+      daysLeft: 14,
+    ),
+    _Challenge(
+      id: '4',
+      title: 'Candle Lighter',
+      description: 'Light 5 prayer candles this month',
+      icon: '🕯️',
+      progress: 0,
+      total: 5,
+      reward: 75,
+      daysLeft: 30,
+    ),
+    _Challenge(
+      id: '5',
+      title: 'Confession Prep',
+      description: 'Complete the Examen 3 times this week',
+      icon: '✝️',
+      progress: 0,
+      total: 3,
+      reward: 60,
+      daysLeft: 7,
+    ),
+    _Challenge(
+      id: '6',
+      title: 'Mass Devotee',
+      description: 'Request 2 Mass offerings this month',
+      icon: '⛪',
+      progress: 0,
+      total: 2,
+      reward: 150,
+      daysLeft: 30,
+    ),
+    _Challenge(
+      id: '7',
+      title: 'Intercessor',
+      description: 'Pray for 50 people on the Prayer Wall',
+      icon: '🙏',
+      progress: 0,
+      total: 50,
+      reward: 300,
+      daysLeft: 30,
+    ),
+    _Challenge(
+      id: '8',
+      title: 'Novena Novice',
+      description: 'Complete your first Novena',
+      icon: '📅',
+      progress: 0,
+      total: 9,
+      reward: 100,
+      daysLeft: 9,
+    ),
+    _Challenge(
+      id: '9',
+      title: 'Early Riser',
+      description: 'Complete Morning Prayer 5 days in a row',
+      icon: '🌅',
+      progress: 0,
+      total: 5,
+      reward: 80,
+      daysLeft: 7,
+    ),
+    _Challenge(
+      id: '10',
+      title: 'Charitable Heart',
+      description: 'Light a candle for a stranger',
+      icon: '❤️',
+      progress: 0,
+      total: 1,
+      reward: 50,
+      daysLeft: 30,
+    ),
+    _Challenge(
+      id: '11',
+      title: 'Bible Scholar',
+      description: 'Read all 4 Gospels',
+      icon: '📚',
+      progress: 0,
+      total: 4,
+      reward: 500,
+      daysLeft: 90,
+    ),
+    _Challenge(
+      id: '12',
+      title: 'Saintly Friend',
+      description: 'Read about 10 different Saints',
+      icon: '🕊️',
+      progress: 0,
+      total: 10,
+      reward: 120,
+      daysLeft: 30,
     ),
   ];
 
-  final List<_LeaderboardEntry> _leaderboard = [
-    _LeaderboardEntry(
-      rank: 1,
-      name: 'Mary M.',
-      points: 2450,
-      isCurrentUser: false,
-    ),
-    _LeaderboardEntry(
-      rank: 2,
-      name: 'John P.',
-      points: 2280,
-      isCurrentUser: false,
-    ),
-    _LeaderboardEntry(
-      rank: 3,
-      name: 'Sarah L.',
-      points: 2100,
-      isCurrentUser: false,
-    ),
-    _LeaderboardEntry(rank: 4, name: 'You', points: 1850, isCurrentUser: true),
-    _LeaderboardEntry(
-      rank: 5,
-      name: 'Michael K.',
-      points: 1720,
-      isCurrentUser: false,
-    ),
-    _LeaderboardEntry(
-      rank: 6,
-      name: 'Anna R.',
-      points: 1650,
-      isCurrentUser: false,
-    ),
-    _LeaderboardEntry(
-      rank: 7,
-      name: 'David S.',
-      points: 1580,
-      isCurrentUser: false,
-    ),
-    _LeaderboardEntry(
-      rank: 8,
-      name: 'Grace C.',
-      points: 1490,
-      isCurrentUser: false,
-    ),
-  ];
+  late final List<_LeaderboardEntry> _leaderboard;
 
   final List<_Badge> _badges = [
-    _Badge(icon: '🙏', name: 'First Prayer', earned: true),
-    _Badge(icon: '📿', name: 'Rosary Master', earned: true),
-    _Badge(icon: '🔥', name: '7 Day Streak', earned: true),
-    _Badge(icon: '📖', name: 'Bible Reader', earned: true),
+    _Badge(icon: '🙏', name: 'First Prayer', earned: false),
+    _Badge(icon: '📿', name: 'Rosary Master', earned: false),
+    _Badge(icon: '🔥', name: '7 Day Streak', earned: false),
+    _Badge(icon: '📖', name: 'Bible Reader', earned: false),
     _Badge(icon: '⛪', name: 'Mass Goer', earned: false),
     _Badge(icon: '🏆', name: '30 Day Streak', earned: false),
     _Badge(icon: '🌟', name: 'Top 10', earned: false),
     _Badge(icon: '💎', name: 'Benefactor', earned: false),
+    _Badge(icon: '🕯️', name: 'Light Bearer', earned: false),
+    _Badge(icon: '🛡️', name: 'Guardian', earned: false),
+    _Badge(icon: '❤️', name: 'Intercessor', earned: false),
+    _Badge(icon: '📅', name: 'Novena Master', earned: false),
+    _Badge(icon: '🌅', name: 'Early Bird', earned: false),
+    _Badge(icon: '🌙', name: 'Night Watch', earned: false),
+    _Badge(icon: '✝️', name: 'Penitent', earned: false),
   ];
 
   @override
@@ -179,7 +396,7 @@ class _ChallengesScreenState extends ConsumerState<ChallengesScreen>
                       ),
                     ),
                     Text(
-                      '1,850',
+                      '0',
                       style: GoogleFonts.inter(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
@@ -206,7 +423,7 @@ class _ChallengesScreenState extends ConsumerState<ChallengesScreen>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Rank #4',
+                        'Rank #8',
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,

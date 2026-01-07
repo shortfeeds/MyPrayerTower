@@ -1,12 +1,41 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/animations/premium_animations.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../saints/providers/saints_provider.dart';
+
+// Minimal generic Saint model for UI display
+class Saint {
+  final String id;
+  final String name;
+  final String? title;
+  final String? imageUrl;
+  final String? shortBio;
+
+  const Saint({
+    required this.id,
+    required this.name,
+    this.title,
+    this.imageUrl,
+    this.shortBio,
+  });
+}
+
+// Mock provider since feature was removed
+final saintOfTheDayProvider = FutureProvider<Saint>((ref) async {
+  // Return a static saint for now to keep UI valid
+  return const Saint(
+    id: 'st-michael',
+    name: 'St. Michael the Archangel',
+    title: 'Defender in Battle',
+    imageUrl:
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Guido_Reni_-_Saint_Michael_the_Archangel_-_Google_Art_Project.jpg/800px-Guido_Reni_-_Saint_Michael_the_Archangel_-_Google_Art_Project.jpg',
+    shortBio:
+        'Defend us in battle, be our protection against the wickedness and snares of the devil.',
+  );
+});
 
 class SaintOfDayCard extends ConsumerWidget {
   const SaintOfDayCard({super.key});
@@ -25,7 +54,12 @@ class SaintOfDayCard extends ConsumerWidget {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () => context.push('/saints/${saint.id}'),
+                onTap: () {
+                  // Navigation disabled as feature is removed
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Saint details coming soon')),
+                  );
+                },
                 borderRadius: BorderRadius.circular(16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -43,6 +77,7 @@ class SaintOfDayCard extends ConsumerWidget {
                               height: 130,
                               width: double.infinity,
                               fit: BoxFit.cover,
+                              alignment: Alignment.topCenter,
                               placeholder: (context, url) => PremiumShimmer(
                                 child: Container(color: AppTheme.sacredNavy800),
                               ),
@@ -127,7 +162,7 @@ class SaintOfDayCard extends ConsumerWidget {
                             const SizedBox(height: 6),
                             Expanded(
                               child: Text(
-                                saint.shortDescription ?? saint.bio ?? '',
+                                saint.shortBio ?? '',
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.inter(
                                   fontSize: 12,

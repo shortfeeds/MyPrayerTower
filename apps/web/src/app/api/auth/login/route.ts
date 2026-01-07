@@ -26,6 +26,9 @@ export async function POST(request: NextRequest) {
                 firstName: true,
                 lastName: true,
                 displayName: true,
+                streakCount: true,
+                longestStreak: true,
+                lastStreakUpdate: true,
             }
         });
 
@@ -77,6 +80,9 @@ export async function POST(request: NextRequest) {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 displayName: user.displayName,
+                streakCount: user.streakCount,
+                longestStreak: user.longestStreak,
+                lastStreakUpdate: user.lastStreakUpdate,
             }
         });
 

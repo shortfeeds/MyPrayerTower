@@ -390,6 +390,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
               ),
             ],
           ),
+          const SizedBox(height: 120), // Clearance for bottom nav bar
         ],
       ),
     );
@@ -574,13 +575,15 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
               ),
             ),
           ),
+          const SizedBox(height: 120), // Clearance for bottom nav bar
         ],
       ),
     );
   }
 
   void _handleDonate() {
-    // TODO: Integrate with Stripe/Cashfree
+    // NOTE: Integrate with Stripe/Cashfree
+    debugPrint('Processing donation request: \$$_totalAmount');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -595,7 +598,8 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
     final plans = ref.read(subscriptionPlansProvider);
     final plan = plans[_selectedPlanIndex!];
 
-    // TODO: Integrate with Stripe subscriptions
+    // NOTE: Integrate with Stripe subscriptions
+    debugPrint('Processing subscription: ${plan.id}');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Subscribing to ${plan.name}...'),

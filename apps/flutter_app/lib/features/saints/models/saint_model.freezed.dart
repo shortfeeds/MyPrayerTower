@@ -28,13 +28,10 @@ mixin _$Saint {
   String? get feastDay => throw _privateConstructorUsedError;
   int? get feastMonth => throw _privateConstructorUsedError;
   int? get feastDayOfMonth => throw _privateConstructorUsedError;
-  @JsonKey(name: 'biography')
-  String? get bio => throw _privateConstructorUsedError;
-  @JsonKey(name: 'shortBio')
-  String? get shortDescription => throw _privateConstructorUsedError;
+  String? get biography => throw _privateConstructorUsedError;
+  String? get shortBio => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
-  @JsonKey(name: 'patronOf')
-  List<String>? get patronage => throw _privateConstructorUsedError;
+  List<String>? get patronOf => throw _privateConstructorUsedError;
   String? get prayer => throw _privateConstructorUsedError;
 
   /// Serializes this Saint to a JSON map.
@@ -59,10 +56,10 @@ abstract class $SaintCopyWith<$Res> {
     String? feastDay,
     int? feastMonth,
     int? feastDayOfMonth,
-    @JsonKey(name: 'biography') String? bio,
-    @JsonKey(name: 'shortBio') String? shortDescription,
+    String? biography,
+    String? shortBio,
     String? imageUrl,
-    @JsonKey(name: 'patronOf') List<String>? patronage,
+    List<String>? patronOf,
     String? prayer,
   });
 }
@@ -89,10 +86,10 @@ class _$SaintCopyWithImpl<$Res, $Val extends Saint>
     Object? feastDay = freezed,
     Object? feastMonth = freezed,
     Object? feastDayOfMonth = freezed,
-    Object? bio = freezed,
-    Object? shortDescription = freezed,
+    Object? biography = freezed,
+    Object? shortBio = freezed,
     Object? imageUrl = freezed,
-    Object? patronage = freezed,
+    Object? patronOf = freezed,
     Object? prayer = freezed,
   }) {
     return _then(
@@ -125,21 +122,21 @@ class _$SaintCopyWithImpl<$Res, $Val extends Saint>
                 ? _value.feastDayOfMonth
                 : feastDayOfMonth // ignore: cast_nullable_to_non_nullable
                       as int?,
-            bio: freezed == bio
-                ? _value.bio
-                : bio // ignore: cast_nullable_to_non_nullable
+            biography: freezed == biography
+                ? _value.biography
+                : biography // ignore: cast_nullable_to_non_nullable
                       as String?,
-            shortDescription: freezed == shortDescription
-                ? _value.shortDescription
-                : shortDescription // ignore: cast_nullable_to_non_nullable
+            shortBio: freezed == shortBio
+                ? _value.shortBio
+                : shortBio // ignore: cast_nullable_to_non_nullable
                       as String?,
             imageUrl: freezed == imageUrl
                 ? _value.imageUrl
                 : imageUrl // ignore: cast_nullable_to_non_nullable
                       as String?,
-            patronage: freezed == patronage
-                ? _value.patronage
-                : patronage // ignore: cast_nullable_to_non_nullable
+            patronOf: freezed == patronOf
+                ? _value.patronOf
+                : patronOf // ignore: cast_nullable_to_non_nullable
                       as List<String>?,
             prayer: freezed == prayer
                 ? _value.prayer
@@ -167,10 +164,10 @@ abstract class _$$SaintImplCopyWith<$Res> implements $SaintCopyWith<$Res> {
     String? feastDay,
     int? feastMonth,
     int? feastDayOfMonth,
-    @JsonKey(name: 'biography') String? bio,
-    @JsonKey(name: 'shortBio') String? shortDescription,
+    String? biography,
+    String? shortBio,
     String? imageUrl,
-    @JsonKey(name: 'patronOf') List<String>? patronage,
+    List<String>? patronOf,
     String? prayer,
   });
 }
@@ -196,10 +193,10 @@ class __$$SaintImplCopyWithImpl<$Res>
     Object? feastDay = freezed,
     Object? feastMonth = freezed,
     Object? feastDayOfMonth = freezed,
-    Object? bio = freezed,
-    Object? shortDescription = freezed,
+    Object? biography = freezed,
+    Object? shortBio = freezed,
     Object? imageUrl = freezed,
-    Object? patronage = freezed,
+    Object? patronOf = freezed,
     Object? prayer = freezed,
   }) {
     return _then(
@@ -232,21 +229,21 @@ class __$$SaintImplCopyWithImpl<$Res>
             ? _value.feastDayOfMonth
             : feastDayOfMonth // ignore: cast_nullable_to_non_nullable
                   as int?,
-        bio: freezed == bio
-            ? _value.bio
-            : bio // ignore: cast_nullable_to_non_nullable
+        biography: freezed == biography
+            ? _value.biography
+            : biography // ignore: cast_nullable_to_non_nullable
                   as String?,
-        shortDescription: freezed == shortDescription
-            ? _value.shortDescription
-            : shortDescription // ignore: cast_nullable_to_non_nullable
+        shortBio: freezed == shortBio
+            ? _value.shortBio
+            : shortBio // ignore: cast_nullable_to_non_nullable
                   as String?,
         imageUrl: freezed == imageUrl
             ? _value.imageUrl
             : imageUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
-        patronage: freezed == patronage
-            ? _value._patronage
-            : patronage // ignore: cast_nullable_to_non_nullable
+        patronOf: freezed == patronOf
+            ? _value._patronOf
+            : patronOf // ignore: cast_nullable_to_non_nullable
                   as List<String>?,
         prayer: freezed == prayer
             ? _value.prayer
@@ -268,12 +265,12 @@ class _$SaintImpl implements _Saint {
     this.feastDay,
     this.feastMonth,
     this.feastDayOfMonth,
-    @JsonKey(name: 'biography') this.bio,
-    @JsonKey(name: 'shortBio') this.shortDescription,
+    this.biography,
+    this.shortBio,
     this.imageUrl,
-    @JsonKey(name: 'patronOf') final List<String>? patronage,
+    final List<String>? patronOf,
     this.prayer,
-  }) : _patronage = patronage;
+  }) : _patronOf = patronOf;
 
   factory _$SaintImpl.fromJson(Map<String, dynamic> json) =>
       _$$SaintImplFromJson(json);
@@ -293,20 +290,17 @@ class _$SaintImpl implements _Saint {
   @override
   final int? feastDayOfMonth;
   @override
-  @JsonKey(name: 'biography')
-  final String? bio;
+  final String? biography;
   @override
-  @JsonKey(name: 'shortBio')
-  final String? shortDescription;
+  final String? shortBio;
   @override
   final String? imageUrl;
-  final List<String>? _patronage;
+  final List<String>? _patronOf;
   @override
-  @JsonKey(name: 'patronOf')
-  List<String>? get patronage {
-    final value = _patronage;
+  List<String>? get patronOf {
+    final value = _patronOf;
     if (value == null) return null;
-    if (_patronage is EqualUnmodifiableListView) return _patronage;
+    if (_patronOf is EqualUnmodifiableListView) return _patronOf;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
@@ -316,7 +310,7 @@ class _$SaintImpl implements _Saint {
 
   @override
   String toString() {
-    return 'Saint(id: $id, name: $name, slug: $slug, title: $title, feastDay: $feastDay, feastMonth: $feastMonth, feastDayOfMonth: $feastDayOfMonth, bio: $bio, shortDescription: $shortDescription, imageUrl: $imageUrl, patronage: $patronage, prayer: $prayer)';
+    return 'Saint(id: $id, name: $name, slug: $slug, title: $title, feastDay: $feastDay, feastMonth: $feastMonth, feastDayOfMonth: $feastDayOfMonth, biography: $biography, shortBio: $shortBio, imageUrl: $imageUrl, patronOf: $patronOf, prayer: $prayer)';
   }
 
   @override
@@ -334,15 +328,13 @@ class _$SaintImpl implements _Saint {
                 other.feastMonth == feastMonth) &&
             (identical(other.feastDayOfMonth, feastDayOfMonth) ||
                 other.feastDayOfMonth == feastDayOfMonth) &&
-            (identical(other.bio, bio) || other.bio == bio) &&
-            (identical(other.shortDescription, shortDescription) ||
-                other.shortDescription == shortDescription) &&
+            (identical(other.biography, biography) ||
+                other.biography == biography) &&
+            (identical(other.shortBio, shortBio) ||
+                other.shortBio == shortBio) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
-            const DeepCollectionEquality().equals(
-              other._patronage,
-              _patronage,
-            ) &&
+            const DeepCollectionEquality().equals(other._patronOf, _patronOf) &&
             (identical(other.prayer, prayer) || other.prayer == prayer));
   }
 
@@ -357,10 +349,10 @@ class _$SaintImpl implements _Saint {
     feastDay,
     feastMonth,
     feastDayOfMonth,
-    bio,
-    shortDescription,
+    biography,
+    shortBio,
     imageUrl,
-    const DeepCollectionEquality().hash(_patronage),
+    const DeepCollectionEquality().hash(_patronOf),
     prayer,
   );
 
@@ -387,10 +379,10 @@ abstract class _Saint implements Saint {
     final String? feastDay,
     final int? feastMonth,
     final int? feastDayOfMonth,
-    @JsonKey(name: 'biography') final String? bio,
-    @JsonKey(name: 'shortBio') final String? shortDescription,
+    final String? biography,
+    final String? shortBio,
     final String? imageUrl,
-    @JsonKey(name: 'patronOf') final List<String>? patronage,
+    final List<String>? patronOf,
     final String? prayer,
   }) = _$SaintImpl;
 
@@ -411,16 +403,13 @@ abstract class _Saint implements Saint {
   @override
   int? get feastDayOfMonth;
   @override
-  @JsonKey(name: 'biography')
-  String? get bio;
+  String? get biography;
   @override
-  @JsonKey(name: 'shortBio')
-  String? get shortDescription;
+  String? get shortBio;
   @override
   String? get imageUrl;
   @override
-  @JsonKey(name: 'patronOf')
-  List<String>? get patronage;
+  List<String>? get patronOf;
   @override
   String? get prayer;
 

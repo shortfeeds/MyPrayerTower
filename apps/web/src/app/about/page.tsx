@@ -102,11 +102,11 @@ export default function AboutPage() {
                             <div className="relative z-10">
                                 <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
                                 <p className="text-blue-100 mb-8 max-w-xl mx-auto">
-                                    Start your spiritual journey today. Create a free account to track your prayers, save your favorite churches, and connect with believers worldwide.
+                                    Start your spiritual journey today. Create an account to track your prayers, save your favorite churches, and connect with believers worldwide.
                                 </p>
                                 <div className="flex gap-4 justify-center">
                                     <Link href="/register" className="px-8 py-3 bg-gold-500 hover:bg-gold-400 text-white font-bold rounded-xl transition-colors shadow-lg shadow-gold-500/25">
-                                        Get Started Free
+                                        Join Now
                                     </Link>
                                     <Link href="/contact" className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-colors backdrop-blur-sm">
                                         Contact Us

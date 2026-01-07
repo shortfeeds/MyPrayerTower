@@ -13,49 +13,31 @@ class QuickAccessBar extends StatelessWidget {
       icon: LucideIcons.heart,
       label: 'Pray Now',
       route: '/prayers',
-      gradient: LinearGradient(
-        colors: [Color(0xFFEC4899), Color(0xFFF43F5E)],
-      ),
-    ),
-    const _QuickAction(
-      icon: LucideIcons.mapPin,
-      label: 'Find Mass',
-      route: '/churches',
-      gradient: LinearGradient(
-        colors: [Color(0xFF3B82F6), Color(0xFF6366F1)],
-      ),
+      gradient: LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFF43F5E)]),
     ),
     const _QuickAction(
       icon: LucideIcons.flame,
       label: 'Light Candle',
       route: '/candles',
-      gradient: LinearGradient(
-        colors: [Color(0xFFF59E0B), Color(0xFFEF4444)],
-      ),
+      gradient: LinearGradient(colors: [Color(0xFFF59E0B), Color(0xFFEF4444)]),
     ),
     const _QuickAction(
-      icon: LucideIcons.circleEllipsis,
+      icon: LucideIcons.layoutGrid,
       label: 'Rosary',
       route: '/rosary',
-      gradient: LinearGradient(
-        colors: [Color(0xFF8B5CF6), Color(0xFFA855F7)],
-      ),
+      gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFFA855F7)]),
     ),
     const _QuickAction(
       icon: LucideIcons.shield,
       label: 'Confession',
       route: '/confession',
-      gradient: LinearGradient(
-        colors: [Color(0xFF10B981), Color(0xFF14B8A6)],
-      ),
+      gradient: LinearGradient(colors: [Color(0xFF10B981), Color(0xFF14B8A6)]),
     ),
     const _QuickAction(
       icon: LucideIcons.scroll,
       label: 'Mass Offer',
       route: '/mass-offering',
-      gradient: LinearGradient(
-        colors: [AppTheme.gold400, AppTheme.gold500],
-      ),
+      gradient: LinearGradient(colors: [AppTheme.gold400, AppTheme.gold500]),
     ),
   ];
 
@@ -63,15 +45,23 @@ class QuickAccessBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 90,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        itemCount: _actions.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final action = _actions[index];
-          return _QuickActionButton(action: action);
-        },
+      child: Center(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(_actions.length, (index) {
+              final action = _actions[index];
+              return Padding(
+                padding: EdgeInsets.only(
+                  right: index < _actions.length - 1 ? 12 : 0,
+                ),
+                child: _QuickActionButton(action: action),
+              );
+            }),
+          ),
+        ),
       ),
     );
   }

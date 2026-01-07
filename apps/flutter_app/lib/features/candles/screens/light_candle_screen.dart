@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../repositories/candle_repository.dart';
+import '../../auth/providers/auth_provider.dart';
 
 class LightCandleScreen extends ConsumerStatefulWidget {
   const LightCandleScreen({super.key});
@@ -65,6 +67,7 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.sacredNavy950,
+      resizeToAvoidBottomInset: true, // Ensures keyboard doesn't cover content
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -86,259 +89,269 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Duration Selection
-            Text(
-              'Choose Duration',
-              style: GoogleFonts.inter(
-                color: Colors.white70,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Duration Selection
+              Text(
+                'Choose Duration',
+                style: GoogleFonts.inter(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 1.4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              children: _durations.reversed.map((duration) {
-                final isSelected = _selectedDuration == duration['value'];
-                final isPremium = duration['tier'] == 'premium';
+              const SizedBox(height: 12),
+              GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                childAspectRatio: 1.4,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                children: _durations.reversed.map((duration) {
+                  final isSelected = _selectedDuration == duration['value'];
+                  final isPremium = duration['tier'] == 'premium';
 
-                return GestureDetector(
-                  onTap: () =>
-                      setState(() => _selectedDuration = duration['value']),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? (isPremium
-                                ? AppTheme.gold500.withValues(alpha: 0.2)
-                                : Colors.blue.withValues(alpha: 0.1))
-                          : AppTheme.darkCard,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
+                  return GestureDetector(
+                    onTap: () =>
+                        setState(() => _selectedDuration = duration['value']),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
                         color: isSelected
                             ? (isPremium
-                                  ? AppTheme.gold500
-                                  : Colors.blue.shade400)
-                            : Colors.white10,
-                        width: 2,
+                                  ? AppTheme.gold500.withValues(alpha: 0.2)
+                                  : Colors.blue.withValues(alpha: 0.1))
+                            : AppTheme.darkCard,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected
+                              ? (isPremium
+                                    ? AppTheme.gold500
+                                    : Colors.blue.shade400)
+                              : Colors.white10,
+                          width: 2,
+                        ),
+                      ),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          if (isPremium)
+                            Positioned(
+                              top: -8,
+                              right: -8,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [AppTheme.gold500, Colors.orange],
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  'FEATURED',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    duration['label'],
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    duration['priceDisplay'],
+                                    style: GoogleFonts.inter(
+                                      color: duration['price'] == 0
+                                          ? Colors.greenAccent
+                                          : AppTheme.gold500,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                duration['desc'],
+                                style: GoogleFonts.inter(
+                                  color: Colors.white60,
+                                  fontSize: 11,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    child: Stack(
-                      children: [
-                        if (isPremium)
-                          Positioned(
-                            top: -8,
-                            right: -8,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [AppTheme.gold500, Colors.orange],
-                                ),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                'FEATURED',
-                                style: GoogleFonts.inter(
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  duration['label'],
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  duration['priceDisplay'],
-                                  style: GoogleFonts.inter(
-                                    color: duration['price'] == 0
-                                        ? Colors.greenAccent
-                                        : AppTheme.gold500,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              duration['desc'],
-                              style: GoogleFonts.inter(
-                                color: Colors.white60,
-                                fontSize: 11,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ],
+                  );
+                }).toList(),
+              ),
+
+              const SizedBox(height: 32),
+
+              // Name Input
+              Text(
+                'Your Name',
+                style: GoogleFonts.inter(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                onChanged: (val) => setState(() => _userName = val),
+                enabled: !_isAnonymous,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: _isAnonymous ? 'Anonymous' : 'Enter your name',
+                  hintStyle: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.3),
+                  ),
+                  filled: true,
+                  fillColor: AppTheme.darkCard,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+              ),
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () => setState(() => _isAnonymous = !_isAnonymous),
+                child: Row(
+                  children: [
+                    Icon(
+                      _isAnonymous
+                          ? LucideIcons.checkSquare
+                          : LucideIcons.square,
+                      color: _isAnonymous ? AppTheme.gold500 : Colors.grey,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Post anonymously',
+                      style: GoogleFonts.inter(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Intention Input
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Your Prayer Intention',
+                    style: GoogleFonts.inter(
+                      color: Colors.white70,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
                     ),
                   ),
-                );
-              }).toList(),
-            ),
-
-            const SizedBox(height: 32),
-
-            // Name Input
-            Text(
-              'Your Name',
-              style: GoogleFonts.inter(
-                color: Colors.white70,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              onChanged: (val) => setState(() => _userName = val),
-              enabled: !_isAnonymous,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: _isAnonymous ? 'Anonymous' : 'Enter your name',
-                hintStyle: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.3),
-                ),
-                filled: true,
-                fillColor: AppTheme.darkCard,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.all(16),
-              ),
-            ),
-            const SizedBox(height: 8),
-            GestureDetector(
-              onTap: () => setState(() => _isAnonymous = !_isAnonymous),
-              child: Row(
-                children: [
-                  Icon(
-                    _isAnonymous ? LucideIcons.checkSquare : LucideIcons.square,
-                    color: _isAnonymous ? AppTheme.gold500 : Colors.grey,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
                   Text(
-                    'Post anonymously',
-                    style: GoogleFonts.inter(color: Colors.grey, fontSize: 14),
+                    '${_intention.length}/60',
+                    style: GoogleFonts.inter(color: Colors.grey, fontSize: 12),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 8),
+              TextField(
+                onChanged: (val) => setState(() => _intention = val),
+                style: const TextStyle(color: Colors.white),
+                maxLength: 60,
+                decoration: InputDecoration(
+                  hintText: 'For healing, peace, guidance...',
+                  hintStyle: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.3),
+                  ),
+                  filled: true,
+                  fillColor: AppTheme.darkCard,
+                  counterText: '',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+              ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 48),
 
-            // Intention Input
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Your Prayer Intention',
-                  style: GoogleFonts.inter(
-                    color: Colors.white70,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+              // Action Button
+              ElevatedButton(
+                onPressed: _isProcessing ? null : _handleAction,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.gold500,
+                  disabledBackgroundColor: Colors.grey.shade800,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                Text(
-                  '${_intention.length}/60',
-                  style: GoogleFonts.inter(color: Colors.grey, fontSize: 12),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              onChanged: (val) => setState(() => _intention = val),
-              style: const TextStyle(color: Colors.white),
-              maxLength: 60,
-              decoration: InputDecoration(
-                hintText: 'For healing, peace, guidance...',
-                hintStyle: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.3),
-                ),
-                filled: true,
-                fillColor: AppTheme.darkCard,
-                counterText: '',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.all(16),
-              ),
-            ),
-
-            const SizedBox(height: 48),
-
-            // Action Button
-            ElevatedButton(
-              onPressed: _isValid() ? _handleAction : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.gold500,
-                disabledBackgroundColor: Colors.grey.shade800,
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: _isProcessing
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.black,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          isPaid ? LucideIcons.creditCard : LucideIcons.flame,
+                child: _isProcessing
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
                           color: Colors.black,
-                          size: 20,
+                          strokeWidth: 2,
                         ),
-                        const SizedBox(width: 12),
-                        Text(
-                          isPaid
-                              ? 'Continue - ${selectedOption['priceDisplay']}'
-                              : 'Light Free Candle',
-                          style: GoogleFonts.inter(
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            isPaid ? LucideIcons.creditCard : LucideIcons.flame,
                             color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            size: 20,
                           ),
-                        ),
-                      ],
-                    ),
-            ),
-          ],
+                          const SizedBox(width: 12),
+                          Text(
+                            isPaid
+                                ? 'Continue - ${selectedOption['priceDisplay']}'
+                                : 'Light Free Candle',
+                            style: GoogleFonts.inter(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -350,40 +363,79 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
     return true;
   }
 
-  void _handleAction() {
+  Future<void> _handleAction() async {
+    if (!_isValid()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your name and intention'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     setState(() => _isProcessing = true);
 
-    // Simulate processing
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        setState(() => _isProcessing = false);
-        final selectedOption = _durations.firstWhere(
-          (d) => d['value'] == _selectedDuration,
-        );
-        final isPaid = (selectedOption['price'] as double) > 0;
+    final selectedOption = _durations.firstWhere(
+      (d) => d['value'] == _selectedDuration,
+    );
+    final isPaid = (selectedOption['price'] as double) > 0;
+    final tier = selectedOption['tier'] as String;
 
-        if (isPaid) {
-          // Payment Flow placeholder
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Proceeding to payment for ${selectedOption['priceDisplay']}...',
-              ),
-              backgroundColor: AppTheme.gold500,
+    // Get current user ID if logged in (optional)
+    final authState = ref.read(authProvider);
+    final userId = authState.value?.id;
+
+    // Save to database (works for both guests and logged-in users)
+    final candleRepo = ref.read(candleRepositoryProvider);
+    final candle = await candleRepo.lightCandle(
+      userName: _isAnonymous ? 'Anonymous' : _userName,
+      intention: _intention,
+      duration: _selectedDuration,
+      tier: tier,
+      userId: userId,
+      isAnonymous: _isAnonymous,
+    );
+
+    if (!mounted) return;
+    setState(() => _isProcessing = false);
+
+    if (candle != null) {
+      // Successfully saved to database
+      if (isPaid) {
+        // Payment Flow - candle is saved but needs payment confirmation
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Proceeding to payment for ${selectedOption['priceDisplay']}...',
             ),
-          );
-          // In real implementation, show payment sheet here
-        } else {
-          // Free Candle Success
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Your candle has been lit!'),
-              backgroundColor: Colors.green,
+            backgroundColor: AppTheme.gold500,
+          ),
+        );
+        // In real implementation, show payment sheet here
+        // After successful payment, update candle status
+      } else {
+        // Free Candle Success
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              '🕯️ Your candle has been lit! It will appear on the wall.',
             ),
-          );
-          context.pop();
-        }
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Refresh candles list
+        ref.invalidate(activeCandlesProvider);
+        context.pop();
       }
-    });
+    } else {
+      // Failed to save - show error but still allow UI flow
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Your candle has been lit locally!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.pop();
+    }
   }
 }

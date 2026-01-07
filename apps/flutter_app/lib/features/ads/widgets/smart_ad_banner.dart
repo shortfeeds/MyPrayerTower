@@ -1,11 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../../../core/theme/app_theme.dart';
-import '../models/ad_model.dart';
-import '../repositories/ad_repository.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../services/ad_service.dart';
 
 class SmartAdBanner extends ConsumerStatefulWidget {
   final String page;
@@ -18,132 +15,126 @@ class SmartAdBanner extends ConsumerStatefulWidget {
 }
 
 class _SmartAdBannerState extends ConsumerState<SmartAdBanner> {
-  BannerAd? _googleBannerAd;
-  bool _isGoogleAdLoaded = false;
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAd();
+  }
+
+  void _loadAd() {
+    final adService = ref.read(adServiceProvider);
+    _bannerAd = adService.createBannerAd(
+      onAdLoaded: () {
+        if (mounted) {
+          setState(() {
+            _isAdLoaded = true;
+            _hasError = false;
+          });
+        }
+      },
+      onAdFailed: (error) {
+        if (mounted) {
+          setState(() {
+            _hasError = true;
+          });
+        }
+      },
+    );
+    _bannerAd?.load();
+  }
 
   @override
   void dispose() {
-    _googleBannerAd?.dispose();
+    _bannerAd?.dispose();
     super.dispose();
-  }
-
-  void _loadGoogleAd(String adUnitId) {
-    _googleBannerAd = BannerAd(
-      adUnitId: adUnitId,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (_) {
-          setState(() {
-            _isGoogleAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (ad, error) {
-          // ad.dispose();
-          // print('Ad failed to load: $error');
-        },
-      ),
-    )..load();
-  }
-
-  Future<void> _launchUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final adRepo = ref.watch(adRepositoryProvider);
+    if (_isAdLoaded && _bannerAd != null) {
+      return Container(
+        width: double.infinity,
+        height: _bannerAd!.size.height.toDouble(),
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: _bannerAd!.size.width.toDouble(),
+          height: _bannerAd!.size.height.toDouble(),
+          child: AdWidget(ad: _bannerAd!),
+        ),
+      );
+    }
 
-    return FutureBuilder<List<AdModel>>(
-      // Fetch ads for this slot
-      future: adRepo.getAds(page: widget.page, position: widget.position),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        final ad = snapshot.data!.first;
-
-        // 1. Offline Sponsor Ad
-        if (ad.adSource == 'OFFLINE' && ad.imageUrl != null) {
-          // Track Impression
-          adRepo.trackImpression(ad.id);
-
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 4, bottom: 4),
-                  child: Text(
-                    'SPONSORED',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textSecondary.withValues(alpha: 0.5),
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    if (ad.linkUrl != null) {
-                      adRepo.trackClick(ad.id);
-                      _launchUrl(ad.linkUrl!);
-                    }
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: ad.imageUrl!,
-                      width: double.infinity,
-                      height: widget.position == 'sidebar'
-                          ? 250
-                          : 60, // Adjust height
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: AppTheme.sacredNavy800,
-                        height: 60,
-                        child: const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                      errorWidget: (context, url, error) =>
-                          const SizedBox.shrink(),
-                    ),
-                  ),
-                ),
-              ],
+    if (_hasError) {
+      // House Ad (Offline / Fallback Mode)
+      return Container(
+        width: double.infinity,
+        height: 60,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              const Color(0xFF1E293B),
+              Colors.amber.withValues(alpha: 0.1),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.light_mode,
+                color: Colors.amber,
+                size: 20,
+              ),
             ),
-          );
-        }
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Light a Virtual Candle',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Pray for your intentions',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white38,
+              size: 14,
+            ),
+          ],
+        ),
+      );
+    }
 
-        // 2. Google Ad (Banner)
-        if (ad.adSource == 'GOOGLE' && ad.googleAdUnitId != null) {
-          if (_googleBannerAd == null) {
-            // Initialize ad only once
-            _loadGoogleAd(ad.googleAdUnitId!);
-          }
-
-          if (_isGoogleAdLoaded && _googleBannerAd != null) {
-            return Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              width: _googleBannerAd!.size.width.toDouble(),
-              height: _googleBannerAd!.size.height.toDouble(),
-              child: AdWidget(ad: _googleBannerAd!),
-            );
-          }
-          // Placeholder while loading or if failed
-          return const SizedBox(height: 50); // Min height to prevent jump
-        }
-
-        return const SizedBox.shrink();
-      },
-    );
+    // Loading State
+    return const SizedBox.shrink();
   }
 }

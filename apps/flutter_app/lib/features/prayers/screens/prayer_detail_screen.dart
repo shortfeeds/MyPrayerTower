@@ -1,156 +1,131 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
+import '../repositories/prayers_repository.dart';
+import '../models/prayer_model.dart';
 
 class PrayerDetailScreen extends ConsumerWidget {
-  final String prayerId;
+  final int prayerId;
 
   const PrayerDetailScreen({super.key, required this.prayerId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Ideally we would have a specific provider for this
+    final prayerFuture = ref
+        .watch(prayersRepositoryProvider)
+        .getPrayerById(prayerId);
+
     return Scaffold(
+      backgroundColor: AppTheme.sacredNavy950,
       appBar: AppBar(
-        title: const Text('Prayer'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(LucideIcons.arrowLeft, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
-          IconButton(icon: const Icon(LucideIcons.share2), onPressed: () {}),
-          IconButton(icon: const Icon(LucideIcons.heart), onPressed: () {}),
-          // GLOBAL MENU: Added action for detail screen
           IconButton(
-            icon: const Icon(LucideIcons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
+            icon: const Icon(LucideIcons.share2, color: Colors.white),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(LucideIcons.heart, color: Colors.white),
+            onPressed: () {},
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title
-            Text(
-              'The Lord\'s Prayer',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-
-            const SizedBox(height: 8),
-
-            // Category badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppTheme.info.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(20),
-              ),
+      body: FutureBuilder<Prayer?>(
+        future: prayerFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
               child: Text(
-                'Essential Prayers',
-                style: Theme.of(
-                  context,
-                ).textTheme.labelSmall?.copyWith(color: AppTheme.info),
+                'Error: ${snapshot.error}',
+                style: const TextStyle(color: Colors.white),
               ),
-            ),
+            );
+          }
 
-            const SizedBox(height: 24),
-
-            // Prayer content
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppTheme.darkCard,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppTheme.darkBorder.withValues(alpha: 0.5),
-                ),
-              ),
-              child: Text(
-                '''Our Father, who art in heaven,
-hallowed be thy name;
-thy kingdom come;
-thy will be done
-on earth as it is in heaven.
-
-Give us this day our daily bread,
-and forgive us our trespasses,
-as we forgive those who trespass against us;
-and lead us not into temptation,
-but deliver us from evil.
-
-Amen.''',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  height: 1.8,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Audio button (Premium)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: AppTheme.goldGradient,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
+          if (!snapshot.hasData || snapshot.data == null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Icon(LucideIcons.play, color: Colors.white),
+                  const Icon(
+                    LucideIcons.fileQuestion,
+                    size: 48,
+                    color: Colors.white54,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Listen to Audio',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        Text(
-                          'Premium Feature',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Colors.white.withValues(alpha: 0.8),
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Upgrade',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: AppTheme.accentAmber,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Prayer not found',
+                    style: GoogleFonts.inter(color: Colors.white70),
                   ),
                 ],
               ),
-            ),
+            );
+          }
 
-            const SizedBox(height: 100),
-          ],
-        ),
+          final prayer = snapshot.data!;
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.gold500.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppTheme.gold500.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Text(
+                    prayer.categoryLabel,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.gold500,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  prayer.title,
+                  style: GoogleFonts.merriweather(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                Container(width: 40, height: 2, color: AppTheme.gold500),
+                const SizedBox(height: 32),
+                Text(
+                  prayer.content,
+                  style: GoogleFonts.inter(
+                    fontSize: 18,
+                    color: Colors.white.withValues(alpha: 0.9),
+                    height: 1.8,
+                  ),
+                ),
+                const SizedBox(height: 100),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

@@ -1,3 +1,4 @@
+// Refresh IDE
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'saint_model.freezed.dart';
@@ -13,10 +14,10 @@ class Saint with _$Saint {
     String? feastDay,
     int? feastMonth,
     int? feastDayOfMonth,
-    @JsonKey(name: 'biography') String? bio,
-    @JsonKey(name: 'shortBio') String? shortDescription,
+    String? biography,
+    String? shortBio,
     String? imageUrl,
-    @JsonKey(name: 'patronOf') List<String>? patronage,
+    List<String>? patronOf,
     String? prayer,
   }) = _Saint;
 

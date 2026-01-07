@@ -11,9 +11,14 @@ _$PrayerImpl _$$PrayerImplFromJson(Map<String, dynamic> json) => _$PrayerImpl(
   title: json['title'] as String,
   content: json['content'] as String,
   category: json['category'] as String,
-  categoryLabel: json['category_label'] as String?,
+  categoryLabel: json['category_label'] as String,
+  tags:
+      (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const [],
   isActive: json['is_active'] as bool? ?? true,
-  tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+  createdAt: json['created_at'] == null
+      ? null
+      : DateTime.parse(json['created_at'] as String),
 );
 
 Map<String, dynamic> _$$PrayerImplToJson(_$PrayerImpl instance) =>
@@ -23,6 +28,7 @@ Map<String, dynamic> _$$PrayerImplToJson(_$PrayerImpl instance) =>
       'content': instance.content,
       'category': instance.category,
       'category_label': instance.categoryLabel,
-      'is_active': instance.isActive,
       'tags': instance.tags,
+      'is_active': instance.isActive,
+      'created_at': instance.createdAt?.toIso8601String(),
     };
