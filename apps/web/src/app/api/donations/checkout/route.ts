@@ -5,41 +5,41 @@ import { randomUUID } from 'crypto';
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { duration, amount, intention, name, isAnonymous } = body;
+        console.log('Donation Checkout Request:', JSON.stringify(body, null, 2));
+        const { amount, tier, email, name, message, isAnonymous, coversFee } = body;
 
-        // Validate required fields
-        if (!duration || !amount || !intention) {
+        // amount is in cents
+        if (!amount || amount < 50) { // Minimum 50 cents
             return NextResponse.json(
-                { success: false, message: 'Missing required fields' },
+                { success: false, message: 'Invalid donation amount' },
                 { status: 400 }
             );
         }
 
-        // Create a unique order ID
-        const orderId = `CANDLE_${randomUUID().slice(0, 8)}_${Date.now()}`;
+        const orderId = `DONATE_${randomUUID().slice(0, 8)}_${Date.now()}`;
+        const customerId = (name || 'donor').replace(/[^\w]/g, '_').substring(0, 20);
 
-        // Customer details
-        const customerId = name ? name.replace(/[^\w]/g, '_').substring(0, 20) : 'guest_user';
-        const customerPhone = '9999999999';
-        const customerName = name || 'Guest';
+        // Convert cents to dollars
+        const dollarAmount = Number((amount / 100).toFixed(2));
 
         const order = await createOrder({
             orderId,
-            amount: Number((amount / 100).toFixed(2)), // Convert cents to dollars
+            amount: dollarAmount,
             currency: 'USD',
             customerId,
-            customerPhone,
-            customerName
+            customerPhone: '9999999999',
+            customerName: name || 'Donor'
         });
 
         return NextResponse.json({
             success: true,
             payment_session_id: order.payment_session_id,
             order_id: order.order_id,
+            url: null
         });
 
     } catch (error: any) {
-        console.error('Checkout error:', error);
+        console.error('Donation Checkout error:', error);
         return NextResponse.json(
             { success: false, message: error.message || 'Internal Server Error' },
             { status: 500 }

@@ -10,7 +10,7 @@ const OFFERING_TYPES = [
         id: 'REGULAR',
         name: 'Single Mass',
         icon: '⛪',
-        price: 1500,
+        price: 1000,
         description: 'A single Holy Mass offered for your intention',
         popular: false,
     },
@@ -35,7 +35,7 @@ const OFFERING_TYPES = [
         id: 'GREGORIAN',
         name: 'Gregorian Masses',
         icon: '🙏',
-        price: 25000,
+        price: 20000,
         description: '30 consecutive Masses for the deceased (traditional devotion)',
         popular: false,
     },
@@ -131,10 +131,16 @@ export default function MassOfferingsPage() {
     const handleSubmit = async () => {
         setIsSubmitting(true);
         try {
+            const totalAmount = calculateTotal();
+            const intentionDetails = `For: ${intentionFor} (${isForLiving ? 'Living' : 'Deceased'}). ${selectedIntentions.length ? 'Intentions: ' + selectedIntentions.join(', ') : ''}. ${specialIntention ? 'Note: ' + specialIntention : ''}`;
+
             const response = await fetch('/api/mass-offerings/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    offeringId: selectedType, // Backend expects offeringId
+                    amount: totalAmount, // Send calculated total in cents
+                    intention: intentionDetails, // Backend expects single intention string
                     offeringType: selectedType,
                     intentionFor,
                     additionalNames: additionalNames.filter(n => n.trim()),
@@ -159,24 +165,19 @@ export default function MassOfferingsPage() {
 
             const data = await response.json();
 
-            if (data.paymentSessionId) {
-                // Open Cashfree checkout
-                const cashfree = (window as any).Cashfree;
-                if (cashfree) {
-                    const cf = new cashfree.Cashfree({ mode: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox' });
-                    cf.checkout({
-                        paymentSessionId: data.paymentSessionId,
-                        redirectTarget: '_self',
-                    });
-                } else {
-                    // Fallback: redirect to Cashfree checkout URL
-                    const checkoutUrl = process.env.NODE_ENV === 'production'
-                        ? `https://payments.cashfree.com/order/${data.paymentSessionId}`
-                        : `https://payments-test.cashfree.com/order/${data.paymentSessionId}`;
-                    window.location.href = checkoutUrl;
-                }
-            } else if (data.error) {
-                alert(data.error);
+            if (data.success && data.payment_session_id) {
+                // Initialize Cashfree
+                const { load } = await import('@cashfreepayments/cashfree-js');
+                const cashfree = await load({
+                    mode: "production", // or "sandbox"
+                });
+
+                cashfree.checkout({
+                    paymentSessionId: data.payment_session_id,
+                    redirectTarget: "_self",
+                });
+            } else {
+                alert(data.message || 'Failed to initiate payment');
             }
         } catch (error) {
             console.error('Checkout error:', error);

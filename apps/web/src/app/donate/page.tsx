@@ -99,7 +99,7 @@ export default function DonatePage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    amount: getAmount(),
+                    amount: getTotal(), // sends total in cents
                     tier: customAmount ? 'CUSTOM' : selectedTier,
                     email,
                     name,
@@ -110,8 +110,16 @@ export default function DonatePage() {
             });
 
             const data = await response.json();
-            if (data.url) {
-                window.location.href = data.url;
+
+            if (data.success && data.payment_session_id) {
+                const { load } = await import('@cashfreepayments/cashfree-js');
+                const cashfree = await load({ mode: "production" });
+                cashfree.checkout({
+                    paymentSessionId: data.payment_session_id,
+                    redirectTarget: "_self",
+                });
+            } else {
+                alert(data.message || 'Failed to initiate payment');
             }
         } catch (error) {
             console.error('Checkout error:', error);
@@ -129,19 +137,31 @@ export default function DonatePage() {
 
         setIsSubmitting(true);
         try {
-            const response = await fetch('/api/donations/subscribe', {
+            // Use the standard checkout for now (Month 1)
+            // TODO: Implement recurring subscription flow
+            const response = await fetch('/api/donations/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    plan: selectedPlan,
+                    amount: selectedPlanData?.price || 0,
+                    tier: selectedPlan,
+                    isSubscription: true, // Flag for backend context
                     email,
                     name,
                 }),
             });
 
             const data = await response.json();
-            if (data.url) {
-                window.location.href = data.url;
+
+            if (data.success && data.payment_session_id) {
+                const { load } = await import('@cashfreepayments/cashfree-js');
+                const cashfree = await load({ mode: "production" });
+                cashfree.checkout({
+                    paymentSessionId: data.payment_session_id,
+                    redirectTarget: "_self",
+                });
+            } else {
+                alert(data.message || 'Failed to initiate subscription');
             }
         } catch (error) {
             console.error('Subscription error:', error);

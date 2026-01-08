@@ -10,8 +10,8 @@ const securityHeaders = {
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self), payment=()',
     'Content-Security-Policy': [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.cashfree.com https://*.vercel-scripts.com https://*.vercel-insights.com",
-        "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.cashfree.com https://*.vercel-scripts.com https://*.vercel-insights.com",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.cashfree.com https://*.vercel-scripts.com https://*.vercel-insights.com https://*.adtrafficquality.google",
+        "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.cashfree.com https://*.vercel-scripts.com https://*.vercel-insights.com https://*.adtrafficquality.google",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "img-src 'self' data: blob: https: http:",
         "font-src 'self' https://fonts.gstatic.com",

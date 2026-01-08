@@ -280,10 +280,12 @@ export default function CandleWallPage() {
     };
 
     const processPayment = async () => {
+        console.log('Starting candle payment process...');
         setIsProcessingPayment(true);
         setPaymentError('');
 
         try {
+            console.log('Calling /api/candles/checkout...');
             const response = await fetch('/api/candles/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -296,20 +298,35 @@ export default function CandleWallPage() {
                 }),
             });
 
+            console.log('Response status:', response.status);
             const data = await response.json();
+            console.log('Response data:', data);
 
-            if (data.success && data.paymentUrl) {
-                window.location.href = data.paymentUrl;
-            } else if (data.success && data.orderId) {
-                await processCandle();
-                setShowPaymentModal(false);
+            if (data.success && data.payment_session_id) {
+                console.log('Initializing Cashfree SDK...');
+                // Initialize Cashfree using the payment session ID
+                // Note: You must ensure @cashfreepayments/cashfree-js is loaded
+                // We'll load it dynamically or assume it's available via global if script tag
+                // But better to use the imported module if installed
+                const { load } = await import('@cashfreepayments/cashfree-js');
+                const cashfree = await load({
+                    mode: "production", // or "sandbox" based on env
+                });
+                console.log('Cashfree SDK loaded, calling checkout...');
+
+                cashfree.checkout({
+                    paymentSessionId: data.payment_session_id,
+                    redirectTarget: "_self", // Redirect to return_url configured in backend
+                });
+
             } else {
+                console.error('Payment initialization failed:', data.message);
                 setPaymentError(data.message || 'Failed to initiate payment. Please try again.');
+                setIsProcessingPayment(false);
             }
         } catch (error) {
             console.error('Payment error:', error);
             setPaymentError('Something went wrong. Please try again.');
-        } finally {
             setIsProcessingPayment(false);
         }
     };

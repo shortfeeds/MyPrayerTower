@@ -31,6 +31,7 @@ export default function BouquetsPage() {
     const [occasion, setOccasion] = useState('');
     const [message, setMessage] = useState('');
     const [sendDate, setSendDate] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false); // Valid placement
 
     const totalItems = Object.values(selection).reduce((a, b) => a + b, 0);
     const totalPrice = bouquetItems.reduce((total, item) => {
@@ -43,6 +44,51 @@ export default function BouquetsPage() {
 
     const decrementItem = (id: string) => {
         setSelection(prev => ({ ...prev, [id]: Math.max(0, (prev[id] || 0) - 1) }));
+    };
+
+    const handleSendBouquet = async () => {
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('/api/bouquets/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    items: selection,
+                    recipientName,
+                    recipientEmail,
+                    senderName,
+                    senderEmail,
+                    message,
+                    occasion,
+                    sendDate,
+                    isAnonymous: false,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                if (data.payment_session_id) {
+                    const { load } = await import('@cashfreepayments/cashfree-js');
+                    const cashfree = await load({ mode: "production" });
+                    cashfree.checkout({
+                        paymentSessionId: data.payment_session_id,
+                        redirectTarget: "_self",
+                    });
+                } else {
+                    alert('Bouquet sent successfully!');
+                    setStep(1);
+                    setSelection({ mass: 0, rosary: 0, prayer: 0, candle: 0 });
+                }
+            } else {
+                alert(data.message || 'Failed to send bouquet');
+            }
+        } catch (error) {
+            console.error('Bouquet error:', error);
+            alert('Something went wrong. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -289,10 +335,18 @@ export default function BouquetsPage() {
                                     Edit
                                 </button>
                                 <button
-                                    className="flex-1 py-3 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition-colors flex items-center justify-center gap-2"
+                                    onClick={handleSendBouquet}
+                                    disabled={isSubmitting}
+                                    className="flex-1 py-3 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
-                                    <Send className="w-5 h-5" />
-                                    Send Bouquet {totalPrice > 0 && `- $${(totalPrice / 100).toFixed(2)}`}
+                                    {isSubmitting ? (
+                                        <span className="animate-spin">⏳</span>
+                                    ) : (
+                                        <>
+                                            <Send className="w-5 h-5" />
+                                            Send Bouquet {totalPrice > 0 && `- $${(totalPrice / 100).toFixed(2)}`}
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>
