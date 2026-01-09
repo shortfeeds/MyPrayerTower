@@ -167,3 +167,86 @@ export async function notifyBouquet(data: {
         }
     });
 }
+
+/**
+ * Send memorial creation notification
+ */
+export async function notifyMemorialCreation(data: {
+    memorialName: string;
+    tier: string;
+    createdBy: string;
+    email?: string;
+}) {
+    return sendAdminNotification({
+        type: 'memorial' as any,
+        subject: `New Memorial Created: ${data.memorialName}`,
+        data: {
+            Memorial: data.memorialName,
+            Tier: data.tier,
+            'Created By': data.createdBy,
+            Email: data.email || 'Not provided',
+        }
+    });
+}
+
+/**
+ * Send memorial offering notification
+ */
+export async function notifyMemorialOffering(data: {
+    memorialName: string;
+    offeringType: string;
+    amount: number;
+    senderName: string;
+    message?: string;
+}) {
+    return sendAdminNotification({
+        type: 'memorial_offering' as any,
+        subject: `Memorial Offering: ${data.offeringType} for ${data.memorialName}`,
+        data: {
+            Memorial: data.memorialName,
+            'Offering Type': data.offeringType,
+            Amount: `$${(data.amount / 100).toFixed(2)}`,
+            Sender: data.senderName,
+            Message: data.message || 'None',
+        }
+    });
+}
+
+/**
+ * Send anniversary reminder email
+ * This would be called by a cron job
+ */
+export async function sendAnniversaryReminder(data: {
+    memorialName: string;
+    memorialSlug: string;
+    anniversaryDate: string;
+    recipientEmail: string;
+    recipientName?: string;
+}) {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myprayertower.com';
+    const memorialUrl = `${baseUrl}/memorials/${data.memorialSlug}`;
+
+    const subject = `🕯️ Anniversary Remembrance: ${data.memorialName}`;
+    const body = `
+Dear ${data.recipientName || 'Friend'},
+
+Today marks the anniversary of ${data.memorialName}.
+
+Take a moment to light a candle, say a prayer, or leave a message in their memory.
+
+Visit their memorial: ${memorialUrl}
+
+With prayers,
+MyPrayerTower Team
+    `.trim();
+
+    console.log('=== ANNIVERSARY EMAIL ===');
+    console.log(`To: ${data.recipientEmail}`);
+    console.log(`Subject: ${subject}`);
+    console.log(body);
+    console.log('=========================');
+
+    // In production, send actual email
+    return true;
+}
+
