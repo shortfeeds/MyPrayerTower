@@ -55,7 +55,7 @@ export default function RefundsPage() {
                                     <li>• <strong>3 Day Candle:</strong> $2.99 - Non-refundable once lit</li>
                                     <li>• <strong>7 Day Candle:</strong> $5.99 - Non-refundable once lit</li>
                                     <li>• <strong>30 Day Featured Candle:</strong> $14.99 - Refund within 24 hours if not displayed</li>
-                                    <li>• <strong>Memorial Setup:</strong> Basic ($20) / Premium ($49) - Refundable within 48h if unsatisfied</li>
+                                    <li>• <strong>Memorial Setup:</strong> Basic (Free) / Featured ($49.99) - Refundable within 48h if unsatisfied</li>
                                 </ul>
                             </div>
 

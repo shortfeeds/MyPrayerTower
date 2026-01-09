@@ -153,8 +153,8 @@ export default function MemorialsPage() {
                         setSelectedMemorial(memorial);
                     }}
                     className={`w-full py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${isPremium
-                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md hover:shadow-lg'
-                            : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
+                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md hover:shadow-lg'
+                        : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
                         }`}
                 >
                     <Gift className="w-4 h-4" />
@@ -319,17 +319,17 @@ export default function MemorialsPage() {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 href="/memorials/create"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full shadow-lg"
+                                className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 backdrop-blur border border-white/20 text-white font-bold rounded-full hover:bg-white/20 transition-colors"
                             >
                                 <Plus className="w-5 h-5" />
-                                Create Basic — $20
+                                Create Free Memorial
                             </Link>
                             <Link
                                 href="/memorials/create?tier=premium"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 backdrop-blur border border-white/20 text-white font-bold rounded-full hover:bg-white/20 transition-colors"
+                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full shadow-lg"
                             >
-                                <Sparkles className="w-5 h-5 text-amber-400" />
-                                Create Premium — $49
+                                <Sparkles className="w-5 h-5 text-white" />
+                                Create Featured — $49.99
                             </Link>
                         </div>
                     </div>

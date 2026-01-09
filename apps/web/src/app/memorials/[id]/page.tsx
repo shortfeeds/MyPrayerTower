@@ -205,22 +205,58 @@ export default function MemorialDetailPage() {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            {/* Hero Header */}
-            <div className="relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700 text-white">
-                <div className="absolute inset-0 opacity-30">
+            {/* Premium Shimmer Animation */}
+            {memorial.tier === 'PREMIUM' && (
+                <style>{`
+                    @keyframes shimmer {
+                        0% { background-position: -200% center; }
+                        100% { background-position: 200% center; }
+                    }
+                    .premium-shimmer {
+                        background: linear-gradient(90deg, transparent, rgba(255,215,0,0.3), transparent);
+                        background-size: 200% 100%;
+                        animation: shimmer 3s infinite;
+                    }
+                `}</style>
+            )}
+
+            {/* Featured Memorial Banner for Premium */}
+            {memorial.tier === 'PREMIUM' && (
+                <div className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 py-2 text-center relative overflow-hidden">
+                    <div className="absolute inset-0 premium-shimmer" />
+                    <span className="relative text-white font-bold text-sm flex items-center justify-center gap-2">
+                        <Sparkles className="w-4 h-4" />
+                        ⭐ Featured Memorial ⭐
+                        <Sparkles className="w-4 h-4" />
+                    </span>
+                </div>
+            )}
+
+            {/* Hero Header - Premium gets gold, Basic gets slate */}
+            <div className={`relative text-white ${memorial.tier === 'PREMIUM'
+                ? 'bg-gradient-to-b from-amber-900 via-amber-800 to-slate-800'
+                : 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700'
+                }`}>
+                <div className="absolute inset-0 opacity-20">
                     {memorial.photoUrl && (
                         <img src={memorial.photoUrl} alt="" className="w-full h-full object-cover blur-xl" />
                     )}
                 </div>
-                <div className="relative z-10 container mx-auto px-4 pt-24 pb-32">
+                {memorial.tier === 'PREMIUM' && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-amber-500/10" />
+                )}
+                <div className="relative z-10 container mx-auto px-4 pt-20 pb-32">
                     <Link href="/memorials" className="inline-flex items-center gap-2 text-slate-300 hover:text-white mb-8 transition-colors">
                         <ChevronLeft className="w-5 h-5" />
                         Back to Memorials
                     </Link>
 
                     <div className="flex flex-col lg:flex-row gap-8 items-start">
-                        {/* Photo */}
-                        <div className="w-48 h-48 lg:w-56 lg:h-56 rounded-2xl overflow-hidden bg-slate-700 flex-shrink-0 shadow-2xl border-4 border-white/20">
+                        {/* Photo - Premium gets golden ring with glow */}
+                        <div className={`w-48 h-48 lg:w-56 lg:h-56 rounded-2xl overflow-hidden bg-slate-700 flex-shrink-0 shadow-2xl ${memorial.tier === 'PREMIUM'
+                            ? 'ring-4 ring-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.4)]'
+                            : 'border-4 border-white/20'
+                            }`}>
                             {memorial.photoUrl ? (
                                 <img src={memorial.photoUrl} alt={fullName} className="w-full h-full object-cover" />
                             ) : (
@@ -232,19 +268,18 @@ export default function MemorialDetailPage() {
 
                         {/* Info */}
                         <div className="flex-1">
-                            {memorial.tier === 'PREMIUM' && (
-                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full mb-3">
-                                    <Sparkles className="w-3 h-3" /> Featured Memorial
-                                </span>
-                            )}
-                            <h1 className="text-4xl lg:text-5xl font-serif font-bold mb-2">
+                            <h1 className="text-3xl lg:text-4xl font-serif font-bold mb-2 text-white/80">
                                 In Loving Memory of
                             </h1>
-                            <h2 className="text-5xl lg:text-6xl font-serif font-bold text-amber-400 mb-4">
+                            <h2 className={`text-5xl lg:text-6xl font-serif font-bold mb-4 ${memorial.tier === 'PREMIUM'
+                                ? 'text-amber-400 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]'
+                                : 'text-white'
+                                }`}>
                                 {fullName}
                             </h2>
                             {lifeSpan && (
-                                <div className="flex items-center gap-2 text-slate-300 text-lg mb-4">
+                                <div className={`flex items-center gap-2 text-lg mb-4 ${memorial.tier === 'PREMIUM' ? 'text-amber-200' : 'text-slate-300'
+                                    }`}>
                                     <Calendar className="w-5 h-5" />
                                     <span>{lifeSpan}</span>
                                 </div>
@@ -550,19 +585,23 @@ export default function MemorialDetailPage() {
 
                         {/* Upgrade CTA for Basic Tier */}
                         {memorial.tier === 'BASIC' && (
-                            <div className="bg-gradient-to-br from-amber-100 to-yellow-50 rounded-2xl p-6 border border-amber-300">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Crown className="w-5 h-5 text-amber-600" />
-                                    <h4 className="font-bold text-gray-900">Upgrade to Featured</h4>
+                            <div className="bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 rounded-2xl p-6 border-2 border-amber-400 shadow-lg">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Crown className="w-6 h-6 text-amber-600" />
+                                    <h4 className="text-lg font-bold text-gray-900">Upgrade to Featured</h4>
                                 </div>
-                                <p className="text-sm text-gray-600 mb-4">
-                                    Get premium styling, priority placement, and more visibility for this memorial.
-                                </p>
+                                <ul className="text-sm text-gray-700 mb-4 space-y-2">
+                                    <li className="flex items-center gap-2">✓ <span>Golden premium styling</span></li>
+                                    <li className="flex items-center gap-2">✓ <span>Unlimited photos & videos</span></li>
+                                    <li className="flex items-center gap-2">✓ <span>Background music</span></li>
+                                    <li className="flex items-center gap-2">✓ <span>Ad-free experience</span></li>
+                                    <li className="flex items-center gap-2">✓ <span>Priority placement</span></li>
+                                </ul>
                                 <Link
                                     href={`/memorials/${memorial.id}/upgrade`}
-                                    className="block w-full py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl text-center hover:shadow-lg transition-all"
+                                    className="block w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl text-center shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
                                 >
-                                    Upgrade - $29/year
+                                    ⭐ Upgrade Now — $49.99
                                 </Link>
                             </div>
                         )}

@@ -108,8 +108,8 @@ export default function CreateMemorialPage() {
                             return (
                                 <div key={s} className="flex flex-col items-center gap-2">
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${isCompleted ? 'bg-amber-500 text-white' :
-                                            isCurrent ? 'bg-white border-2 border-amber-500 text-amber-500' :
-                                                'bg-gray-200 text-gray-400'
+                                        isCurrent ? 'bg-white border-2 border-amber-500 text-amber-500' :
+                                            'bg-gray-200 text-gray-400'
                                         }`}>
                                         {isCompleted ? <Check className="w-4 h-4" /> : i + 1}
                                     </div>
@@ -214,8 +214,8 @@ export default function CreateMemorialPage() {
 
                                 <div
                                     className={`relative aspect-video rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all ${formData.photoPreview
-                                            ? 'border-amber-500 bg-amber-50'
-                                            : 'border-gray-300 hover:border-amber-400 hover:bg-gray-50'
+                                        ? 'border-amber-500 bg-amber-50'
+                                        : 'border-gray-300 hover:border-amber-400 hover:bg-gray-50'
                                         }`}
                                     onClick={() => fileInputRef.current?.click()}
                                 >
@@ -267,14 +267,14 @@ export default function CreateMemorialPage() {
                                     <div
                                         onClick={() => updateForm('tier', 'BASIC')}
                                         className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${formData.tier === 'BASIC'
-                                                ? 'border-amber-500 bg-amber-50'
-                                                : 'border-gray-200 hover:border-amber-300'
+                                            ? 'border-amber-500 bg-amber-50'
+                                            : 'border-gray-200 hover:border-amber-300'
                                             }`}
                                     >
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
                                                 <h3 className="font-bold text-lg text-gray-900">Basic Memorial</h3>
-                                                <div className="text-2xl font-bold text-amber-600 mt-1">$20</div>
+                                                <div className="text-2xl font-bold text-green-600 mt-1">FREE</div>
                                             </div>
                                             <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${formData.tier === 'BASIC' ? 'border-amber-500 bg-amber-500 text-white' : 'border-gray-300'
                                                 }`}>
@@ -293,8 +293,8 @@ export default function CreateMemorialPage() {
                                     <div
                                         onClick={() => updateForm('tier', 'PREMIUM')}
                                         className={`relative p-6 rounded-2xl border-2 cursor-pointer transition-all ${formData.tier === 'PREMIUM'
-                                                ? 'border-amber-500 bg-gradient-to-br from-amber-50 to-orange-50'
-                                                : 'border-gray-200 hover:border-amber-300'
+                                            ? 'border-amber-500 bg-gradient-to-br from-amber-50 to-orange-50'
+                                            : 'border-gray-200 hover:border-amber-300'
                                             }`}
                                     >
                                         <div className="absolute top-0 right-0 -mt-3 -mr-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
@@ -306,7 +306,7 @@ export default function CreateMemorialPage() {
                                                     Premium
                                                     <Sparkles className="w-4 h-4 text-amber-500" />
                                                 </h3>
-                                                <div className="text-2xl font-bold text-amber-600 mt-1">$49</div>
+                                                <div className="text-2xl font-bold text-amber-600 mt-1">$49.99</div>
                                             </div>
                                             <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${formData.tier === 'PREMIUM' ? 'border-amber-500 bg-amber-500 text-white' : 'border-gray-300'
                                                 }`}>
