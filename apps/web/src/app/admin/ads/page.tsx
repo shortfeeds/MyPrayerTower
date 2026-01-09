@@ -191,6 +191,60 @@ export default function AdminAdsPage() {
                 </div>
             </div>
 
+            {/* Ad Slots Reference */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">📍 Ad Slot Positions by Page</h3>
+                <p className="text-sm text-gray-500 mb-4">
+                    These are all the ad positions available. Create ads for each page/position combination you want to monetize.
+                </p>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="border-b border-gray-200">
+                                <th className="text-left py-2 px-3 font-semibold text-gray-700">Page</th>
+                                <th className="text-center py-2 px-3 font-semibold text-gray-700">Top</th>
+                                <th className="text-center py-2 px-3 font-semibold text-gray-700">Sidebar</th>
+                                <th className="text-center py-2 px-3 font-semibold text-gray-700">Inline</th>
+                                <th className="text-center py-2 px-3 font-semibold text-gray-700">Bottom</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {[
+                                { page: 'Churches', slots: ['top', 'sidebar', 'inline'] },
+                                { page: 'Saints', slots: ['top', 'sidebar', 'inline'] },
+                                { page: 'Prayers', slots: ['top', 'sidebar', 'inline'] },
+                                { page: 'Memorials', slots: ['top', 'sidebar', 'inline'] },
+                                { page: 'Bible', slots: ['top', 'sidebar'] },
+                                { page: 'Readings', slots: ['top', 'sidebar'] },
+                                { page: 'Prayer Wall', slots: ['top', 'sidebar'] },
+                                { page: 'Home', slots: ['top', 'bottom'] },
+                            ].map(({ page, slots }) => (
+                                <tr key={page} className="hover:bg-gray-50">
+                                    <td className="py-2 px-3 font-medium text-gray-900">{page}</td>
+                                    <td className="py-2 px-3 text-center">
+                                        {slots.includes('top') ? '✅' : '—'}
+                                    </td>
+                                    <td className="py-2 px-3 text-center">
+                                        {slots.includes('sidebar') ? '✅' : '—'}
+                                    </td>
+                                    <td className="py-2 px-3 text-center">
+                                        {slots.includes('inline') ? '✅' : '—'}
+                                    </td>
+                                    <td className="py-2 px-3 text-center">
+                                        {slots.includes('bottom') ? '✅' : '—'}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                    <p className="text-sm text-blue-800">
+                        <strong>💡 Tip:</strong> Create Google AdSense units: Top Banner (728×90), Sidebar (300×250), In-Feed (Fluid)
+                    </p>
+                </div>
+            </div>
+
             {/* Ads Table */}
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div className="overflow-x-auto">
