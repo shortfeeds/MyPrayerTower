@@ -153,7 +153,7 @@ const nextConfig = {
                             "font-src 'self' https://fonts.gstatic.com",
                             "img-src 'self' data: https: blob:",
                             "connect-src 'self' https://*.stripe.com https://*.google-analytics.com https://*.googlesyndication.com https://*.gstatic.com https://*.adtrafficquality.google https://*.supabase.co https://*.cashfree.com https://*.vercel-scripts.com https://*.vercel-insights.com https://*.neon.tech",
-                            "frame-src 'self' https://*.stripe.com https://*.google.com https://*.doubleclick.net https://*.googlesyndication.com https://*.cashfree.com",
+                            "frame-src 'self' https://*.stripe.com https://*.google.com https://*.youtube.com https://*.vimeo.com https://*.doubleclick.net https://*.googlesyndication.com https://*.cashfree.com https://*.adtrafficquality.google",
                         ].join('; '),
                     },
                 ],

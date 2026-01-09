@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Calendar, MapPin, BookOpen, Share2, Heart, Loader2, Crown, Sparkles } from 'lucide-react';
+import { ChevronLeft, Calendar, MapPin, BookOpen, Heart, Loader2, Crown, Sparkles, Minus, Plus, Type } from 'lucide-react';
 import Link from 'next/link';
 import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { generateSaintSchema } from '@/lib/seo/structuredData';
+import { SmartAdSlot } from '@/components/ads';
 
 interface Saint {
     id: string;
@@ -26,25 +27,25 @@ interface Saint {
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-// Ad Banner Component  
-function AdBanner() {
-    return (
-        <div className="aspect-[4/5] bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl flex items-center justify-center border border-amber-200/50 relative overflow-hidden group hover:border-amber-300 transition-all">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="text-center relative z-10">
-                <Sparkles className="w-6 h-6 text-amber-400 mx-auto mb-1" />
-                <p className="text-xs text-gray-500 font-medium">Sponsored</p>
-                <Link href="/advertise" className="text-[10px] text-amber-600 hover:underline">Advertise here</Link>
-            </div>
-        </div>
-    );
-}
+const TEXT_SIZES = [
+    { label: 'S', class: 'text-base leading-relaxed' },
+    { label: 'M', class: 'text-lg leading-relaxed' },
+    { label: 'L', class: 'text-xl leading-loose' },
+    { label: 'XL', class: 'text-2xl leading-loose' },
+];
 
 export default function SaintDetailPage({ params }: { params: { id: string } }) {
     const [saint, setSaint] = useState<Saint | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isFavorite, setIsFavorite] = useState(false);
+    const [textSizeIndex, setTextSizeIndex] = useState(1); // Default M
+
+    useEffect(() => {
+        // Load saved preference
+        const saved = localStorage.getItem('mpt-text-size');
+        if (saved) setTextSizeIndex(parseInt(saved, 10) || 1);
+    }, []);
 
     useEffect(() => {
         async function fetchSaint() {
@@ -65,6 +66,12 @@ export default function SaintDetailPage({ params }: { params: { id: string } }) 
         }
         fetchSaint();
     }, [params.id]);
+
+    const handleTextSize = (delta: number) => {
+        const newIndex = Math.max(0, Math.min(TEXT_SIZES.length - 1, textSizeIndex + delta));
+        setTextSizeIndex(newIndex);
+        localStorage.setItem('mpt-text-size', String(newIndex));
+    };
 
     if (loading) {
         return (
@@ -178,11 +185,37 @@ export default function SaintDetailPage({ params }: { params: { id: string } }) 
                 </div>
             </div>
 
+            {/* Top Ad */}
+            <div className="container mx-auto px-4 py-4">
+                <SmartAdSlot page="saints" position="top" />
+            </div>
+
             {/* Content */}
-            <div className="container mx-auto px-4 py-12">
+            <div className="container mx-auto px-4 py-8">
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
+                        {/* Text Size Controls */}
+                        <div className="flex items-center justify-end gap-2">
+                            <Type className="w-4 h-4 text-gray-500" />
+                            <span className="text-xs text-gray-500 mr-2">Text Size</span>
+                            <button
+                                onClick={() => handleTextSize(-1)}
+                                disabled={textSizeIndex === 0}
+                                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition-colors"
+                            >
+                                <Minus className="w-4 h-4" />
+                            </button>
+                            <span className="text-sm font-bold w-8 text-center">{TEXT_SIZES[textSizeIndex].label}</span>
+                            <button
+                                onClick={() => handleTextSize(1)}
+                                disabled={textSizeIndex === TEXT_SIZES.length - 1}
+                                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition-colors"
+                            >
+                                <Plus className="w-4 h-4" />
+                            </button>
+                        </div>
+
                         {/* Biography */}
                         {(saint.biography || saint.shortBio) && (
                             <div className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-gray-100">
@@ -190,7 +223,7 @@ export default function SaintDetailPage({ params }: { params: { id: string } }) 
                                     <BookOpen className="w-6 h-6 text-amber-500" />
                                     Biography
                                 </h2>
-                                <div className="text-gray-700 leading-relaxed whitespace-pre-line text-lg">
+                                <div className={`text-gray-700 whitespace-pre-line ${TEXT_SIZES[textSizeIndex].class}`}>
                                     {saint.biography || saint.shortBio}
                                 </div>
                             </div>
@@ -199,12 +232,15 @@ export default function SaintDetailPage({ params }: { params: { id: string } }) 
                         {/* Default Prayer */}
                         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-200/50">
                             <h2 className="text-2xl font-serif font-bold text-amber-800 mb-6">🙏 Prayer to {saint.name}</h2>
-                            <p className="text-amber-900/80 italic leading-relaxed text-lg">
+                            <p className={`text-amber-900/80 italic ${TEXT_SIZES[textSizeIndex].class}`}>
                                 O glorious {saint.name}, through your intercession may we grow in virtue and faith.
                                 Help us to follow your holy example and to lead lives worthy of our calling.
                                 Pray for us that we may persevere in our journey toward eternal life. Amen.
                             </p>
                         </div>
+
+                        {/* End of Content Ad */}
+                        <SmartAdSlot page="saints" position="inline" />
                     </div>
 
                     {/* Sidebar */}
@@ -262,7 +298,7 @@ export default function SaintDetailPage({ params }: { params: { id: string } }) 
                         />
 
                         {/* Sidebar Ad */}
-                        <AdBanner />
+                        <SmartAdSlot page="saints" position="sidebar" />
                     </div>
                 </div>
             </div>

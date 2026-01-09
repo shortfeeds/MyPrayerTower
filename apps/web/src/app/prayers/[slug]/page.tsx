@@ -1,30 +1,17 @@
-
 import { PrismaClient } from '@mpt/database';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Share2, BookOpen, Tag, Heart, Sparkles, Copy, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Tag, BookOpen, ChevronRight } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { generatePrayerSchema } from '@/lib/seo/structuredData';
+import { SmartAdSlot } from '@/components/ads';
+import { PrayerContent } from './PrayerContent';
 
 const prisma = new PrismaClient();
 
 interface Props {
     params: { slug: string };
-}
-
-// Ad Component
-function AdBanner({ position }: { position: 'sidebar' | 'bottom' }) {
-    return (
-        <div className={`${position === 'sidebar' ? 'aspect-[4/5]' : 'h-32'} bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center border border-gray-200/50 relative overflow-hidden group hover:border-gray-300 transition-all`}>
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="text-center relative z-10">
-                <Sparkles className="w-6 h-6 text-gray-400 mx-auto mb-1" />
-                <p className="text-xs text-gray-500 font-medium">Sponsored</p>
-                <Link href="/advertise" className="text-[10px] text-blue-500 hover:underline">Advertise here</Link>
-            </div>
-        </div>
-    );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -112,59 +99,23 @@ export default async function PrayerDetailPage({ params }: Props) {
                 </div>
             </div>
 
+            {/* Top Ad */}
+            <div className="max-w-6xl mx-auto px-4 py-4">
+                <SmartAdSlot page="prayers" position="top" />
+            </div>
+
             {/* Content */}
-            <div className="max-w-6xl mx-auto px-4 py-12">
+            <div className="max-w-6xl mx-auto px-4 py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Main Content */}
                     <main className="flex-1">
-                        <article className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
-                            {/* Prayer Content */}
-                            <div className="p-8 md:p-12 lg:p-16">
-                                <div className="relative">
-                                    {/* Decorative Quote */}
-                                    <div className="absolute -top-4 -left-4 text-8xl text-blue-100 font-serif select-none">"</div>
-
-                                    <div className="relative prose prose-lg max-w-none text-gray-700 font-serif leading-loose whitespace-pre-wrap">
-                                        {prayer.content}
-                                    </div>
-
-                                    <div className="absolute -bottom-8 -right-4 text-8xl text-blue-100 font-serif select-none rotate-180">"</div>
-                                </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="bg-gradient-to-r from-gray-50 to-white px-8 md:px-12 py-6 border-t border-gray-100">
-                                <div className="flex flex-wrap items-center justify-between gap-4">
-                                    <div className="flex items-center gap-3 w-full">
-                                        <ShareButtons
-                                            url={`https://myprayertower.com/prayers/${prayer.id}`}
-                                            title={prayer.title}
-                                            description={prayer.content.substring(0, 100) + '...'}
-                                            variant="default"
-                                        />
-                                        <button className="inline-flex items-center gap-2 px-5 py-2.5 text-gray-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all font-medium ml-auto">
-                                            <Heart size={18} />
-                                            <span>Save</span>
-                                        </button>
-                                        <script
-                                            type="application/ld+json"
-                                            dangerouslySetInnerHTML={{
-                                                __html: JSON.stringify(generatePrayerSchema({
-                                                    id: prayer.id,
-                                                    title: prayer.title,
-                                                    content: prayer.content,
-                                                    category: prayer.category,
-                                                    category_label: prayer.category_label || undefined
-                                                }))
-                                            }}
-                                        />
-                                    </div>
-                                    <span className="text-sm text-gray-400">
-                                        Prayer #{prayer.id.toString()}
-                                    </span>
-                                </div>
-                            </div>
-                        </article>
+                        <PrayerContent
+                            prayerId={prayer.id}
+                            prayerTitle={prayer.title}
+                            prayerContent={prayer.content}
+                            categoryLabel={prayer.category_label || undefined}
+                            category={prayer.category}
+                        />
 
                         {/* Related Prayers */}
                         {relatedPrayers.length > 0 && (
@@ -196,7 +147,7 @@ export default async function PrayerDetailPage({ params }: Props) {
 
                         {/* Bottom Ad */}
                         <div className="mt-12">
-                            <AdBanner position="bottom" />
+                            <SmartAdSlot page="prayers" position="inline" />
                         </div>
                     </main>
 
@@ -204,7 +155,7 @@ export default async function PrayerDetailPage({ params }: Props) {
                     <aside className="lg:w-80 flex-shrink-0">
                         <div className="sticky top-28 space-y-6">
                             {/* Sidebar Ad */}
-                            <AdBanner position="sidebar" />
+                            <SmartAdSlot page="prayers" position="sidebar" />
 
                             {/* Quick Actions */}
                             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
