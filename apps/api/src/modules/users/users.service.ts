@@ -8,8 +8,10 @@ export class UsersService {
     async findById(id: string) {
         return this.prisma.user.findUnique({
             where: { id },
-            include: { homeChurch: true },
+            include: { Church: true },
         });
+        if (!user) return null;
+        return { ...user, homeChurch: user.Church };
     }
 
     async findByEmail(email: string) {

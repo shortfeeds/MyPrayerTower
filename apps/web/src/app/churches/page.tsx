@@ -1,15 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { MapPin, Search, Church, ChevronRight, Loader2, Globe, X, CheckCircle, Sparkles, Building2, Phone } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Search, Church, ChevronRight, ChevronDown, Loader2, Globe, X, CheckCircle, Phone, Mail, ExternalLink, Clock, Calendar, Heart } from 'lucide-react';
 import Link from 'next/link';
+import { SmartAdSlot } from '@/components/ads';
 
 interface ChurchData {
     id: string;
     name: string;
+    slug: string | null;
     city: string | null;
+    state: string | null;
     country: string | null;
     countryCode: string | null;
+    postalCode: string | null;
     type: string | null;
     denomination: string | null;
     isVerified: boolean;
@@ -17,31 +21,47 @@ interface ChurchData {
     latitude: number | null;
     longitude: number | null;
     phone: string | null;
+    email: string | null;
+    website: string | null;
+    description: string | null;
+    shortDescription: string | null;
+    massSchedule: any;
+    confessionSchedule: any;
+    adorationSchedule: any;
     primaryImageUrl: string | null;
     viewCount: number;
     followerCount: number;
+    Diocese: { id: string; name: string; type: string } | null;
 }
 
-interface AdBanner {
-    id: string;
-    imageUrl: string;
-    linkUrl: string;
-    altText: string;
-    position: string;
+interface Filters {
+    countries: { code: string; name: string; count: number }[];
+    types: { type: string; count: number }[];
+    denominations: { denomination: string; count: number }[];
 }
 
-// Ad Placeholder Component
-function AdPlaceholder({ position, className = '' }: { position: string; className?: string }) {
-    return (
-        <div className={`bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center border border-blue-200/50 relative overflow-hidden group hover:border-blue-300 transition-all ${className}`}>
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="text-center relative z-10 p-6">
-                <Sparkles className="w-6 h-6 text-blue-400 mx-auto mb-1" />
-                <p className="text-xs text-gray-500 font-medium">Sponsored</p>
-                <Link href="/advertise" className="text-[10px] text-blue-500 hover:underline">Advertise here</Link>
-            </div>
-        </div>
-    );
+const CHURCH_TYPE_LABELS: Record<string, string> = {
+    PARISH: '⛪ Parish',
+    CATHEDRAL: '🏛️ Cathedral',
+    BASILICA: '🕌 Basilica',
+    CHAPEL: '🕯️ Chapel',
+    SHRINE: '✨ Shrine',
+    MONASTERY: '🏔️ Monastery',
+    ABBEY: '📿 Abbey',
+    MISSION: '🌍 Mission',
+    OTHER: 'Other'
+};
+
+function formatSchedule(schedule: any): string | null {
+    if (!schedule) return null;
+    if (typeof schedule === 'string') return schedule;
+    if (Array.isArray(schedule)) return schedule.join(', ');
+    if (typeof schedule === 'object') {
+        const entries = Object.entries(schedule);
+        if (entries.length === 0) return null;
+        return entries.slice(0, 2).map(([day, time]) => `${day}: ${time}`).join(' • ');
+    }
+    return null;
 }
 
 export default function ChurchesPage() {
@@ -51,22 +71,15 @@ export default function ChurchesPage() {
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [hasMore, setHasMore] = useState(true);
-    const [ads, setAds] = useState<{ top?: AdBanner; sidebar?: AdBanner; inline?: AdBanner }>({});
+    const [filters, setFilters] = useState<Filters | null>(null);
 
-    useEffect(() => {
-        fetch('/api/sponsored?page=churches')
-            .then(res => res.json())
-            .then(data => {
-                if (data.ads) {
-                    const adsMap: any = {};
-                    data.ads.forEach((ad: AdBanner) => {
-                        adsMap[ad.position] = ad;
-                    });
-                    setAds(adsMap);
-                }
-            })
-            .catch(err => console.log('No ads available'));
-    }, []);
+    // Active filters
+    const [selectedCountry, setSelectedCountry] = useState('');
+    const [selectedType, setSelectedType] = useState('');
+    const [selectedDenomination, setSelectedDenomination] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
+
+    const activeFilterCount = [selectedCountry, selectedType, selectedDenomination].filter(Boolean).length;
 
     const fetchChurches = async (reset = false) => {
         try {
@@ -74,8 +87,11 @@ export default function ChurchesPage() {
             const currentPage = reset ? 1 : page;
             const params = new URLSearchParams({
                 page: currentPage.toString(),
-                limit: '20',
-                ...(searchQuery && { search: searchQuery })
+                limit: '15',
+                ...(searchQuery && { search: searchQuery }),
+                ...(selectedCountry && { country: selectedCountry }),
+                ...(selectedType && { type: selectedType }),
+                ...(selectedDenomination && { denomination: selectedDenomination })
             });
 
             const res = await fetch(`/api/churches?${params}`);
@@ -84,13 +100,14 @@ export default function ChurchesPage() {
             if (reset) {
                 setChurches(data.churches || []);
                 setPage(2);
+                if (data.filters) setFilters(data.filters);
             } else {
                 setChurches(prev => [...prev, ...(data.churches || [])]);
                 setPage(prev => prev + 1);
             }
 
             setTotal(data.total || 0);
-            setHasMore((data.churches?.length || 0) === 20);
+            setHasMore((data.churches?.length || 0) === 15);
         } catch (err) {
             console.error('Failed to fetch churches:', err);
         } finally {
@@ -101,54 +118,52 @@ export default function ChurchesPage() {
     useEffect(() => {
         const timer = setTimeout(() => fetchChurches(true), 300);
         return () => clearTimeout(timer);
-    }, [searchQuery]);
+    }, [searchQuery, selectedCountry, selectedType, selectedDenomination]);
 
-    const trackAdClick = (adId: string) => {
-        fetch(`/api/sponsored/${adId}/click`, { method: 'POST' }).catch(() => { });
+    const clearFilters = () => {
+        setSelectedCountry('');
+        setSelectedType('');
+        setSelectedDenomination('');
+        setSearchQuery('');
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50/50 to-white">
-            {/* Premium Hero Section */}
-            <div className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800" />
+        <div className="min-h-screen bg-slate-50">
+            {/* Hero */}
+            <div className="relative bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 overflow-hidden">
                 <div className="absolute inset-0 opacity-30">
-                    <div className="absolute top-10 left-10 w-72 h-72 bg-blue-400 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-400 rounded-full blur-3xl animate-pulse delay-700" />
+                    <div className="absolute top-10 left-1/4 w-64 h-64 bg-blue-500 rounded-full blur-3xl" />
+                    <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-indigo-600 rounded-full blur-3xl" />
                 </div>
 
-                <div className="relative z-10 pt-28 pb-20 px-4">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/15 backdrop-blur-md rounded-full text-white/90 text-sm font-medium mb-8 border border-white/20">
-                            <Globe className="w-4 h-4 text-blue-200" />
-                            <span>{total.toLocaleString()}+ Churches Worldwide</span>
+                <div className="relative z-10 pt-24 pb-8 px-4">
+                    <div className="max-w-5xl mx-auto text-center">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-white/90 text-sm font-medium mb-4 border border-white/10">
+                            <Globe className="w-4 h-4" />
+                            <span>{total.toLocaleString()}+ Catholic Churches</span>
                         </div>
 
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 tracking-tight">
-                            Find Catholic
-                            <span className="block bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">
-                                Churches
-                            </span>
+                        <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-3">
+                            Church Directory
                         </h1>
-                        <p className="text-xl text-blue-100/90 mb-12 max-w-2xl mx-auto leading-relaxed">
-                            Discover parishes, view Mass times, get directions, and connect with your local faith community.
+                        <p className="text-slate-400 mb-6 max-w-xl mx-auto">
+                            Find Mass times, confession schedules, and connect with parishes worldwide.
                         </p>
 
-                        {/* Glassmorphism Search */}
-                        <div className="relative max-w-2xl mx-auto group">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur opacity-25 group-hover:opacity-40 transition-opacity" />
-                            <div className="relative bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl flex items-center">
-                                <Search className="absolute left-6 w-6 h-6 text-gray-400" />
+                        {/* Search */}
+                        <div className="relative max-w-2xl mx-auto">
+                            <div className="relative bg-white rounded-xl shadow-2xl flex items-center">
+                                <Search className="absolute left-5 w-5 h-5 text-slate-400" />
                                 <input
                                     type="text"
-                                    placeholder="Search by church name, city, or country..."
+                                    placeholder="Search by name, city, state, or address..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-16 pr-12 py-5 bg-transparent text-gray-900 rounded-2xl placeholder-gray-400 focus:outline-none text-lg"
+                                    className="w-full pl-14 pr-10 py-4 bg-transparent text-slate-900 rounded-xl placeholder-slate-400 focus:outline-none text-base"
                                 />
                                 {searchQuery && (
-                                    <button onClick={() => setSearchQuery('')} className="absolute right-5 p-2 hover:bg-gray-100 rounded-full transition-colors">
-                                        <X className="w-5 h-5 text-gray-400" />
+                                    <button onClick={() => setSearchQuery('')} className="absolute right-4 p-1.5 hover:bg-slate-100 rounded-full">
+                                        <X className="w-4 h-4 text-slate-400" />
                                     </button>
                                 )}
                             </div>
@@ -157,179 +172,278 @@ export default function ChurchesPage() {
                 </div>
             </div>
 
-            {/* Top Ad Banner */}
-            {ads.top ? (
-                <div className="container mx-auto px-4 py-4">
-                    <a
-                        href={ads.top.linkUrl}
-                        target="_blank"
-                        rel="noopener noreferrer sponsored"
-                        onClick={() => trackAdClick(ads.top!.id)}
-                        className="block"
-                    >
-                        <img src={ads.top.imageUrl} alt={ads.top.altText} className="max-h-24 mx-auto rounded-xl" />
-                    </a>
-                    <p className="text-center text-[10px] text-gray-400 mt-1">Sponsored</p>
-                </div>
-            ) : (
-                <div className="container mx-auto px-4 py-6">
-                    <AdPlaceholder position="top" className="h-24" />
-                </div>
-            )}
+            {/* Filters Bar */}
+            <div className="bg-white border-b border-slate-200 sticky top-16 z-40">
+                <div className="container mx-auto px-4 py-3">
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                            <button
+                                onClick={() => setShowFilters(!showFilters)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${showFilters ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                            >
+                                <span>Filters</span>
+                                {activeFilterCount > 0 && (
+                                    <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center">
+                                        {activeFilterCount}
+                                    </span>
+                                )}
+                                <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+                            </button>
 
-            {/* Results Section */}
-            <div className="container mx-auto px-4 py-10">
-                <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Main Content */}
-                    <div className="flex-1">
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h2 className="text-2xl font-serif font-bold text-gray-900">
-                                    {searchQuery ? `Results for "${searchQuery}"` : 'Browse Churches'}
-                                </h2>
-                                <p className="text-gray-500 mt-1">
-                                    {loading && churches.length === 0 ? 'Searching...' : `Showing ${churches.length} of ${total.toLocaleString()} churches`}
-                                </p>
-                            </div>
+                            {/* Quick Filter Pills */}
+                            {selectedCountry && (
+                                <span className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-700 text-sm rounded-full">
+                                    {filters?.countries.find(c => c.code === selectedCountry)?.name || selectedCountry}
+                                    <button onClick={() => setSelectedCountry('')}><X className="w-3 h-3" /></button>
+                                </span>
+                            )}
+                            {selectedType && (
+                                <span className="flex items-center gap-1 px-3 py-1.5 bg-purple-100 text-purple-700 text-sm rounded-full">
+                                    {CHURCH_TYPE_LABELS[selectedType] || selectedType}
+                                    <button onClick={() => setSelectedType('')}><X className="w-3 h-3" /></button>
+                                </span>
+                            )}
+                            {selectedDenomination && (
+                                <span className="flex items-center gap-1 px-3 py-1.5 bg-emerald-100 text-emerald-700 text-sm rounded-full">
+                                    {selectedDenomination}
+                                    <button onClick={() => setSelectedDenomination('')}><X className="w-3 h-3" /></button>
+                                </span>
+                            )}
+
+                            {activeFilterCount > 0 && (
+                                <button onClick={clearFilters} className="text-sm text-slate-500 hover:text-slate-700 whitespace-nowrap">
+                                    Clear all
+                                </button>
+                            )}
                         </div>
 
+                        <span className="text-sm text-slate-500 whitespace-nowrap">
+                            {total.toLocaleString()} results
+                        </span>
+                    </div>
+
+                    {/* Expanded Filters */}
+                    {showFilters && filters && (
+                        <div className="grid sm:grid-cols-3 gap-4 pt-4 mt-3 border-t border-slate-100">
+                            {/* Country */}
+                            <div>
+                                <label className="block text-xs font-medium text-slate-500 mb-1.5">Country</label>
+                                <select
+                                    value={selectedCountry}
+                                    onChange={(e) => setSelectedCountry(e.target.value)}
+                                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">All Countries</option>
+                                    {filters.countries.map(c => (
+                                        <option key={c.code} value={c.code}>{c.name} ({c.count})</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Type */}
+                            <div>
+                                <label className="block text-xs font-medium text-slate-500 mb-1.5">Church Type</label>
+                                <select
+                                    value={selectedType}
+                                    onChange={(e) => setSelectedType(e.target.value)}
+                                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">All Types</option>
+                                    {filters.types.map(t => (
+                                        <option key={t.type} value={t.type}>{CHURCH_TYPE_LABELS[t.type] || t.type} ({t.count})</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Denomination */}
+                            <div>
+                                <label className="block text-xs font-medium text-slate-500 mb-1.5">Denomination</label>
+                                <select
+                                    value={selectedDenomination}
+                                    onChange={(e) => setSelectedDenomination(e.target.value)}
+                                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">All Denominations</option>
+                                    {filters.denominations.map(d => (
+                                        <option key={d.denomination} value={d.denomination}>{d.denomination} ({d.count})</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Top Ad */}
+            <div className="container mx-auto px-4 py-4">
+                <SmartAdSlot page="churches" position="top" />
+            </div>
+
+            {/* Main Content */}
+            <div className="container mx-auto px-4 pb-12">
+                <div className="flex flex-col lg:flex-row gap-6">
+                    {/* Listings */}
+                    <div className="flex-1">
                         {loading && churches.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-20">
-                                <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
-                                <p className="text-gray-500">Loading churches...</p>
+                                <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-3" />
+                                <p className="text-slate-500 text-sm">Loading churches...</p>
                             </div>
                         ) : churches.length === 0 ? (
-                            <div className="text-center py-20 bg-white rounded-3xl border border-gray-200 shadow-sm">
-                                <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <Church className="w-10 h-10 text-blue-400" />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">No Churches Found</h3>
-                                <p className="text-gray-500 mb-6">Try adjusting your search terms</p>
-                                <button onClick={() => setSearchQuery('')} className="text-blue-600 font-semibold hover:underline">
-                                    Clear search
+                            <div className="text-center py-20 bg-white rounded-xl border border-slate-200">
+                                <Church className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                                <h3 className="text-lg font-semibold text-slate-900 mb-2">No Churches Found</h3>
+                                <button onClick={clearFilters} className="text-blue-600 text-sm font-medium hover:underline">
+                                    Clear all filters
                                 </button>
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                {churches.map((church, index) => (
-                                    <div key={church.id}>
-                                        {/* Inline Ad - Show after every 5th listing */}
-                                        {ads.inline && index > 0 && index % 5 === 0 && (
-                                            <a
-                                                href={ads.inline.linkUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer sponsored"
-                                                onClick={() => trackAdClick(ads.inline!.id)}
-                                                className="block bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-4 mb-4"
+                                {churches.map((church, index) => {
+                                    const massInfo = formatSchedule(church.massSchedule);
+                                    const confessionInfo = formatSchedule(church.confessionSchedule);
+
+                                    return (
+                                        <React.Fragment key={church.id}>
+                                            <div
+                                                className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:border-blue-300 hover:shadow-lg transition-all group"
                                             >
-                                                <img src={ads.inline.imageUrl} alt={ads.inline.altText} className="max-h-20 mx-auto" />
-                                                <p className="text-center text-[10px] text-gray-400 mt-1">Sponsored</p>
-                                            </a>
-                                        )}
-                                        {!ads.inline && index > 0 && index % 5 === 0 && (
-                                            <div className="mb-4">
-                                                <AdPlaceholder position="inline" className="h-28" />
-                                            </div>
-                                        )}
-
-                                        {/* Church Card */}
-                                        <div className="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1">
-                                            <div className="p-5 md:p-6">
-                                                <div className="flex flex-col md:flex-row md:items-start gap-5">
-                                                    {/* Church Icon/Image Placeholder */}
-                                                    <div className="w-full md:w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300 overflow-hidden relative">
-                                                        {church.primaryImageUrl ? (
-                                                            <img src={church.primaryImageUrl} alt={church.name} className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            <Church className="w-8 h-8 text-white" />
-                                                        )}
-                                                    </div>
-
-                                                    {/* Church Info */}
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
-                                                            <Link href={`/churches/${church.id}`} className="block flex-1">
-                                                                <h3 className="font-bold text-gray-900 text-xl font-serif group-hover:text-blue-600 transition-colors">
-                                                                    {church.name}
-                                                                </h3>
-                                                            </Link>
-                                                            <div className="flex gap-2 shrink-0 flex-wrap justify-end">
-                                                                {church.isVerified && (
-                                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-100">
-                                                                        <CheckCircle className="w-3 h-3" /> Verified
-                                                                    </span>
-                                                                )}
-                                                                {church.denomination && (
-                                                                    <span className="inline-flex px-2.5 py-1 bg-purple-50 text-purple-700 text-xs font-semibold rounded-full border border-purple-100">
-                                                                        {church.denomination}
-                                                                    </span>
-                                                                )}
-                                                                {church.type && (
-                                                                    <span className="inline-flex px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full border border-blue-100">
-                                                                        {church.type}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-4 text-gray-500 text-sm mb-4 flex-wrap">
-                                                            <div className="flex items-center gap-1.5">
-                                                                <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                                                                <span className="line-clamp-1">
-                                                                    {church.address || [church.city, church.country].filter(Boolean).join(', ') || 'Location details available'}
-                                                                </span>
-                                                            </div>
-                                                            {church.phone && (
-                                                                <div className="flex items-center gap-1.5">
-                                                                    <Phone className="w-3.5 h-3.5 text-gray-400" />
-                                                                    <span>{church.phone}</span>
-                                                                </div>
+                                                <div className="p-5">
+                                                    <div className="flex gap-4">
+                                                        {/* Image/Icon */}
+                                                        <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                                            {church.primaryImageUrl ? (
+                                                                <img src={church.primaryImageUrl} alt={church.name} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <Church className="w-7 h-7 text-white" />
                                                             )}
                                                         </div>
 
-                                                        {/* Stats & Actions */}
-                                                        <div className="flex items-center justify-between pt-4 border-t border-gray-50 mt-2">
-                                                            <div className="flex items-center gap-4 text-xs text-gray-400">
-                                                                {(church.viewCount || 0) > 0 && <span>{church.viewCount?.toLocaleString()} views</span>}
-                                                                {(church.followerCount || 0) > 0 && <span>• {church.followerCount?.toLocaleString()} followers</span>}
+                                                        {/* Main Info */}
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-start justify-between gap-3 mb-2">
+                                                                <div>
+                                                                    <Link href={`/churches/${church.slug || church.id}`} className="block">
+                                                                        <h3 className="font-bold text-slate-900 text-lg group-hover:text-blue-600 transition-colors line-clamp-1">
+                                                                            {church.name}
+                                                                        </h3>
+                                                                    </Link>
+                                                                    {church.Diocese && (
+                                                                        <p className="text-sm text-slate-500">{church.Diocese.name}</p>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex items-center gap-2 flex-shrink-0">
+                                                                    {church.isVerified && (
+                                                                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                                                                            <CheckCircle className="w-3 h-3" /> Verified
+                                                                        </span>
+                                                                    )}
+                                                                    {church.type && (
+                                                                        <span className="px-2 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded-full">
+                                                                            {CHURCH_TYPE_LABELS[church.type]?.replace(/^[^\s]+\s/, '') || church.type}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                             </div>
 
-                                                            <div className="flex gap-3">
-                                                                <Link
-                                                                    href={`/churches/${church.id}`}
-                                                                    className="text-sm font-semibold text-blue-600 group-hover:text-blue-700 flex items-center gap-1"
-                                                                >
-                                                                    View Details <ChevronRight className="w-4 h-4" />
-                                                                </Link>
+                                                            {/* Address */}
+                                                            <div className="flex items-center gap-1.5 text-sm text-slate-600 mb-2">
+                                                                <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                                                                <span className="truncate">
+                                                                    {[church.address, church.city, church.state, church.country].filter(Boolean).join(', ')}
+                                                                </span>
+                                                            </div>
 
-                                                                {church.latitude && church.longitude && (
-                                                                    <a
-                                                                        href={`https://www.google.com/maps/dir/?api=1&destination=${church.latitude},${church.longitude}`}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="text-gray-400 hover:text-gray-600 text-sm flex items-center gap-1 transition-colors"
-                                                                    >
-                                                                        <MapPin className="w-3.5 h-3.5" />
-                                                                        Directions
-                                                                    </a>
+                                                            {/* Schedules */}
+                                                            <div className="flex flex-wrap gap-3 text-sm">
+                                                                {massInfo && (
+                                                                    <div className="flex items-center gap-1.5 text-slate-600">
+                                                                        <Clock className="w-4 h-4 text-amber-500" />
+                                                                        <span className="font-medium text-slate-700">Mass:</span>
+                                                                        <span className="truncate max-w-[200px]">{massInfo}</span>
+                                                                    </div>
+                                                                )}
+                                                                {confessionInfo && (
+                                                                    <div className="flex items-center gap-1.5 text-slate-600">
+                                                                        <Heart className="w-4 h-4 text-purple-500" />
+                                                                        <span className="font-medium text-slate-700">Confession:</span>
+                                                                        <span className="truncate max-w-[180px]">{confessionInfo}</span>
+                                                                    </div>
                                                                 )}
                                                             </div>
+
+                                                            {/* Description */}
+                                                            {church.shortDescription && (
+                                                                <p className="text-sm text-slate-500 mt-2 line-clamp-2">{church.shortDescription}</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Footer */}
+                                                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
+                                                        <div className="flex items-center gap-4 text-sm">
+                                                            {church.phone && (
+                                                                <a href={`tel:${church.phone}`} className="flex items-center gap-1.5 text-slate-500 hover:text-blue-600">
+                                                                    <Phone className="w-4 h-4" />
+                                                                    <span>{church.phone}</span>
+                                                                </a>
+                                                            )}
+                                                            {church.email && (
+                                                                <a href={`mailto:${church.email}`} className="flex items-center gap-1.5 text-slate-500 hover:text-blue-600">
+                                                                    <Mail className="w-4 h-4" />
+                                                                    <span className="hidden sm:inline">Email</span>
+                                                                </a>
+                                                            )}
+                                                            {church.website && (
+                                                                <a href={church.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-slate-500 hover:text-blue-600">
+                                                                    <ExternalLink className="w-4 h-4" />
+                                                                    <span className="hidden sm:inline">Website</span>
+                                                                </a>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="flex items-center gap-3">
+                                                            {church.latitude && church.longitude && (
+                                                                <a
+                                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${church.latitude},${church.longitude}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="text-sm text-slate-500 hover:text-blue-600 flex items-center gap-1"
+                                                                >
+                                                                    <MapPin className="w-4 h-4" />
+                                                                    Directions
+                                                                </a>
+                                                            )}
+                                                            <Link
+                                                                href={`/churches/${church.slug || church.id}`}
+                                                                className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700"
+                                                            >
+                                                                View Details
+                                                                <ChevronRight className="w-4 h-4" />
+                                                            </Link>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                ))}
+
+                                            {/* Inline Ad every 5 items */}
+                                            {(index + 1) % 5 === 0 && index < churches.length - 1 && (
+                                                <div key={`ad-${index}`}>
+                                                    <SmartAdSlot page="churches" position="inline" />
+                                                </div>
+                                            )}
+                                        </React.Fragment>
+                                    );
+                                })}
                             </div>
                         )}
 
                         {/* Load More */}
                         {!loading && hasMore && churches.length > 0 && (
-                            <div className="mt-12 text-center">
+                            <div className="mt-8 text-center">
                                 <button
                                     onClick={() => fetchChurches(false)}
-                                    className="px-10 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all"
+                                    className="px-8 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl shadow-lg transition-all"
                                 >
                                     Load More Churches
                                 </button>
@@ -337,40 +451,50 @@ export default function ChurchesPage() {
                         )}
 
                         {loading && churches.length > 0 && (
-                            <div className="flex justify-center py-8">
-                                <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                            <div className="flex justify-center py-6">
+                                <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
                             </div>
                         )}
                     </div>
 
                     {/* Sidebar */}
-                    <div className="hidden lg:block w-80 flex-shrink-0">
-                        <div className="sticky top-28 space-y-6">
-                            {ads.sidebar ? (
-                                <a
-                                    href={ads.sidebar.linkUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer sponsored"
-                                    onClick={() => trackAdClick(ads.sidebar!.id)}
-                                    className="block bg-white rounded-2xl border border-gray-200 p-4 shadow-sm"
-                                >
-                                    <img src={ads.sidebar.imageUrl} alt={ads.sidebar.altText} className="w-full rounded-xl" />
-                                    <p className="text-center text-[10px] text-gray-400 mt-2">Sponsored</p>
-                                </a>
-                            ) : (
-                                <AdPlaceholder position="sidebar" className="aspect-[4/5]" />
-                            )}
+                    <aside className="hidden lg:block w-80 flex-shrink-0">
+                        <div className="sticky top-36 space-y-4">
+                            <SmartAdSlot page="churches" position="sidebar" />
 
-                            {/* For Churches CTA */}
-                            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white">
-                                <h4 className="font-bold text-lg mb-2">Are you a Parish?</h4>
-                                <p className="text-indigo-100 text-sm mb-4">Claim your church listing to manage your information and connect with parishioners.</p>
-                                <Link href="/for-churches" className="block w-full text-center py-2.5 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-indigo-50 transition-colors">
-                                    Learn More
+                            {/* Quick Stats */}
+                            <div className="bg-white rounded-xl border border-slate-200 p-5">
+                                <h4 className="font-semibold text-slate-900 mb-3">Quick Stats</h4>
+                                <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-500">Total Churches</span>
+                                        <span className="font-semibold text-slate-900">{total.toLocaleString()}</span>
+                                    </div>
+                                    {filters && (
+                                        <>
+                                            <div className="flex justify-between">
+                                                <span className="text-slate-500">Countries</span>
+                                                <span className="font-semibold text-slate-900">{filters.countries.length}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-slate-500">Church Types</span>
+                                                <span className="font-semibold text-slate-900">{filters.types.length}</span>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* CTA */}
+                            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-5 text-white">
+                                <h4 className="font-bold mb-2">Are you a Parish?</h4>
+                                <p className="text-blue-100 text-sm mb-3">Claim your listing to manage information and connect with parishioners.</p>
+                                <Link href="/for-churches" className="block w-full text-center py-2.5 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors text-sm">
+                                    Claim Your Church
                                 </Link>
                             </div>
                         </div>
-                    </div>
+                    </aside>
                 </div>
             </div>
         </div>

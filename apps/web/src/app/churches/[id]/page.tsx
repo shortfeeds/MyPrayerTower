@@ -5,10 +5,32 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
     ChevronLeft, MapPin, Phone, Globe, Clock, Calendar, Building2,
-    CheckCircle2, AlertCircle, Loader2, Share2, Heart, Sparkles, Mail, Send, Shield, Users, Eye
+    CheckCircle2, AlertCircle, Loader2, Share2, Heart, Sparkles, Mail, Send, Shield, Users, Eye,
+    User, Image as ImageIcon
 } from 'lucide-react';
+import { SmartAdSlot } from '@/components/ads'; // Import shared ad component
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+// Define full interface matching the API response
+interface ChurchStaff {
+    id: string;
+    name: string;
+    title: string;
+    imageUrl: string | null;
+}
+
+interface ChurchImage {
+    id: string;
+    url: string;
+    caption: string | null;
+    isPrimary: boolean;
+}
+
+interface ChurchEvent {
+    id: string;
+    title: string;
+    startDate: string;
+    eventType: string;
+}
 
 interface Church {
     id: string;
@@ -28,26 +50,16 @@ interface Church {
     isVerified: boolean;
     massSchedule?: any;
     confessionSchedule?: any;
+    adorationSchedule?: any;
     latitude?: number;
     longitude?: number;
     followerCount: number;
     viewCount: number;
     primaryImageUrl?: string;
-    dioceseId?: string;
-}
-
-// Ad Component
-function AdBanner() {
-    return (
-        <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center border border-blue-200/50 relative overflow-hidden group hover:border-blue-300 transition-all">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="text-center relative z-10">
-                <Sparkles className="w-6 h-6 text-blue-400 mx-auto mb-1" />
-                <p className="text-xs text-gray-500 font-medium">Sponsored</p>
-                <Link href="/advertise" className="text-[10px] text-blue-500 hover:underline">Advertise here</Link>
-            </div>
-        </div>
-    );
+    Diocese?: { id: string; name: string; type: string };
+    ChurchStaff?: ChurchStaff[];
+    ChurchImage?: ChurchImage[];
+    ChurchEvent?: ChurchEvent[];
 }
 
 // Inline Claim Form Component
@@ -229,6 +241,7 @@ export default function ChurchDetailPage({ params }: { params: { id: string } })
                     setError('Church not found');
                 }
             } catch (err) {
+                console.error(err);
                 setError('Failed to load church');
             } finally {
                 setLoading(false);
@@ -307,6 +320,11 @@ export default function ChurchDetailPage({ params }: { params: { id: string } })
                                 )}
                                 <div>
                                     <div className="flex items-center gap-3 mb-3 flex-wrap">
+                                        {church.Diocese && (
+                                            <span className="bg-white/90 text-blue-900 text-xs font-bold px-3 py-1 rounded-full border border-white/20">
+                                                {church.Diocese.name}
+                                            </span>
+                                        )}
                                         {church.denomination && (
                                             <span className="bg-purple-500/80 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full border border-white/20">
                                                 {church.denomination}
@@ -360,8 +378,13 @@ export default function ChurchDetailPage({ params }: { params: { id: string } })
                 </div>
             </div>
 
+            {/* Top Ad */}
+            <div className="container mx-auto px-4 py-4">
+                <SmartAdSlot page="churches" position="top" />
+            </div>
+
             {/* Content */}
-            <div className="container mx-auto px-4 py-12">
+            <div className="container mx-auto px-4 pb-12">
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
@@ -373,67 +396,146 @@ export default function ChurchDetailPage({ params }: { params: { id: string } })
                             </div>
                         )}
 
-                        {/* Mass Schedule */}
-                        {church.massSchedule && (
+                        {/* Gallery */}
+                        {church.ChurchImage && church.ChurchImage.length > 0 && (
                             <div className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-gray-100">
                                 <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6 flex items-center gap-3">
-                                    <Clock className="w-6 h-6 text-blue-500" /> Mass Schedule
+                                    <ImageIcon className="w-6 h-6 text-rose-500" /> Photo Gallery
                                 </h2>
-                                <div className="space-y-6">
-                                    {church.massSchedule.sunday && (
-                                        <div>
-                                            <h3 className="font-semibold text-gray-900 mb-3">Sunday</h3>
-                                            <div className="flex flex-wrap gap-2">
-                                                {church.massSchedule.sunday.map((time: string, i: number) => (
-                                                    <span key={i} className="px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 rounded-xl text-sm font-medium">
-                                                        {time}
-                                                    </span>
-                                                ))}
-                                            </div>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {church.ChurchImage.map((img) => (
+                                        <div key={img.id} className="aspect-square rounded-xl overflow-hidden cursor-pointer group relative">
+                                            <img src={img.url} alt={img.caption || 'Church photo'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            {img.caption && (
+                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                                                    <p className="text-white text-xs">{img.caption}</p>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                    {church.massSchedule.saturday && (
-                                        <div>
-                                            <h3 className="font-semibold text-gray-900 mb-3">Saturday</h3>
-                                            <div className="flex flex-wrap gap-2">
-                                                {church.massSchedule.saturday.map((time: string, i: number) => (
-                                                    <span key={i} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium">
-                                                        {time}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                    {church.massSchedule.weekday && (
-                                        <div>
-                                            <h3 className="font-semibold text-gray-900 mb-3">Weekdays</h3>
-                                            <div className="flex flex-wrap gap-2">
-                                                {church.massSchedule.weekday.map((time: string, i: number) => (
-                                                    <span key={i} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium">
-                                                        {time}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
+                                    ))}
                                 </div>
                             </div>
                         )}
 
-                        {/* Confession Schedule */}
-                        {church.confessionSchedule?.times && (
+                        {/* Schedules Block */}
+                        <div className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-gray-100 space-y-8">
+                            {/* Mass Schedule */}
+                            {church.massSchedule && (
+                                <div>
+                                    <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6 flex items-center gap-3">
+                                        <Clock className="w-6 h-6 text-blue-500" /> Holy Mass
+                                    </h2>
+                                    <div className="space-y-6">
+                                        {typeof church.massSchedule === 'object' && Object.entries(church.massSchedule).map(([day, times]) => (
+                                            <div key={day}>
+                                                <h3 className="font-semibold text-gray-900 mb-3 capitalize">{day}</h3>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {Array.isArray(times) ? times.map((time: string, i: number) => (
+                                                        <span key={i} className={`px-4 py-2 rounded-xl text-sm font-medium ${day === 'sunday' ? 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800' : 'bg-gray-100 text-gray-700'}`}>
+                                                            {time}
+                                                        </span>
+                                                    )) : (
+                                                        <span className="text-gray-600">{String(times)}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Separator */}
+                            {(church.massSchedule && (church.confessionSchedule || church.adorationSchedule)) && <hr className="border-gray-100" />}
+
+                            {/* Confession Schedule */}
+                            {church.confessionSchedule && (
+                                <div>
+                                    <h2 className="text-xl font-serif font-bold text-gray-900 mb-4 flex items-center gap-3">
+                                        <Shield className="w-5 h-5 text-purple-500" /> Confession
+                                    </h2>
+                                    <div className="space-y-3">
+                                        {typeof church.confessionSchedule === 'object' && Object.entries(church.confessionSchedule).map(([day, times]) => (
+                                            <div key={day} className="flex flex-col sm:flex-row sm:items-baseline gap-2">
+                                                <span className="font-medium text-gray-900 w-24 capitalize">{day}:</span>
+                                                <span className="text-gray-600">{Array.isArray(times) ? times.join(', ') : String(times)}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Separator */}
+                            {((church.massSchedule || church.confessionSchedule) && church.adorationSchedule) && <hr className="border-gray-100" />}
+
+                            {/* Adoration Schedule */}
+                            {church.adorationSchedule && (
+                                <div>
+                                    <h2 className="text-xl font-serif font-bold text-gray-900 mb-4 flex items-center gap-3">
+                                        <Sparkles className="w-5 h-5 text-amber-500" /> Adoration
+                                    </h2>
+                                    <div className="space-y-3">
+                                        {typeof church.adorationSchedule === 'object' && Object.entries(church.adorationSchedule).map(([day, times]) => (
+                                            <div key={day} className="flex flex-col sm:flex-row sm:items-baseline gap-2">
+                                                <span className="font-medium text-gray-900 w-24 capitalize">{day}:</span>
+                                                <span className="text-gray-600">{Array.isArray(times) ? times.join(', ') : String(times)}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Staff Section */}
+                        {church.ChurchStaff && church.ChurchStaff.length > 0 && (
                             <div className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-gray-100">
                                 <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6 flex items-center gap-3">
-                                    <Calendar className="w-6 h-6 text-purple-500" /> Confession Schedule
+                                    <Users className="w-6 h-6 text-indigo-500" /> Clergy & Staff
                                 </h2>
-                                <ul className="space-y-3">
-                                    {church.confessionSchedule.times.map((time: string, i: number) => (
-                                        <li key={i} className="text-gray-600 flex items-start gap-2">
-                                            <span className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                                            {time}
-                                        </li>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    {church.ChurchStaff.map((staff) => (
+                                        <div key={staff.id} className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-colors">
+                                            {staff.imageUrl ? (
+                                                <img src={staff.imageUrl} alt={staff.name} className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm" />
+                                            ) : (
+                                                <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500 border-2 border-white shadow-sm">
+                                                    <User className="w-6 h-6" />
+                                                </div>
+                                            )}
+                                            <div>
+                                                <h3 className="font-bold text-gray-900">{staff.name}</h3>
+                                                <p className="text-sm text-indigo-600 font-medium">{staff.title}</p>
+                                            </div>
+                                        </div>
                                     ))}
-                                </ul>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Upcoming Events */}
+                        {church.ChurchEvent && church.ChurchEvent.length > 0 && (
+                            <div className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-gray-100">
+                                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6 flex items-center gap-3">
+                                    <Calendar className="w-6 h-6 text-green-500" /> Upcoming Events
+                                </h2>
+                                <div className="space-y-4">
+                                    {church.ChurchEvent.map((event) => (
+                                        <div key={event.id} className="flex gap-4 items-start p-4 rounded-xl bg-gray-50 border border-gray-100">
+                                            <div className="flex flex-col items-center bg-white rounded-lg p-2 border border-gray-200 shadow-sm w-16 flex-shrink-0">
+                                                <span className="text-xs font-bold text-red-500 uppercase">{new Date(event.startDate).toLocaleString('default', { month: 'short' })}</span>
+                                                <span className="text-xl font-bold text-gray-900">{new Date(event.startDate).getDate()}</span>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-gray-900 text-lg">{event.title}</h3>
+                                                <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                                                    <Clock className="w-4 h-4" />
+                                                    <span>{new Date(event.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                    <span className="w-1 h-1 bg-gray-300 rounded-full" />
+                                                    <span>{event.eventType}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
 
@@ -441,6 +543,11 @@ export default function ChurchDetailPage({ params }: { params: { id: string } })
                         {!church.isVerified && showClaimForm && (
                             <ClaimForm churchId={church.id} churchName={church.name} />
                         )}
+
+                        {/* Inline Ad */}
+                        <div className="py-4">
+                            <SmartAdSlot page="churches" position="inline" />
+                        </div>
                     </div>
 
                     {/* Sidebar */}
@@ -535,7 +642,7 @@ export default function ChurchDetailPage({ params }: { params: { id: string } })
                         )}
 
                         {/* Sidebar Ad */}
-                        <AdBanner />
+                        <SmartAdSlot page="churches" position="sidebar" />
                     </div>
                 </div>
             </div>

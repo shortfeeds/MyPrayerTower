@@ -84,14 +84,20 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
             <head>
-                {/* Google AdSense Script - Replace ca-pub-XXXXXXXX with your actual publisher ID */}
+                {/* Google AdSense - Optimized Load Strategy */}
                 {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
                     <Script
                         async
                         src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-                        strategy="afterInteractive"
+                        strategy="lazyOnload"
+                        crossOrigin="anonymous"
                     />
                 )}
+
+                {/* Preconnect to critical domains */}
+                <link rel="preconnect" href="https://htgvilktnadnwlforyjt.supabase.co" />
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 {/* Cashfree Payments SDK */}
                 <Script
                     src="https://sdk.cashfree.com/js/v3/cashfree.js"

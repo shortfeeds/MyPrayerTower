@@ -89,7 +89,7 @@ export function UniversalOfferingModal({ isOpen, onClose }: UniversalOfferingMod
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[90%] max-w-lg bg-gradient-to-b from-gray-900 to-gray-950 rounded-3xl shadow-2xl z-[9999] overflow-hidden border border-white/10"
+                                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[90%] max-w-lg bg-gradient-to-b from-gray-900 to-gray-950 rounded-3xl shadow-2xl z-[9999] overflow-hidden border border-white/10 pointer-events-auto"
                             >
                                 {/* Decorative glow */}
                                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/30 rounded-full blur-3xl" />

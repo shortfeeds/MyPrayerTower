@@ -42,6 +42,7 @@ export class ReportBlockService {
 
         const report = await this.prisma.userReport.create({
             data: {
+                id: crypto.randomUUID(), // Generate ID
                 reporterId,
                 reportedUserId,
                 reason,
@@ -71,7 +72,11 @@ export class ReportBlockService {
         }
 
         await this.prisma.userBlock.create({
-            data: { userId, blockedUserId }
+            data: {
+                id: crypto.randomUUID(), // Generate ID
+                userId,
+                blockedUserId
+            }
         });
 
         this.logger.log(`User ${userId} blocked user ${blockedUserId}`);
@@ -98,14 +103,21 @@ export class ReportBlockService {
 
     // Get blocked users
     async getBlockedUsers(userId: string) {
-        return this.prisma.userBlock.findMany({
+        // Use correct relation name from schema: User_UserBlock_blockedUserIdToUser
+        const blocks = await this.prisma.userBlock.findMany({
             where: { userId },
             include: {
-                blockedUser: {
+                User_UserBlock_blockedUserIdToUser: {
                     select: { id: true, displayName: true, email: true }
                 }
             }
         });
+
+        return blocks.map(block => ({
+            ...block,
+            blockedUser: block.User_UserBlock_blockedUserIdToUser,
+            User_UserBlock_blockedUserIdToUser: undefined
+        }));
     }
 
     // Check if user is blocked
@@ -124,23 +136,34 @@ export class ReportBlockService {
 
     // Admin: Get pending reports
     async getPendingReports(limit = 20) {
-        return this.prisma.userReport.findMany({
+        // Use correct relation names: User_UserReport_reporterIdToUser and User_UserReport_reportedUserIdToUser
+        const reports = await this.prisma.userReport.findMany({
             where: { status: 'PENDING' },
             take: limit,
             orderBy: { createdAt: 'desc' },
             include: {
-                reporter: { select: { id: true, displayName: true, email: true } },
-                reportedUser: { select: { id: true, displayName: true, email: true } }
+                User_UserReport_reporterIdToUser: { select: { id: true, displayName: true, email: true } },
+                User_UserReport_reportedUserIdToUser: { select: { id: true, displayName: true, email: true } }
             }
         });
+
+        return reports.map(report => ({
+            ...report,
+            reporter: report.User_UserReport_reporterIdToUser,
+            reportedUser: report.User_UserReport_reportedUserIdToUser,
+            User_UserReport_reporterIdToUser: undefined,
+            User_UserReport_reportedUserIdToUser: undefined
+        }));
+
     }
 
     // Admin: Resolve report
     async resolveReport(reportId: string, action: 'DISMISSED' | 'WARNED' | 'SUSPENDED', adminId: string) {
+        // Map the action string to the ReportStatus enum if necessary, assuming string matches exactly
         return this.prisma.userReport.update({
             where: { id: reportId },
             data: {
-                status: action,
+                status: action as any, // Cast if enum mismatch slightly (ReportStatus vs string)
                 resolvedBy: adminId,
                 resolvedAt: new Date()
             }

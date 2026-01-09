@@ -3,7 +3,7 @@
 import { SocialProofToast } from '@/components/engagement/SocialProofToast';
 import { PushNotificationPrompt } from '@/components/engagement/PushNotificationPrompt';
 import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
-import { PrayerTooltips } from '@/components/onboarding/PrayerTooltips';
+
 import { usePathname } from 'next/navigation';
 
 /**
@@ -32,8 +32,7 @@ export function GlobalEngagement() {
             {/* Floating prayer action button (mobile only) */}
             <FloatingPrayerButton href="/prayers" label="Pray" />
 
-            {/* Onboarding tooltips for new users */}
-            <PrayerTooltips />
+
         </>
     );
 }

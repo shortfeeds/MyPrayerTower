@@ -104,17 +104,27 @@ export class StripeWebhooksController {
 
         switch (type) {
             case 'mass_offering':
-                await this.massOfferingsService.handlePaymentSuccess(session);
+                await this.massOfferingsService.handlePaymentSuccess(
+                    metadata.orderNumber,
+                    session.payment_intent as string || session.id
+                );
                 this.logger.log(`Mass offering ${metadata.orderNumber} payment processed`);
                 break;
 
             case 'platform_donation':
-                await this.donationsService.handleDonationPaymentSuccess(session);
+                await this.donationsService.handleDonationPaymentSuccess(
+                    metadata.orderNumber,
+                    session.payment_intent as string || session.id
+                );
                 this.logger.log(`Donation ${metadata.orderNumber} payment processed`);
                 break;
 
             case 'prayer_subscription':
-                await this.donationsService.handleSubscriptionSuccess(session);
+                await this.donationsService.handleSubscriptionSuccess(
+                    session.subscription as string,
+                    session.customer as string,
+                    metadata.plan
+                );
                 this.logger.log(`Prayer subscription created for ${metadata.plan}`);
                 break;
 

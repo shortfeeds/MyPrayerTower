@@ -6,37 +6,57 @@ export async function GET(
     { params }: { params: { id: string } }
 ) {
     try {
-        const id = params.id;
+        const idOrSlug = params.id;
 
-        const church = await db.church.findUnique({
-            where: { id },
-            select: {
-                id: true,
-                name: true,
-                slug: true,
-                type: true,
-                address: true,
-                city: true,
-                country: true,
-                phone: true,
-                website: true,
-                email: true,
-                description: true,
-                isVerified: true,
-                massSchedule: true,
-                confessionSchedule: true,
-                latitude: true,
-                longitude: true,
-                denomination: true,
-                state: true,
-                postalCode: true,
-                dioceseId: true,
-                followerCount: true,
-                viewCount: true,
-                primaryImageUrl: true,
-                updatedAt: true,
+        // Try to find by id first, then by slug
+        let church = await db.church.findUnique({
+            where: { id: idOrSlug },
+            include: {
+                Diocese: {
+                    select: { id: true, name: true, type: true }
+                },
+                ChurchImage: {
+                    select: { id: true, url: true, caption: true, isPrimary: true },
+                    orderBy: { sortOrder: 'asc' }
+                },
+                ChurchStaff: {
+                    select: { id: true, name: true, title: true, imageUrl: true },
+                    orderBy: { sortOrder: 'asc' }
+                },
+                ChurchEvent: {
+                    where: { startDate: { gte: new Date() } },
+                    select: { id: true, title: true, startDate: true, eventType: true },
+                    orderBy: { startDate: 'asc' },
+                    take: 5
+                }
             }
         });
+
+        // If not found by id, try by slug
+        if (!church) {
+            church = await db.church.findUnique({
+                where: { slug: idOrSlug },
+                include: {
+                    Diocese: {
+                        select: { id: true, name: true, type: true }
+                    },
+                    ChurchImage: {
+                        select: { id: true, url: true, caption: true, isPrimary: true },
+                        orderBy: { sortOrder: 'asc' }
+                    },
+                    ChurchStaff: {
+                        select: { id: true, name: true, title: true, imageUrl: true },
+                        orderBy: { sortOrder: 'asc' }
+                    },
+                    ChurchEvent: {
+                        where: { startDate: { gte: new Date() } },
+                        select: { id: true, title: true, startDate: true, eventType: true },
+                        orderBy: { startDate: 'asc' },
+                        take: 5
+                    }
+                }
+            });
+        }
 
         if (!church) {
             return NextResponse.json(
@@ -44,6 +64,12 @@ export async function GET(
                 { status: 404 }
             );
         }
+
+        // Increment view count (fire and forget)
+        db.church.update({
+            where: { id: church.id },
+            data: { viewCount: { increment: 1 } }
+        }).catch(() => { });
 
         return NextResponse.json(church);
     } catch (error: any) {

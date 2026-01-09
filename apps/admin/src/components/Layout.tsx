@@ -28,6 +28,46 @@ const menuItems = [
 export function Layout({ children }: { children: React.ReactNode }) {
     const [collapsed, setCollapsed] = useState(false);
     const location = useLocation();
+    const {
+        token: { colorBgContainer, borderRadiusLG },
+    } = theme.useToken();
+
+    // Map path to breadcrumb name
+    const pathNameMap: Record<string, string> = {
+        '/dashboard': 'Dashboard',
+        '/prayers': 'Prayers',
+        '/churches': 'Churches',
+        '/claims': 'Claims',
+        '/users': 'Users',
+        '/sync': 'Sync',
+        '/settings': 'Settings',
+    };
+
+    const currentPathName = pathNameMap[location.pathname] || 'Dashboard';
+
+    const userMenu = {
+        items: [
+            {
+                key: 'profile',
+                label: 'Profile',
+                icon: <UserOutlined />
+            },
+            {
+                key: 'settings',
+                label: 'Settings',
+                icon: <SettingOutlined />
+            },
+            {
+                type: 'divider',
+            },
+            {
+                key: 'logout',
+                label: 'Logout',
+                icon: <LogoutOutlined />,
+                danger: true
+            },
+        ]
+    };
 
     return (
         <AntLayout style={{ minHeight: '100vh' }}>
@@ -35,50 +75,122 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 trigger={null}
                 collapsible
                 collapsed={collapsed}
-                style={{ background: '#001529' }}
+                width={260}
+                style={{
+                    borderRight: '1px solid #1e293b',
+                    zIndex: 10
+                }}
             >
                 <div style={{
                     height: 64,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: 'white',
-                    fontSize: collapsed ? 16 : 18,
-                    fontWeight: 'bold',
-                    borderBottom: '1px solid rgba(255,255,255,0.1)'
+                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    marginBottom: 8
                 }}>
-                    {collapsed ? 'MPT' : 'MyPrayerTower'}
+                    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{
+                            width: 32, height: 32,
+                            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                            borderRadius: 8,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontWeight: 'bold', color: 'white'
+                        }}>
+                            MP
+                        </div>
+                        {!collapsed && (
+                            <span style={{
+                                color: 'white',
+                                fontSize: 18,
+                                fontWeight: 700,
+                                fontFamily: 'serif',
+                                letterSpacing: '0.5px'
+                            }}>
+                                PrayerTower
+                            </span>
+                        )}
+                    </Link>
                 </div>
                 <Menu
                     theme="dark"
                     mode="inline"
                     selectedKeys={[location.pathname]}
                     items={menuItems}
-                    style={{ borderRight: 0 }}
+                    style={{ background: 'transparent', borderRight: 0 }}
                 />
             </Sider>
             <AntLayout>
                 <Header style={{
                     padding: '0 24px',
-                    background: '#fff',
+                    background: colorBgContainer,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.08)'
+                    borderBottom: '1px solid #1e293b',
+                    height: 64,
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 9
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
                         {collapsed ?
-                            <MenuUnfoldOutlined onClick={() => setCollapsed(false)} style={{ fontSize: 18, cursor: 'pointer' }} /> :
-                            <MenuFoldOutlined onClick={() => setCollapsed(true)} style={{ fontSize: 18, cursor: 'pointer' }} />
+                            <MenuUnfoldOutlined onClick={() => setCollapsed(false)} style={{ fontSize: 18, cursor: 'pointer', color: '#94a3b8' }} /> :
+                            <MenuFoldOutlined onClick={() => setCollapsed(true)} style={{ fontSize: 18, cursor: 'pointer', color: '#94a3b8' }} />
                         }
-                        <span style={{ fontWeight: 600, fontSize: 18 }}>Admin Panel</span>
+
+                        {/* Breadcrumb */}
+                        <Breadcrumb
+                            items={[
+                                { title: 'Admin' },
+                                { title: currentPathName },
+                            ]}
+                        />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                        <span>admin@myprayertower.com</span>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                        {/* Global Search */}
+                        <Input
+                            placeholder="Search anything (Cmd+K)..."
+                            prefix={<SearchOutlined style={{ color: '#64748b' }} />}
+                            style={{
+                                width: 300,
+                                background: '#0f172a',
+                                border: '1px solid #1e293b',
+                                color: 'white',
+                                borderRadius: 8
+                            }}
+                            variant="filled"
+                        />
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                            <Badge count={5} size="small" offset={[-2, 2]}>
+                                <BellOutlined style={{ fontSize: 20, color: '#94a3b8', cursor: 'pointer' }} />
+                            </Badge>
+
+                            <Dropdown menu={userMenu} placement="bottomRight">
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
+                                    <Avatar size="default" style={{ backgroundColor: '#f59e0b', verticalAlign: 'middle' }}>
+                                        A
+                                    </Avatar>
+                                    <div style={{ lineHeight: '1.2' }}>
+                                        <div style={{ fontSize: 14, fontWeight: 500 }}>Super Admin</div>
+                                        <div style={{ fontSize: 11, color: '#64748b' }}>Administrator</div>
+                                    </div>
+                                </div>
+                            </Dropdown>
+                        </div>
                     </div>
                 </Header>
-                <Content style={{ margin: 24, padding: 24, background: '#fff', borderRadius: 8, minHeight: 280 }}>
-                    {children}
+                <Content style={{ margin: '24px 24px 0', overflow: 'initial' }}>
+                    <div style={{
+                        padding: 0,
+                        minHeight: 360,
+                        // background: colorBgContainer,
+                        // borderRadius: borderRadiusLG,
+                    }}>
+                        {children}
+                    </div>
                 </Content>
             </AntLayout>
         </AntLayout>
