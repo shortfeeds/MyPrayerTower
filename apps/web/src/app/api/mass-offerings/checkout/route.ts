@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createOrder } from '@/lib/cashfree';
 import { randomUUID } from 'crypto';
+import { notifyMassOffering } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
     try {
@@ -26,6 +27,15 @@ export async function POST(req: NextRequest) {
             customerPhone: '9999999999',
             customerName: name || 'Guest'
         });
+
+        // Send admin notification
+        notifyMassOffering({
+            offeringType: offeringId,
+            intention,
+            amount,
+            name: name || 'Guest',
+            email
+        }).catch(err => console.error('Failed to send mass offering notification:', err));
 
         return NextResponse.json({
             success: true,

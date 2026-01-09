@@ -54,10 +54,10 @@ const CANDLE_COLORS = {
 
 // USD Pricing - global standard
 const DURATIONS = [
-    { value: 'ONE_DAY', label: '1 Day', hours: 24, price: 0, priceDisplay: 'Free', tier: 'free' },
-    { value: 'THREE_DAYS', label: '3 Days', hours: 72, price: 299, priceDisplay: '$2.99', tier: 'basic' },
-    { value: 'SEVEN_DAYS', label: '7 Days', hours: 168, price: 599, priceDisplay: '$5.99', tier: 'standard' },
-    { value: 'THIRTY_DAYS', label: '30 Days', hours: 720, price: 1499, priceDisplay: '$14.99', tier: 'premium' },
+    { value: 'ONE_DAY', label: '1 Day', hours: 24, price: 0, priceDisplay: 'Free', priceDisplayINR: 'Free', tier: 'free' },
+    { value: 'THREE_DAYS', label: '3 Days', hours: 72, price: 299, priceDisplay: '$2.99', priceDisplayINR: '₹249', tier: 'basic' },
+    { value: 'SEVEN_DAYS', label: '7 Days', hours: 168, price: 599, priceDisplay: '$5.99', priceDisplayINR: '₹499', tier: 'standard' },
+    { value: 'THIRTY_DAYS', label: '30 Days', hours: 720, price: 1499, priceDisplay: '$14.99', priceDisplayINR: '₹1,249', tier: 'premium' },
 ];
 
 const BLOCKED_NAMES = ['agent test', 'test user', 'test', 'testing', 'sample'];
@@ -567,9 +567,17 @@ export default function CandleWallPage() {
                                             )}
                                             <div className="flex justify-between items-start">
                                                 <span className="text-white font-semibold">{duration.label}</span>
-                                                <span className={`text-sm font-bold ${duration.price === 0 ? 'text-green-400' : 'text-amber-400'}`}>
-                                                    {duration.priceDisplay}
-                                                </span>
+                                                <div className="text-right">
+                                                    <span className={`block text-sm font-bold ${duration.price === 0 ? 'text-green-400' : 'text-amber-400'}`}>
+                                                        {duration.priceDisplay}
+                                                    </span>
+                                                    {duration.price > 0 && (
+                                                        <span className="block text-[10px] text-gray-500">
+                                                            {/* @ts-ignore */}
+                                                            {duration.priceDisplayINR}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                             <p className="text-xs text-gray-500 mt-1">
                                                 {duration.tier === 'premium' ? '3000+ prayers • Featured spot' :
@@ -625,7 +633,8 @@ export default function CandleWallPage() {
                                 {isSubmitting ? 'Lighting...' : isPaidOption ? (
                                     <>
                                         <CreditCard className="w-5 h-5" />
-                                        Continue - {selectedDurationData?.priceDisplay}
+                                        Continue - {selectedDurationData?.priceDisplay} <span className="text-xs opacity-80 font-normal ml-1">({/* @ts-ignore */
+                                            selectedDurationData?.priceDisplayINR})</span>
                                     </>
                                 ) : (
                                     <>🕯️ Light Free Candle</>
@@ -655,13 +664,21 @@ export default function CandleWallPage() {
                                 <h3 className="text-sm font-medium text-gray-400 mb-3">Order Summary</h3>
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-white">{selectedDurationData?.label} Prayer Candle</span>
-                                    <span className="text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
+                                    <div className="text-right">
+                                        <span className="block text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
+                                        {/* @ts-ignore */}
+                                        <span className="block text-xs text-gray-500">{selectedDurationData?.priceDisplayINR}</span>
+                                    </div>
                                 </div>
                                 <p className="text-xs text-gray-500 truncate">{intention}</p>
                                 <hr className="border-slate-600 my-3" />
                                 <div className="flex justify-between items-center">
-                                    <span className="text-gray-300 font-medium">Total (USD)</span>
-                                    <span className="text-2xl text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
+                                    <span className="text-gray-300 font-medium">Total</span>
+                                    <div className="text-right">
+                                        <span className="block text-2xl text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
+                                        {/* @ts-ignore */}
+                                        <span className="block text-sm text-gray-500">{selectedDurationData?.priceDisplayINR}</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -684,7 +701,8 @@ export default function CandleWallPage() {
                                 {isProcessingPayment ? 'Processing...' : (
                                     <>
                                         <Lock className="w-5 h-5" />
-                                        Pay {selectedDurationData?.priceDisplay}
+                                        Pay {selectedDurationData?.priceDisplay} <span className="text-sm opacity-80 font-normal">({/* @ts-ignore */
+                                            selectedDurationData?.priceDisplayINR})</span>
                                     </>
                                 )}
                             </button>

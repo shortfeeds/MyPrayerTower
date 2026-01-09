@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createOrder } from '@/lib/cashfree';
 import { randomUUID } from 'crypto';
+import { notifyBouquet } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
     try {
@@ -17,19 +18,30 @@ export async function POST(req: NextRequest) {
         };
 
         let totalAmount = 0;
+        const prayerTypes: string[] = [];
         Object.keys(items).forEach(key => {
             const count = items[key];
-            if (count > 0 && PRICES[key]) {
-                totalAmount += (PRICES[key] * count);
+            if (count > 0) {
+                prayerTypes.push(`${count}x ${key}`);
+                if (PRICES[key]) {
+                    totalAmount += (PRICES[key] * count);
+                }
             }
         });
 
         if (totalAmount === 0) {
-            // Free bouquet?
+            // Free bouquet - still send notification
+            notifyBouquet({
+                recipient: recipientName || 'Unknown',
+                sender: senderName || 'Anonymous',
+                prayerTypes,
+                amount: 0,
+                email: senderEmail
+            }).catch(err => console.error('Failed to send bouquet notification:', err));
+
             return NextResponse.json({
                 success: true,
                 message: 'Free bouquet processed',
-                // handle logic for free items
             });
         }
 
@@ -47,6 +59,15 @@ export async function POST(req: NextRequest) {
             customerPhone: '9999999999',
             customerName: senderName || 'Sender'
         });
+
+        // Send admin notification
+        notifyBouquet({
+            recipient: recipientName || 'Unknown',
+            sender: senderName || 'Anonymous',
+            prayerTypes,
+            amount: totalAmount,
+            email: senderEmail
+        }).catch(err => console.error('Failed to send bouquet notification:', err));
 
         return NextResponse.json({
             success: true,

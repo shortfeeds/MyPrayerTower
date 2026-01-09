@@ -197,9 +197,7 @@ export function CandleBanner() {
                                         Light a Candle
                                         <ArrowRight className="w-5 h-5" />
                                     </Link>
-                                    <p className="text-white/60 text-xs mt-4">
-                                        Free 1-day candles available • Paid upgrades optional
-                                    </p>
+
                                 </div>
                             </div>
                         </div>

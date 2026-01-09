@@ -57,10 +57,10 @@ function StatItem({ icon: Icon, value, suffix, label, color }: StatItemProps) {
 
     return (
         <div ref={ref} className="text-center group">
-            <div className={`w-16 h-16 ${color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                <Icon className="w-8 h-8 text-white" />
+            <div className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-md`}>
+                <Icon className="w-6 h-6 text-white" />
             </div>
-            <div className="font-display text-4xl md:text-5xl font-bold text-white mb-2">
+            <div className="font-display text-2xl md:text-3xl font-bold text-white mb-1">
                 {count.toLocaleString()}{suffix}
             </div>
             <div className="text-blue-100 font-medium">{label}</div>

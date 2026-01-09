@@ -33,7 +33,6 @@ import { QuickAccessCards } from '@/components/home/QuickAccessCards';
 import { TrustBar } from '@/components/home/TrustBar';
 import { HowItWorks } from '@/components/home/HowItWorks';
 import { StatisticsBand } from '@/components/home/StatisticsBand';
-import { FAQSection } from '@/components/home/FAQSection';
 import { LiveCommunityPreview } from '@/components/home/LiveCommunityPreview';
 import { ContentPreview } from '@/components/home/ContentPreview';
 import { PromotionalBanner, AppDownloadBanner } from '@/components/home/PromotionalBanner';
@@ -267,8 +266,6 @@ function LoggedOutHomePage() {
             {/* App Download Banner */}
             <AppDownloadBanner />
 
-            {/* FAQ Section */}
-            <FAQSection />
 
             {/* Final CTA */}
             <section className="py-16 bg-white">

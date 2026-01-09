@@ -172,6 +172,7 @@ export function Footer() {
                                 <ul className="space-y-1 text-gray-400">
                                     <li><Link href="/privacy" className="hover:text-gold-400">Privacy</Link></li>
                                     <li><Link href="/terms" className="hover:text-gold-400">Terms</Link></li>
+                                    <li><Link href="/refunds" className="hover:text-gold-400">Refunds</Link></li>
                                 </ul>
                             </div>
                         </div>
@@ -194,6 +195,7 @@ export function Footer() {
                         <div className="flex gap-3">
                             <Link href="/privacy" className="hover:text-gray-400">Privacy</Link>
                             <Link href="/terms" className="hover:text-gray-400">Terms</Link>
+                            <Link href="/refunds" className="hover:text-gray-400">Refunds</Link>
                             <Link href="/sitemap" className="hover:text-gray-400">Sitemap</Link>
                         </div>
                     </div>

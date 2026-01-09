@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createOrder } from '@/lib/cashfree';
 import { randomUUID } from 'crypto';
+import { notifyDonation } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
     try {
@@ -30,6 +31,15 @@ export async function POST(req: NextRequest) {
             customerPhone: '9999999999',
             customerName: name || 'Donor'
         });
+
+        // Send admin notification
+        notifyDonation({
+            amount,
+            name: name || 'Anonymous',
+            email,
+            message,
+            tier
+        }).catch(err => console.error('Failed to send donation notification:', err));
 
         return NextResponse.json({
             success: true,

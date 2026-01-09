@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createOrder } from '@/lib/cashfree';
 import { randomUUID } from 'crypto';
+import { notifyCandle } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { duration, amount, intention, name, isAnonymous } = body;
+        const { duration, amount, intention, name, isAnonymous, email } = body;
 
         // Validate required fields
         if (!duration || !amount || !intention) {
@@ -31,6 +32,15 @@ export async function POST(req: NextRequest) {
             customerPhone,
             customerName
         });
+
+        // Send admin notification
+        notifyCandle({
+            candleType: duration,
+            intention,
+            amount,
+            name: customerName,
+            email
+        }).catch(err => console.error('Failed to send candle notification:', err));
 
         return NextResponse.json({
             success: true,
