@@ -1912,3 +1912,24 @@ model MemorialPhoto {
   @@index([sortOrder])
 }
 
+model AbandonedCart {
+  id            String    @id @default(cuid())
+  type          String    // MEMORIAL, CANDLE, MASS, OFFERING
+  email         String
+  name          String?
+  phone         String?
+  data          Json      // Serialized form data
+  step          String    // Last reached step
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Reminder tracking
+  reminderCount Int       @default(0)
+  lastReminder  DateTime?
+  converted     Boolean   @default(false)
+  convertedAt   DateTime?
+
+  @@index([email])
+  @@index([createdAt])
+  @@index([converted])
+}

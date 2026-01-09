@@ -8,40 +8,40 @@ export function OfferingsGrid() {
     const offerings = [
         {
             title: 'Light a Candle',
-            description: 'A virtual prayer candle burning for your intentions, 24/7',
+            description: 'A virtual prayer candle burning for your intentions',
             icon: Flame,
             href: '/candles',
-            price: 'From $1',
+            cta: 'Start Praying',
             colors: 'from-amber-500 to-orange-500',
             bgLight: 'from-amber-50 to-orange-50',
             border: 'border-amber-200',
         },
         {
             title: 'Mass Offerings',
-            description: 'Request a Holy Mass for your loved ones, living or deceased',
+            description: 'Request a Holy Mass for your loved ones',
             icon: Cross,
             href: '/mass-offerings',
-            price: 'From $15',
+            cta: 'Request a Mass',
             colors: 'from-blue-500 to-indigo-500',
             bgLight: 'from-blue-50 to-indigo-50',
             border: 'border-blue-200',
         },
         {
             title: 'Spiritual Bouquets',
-            description: 'A beautiful gift of prayers, candles, and Mass intentions',
+            description: 'A beautiful gift of prayers and intentions',
             icon: Gift,
             href: '/bouquets',
-            price: 'From $10',
+            cta: 'Send a Gift',
             colors: 'from-rose-500 to-pink-500',
             bgLight: 'from-rose-50 to-pink-50',
             border: 'border-rose-200',
         },
         {
             title: 'Eternal Memorials',
-            description: 'Honor your departed loved ones with a lasting digital tribute',
+            description: 'Honor your departed loved ones with a tribute',
             icon: Heart,
             href: '/memorials',
-            price: 'From $20',
+            cta: 'Honor Someone',
             colors: 'from-purple-500 to-violet-500',
             bgLight: 'from-purple-50 to-violet-50',
             border: 'border-purple-200',
@@ -90,10 +90,10 @@ export function OfferingsGrid() {
                             <h3 className="font-bold text-gray-900 text-lg mb-2">{offering.title}</h3>
                             <p className="text-sm text-gray-600 mb-4">{offering.description}</p>
 
-                            {/* Price & Arrow */}
+                            {/* CTA & Arrow */}
                             <div className="flex items-center justify-between mt-auto">
-                                <span className={`text-sm font-bold bg-gradient-to-r ${offering.colors} bg-clip-text text-transparent`}>
-                                    {offering.price}
+                                <span className={`text-sm font-bold px-3 py-1 rounded-full bg-gradient-to-r ${offering.colors} text-white shadow-sm`}>
+                                    {offering.cta}
                                 </span>
                                 <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-900 group-hover:translate-x-1 transition-all" />
                             </div>

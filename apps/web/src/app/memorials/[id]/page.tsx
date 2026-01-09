@@ -5,10 +5,11 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
     ChevronLeft, Calendar, Flame, Cross, Heart, Share2, Users,
-    MessageSquare, Loader2, ExternalLink, Sparkles, Gift
+    MessageSquare, Loader2, ExternalLink, Sparkles, Gift, LogIn
 } from 'lucide-react';
 import { SmartAdSlot } from '@/components/ads';
 import { ShareButtons } from '@/components/social/ShareButtons';
+import { QRCodeGenerator } from '@/components/memorials/QRCodeGenerator';
 
 interface Offering {
     id: string;
@@ -77,6 +78,15 @@ export default function MemorialDetailPage() {
     const [error, setError] = useState<string | null>(null);
     const [newMessage, setNewMessage] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        // Check authentication status
+        fetch('/api/auth/me')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => setIsLoggedIn(!!data?.user))
+            .catch(() => setIsLoggedIn(false));
+    }, []);
 
     useEffect(() => {
         async function fetchMemorial() {
@@ -361,35 +371,58 @@ export default function MemorialDetailPage() {
                             </div>
                         )}
 
-                        {/* Guestbook */}
+                        {/* Tributes & Memories */}
                         <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
                             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                <MessageSquare className="w-5 h-5 text-blue-500" />
-                                Guestbook
+                                <Heart className="w-5 h-5 text-rose-500" />
+                                Tributes & Memories
                             </h3>
 
-                            {/* Add Message */}
-                            <div className="mb-6">
-                                <textarea
-                                    value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                    placeholder="Leave a message of remembrance..."
-                                    className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
-                                    rows={3}
-                                />
-                                <button
-                                    onClick={submitGuestbook}
-                                    disabled={!newMessage.trim() || submitting}
-                                    className="mt-2 px-6 py-2 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 disabled:opacity-50 transition-colors"
-                                >
-                                    {submitting ? 'Posting...' : 'Post Message'}
-                                </button>
-                            </div>
+                            {/* Add Message - Auth Required */}
+                            {isLoggedIn ? (
+                                <div className="mb-6">
+                                    <textarea
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        placeholder="Share a memory or message of tribute..."
+                                        className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
+                                        rows={3}
+                                    />
+                                    <button
+                                        onClick={submitGuestbook}
+                                        disabled={!newMessage.trim() || submitting}
+                                        className="mt-2 px-6 py-2 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 disabled:opacity-50 transition-colors"
+                                    >
+                                        {submitting ? 'Posting...' : 'Share Tribute'}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="mb-6 p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200">
+                                    <div className="flex items-start gap-4">
+                                        <div className="p-3 bg-white rounded-xl shadow-sm">
+                                            <LogIn className="w-6 h-6 text-amber-600" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-gray-900 mb-1">Sign in to Leave a Tribute</h4>
+                                            <p className="text-sm text-gray-600 mb-3">
+                                                Join our community to share memories and messages of remembrance for {fullName}.
+                                            </p>
+                                            <Link
+                                                href={`/auth/signin?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                                                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white font-semibold text-sm rounded-xl hover:bg-amber-600 transition-colors"
+                                            >
+                                                <LogIn className="w-4 h-4" />
+                                                Sign In
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Messages */}
                             <div className="space-y-4">
                                 {memorial.guestbook.length === 0 ? (
-                                    <p className="text-center text-gray-500 py-8">Be the first to leave a message.</p>
+                                    <p className="text-center text-gray-500 py-8">Be the first to share a tribute.</p>
                                 ) : (
                                     memorial.guestbook.map((entry) => (
                                         <div key={entry.id} className="p-4 bg-gray-50 rounded-xl">
@@ -439,6 +472,9 @@ export default function MemorialDetailPage() {
                                 </div>
                             )}
                         </div>
+
+                        {/* QR Code for Physical Memorials */}
+                        <QRCodeGenerator memorialSlug={memorial.slug} memorialName={fullName} />
 
                         {/* Sidebar Ad */}
                         <SmartAdSlot page="memorials" position="sidebar" />

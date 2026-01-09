@@ -77,6 +77,7 @@ export default function PrivacyPolicyPage() {
                             <li>To improve our Services through analytics</li>
                             <li>To display relevant advertisements (Google AdMob)</li>
                             <li>To comply with legal obligations</li>
+                            <li>To send reminders about abandoned transactions or incomplete offerings</li>
                         </ul>
                     </section>
 

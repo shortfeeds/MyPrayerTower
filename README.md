@@ -11,15 +11,15 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 ---
 
 ## ✨ What's New (January 2026)
-
+- 🕊️ **Emotional Pricing** - Contribution-based approach for offerings
 - 🕯️ **Virtual Candles** - Light digital prayer candles for intentions
+- 🛒 **Abandoned Cart Recovery** - Automated email reminders for incomplete offerings
+- 🖤 **Eternal Memorials** - Create lasting digital tributes with multi-tier options
 - 🏆 **Challenges & Leaderboards** - Join spiritual challenges and track progress
 - 💳 **Google Play Billing** - In-app subscriptions on Android
 - 🌸 **Spiritual Bouquets** - Send digital prayer bouquets as gifts
 - 📿 **Daily Examen** - Guided examination of conscience
 - 🔔 **Prayer Reminders** - Custom notifications for prayer times
-- 🎨 **Wallpapers** - Catholic-themed phone wallpapers
-- 📊 **Year in Review** - Annual prayer statistics summary
 
 ---
 
@@ -68,14 +68,17 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 | **Leaderboards** | Community rankings by prayer activity | ✅ NEW |
 | **Prayer Reminders** | Custom notifications for prayer times | ✅ NEW |
 | **Year in Review** | Annual prayer statistics summary | ✅ NEW |
+| **Abandoned Cart** | Auto-recovery for incomplete offerings | ✅ NEW |
 
-### 🕯️ Spiritual Gifts
+### 🕯️ Spiritual Gifts & Memorials
 | Feature | Description | Status |
 |---------|-------------|--------|
 | **Virtual Candles** | 1-30 day digital prayer candles ($0-$15) | ✅ NEW |
 | **Spiritual Bouquets** | Gift prayer collections to loved ones | ✅ NEW |
 | **Mass Offerings** | Request Masses for intentions | ✅ |
+| **Memorial Pages** | Basic ($20) & Premium ($49) tributes | ✅ NEW |
 | **Prayer Certificates** | Digital Mass cards for gifts | ✅ |
+| **Admin Panel** | Manage offerings, memorials, and abandoned carts | ✅ NEW |
 
 ### 💳 Payments & Subscriptions
 | Feature | Description | Status |
@@ -125,7 +128,6 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 ---
 
 ## 🏗️ Project Structure
-
 ```
 myprayertower/
 ├── apps/
@@ -278,6 +280,12 @@ Cashfree: https://myprayertower.com/api/webhooks/cashfree
 | **Plus** | $4.99/mo or $39.99/yr | Ad-free, offline mode, audio prayers, 2 family members |
 | **Premium** | $9.99/mo or $79.99/yr | All Plus + AI suggestions, 5 family members, priority support |
 | **Lifetime** | $149.99 (one-time) | All Premium features forever |
+
+### 🕊️ Memorial Pricing
+| Tier | Price | Features |
+|------|-------|----------|
+| **Basic Memorial** | $20 (one-time) | Permanent page, photo, bio, guestbook |
+| **Premium Memorial** | $49 (one-time) | Featured placement, unlimited photos, QR code, video tribute |
 
 ---
 

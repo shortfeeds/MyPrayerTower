@@ -27,18 +27,36 @@ const MEMORIAL_DATA = [
     { firstName: 'Peter', lastName: 'Andersen', bio: 'Convert from Lutheranism, RCIA sponsor for 25 years', shortBio: 'Brought many home to Rome' },
 ];
 
+// 20 Unique portraits - gender matched to memorial names
+// Females: Margaret, Rosa, Catherine, Anna, Teresa, Mary, Elizabeth, Lucia, Maria, Helen
+// Males: John, Francis, Michael, Patrick, Joseph, Thomas, William, James, Anthony, Peter
 const PHOTOS = [
-    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400',
-    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400',
-    'https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=400',
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
-    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
-    'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400',
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
-    'https://images.unsplash.com/photo-1542178243-bc20974f57b7?w=400',
-    'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?w=400',
+    // Female portraits (indices 0-9)
+    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400', // Margaret - 0
+    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400', // Rosa - 2
+    'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400', // Catherine - 4
+    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400', // Anna - 6
+    'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?w=400', // Teresa - 8
+    'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400', // Mary - 10
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400', // Elizabeth - 12
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400', // Lucia - 14
+    'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400', // Maria - 16
+    'https://images.unsplash.com/photo-1548142813-c348350df52b?w=400', // Helen - 18
+    // Male portraits (indices 10-19)
+    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400', // John - 1
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', // Francis - 3
+    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400', // Michael - 5
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400', // Patrick - 7
+    'https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=400', // Joseph - 9
+    'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400', // Thomas - 11
+    'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=400', // William - 13
+    'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400', // James - 15
+    'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400', // Anthony - 17
+    'https://images.unsplash.com/photo-1557862921-37829c790f19?w=400', // Peter - 19
 ];
+
+// Gender index mapping for each memorial (F=female index 0-9, M=male index 10-19)
+const PHOTO_INDEX_MAP = [0, 10, 1, 11, 2, 12, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17, 8, 18, 9, 19];
 
 // GET /api/seed/memorials - Create dummy memorials
 export async function GET() {
@@ -55,12 +73,27 @@ export async function GET() {
             const birthDate = new Date(birthYear, Math.floor(Math.random() * 12), 1 + Math.floor(Math.random() * 28));
             const deathDate = new Date(deathYear, Math.floor(Math.random() * 12), 1 + Math.floor(Math.random() * 28));
 
+            // Ensure a user exists to own these memorials
+            const user = await prisma.user.upsert({
+                where: { email: 'admin@myprayertower.com' },
+                update: {},
+                create: {
+                    id: 'user_admin_seed', // Explicit ID required
+                    email: 'admin@myprayertower.com',
+                    firstName: 'Admin',
+                    lastName: 'User',
+                    passwordHash: 'placeholder',
+                    updatedAt: new Date(),
+                },
+            });
+
             // Check if exists
             const existing = await prisma.memorial.findUnique({ where: { slug } });
             if (existing) continue;
 
             const memorial = await prisma.memorial.create({
                 data: {
+                    ownerId: user.id,
                     slug,
                     firstName: data.firstName,
                     lastName: data.lastName,
@@ -68,15 +101,15 @@ export async function GET() {
                     shortBio: data.shortBio,
                     birthDate,
                     deathDate,
-                    photoUrl: PHOTOS[i % PHOTOS.length],
-                    tier: i < 5 ? 'PREMIUM' : 'BASIC',
+                    photoUrl: PHOTOS[PHOTO_INDEX_MAP[i]],
+                    tier: i < 10 ? 'PREMIUM' : 'BASIC',
                     isPublic: true,
-                    isVerified: i < 5,
-                    totalCandles: Math.floor(Math.random() * 200) + 10,
-                    totalMasses: Math.floor(Math.random() * 20) + 1,
-                    totalFlowers: Math.floor(Math.random() * 50) + 5,
-                    totalPrayers: Math.floor(Math.random() * 300) + 20,
-                    viewCount: Math.floor(Math.random() * 1000) + 100,
+                    isVerified: i < 10,
+                    totalCandles: i < 10 ? Math.floor(Math.random() * 500) + 200 : Math.floor(Math.random() * 100) + 10,
+                    totalMasses: i < 10 ? Math.floor(Math.random() * 50) + 20 : Math.floor(Math.random() * 10) + 1,
+                    totalFlowers: i < 10 ? Math.floor(Math.random() * 200) + 50 : Math.floor(Math.random() * 30) + 5,
+                    totalPrayers: i < 10 ? Math.floor(Math.random() * 1000) + 300 : Math.floor(Math.random() * 150) + 20,
+                    viewCount: i < 10 ? Math.floor(Math.random() * 5000) + 1000 : Math.floor(Math.random() * 500) + 50,
                 },
             });
             created.push(memorial.slug);

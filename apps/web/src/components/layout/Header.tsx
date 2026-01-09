@@ -5,13 +5,14 @@ import { useState, useEffect, useRef } from 'react';
 import {
     Menu, X, Building2, Heart, BookOpen, User, Star, Search,
     ChevronDown, Sparkles, Book, Calendar, Facebook, Youtube,
-    Moon, Sun, Compass, MapPin, Users, Home, LogOut, Settings
+    Moon, Sun, Compass, MapPin, Users, Home, LogOut, Settings,
+    Flame, Gift, CreditCard
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
 
-import { UniversalOfferingModal } from '@/components/offerings/UniversalOfferingModal';
+
 
 // Simulated auth hook - replace with your actual auth implementation
 const useAuth = () => {
@@ -22,15 +23,17 @@ const useAuth = () => {
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [offeringModalOpen, setOfferingModalOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [prayersOpen, setPrayersOpen] = useState(false);
     const [readingsOpen, setReadingsOpen] = useState(false);
     const [mobilePrayersOpen, setMobilePrayersOpen] = useState(false);
     const [mobileReadingsOpen, setMobileReadingsOpen] = useState(false);
+    const [offeringsOpen, setOfferingsOpen] = useState(false);
+    const [mobileOfferingsOpen, setMobileOfferingsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const prayersRef = useRef<HTMLDivElement>(null);
     const readingsRef = useRef<HTMLDivElement>(null);
+    const offeringsRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const { actualTheme, setTheme } = useTheme();
     const { isAuthenticated, user } = useAuth();
@@ -52,6 +55,9 @@ export function Header() {
             }
             if (readingsRef.current && !readingsRef.current.contains(event.target as Node)) {
                 setReadingsOpen(false);
+            }
+            if (offeringsRef.current && !offeringsRef.current.contains(event.target as Node)) {
+                setOfferingsOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -88,6 +94,13 @@ export function Header() {
         { href: '/bible/year', label: 'Bible Year Plan', icon: BookOpen, description: 'Read in a year' },
     ];
 
+    const offeringsLinks = [
+        { href: '/candles', label: 'Light a Candle', icon: Flame, description: 'Virtual prayer candles' },
+        { href: '/mass-offerings', label: 'Mass Offerings', icon: Gift, description: 'Request a Holy Mass' },
+        { href: '/bouquets', label: 'Spiritual Bouquet', icon: Heart, description: 'Send prayers as gifts' },
+        { href: '/donate', label: 'Support Us', icon: CreditCard, description: 'Make a donation' },
+    ];
+
     // ===== AUTHENTICATED NAVIGATION (Only for logged-in users) =====
     const authenticatedLinks = [
         { href: '/journey', label: 'My Journey', icon: Compass, description: 'Your spiritual dashboard' },
@@ -97,6 +110,7 @@ export function Header() {
     const isActive = (path: string) => pathname?.startsWith(path);
     const isPrayersActive = prayerLinks.some(link => pathname?.startsWith(link.href));
     const isReadingsActive = readingsLinks.some(link => pathname?.startsWith(link.href));
+    const isOfferingsActive = offeringsLinks.some(link => pathname?.startsWith(link.href));
     const isHome = pathname === '/';
 
     return (
@@ -220,27 +234,57 @@ export function Header() {
                                 Churches
                             </Link>
 
-                            {/* Live Sessions - Always visible but behavior changes */}
+                            {/* Memorials - New Primary Feature */}
                             <Link
-                                href="/sessions"
-                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive('/sessions')
+                                href="/memorials"
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive('/memorials')
                                     ? 'bg-white text-sacred-900 shadow-md'
                                     : 'text-white hover:bg-white/20'
                                     }`}
                             >
-                                <Users className={`w-4 h-4 ${isActive('/sessions') ? 'text-gold-600' : ''}`} />
-                                Live Sessions
+                                <Heart className={`w-4 h-4 ${isActive('/memorials') ? 'text-gold-600' : ''}`} />
+                                Memorials
                             </Link>
 
                             {/* My Journey - Only for authenticated users */}
-                            {/* Make an Offering - Universal Action */}
-                            <button
-                                onClick={() => setOfferingModalOpen(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sacred-600 to-sacred-700 hover:from-sacred-500 hover:to-sacred-600 text-white text-sm font-bold rounded-full shadow-md hover:shadow-lg hover:shadow-gold-500/20 transition-all transform hover:-translate-y-0.5 ml-2"
-                            >
-                                <Heart className="w-4 h-4 fill-current text-gold-400" />
-                                Offering
-                            </button>
+                            {/* Offerings Dropdown */}
+                            <div className="relative" ref={offeringsRef}>
+                                <button
+                                    onClick={() => { setOfferingsOpen(!offeringsOpen); setPrayersOpen(false); setReadingsOpen(false); }}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isOfferingsActive
+                                        ? 'bg-white text-sacred-900 shadow-md'
+                                        : 'text-white hover:bg-white/20'
+                                        }`}
+                                >
+                                    <Heart className={`w-4 h-4 ${isOfferingsActive ? 'text-gold-600' : ''}`} />
+                                    Offerings
+                                    <ChevronDown className={`w-3 h-3 transition-transform ${offeringsOpen ? 'rotate-180' : ''}`} />
+                                </button>
+
+                                {offeringsOpen && (
+                                    <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50">
+                                        {offeringsLinks.map((link) => (
+                                            <Link
+                                                key={link.href}
+                                                href={link.href}
+                                                onClick={() => setOfferingsOpen(false)}
+                                                className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${isActive(link.href) ? 'bg-amber-50' : ''
+                                                    }`}
+                                            >
+                                                <div className={`p-2 rounded-lg ${isActive(link.href) ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-500'}`}>
+                                                    <link.icon className="w-4 h-4" />
+                                                </div>
+                                                <div>
+                                                    <div className={`font-medium ${isActive(link.href) ? 'text-amber-700' : 'text-gray-900'}`}>
+                                                        {link.label}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500">{link.description}</div>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
 
                             {isAuthenticated && (
                                 <Link
@@ -256,7 +300,7 @@ export function Header() {
                             )}
                         </nav>
 
-                        <UniversalOfferingModal isOpen={offeringModalOpen} onClose={() => setOfferingModalOpen(false)} />
+
 
                         {/* Right Actions */}
                         <div className="hidden lg:flex items-center gap-3">
@@ -452,6 +496,47 @@ export function Header() {
                                             href={link.href}
                                             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${isActive(link.href)
                                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-medium'
+                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                }`}
+                                            onClick={() => setIsMenuOpen(false)}
+                                        >
+                                            <link.icon className="w-4 h-4" />
+                                            <div>
+                                                <div>{link.label}</div>
+                                                <div className="text-xs text-gray-400">{link.description}</div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Offerings Expandable */}
+                        <div className="rounded-xl overflow-hidden">
+                            <button
+                                onClick={() => setMobileOfferingsOpen(!mobileOfferingsOpen)}
+                                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors ${isOfferingsActive
+                                    ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 font-semibold'
+                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-lg ${isOfferingsActive ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                                        <Heart className="w-5 h-5" />
+                                    </div>
+                                    Offerings
+                                </div>
+                                <ChevronDown className={`w-5 h-5 transition-transform ${mobileOfferingsOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {mobileOfferingsOpen && (
+                                <div className="ml-6 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-4 py-2">
+                                    {offeringsLinks.map((link) => (
+                                        <Link
+                                            key={link.href}
+                                            href={link.href}
+                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${isActive(link.href)
+                                                ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 font-medium'
                                                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                                 }`}
                                             onClick={() => setIsMenuOpen(false)}
