@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@mpt/database';
 import { sendAnniversaryReminder } from '@/lib/email';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 // GET /api/cron/anniversary-reminders - Send anniversary reminders (called by Vercel Cron)

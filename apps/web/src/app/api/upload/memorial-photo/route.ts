@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { getUserFromCookie } from '@/lib/auth';
 
-// Initialize Supabase client for storage
-
-
+export const dynamic = 'force-dynamic';
 // POST /api/upload/memorial-photo - Upload a memorial photo to Supabase Storage
 export async function POST(request: NextRequest) {
     // Initialize Supabase client lazily to avoid build-time errors

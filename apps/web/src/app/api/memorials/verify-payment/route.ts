@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@mpt/database';
 import { verifyOrder } from '@/lib/cashfree';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 // GET /api/memorials/verify-payment - Verify memorial payment and activate

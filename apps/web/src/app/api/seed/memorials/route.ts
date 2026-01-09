@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@mpt/database';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 // Realistic Catholic names and details
