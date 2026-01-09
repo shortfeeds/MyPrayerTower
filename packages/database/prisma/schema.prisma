@@ -83,6 +83,27 @@ model AppSettings {
   liturgicalCalendarEnabled Boolean @default(true)
   quizEnabled               Boolean @default(true)
   saintOfTheDayEnabled      Boolean @default(true)
+  memorialsEnabled          Boolean @default(true)
+  
+  // Memorial Tier Pricing (in cents)
+  memorialBasicPrice        Int  @default(2000)    // $20.00
+  memorialPremiumPrice      Int  @default(4900)    // $49.00
+  
+  // Memorial Offering Prices (in cents)
+  memorialCandleSmallPrice  Int  @default(100)     // $1.00
+  memorialCandleMediumPrice Int  @default(300)     // $3.00
+  memorialCandleLargePrice  Int  @default(500)     // $5.00
+  memorialFlowersPrice      Int  @default(300)     // $3.00
+  memorialPrayerCardPrice   Int  @default(200)     // $2.00
+  memorialFloralBouquetPrice Int @default(700)     // $7.00
+  memorialRosaryDecadePrice Int  @default(500)     // $5.00
+  memorialRosaryFullPrice   Int  @default(1500)    // $15.00
+  
+  // Memorial Spiritual Bouquet Bundle Prices (in cents)
+  memorialBouquetGardenPrice   Int @default(1900)  // $19.00 - Garden of Grace
+  memorialBouquetHeavenlyPrice Int @default(4900)  // $49.00 - Heavenly Tribute
+  memorialBouquetEternalPrice  Int @default(9900)  // $99.00 - Eternal Peace
+  memorialBouquetLegacyPrice   Int @default(29900) // $299.00 - Legacy Remembrance
   
   updatedAt           DateTime @updatedAt
 }
@@ -827,6 +848,11 @@ model User {
   
   // Purchase Events
   PurchaseEvent                              PurchaseEvent[]
+  
+  // Memorials
+  Memorial                                   Memorial[]
+  MemorialOffering                           MemorialOffering[]
+  MemorialGuestbook                          MemorialGuestbook[]
 
   @@index([email])
   @@index([homeChurchId])
@@ -1739,3 +1765,150 @@ model PurchaseEvent {
   @@index([productId])
   @@index([status])
 }
+
+// =========================================
+// MEMORIAL FEATURE
+// =========================================
+
+enum MemorialTier {
+  BASIC
+  PREMIUM
+}
+
+enum MemorialOfferingType {
+  CANDLE_SMALL
+  CANDLE_MEDIUM
+  CANDLE_LARGE
+  FLOWERS
+  PRAYER_CARD
+  FLORAL_BOUQUET
+  ROSARY_DECADE
+  ROSARY_FULL
+  MASS
+  SPIRITUAL_BOUQUET_GARDEN
+  SPIRITUAL_BOUQUET_HEAVENLY
+  SPIRITUAL_BOUQUET_ETERNAL
+  SPIRITUAL_BOUQUET_LEGACY
+}
+
+model Memorial {
+  id              String       @id @default(cuid())
+  slug            String       @unique
+  
+  // Deceased Info
+  firstName       String
+  lastName        String
+  birthDate       DateTime?
+  deathDate       DateTime?
+  biography       String?      @db.Text
+  shortBio        String?      @db.VarChar(500)
+  
+  // Media
+  photoUrl        String?
+  videoUrl        String?
+  musicUrl        String?
+  
+  // Settings
+  tier            MemorialTier @default(BASIC)
+  isPublic        Boolean      @default(true)
+  isVerified      Boolean      @default(false)
+  
+  // Stats
+  totalCandles    Int          @default(0)
+  totalMasses     Int          @default(0)
+  totalFlowers    Int          @default(0)
+  totalPrayers    Int          @default(0)
+  viewCount       Int          @default(0)
+  
+  // Payment
+  paymentId       String?
+  paidAt          DateTime?
+  
+  // Owner
+  ownerId         String
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  
+  owner           User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  offerings       MemorialOffering[]
+  guestbook       MemorialGuestbook[]
+  photos          MemorialPhoto[]
+  
+  @@index([ownerId])
+  @@index([slug])
+  @@index([isPublic])
+  @@index([createdAt])
+}
+
+model MemorialOffering {
+  id            String               @id @default(cuid())
+  memorialId    String
+  
+  // Offerer Info (can be guest or user)
+  userId        String?
+  guestName     String?
+  guestEmail    String?
+  
+  // Offering Details
+  type          MemorialOfferingType
+  amount        Int                   // Amount in cents
+  message       String?               @db.VarChar(500)
+  isAnonymous   Boolean               @default(false)
+  
+  // Payment
+  transactionId String?
+  paymentSource String?               // stripe, cashfree, google_play
+  
+  createdAt     DateTime              @default(now())
+  
+  memorial      Memorial              @relation(fields: [memorialId], references: [id], onDelete: Cascade)
+  user          User?                 @relation(fields: [userId], references: [id])
+  
+  @@index([memorialId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([type])
+}
+
+model MemorialGuestbook {
+  id          String   @id @default(cuid())
+  memorialId  String
+  
+  // Author Info
+  userId      String?
+  guestName   String?
+  
+  // Content
+  message     String   @db.Text
+  
+  // Moderation
+  isApproved  Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  
+  memorial    Memorial @relation(fields: [memorialId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id])
+  
+  @@index([memorialId])
+  @@index([createdAt])
+}
+
+model MemorialPhoto {
+  id          String   @id @default(cuid())
+  memorialId  String
+  
+  url         String
+  caption     String?  @db.VarChar(200)
+  sortOrder   Int      @default(0)
+  
+  uploadedBy  String?
+  
+  createdAt   DateTime @default(now())
+  
+  memorial    Memorial @relation(fields: [memorialId], references: [id], onDelete: Cascade)
+  
+  @@index([memorialId])
+  @@index([sortOrder])
+}
+

@@ -16,7 +16,8 @@ import {
     Zap,
     Flame,
     Scroll,
-    Flower
+    Flower,
+    Heart
 } from 'lucide-react';
 
 interface SettingSection {
@@ -100,6 +101,27 @@ export default function AdminSettingsPage() {
         liturgicalCalendarEnabled: true,
         quizEnabled: true,
         saintOfTheDayEnabled: true,
+        memorialsEnabled: true,
+
+        // Memorial Tier Pricing
+        memorialBasicPrice: 2000,
+        memorialPremiumPrice: 4900,
+
+        // Memorial Offering Prices
+        memorialCandleSmallPrice: 100,
+        memorialCandleMediumPrice: 300,
+        memorialCandleLargePrice: 500,
+        memorialFlowersPrice: 300,
+        memorialPrayerCardPrice: 200,
+        memorialFloralBouquetPrice: 700,
+        memorialRosaryDecadePrice: 500,
+        memorialRosaryFullPrice: 1500,
+
+        // Memorial Spiritual Bouquet Bundles
+        memorialBouquetGardenPrice: 1900,
+        memorialBouquetHeavenlyPrice: 4900,
+        memorialBouquetEternalPrice: 9900,
+        memorialBouquetLegacyPrice: 29900,
     });
 
     useEffect(() => {
@@ -158,6 +180,7 @@ export default function AdminSettingsPage() {
         { id: 'candles', name: 'Candles', icon: Flame },
         { id: 'masses', name: 'Mass Offerings', icon: Scroll },
         { id: 'bouquets', name: 'Spiritual Bouquets', icon: Flower },
+        { id: 'memorials', name: 'Memorials', icon: Heart },
         { id: 'features', name: 'Feature Toggles', icon: Zap },
     ];
 
@@ -444,6 +467,168 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
+                    {activeSection === 'memorials' && (
+                        <div className="space-y-6">
+                            <h2 className="text-xl font-bold text-gray-900 border-b pb-2">Memorial Pricing</h2>
+
+                            <h3 className="text-lg font-semibold text-gray-800 mt-6">Tier Pricing</h3>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Basic Memorial ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialBasicPrice)}
+                                        onChange={(e) => updateSetting('memorialBasicPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Premium Memorial ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialPremiumPrice)}
+                                        onChange={(e) => updateSetting('memorialPremiumPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <h3 className="text-lg font-semibold text-gray-800 mt-6">Quick Offerings</h3>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Small Candle ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialCandleSmallPrice)}
+                                        onChange={(e) => updateSetting('memorialCandleSmallPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Medium Candle ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialCandleMediumPrice)}
+                                        onChange={(e) => updateSetting('memorialCandleMediumPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Large Candle ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialCandleLargePrice)}
+                                        onChange={(e) => updateSetting('memorialCandleLargePrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Flowers ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialFlowersPrice)}
+                                        onChange={(e) => updateSetting('memorialFlowersPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Prayer Card ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialPrayerCardPrice)}
+                                        onChange={(e) => updateSetting('memorialPrayerCardPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Floral Bouquet ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialFloralBouquetPrice)}
+                                        onChange={(e) => updateSetting('memorialFloralBouquetPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Rosary Decade ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialRosaryDecadePrice)}
+                                        onChange={(e) => updateSetting('memorialRosaryDecadePrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Rosary ($)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialRosaryFullPrice)}
+                                        onChange={(e) => updateSetting('memorialRosaryFullPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <h3 className="text-lg font-semibold text-gray-800 mt-6">Spiritual Bouquet Bundles</h3>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Garden of Grace ($)</label>
+                                    <p className="text-xs text-gray-500 mb-2">3 candles + 1 rosary + prayer</p>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialBouquetGardenPrice)}
+                                        onChange={(e) => updateSetting('memorialBouquetGardenPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Heavenly Tribute ($)</label>
+                                    <p className="text-xs text-gray-500 mb-2">7 candles + 1 Mass + 1 rosary</p>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialBouquetHeavenlyPrice)}
+                                        onChange={(e) => updateSetting('memorialBouquetHeavenlyPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Eternal Peace ($)</label>
+                                    <p className="text-xs text-gray-500 mb-2">30 candles + 3 Masses + flowers</p>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialBouquetEternalPrice)}
+                                        onChange={(e) => updateSetting('memorialBouquetEternalPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Legacy Remembrance ($)</label>
+                                    <p className="text-xs text-gray-500 mb-2">100 candles + 10 Masses + weekly rosary/year</p>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formatPrice(settings.memorialBouquetLegacyPrice)}
+                                        onChange={(e) => updateSetting('memorialBouquetLegacyPrice', parsePrice(e.target.value))}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {activeSection === 'features' && (
                         <div className="space-y-6">
                             <h2 className="text-xl font-bold text-gray-900 border-b pb-2">Feature Toggles</h2>
@@ -477,6 +662,7 @@ export default function AdminSettingsPage() {
                                     { key: 'liturgicalCalendarEnabled', label: 'Liturgical Calendar', desc: 'Feast days and seasons' },
                                     { key: 'quizEnabled', label: 'Catholic Quiz', desc: 'Trivia game' },
                                     { key: 'saintOfTheDayEnabled', label: 'Saint of the Day', desc: 'Daily saint bio' },
+                                    { key: 'memorialsEnabled', label: 'Eternal Memorials', desc: 'Memorial pages for deceased' },
                                 ].map(feature => (
                                     <div key={feature.key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
                                         <div>
