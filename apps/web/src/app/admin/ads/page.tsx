@@ -22,7 +22,7 @@ interface Advertisement {
     createdAt: string;
 }
 
-const PAGES = ['home', 'churches', 'saints', 'prayers', 'bible', 'readings', 'prayer-wall'];
+const PAGES = ['home', 'churches', 'saints', 'prayers', 'bible', 'readings', 'prayer-wall', 'memorials'];
 const POSITIONS = ['top', 'sidebar', 'inline', 'bottom'];
 
 export default function AdminAdsPage() {
@@ -344,8 +344,8 @@ export default function AdminAdsPage() {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, adSource: 'OFFLINE' })}
                                         className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${formData.adSource === 'OFFLINE'
-                                                ? 'border-purple-500 bg-purple-50 text-purple-700'
-                                                : 'border-gray-200 hover:border-gray-300'
+                                            ? 'border-purple-500 bg-purple-50 text-purple-700'
+                                            : 'border-gray-200 hover:border-gray-300'
                                             }`}
                                     >
                                         <Smartphone className="w-5 h-5" />
@@ -358,8 +358,8 @@ export default function AdminAdsPage() {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, adSource: 'GOOGLE' })}
                                         className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${formData.adSource === 'GOOGLE'
-                                                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                                : 'border-gray-200 hover:border-gray-300'
+                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                            : 'border-gray-200 hover:border-gray-300'
                                             }`}
                                     >
                                         <Globe className="w-5 h-5" />
