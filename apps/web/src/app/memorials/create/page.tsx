@@ -40,18 +40,24 @@ export default function CreateMemorialPage() {
 
         setLoading(true);
         try {
-            const res = await fetch('/api/memorials', {
+            // Create checkout session with Cashfree
+            const res = await fetch('/api/memorials/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
 
-            if (res.ok) {
-                const data = await res.json();
-                // TODO: Redirect to payment flow
-                router.push(`/memorials/${data.memorial.slug}`);
+            const data = await res.json();
+
+            if (res.ok && data.payment?.paymentLink) {
+                // Redirect to Cashfree payment page
+                window.location.href = data.payment.paymentLink;
+            } else if (res.ok && data.payment?.sessionId) {
+                // Alternative: Use Cashfree SDK if available
+                // For now, show error if no payment link
+                alert('Payment link not available. Please try again.');
             } else {
-                alert('Failed to create memorial. Please try again.');
+                alert(data.error || 'Failed to create memorial. Please try again.');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -86,8 +92,8 @@ export default function CreateMemorialPage() {
                         {[1, 2, 3].map((s) => (
                             <div key={s} className="flex items-center gap-2">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${step >= s
-                                        ? 'bg-amber-500 text-white'
-                                        : 'bg-gray-200 text-gray-500'
+                                    ? 'bg-amber-500 text-white'
+                                    : 'bg-gray-200 text-gray-500'
                                     }`}>
                                     {step > s ? <Check className="w-5 h-5" /> : s}
                                 </div>
@@ -236,8 +242,8 @@ export default function CreateMemorialPage() {
                             <div
                                 onClick={() => updateField('tier', 'BASIC')}
                                 className={`bg-white rounded-3xl p-6 border-2 cursor-pointer transition-all ${formData.tier === 'BASIC'
-                                        ? 'border-amber-500 shadow-lg shadow-amber-500/20'
-                                        : 'border-gray-200 hover:border-gray-300'
+                                    ? 'border-amber-500 shadow-lg shadow-amber-500/20'
+                                    : 'border-gray-200 hover:border-gray-300'
                                     }`}
                             >
                                 <div className="flex items-start justify-between mb-4">
@@ -263,8 +269,8 @@ export default function CreateMemorialPage() {
                             <div
                                 onClick={() => updateField('tier', 'PREMIUM')}
                                 className={`bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 border-2 cursor-pointer transition-all relative ${formData.tier === 'PREMIUM'
-                                        ? 'border-amber-500 shadow-lg shadow-amber-500/20'
-                                        : 'border-amber-200 hover:border-amber-300'
+                                    ? 'border-amber-500 shadow-lg shadow-amber-500/20'
+                                    : 'border-amber-200 hover:border-amber-300'
                                     }`}
                             >
                                 <div className="absolute -top-3 left-6 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full">
