@@ -34,37 +34,60 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://myprayertower.com'),
-    title: 'MyPrayerTower - Find Churches, Share Prayers, Grow in Faith',
-    description: 'The #1 All-in-One Catholic Services App. Find churches near you, join the prayer wall, explore saints, and deepen your spiritual journey.',
-    keywords: 'Catholic, church finder, prayer, rosary, saints, Mass times, confession, Catholic app',
-    authors: [{ name: 'MyPrayerTower' }],
+    title: {
+        default: 'MyPrayerTower | Catholic Prayer & Church Finder App',
+        template: '%s | MyPrayerTower'
+    },
+    description: 'Join the global Catholic community. Find Mass times, submit prayer intentions, light virtual candles, and deepen your faith with daily readings and rosary.',
+    keywords: ['Catholic App', 'Mass Times Near Me', 'Online Prayer Request', 'Virtual Candles', 'Catholic Daily Readings', 'Rosary Audio', 'Confession Guide', 'Saints of the Day'],
+    authors: [{ name: 'MyPrayerTower Team', url: 'https://myprayertower.com' }],
+    creator: 'MyPrayerTower',
+    publisher: 'MyPrayerTower',
+    formatDetection: {
+        email: false,
+        address: false,
+        telephone: false,
+    },
     manifest: '/manifest.json',
     icons: {
-        icon: '/favicon.ico',
-        shortcut: '/favicon.ico',
-        apple: '/icon.png',
-    },
-    appleWebApp: {
-        capable: true,
-        statusBarStyle: 'default',
-        title: 'MyPrayerTower',
-    },
-    other: {
-        'mobile-web-app-capable': 'yes',
+        icon: [
+            { url: '/favicon.ico', sizes: 'any' },
+            { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+        ],
+        apple: '/apple-icon.png',
+        other: [
+            {
+                rel: 'apple-touch-icon-precomposed',
+                url: '/apple-icon-precomposed.png',
+            },
+        ],
     },
     openGraph: {
-        title: 'MyPrayerTower - All-in-One Catholic Services',
-        description: 'Find churches, share prayers, and grow in faith with the global Catholic community.',
-        type: 'website',
-        locale: 'en_US',
+        title: 'MyPrayerTower | Connect, Pray, Grow',
+        description: 'The #1 Catholic App for Mass times, prayer requests, and daily spiritual growth. Join thousands of faithful users today.',
         url: 'https://myprayertower.com',
-        images: ['/og-image.png'],
+        siteName: 'MyPrayerTower',
+        locale: 'en_US',
+        type: 'website',
+        images: [
+            {
+                url: '/opengraph-image',
+                width: 1200,
+                height: 630,
+                alt: 'MyPrayerTower Dashboard',
+            },
+        ],
     },
     twitter: {
         card: 'summary_large_image',
         title: 'MyPrayerTower',
-        description: 'The #1 All-in-One Catholic Services App',
-        images: ['/og-image.png'],
+        description: 'Find churches, request prayers, and grow in faith.',
+        creator: '@myprayertower',
+        images: ['/twitter-image'],
+    },
+    category: 'Lifestyle',
+    verification: {
+        google: 'google-site-verification-code', // User to replace
     },
 };
 

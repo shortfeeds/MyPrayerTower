@@ -19,7 +19,12 @@ import { Suspense } from 'react';
 import { MassOfferingCTA, DonationFAB } from '@/components/giving/MassOfferingCTA';
 import { getUserFromCookie } from '@/lib/auth';
 
-// New engagement, community, and personalization components
+// New Smart Homepage Components
+import { DailyJourneyWidget } from '@/components/home/DailyJourneyWidget';
+import { TrendingPrayersCarousel } from '@/components/home/TrendingPrayersCarousel';
+import { SacredMoments } from '@/components/home/SacredMoments';
+
+// Legacy/Shared Components
 import { LivePrayerSessions } from '@/components/community/LivePrayerSessions';
 import { PrayerRecommendations } from '@/components/personalization/PrayerRecommendations';
 import { RecentlyViewed } from '@/components/personalization/RecentlyViewed';
@@ -29,15 +34,11 @@ import { GlobalPrayerStats } from '@/components/engagement/CommunityPrayerCount'
 import { ParticleBackground } from '@/components/ui/ParticleBackground';
 import { SeasonBadge } from '@/components/ui/LiturgicalTheme';
 import { DashboardGrid } from '@/components/dashboard/DashboardGrid';
-import { QuickAccessCards } from '@/components/home/QuickAccessCards';
 import { TrustBar } from '@/components/home/TrustBar';
 import { HowItWorks } from '@/components/home/HowItWorks';
 import { StatisticsBand } from '@/components/home/StatisticsBand';
-import { LiveCommunityPreview } from '@/components/home/LiveCommunityPreview';
-import { ContentPreview } from '@/components/home/ContentPreview';
 import { PromotionalBanner, AppDownloadBanner } from '@/components/home/PromotionalBanner';
-import { CandleBanner } from '@/components/home/CandleBanner';
-import { OfferingsGrid, MemorialPreview } from '@/components/home/OfferingsGrid';
+import { MemorialPreview } from '@/components/home/OfferingsGrid';
 
 
 
@@ -164,7 +165,7 @@ function LoggedOutHomePage() {
             <LiveStatsBar />
 
             {/* Hero Section */}
-            <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-sacred-600 via-sacred-700 to-sacred-800 text-white">
+            <section className="relative min-h-[75vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-sacred-600 via-sacred-700 to-sacred-800 text-white pb-32">
                 {/* Animated Background Elements */}
                 <div className="absolute inset-0 overflow-hidden">
                     <div className="absolute top-0 left-1/4 w-96 h-96 bg-gold-500 rounded-full blur-[150px] opacity-20 animate-pulse-soft"></div>
@@ -177,7 +178,7 @@ function LoggedOutHomePage() {
                 {/* Cross Pattern Overlay */}
                 <div className="absolute inset-0 opacity-5 bg-hero-pattern"></div>
 
-                <div className="container mx-auto px-4 relative z-10 pt-16 md:pt-20 pb-20">
+                <div className="container mx-auto px-4 relative z-10 pt-16 md:pt-20">
                     <div className="max-w-4xl mx-auto text-center">
                         {/* Liturgical Season Badge */}
                         <div className="mb-4 animate-fade-in">
@@ -192,80 +193,65 @@ function LoggedOutHomePage() {
 
 
                         {/* Main Headline */}
-                        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight animate-fade-in-up">
+                        <h1 className="font-display text-4xl md:text-5xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up tracking-tight">
                             Draw Closer to God,<br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300">
-                                One Prayer at a Time
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-200 via-gold-400 to-gold-200">
+                                One Day at a Time
                             </span>
                         </h1>
 
-                        {/* Verse of the Day Compact */}
-                        <div className="max-w-lg mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                            <VerseOfTheDay variant="compact" />
-                        </div>
-
                         {/* Sub-headline */}
                         <p className="text-lg md:text-xl text-blue-100/90 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            Daily prayers, Mass readings, 10,000+ churches, and a global prayer community.
+                            Join a global community in daily prayer, Mass readings, and sacred traditions. Start your spiritual journey today.
                         </p>
 
                         {/* CTAs */}
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up mb-12" style={{ animationDelay: '0.4s' }}>
                             <Link
                                 href="/register"
                                 className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg shadow-gold-500/30 group"
                             >
                                 <Heart className="w-5 h-5 mr-2 group-hover:fill-current" />
-                                Start Praying — It&apos;s Free
+                                Join Free
                             </Link>
                             <Link
                                 href="/welcome"
                                 className="inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold text-lg rounded-full transition-all duration-300 backdrop-blur-md border border-white/30"
                             >
                                 <Star className="w-5 h-5 mr-2" />
-                                I'm New Here
+                                How it Works
                             </Link>
-                        </div>
-
-                        {/* Social Proof */}
-                        <div className="flex items-center justify-center gap-2 mt-12 animate-fade-in-up text-blue-100/80 text-sm" style={{ animationDelay: '0.6s' }}>
-                            <Users className="w-4 h-4 text-gold-400" />
-                            <span className="font-semibold">1M+ Faithful Users</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Trust Bar - Social Proof */}
+            {/* Daily Journey Widget - Overlaps Hero */}
+            <Suspense fallback={<div className="h-64 bg-white/50 animate-pulse rounded-3xl container mx-auto" />}>
+                <AsyncDailyJourney />
+            </Suspense>
+
+            {/* Trust Bar */}
             <TrustBar />
 
-            {/* Daily Content Preview - Moved up for immediate value */}
-            <ContentPreview />
+            {/* Trending Prayers Carousel */}
+            <TrendingPrayersCarousel />
 
-            {/* Quick Access to Public Features */}
-            <QuickAccessCards />
+            {/* Sacred Services (Offerings) */}
+            <SacredMoments />
 
-            {/* How It Works */}
-            <HowItWorks />
-
-            {/* Live Community */}
-            <LiveCommunityPreview />
-
-            {/* Light a Candle Banner */}
-            <CandleBanner />
-
-            {/* Offerings Grid - Candles, Mass, Gifts, Memorials */}
-            <OfferingsGrid />
-
-            {/* Memorial Preview Section */}
+            {/* Memorials Preview */}
             <MemorialPreview />
 
-            {/* Statistics Band */}
+            {/* Statistics & Impact */}
             <StatisticsBand />
 
             {/* Testimonials */}
-            <section className="py-16 bg-cream-50">
+            <section className="py-20 bg-cream-50">
                 <div className="container mx-auto px-4">
+                    <div className="text-center mb-12">
+                        <h2 className="font-display text-3xl font-bold text-gray-900">Loved by the Faithful</h2>
+                    </div>
                     <TestimonialsSection />
                 </div>
             </section>
@@ -273,24 +259,23 @@ function LoggedOutHomePage() {
             {/* App Download Banner */}
             <AppDownloadBanner />
 
-
             {/* Final CTA */}
-            <section className="py-16 bg-white">
+            <section className="py-20 bg-white">
                 <div className="container mx-auto px-4">
-                    <div className="bg-gradient-to-br from-sacred-600 via-sacred-700 to-sacred-800 rounded-3xl p-10 md:p-16 text-center relative overflow-hidden shadow-2xl max-w-4xl mx-auto">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-gold-500 rounded-full blur-[100px] opacity-20"></div>
+                    <div className="bg-gradient-to-br from-sacred-900 to-sacred-800 rounded-[2.5rem] p-10 md:p-20 text-center relative overflow-hidden shadow-2xl max-w-5xl mx-auto">
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-gold-500 rounded-full blur-[150px] opacity-20"></div>
                         <div className="relative z-10">
-                            <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
-                                Ready to Transform Your Prayer Life?
+                            <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-6">
+                                Prepare Your Heart. <br /> Pray with Us.
                             </h2>
-                            <p className="text-lg text-blue-100 mb-8 max-w-xl mx-auto">
-                                Join over 1 million Catholics deepening their faith with MyPrayerTower.
+                            <p className="text-xl text-blue-100 mb-10 max-w-xl mx-auto">
+                                Create your free account to track your prayers, save your favorite saints, and grow in faith.
                             </p>
                             <Link
                                 href="/register"
-                                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-bold text-lg rounded-full transition-all hover:from-gold-400 hover:to-gold-500 shadow-lg"
+                                className="inline-flex items-center justify-center px-10 py-5 bg-white text-sacred-900 font-bold text-lg rounded-full transition-all hover:bg-gold-50 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
                             >
-                                Create Account
+                                Get Started Now
                             </Link>
                         </div>
                     </div>
@@ -301,6 +286,16 @@ function LoggedOutHomePage() {
             <DonationFAB />
         </div>
     );
+}
+
+async function AsyncDailyJourney() {
+    const [liturgicalDay, reading] = await Promise.all([
+        getLiturgicalData(),
+        getDailyReading()
+    ]);
+    const saint = await getSaintOfTheDay(liturgicalDay.celebrations[0]?.name);
+
+    return <DailyJourneyWidget reading={reading} saint={saint} />;
 }
 
 // --- Main Homepage Component ---
