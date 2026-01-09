@@ -11,7 +11,6 @@ const OFFERING_TYPES = [
         name: 'Single Mass',
         icon: '⛪',
         price: 1000,
-        priceINR: 830,
         description: 'A single Holy Mass offered for your intention',
         popular: false,
     },
@@ -20,7 +19,6 @@ const OFFERING_TYPES = [
         name: 'Perpetual Enrollment',
         icon: '🌟',
         price: 10000,
-        priceINR: 8300,
         description: 'Enrolled forever in daily Masses at our partner monasteries',
         popular: true,
         badge: 'BEST VALUE',
@@ -28,9 +26,8 @@ const OFFERING_TYPES = [
     {
         id: 'NOVENA',
         name: 'Novena of Masses',
-        icon: '📿',
+        icon: '💿',
         price: 7500,
-        priceINR: 6225,
         description: '9 consecutive Masses offered for your intention',
         popular: false,
     },
@@ -39,7 +36,6 @@ const OFFERING_TYPES = [
         name: 'Gregorian Masses',
         icon: '🙏',
         price: 20000,
-        priceINR: 16600,
         description: '30 consecutive Masses for the deceased (traditional devotion)',
         popular: false,
     },
@@ -71,9 +67,9 @@ const DECEASED_INTENTIONS = [
 
 // Add-ons
 const ADDONS = [
-    { id: 'candle', name: '🕯️ Virtual Candle', price: 500, priceINR: 415, description: '7-day candle on Prayer Wall' },
-    { id: 'printedCard', name: '📮 Printed Mass Card', price: 1000, priceINR: 830, description: 'Beautiful card mailed to you' },
-    { id: 'framedCertificate', name: '🖼️ Framed Certificate', price: 3500, priceINR: 2905, description: 'Premium framed memorial' },
+    { id: 'candle', name: '🕯️ Virtual Candle', price: 500, description: '7-day candle on Prayer Wall' },
+    { id: 'printedCard', name: '📮 Printed Mass Card', price: 1000, description: 'Beautiful card mailed to you' },
+    { id: 'framedCertificate', name: '🖼️ Framed Certificate', price: 3500, description: 'Premium framed memorial' },
 ];
 
 export default function MassOfferingsPage() {
@@ -108,14 +104,7 @@ export default function MassOfferingsPage() {
         return total;
     };
 
-    const calculateTotalINR = () => {
-        // @ts-ignore
-        let total = selectedOffering?.priceINR || 0;
-        if (addons.candle) total += 415;
-        if (addons.printedCard) total += 830;
-        if (addons.framedCertificate) total += 2905;
-        return total;
-    };
+
 
     const toggleIntention = (value: string) => {
         setSelectedIntentions(prev =>
@@ -265,11 +254,7 @@ export default function MassOfferingsPage() {
                                                 )}
                                             </div>
                                             <p className="text-gray-600 text-sm mt-1">{type.description}</p>
-                                            <div className="flex gap-2 items-baseline mt-2">
-                                                <p className="text-amber-600 font-bold">${(type.price / 100).toFixed(2)}</p>
-                                                {/* @ts-ignore */}
-                                                <p className="text-xs text-gray-500">(≈ ₹{type.priceINR?.toLocaleString()})</p>
-                                            </div>
+                                            <p className="text-amber-600 font-bold">${(type.price / 100).toFixed(2)}</p>
                                         </div>
                                     </div>
                                 </button>
@@ -467,8 +452,6 @@ export default function MassOfferingsPage() {
                                     </div>
                                     <div className="text-right">
                                         <span className="block font-bold text-amber-600">+${(addon.price / 100).toFixed(2)}</span>
-                                        {/* @ts-ignore */}
-                                        <span className="block text-xs text-gray-500">+₹{addon.priceINR}</span>
                                     </div>
                                 </label>
                             ))}
@@ -628,7 +611,6 @@ export default function MassOfferingsPage() {
                                     <span>Total</span>
                                     <div className="text-right">
                                         <span>${(calculateTotal() / 100).toFixed(2)}</span>
-                                        <span className="block text-sm text-gray-500 font-normal">≈ ₹{calculateTotalINR().toLocaleString()}</span>
                                     </div>
                                 </div>
                             </div>
@@ -658,7 +640,7 @@ export default function MassOfferingsPage() {
                                 ) : (
                                     <>
                                         <Heart className="w-5 h-5" />
-                                        Request Mass - ${(calculateTotal() / 100).toFixed(2)} <span className="text-sm opacity-80 font-normal ml-1"> (₹{calculateTotalINR().toLocaleString()})</span>
+                                        Request Mass - ${(calculateTotal() / 100).toFixed(2)}
                                     </>
                                 )}
                             </button>

@@ -6,12 +6,12 @@ import Link from 'next/link';
 
 // Donation tiers
 const DONATION_TIERS = [
-    { id: 'CANDLE', amount: 1000, amountINR: 830, label: '🕯️ Light a Candle', description: 'A small but meaningful gift' },
-    { id: 'ROSARY', amount: 2000, amountINR: 1660, label: '📿 Rosary Partner', description: 'Support our prayer ministry' },
-    { id: 'SUPPORTER', amount: 5000, amountINR: 4150, label: '⛪ Parish Supporter', description: 'Help sustain our mission' },
-    { id: 'GUARDIAN', amount: 10000, amountINR: 8300, label: '👼 Guardian Angel', description: 'A generous contribution' },
-    { id: 'BENEFACTOR', amount: 25000, amountINR: 20750, label: '🌟 Benefactor', description: 'Major supporter' },
-    { id: 'PATRON', amount: 50000, amountINR: 41500, label: '💎 Patron', description: 'Distinguished patron' },
+    { id: 'CANDLE', amount: 1000, label: '🕯️ Light a Candle', description: 'A small but meaningful gift' },
+    { id: 'ROSARY', amount: 2000, label: '💿 Rosary Partner', description: 'Support our prayer ministry' },
+    { id: 'SUPPORTER', amount: 5000, label: '⛪ Parish Supporter', description: 'Help sustain our mission' },
+    { id: 'GUARDIAN', amount: 10000, label: '👼 Guardian Angel', description: 'A generous contribution' },
+    { id: 'BENEFACTOR', amount: 25000, label: '🌟 Benefactor', description: 'Major supporter' },
+    { id: 'PATRON', amount: 50000, label: '💎 Patron', description: 'Distinguished patron' },
 ];
 
 // Subscription plans
@@ -21,7 +21,6 @@ const SUBSCRIPTION_PLANS = [
         name: 'Prayer Partner',
         icon: '🙏',
         price: 999,
-        priceINR: 830,
         perks: [
             '1 Mass offered monthly for your intention',
             'Name on our Daily Prayer List',
@@ -35,7 +34,6 @@ const SUBSCRIPTION_PLANS = [
         name: 'Family Plan',
         icon: '👨‍👩‍👧‍👦',
         price: 1999,
-        priceINR: 1660,
         perks: [
             '3 Masses offered monthly',
             'Entire family on Daily Prayer List',
@@ -49,7 +47,6 @@ const SUBSCRIPTION_PLANS = [
         name: 'Patron Circle',
         icon: '💎',
         price: 4999,
-        priceINR: 4150,
         perks: [
             'Unlimited Mass requests',
             'Perpetual Enrollment included',
@@ -237,8 +234,6 @@ export default function DonatePage() {
                                     >
                                         <div className="text-2xl mb-1">{tier.label.split(' ')[0]}</div>
                                         <p className="font-bold text-gray-900">${(tier.amount / 100)}</p>
-                                        {/* @ts-ignore */}
-                                        <p className="text-xs text-gray-500 font-medium">₹{tier.amountINR.toLocaleString()}</p>
                                     </button>
                                 ))}
                             </div>
@@ -256,11 +251,7 @@ export default function DonatePage() {
                                         : 'border-gray-200 focus:border-rose-500'
                                         }`}
                                 />
-                                {customAmount && (
-                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
-                                        ≈ ₹{(parseInt(customAmount) * 83).toLocaleString()}
-                                    </span>
-                                )}
+
                             </div>
                         </div>
 
@@ -334,7 +325,6 @@ export default function DonatePage() {
                                     <span>Total</span>
                                     <div className="text-right">
                                         <span>${(getTotal() / 100).toFixed(2)}</span>
-                                        <span className="block text-sm text-gray-500 font-medium">≈ ₹{(getTotal() * 0.83).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
                                     </div>
                                 </div>
                             </div>
@@ -350,7 +340,7 @@ export default function DonatePage() {
                             ) : (
                                 <>
                                     <Heart className="w-5 h-5" />
-                                    Donate ${(getTotal() / 100).toFixed(2)} <span className="text-xs opacity-80 font-normal ml-1"> (≈ ₹{Math.round((getTotal() / 100) * 83).toLocaleString()})</span>
+                                    Donate ${(getTotal() / 100).toFixed(2)}
                                 </>
                             )}
                         </button>
@@ -395,8 +385,6 @@ export default function DonatePage() {
                                             </div>
                                             <p className="text-rose-600 font-bold text-lg mt-1">
                                                 ${(plan.price / 100).toFixed(2)}/month
-                                                {/* @ts-ignore */}
-                                                <span className="text-sm text-gray-500 ml-2 font-normal">(₹{plan.priceINR}/mo)</span>
                                             </p>
                                             <ul className="mt-3 space-y-2">
                                                 {plan.perks.map((perk, i) => (
@@ -452,8 +440,6 @@ export default function DonatePage() {
                                 <>
                                     <Sparkles className="w-5 h-5" />
                                     Become a {selectedPlanData?.name} - ${((selectedPlanData?.price || 0) / 100).toFixed(2)}/mo
-                                    {/* @ts-ignore */}
-                                    <span className="text-xs opacity-80 font-normal ml-1"> (₹{selectedPlanData?.priceINR}/mo)</span>
                                 </>
                             )}
                         </button>

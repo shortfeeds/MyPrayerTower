@@ -5,11 +5,12 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
     ChevronLeft, Calendar, Flame, Cross, Heart, Share2, Users,
-    MessageSquare, Loader2, ExternalLink, Sparkles, Gift, LogIn
+    MessageSquare, Loader2, ExternalLink, Sparkles, Gift, LogIn, Crown
 } from 'lucide-react';
 import { SmartAdSlot } from '@/components/ads';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { QRCodeGenerator } from '@/components/memorials/QRCodeGenerator';
+import { OfferingDialog } from '@/components/memorials/OfferingDialog';
 
 interface Offering {
     id: string;
@@ -79,6 +80,8 @@ export default function MemorialDetailPage() {
     const [newMessage, setNewMessage] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [offeringDialogOpen, setOfferingDialogOpen] = useState(false);
+    const [linkCopied, setLinkCopied] = useState(false);
 
     useEffect(() => {
         // Check authentication status
@@ -122,6 +125,31 @@ export default function MemorialDetailPage() {
             console.error('Error submitting message:', err);
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const shareInvitation = async () => {
+        const url = typeof window !== 'undefined' ? window.location.href : '';
+        const text = `You're invited to honor the memory of ${memorial?.firstName} ${memorial?.lastName}. Light a candle or share a tribute.`;
+
+        if (typeof navigator !== 'undefined' && navigator.share) {
+            try {
+                await navigator.share({
+                    title: `Memorial: ${memorial?.firstName} ${memorial?.lastName}`,
+                    text,
+                    url,
+                });
+            } catch (err) {
+                console.log('Share cancelled or failed');
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(url);
+                setLinkCopied(true);
+                setTimeout(() => setLinkCopied(false), 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
         }
     };
 
@@ -278,25 +306,34 @@ export default function MemorialDetailPage() {
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Quick Acts of Love</h3>
                             <p className="text-gray-500 mb-6">A small gesture, eternal love</p>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <Link
-                                    href={`/candles?memorial=${memorial.id}&name=${encodeURIComponent(fullName)}`}
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
                                     className="flex flex-col items-center p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-100 hover:border-amber-300 transition-all group"
                                 >
                                     <span className="text-3xl mb-2">🕯️</span>
                                     <span className="font-semibold text-gray-900">Candle</span>
                                     <span className="text-sm text-amber-600">$1-5</span>
-                                </Link>
-                                <button className="flex flex-col items-center p-4 bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl border border-rose-100 hover:border-rose-300 transition-all group">
+                                </button>
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl border border-rose-100 hover:border-rose-300 transition-all group"
+                                >
                                     <span className="text-3xl mb-2">🌹</span>
                                     <span className="font-semibold text-gray-900">Flowers</span>
                                     <span className="text-sm text-rose-600">$3</span>
                                 </button>
-                                <button className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all group">
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all group"
+                                >
                                     <span className="text-3xl mb-2">🙏</span>
                                     <span className="font-semibold text-gray-900">Prayer</span>
                                     <span className="text-sm text-blue-600">$2</span>
                                 </button>
-                                <button className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl border border-purple-100 hover:border-purple-300 transition-all group">
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl border border-purple-100 hover:border-purple-300 transition-all group"
+                                >
                                     <span className="text-3xl mb-2">💐</span>
                                     <span className="font-semibold text-gray-900">Bouquet</span>
                                     <span className="text-sm text-purple-600">$7</span>
@@ -309,15 +346,18 @@ export default function MemorialDetailPage() {
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Sacred Offerings</h3>
                             <p className="text-gray-500 mb-6">The greatest gift — a prayer from the Church</p>
                             <div className="grid md:grid-cols-2 gap-4">
-                                <button className="flex items-center gap-4 p-5 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100 hover:border-indigo-300 transition-all text-left">
-                                    <span className="text-4xl">📿</span>
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="flex items-center gap-4 p-5 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100 hover:border-indigo-300 transition-all text-left"
+                                >
+                                    <span className="text-4xl">💿</span>
                                     <div>
                                         <div className="font-semibold text-gray-900">Rosary</div>
                                         <div className="text-sm text-indigo-600">$5 - $15</div>
                                     </div>
                                 </button>
-                                <Link
-                                    href={`/mass-offerings?memorial=${memorial.id}&intention=${encodeURIComponent(`For the repose of the soul of ${fullName}`)}`}
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
                                     className="flex items-center gap-4 p-5 bg-gradient-to-br from-blue-50 to-sky-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all text-left"
                                 >
                                     <span className="text-4xl">✝️</span>
@@ -326,7 +366,7 @@ export default function MemorialDetailPage() {
                                         <div className="text-sm text-blue-600">$25</div>
                                     </div>
                                     <ExternalLink className="w-4 h-4 ml-auto text-gray-400" />
-                                </Link>
+                                </button>
                             </div>
                         </div>
 
@@ -338,22 +378,34 @@ export default function MemorialDetailPage() {
                             </div>
                             <p className="text-amber-700 mb-6">The most meaningful tribute you can give</p>
                             <div className="grid md:grid-cols-2 gap-4">
-                                <button className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left">
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
+                                >
                                     <div className="font-bold text-gray-900">Garden of Grace</div>
                                     <p className="text-sm text-gray-500 mb-2">3 candles + 1 rosary + prayer card</p>
                                     <div className="text-amber-600 font-bold">$19</div>
                                 </button>
-                                <button className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left">
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
+                                >
                                     <div className="font-bold text-gray-900">Heavenly Tribute</div>
                                     <p className="text-sm text-gray-500 mb-2">7 candles + 1 Mass + 1 rosary</p>
                                     <div className="text-amber-600 font-bold">$49</div>
                                 </button>
-                                <button className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left">
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
+                                >
                                     <div className="font-bold text-gray-900">Eternal Peace</div>
                                     <p className="text-sm text-gray-500 mb-2">30 candles + 3 Masses + 3 rosaries + flowers</p>
                                     <div className="text-amber-600 font-bold">$99</div>
                                 </button>
-                                <button className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left">
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
+                                >
                                     <div className="font-bold text-gray-900">Legacy Remembrance</div>
                                     <p className="text-sm text-gray-500 mb-2">100 candles + 10 Masses + weekly rosary for 1 year</p>
                                     <div className="text-amber-600 font-bold">$299</div>
@@ -488,13 +540,42 @@ export default function MemorialDetailPage() {
                             <p className="text-sm text-gray-600 mb-4">
                                 Invite loved ones to contribute to this memorial.
                             </p>
-                            <button className="w-full py-2 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition-colors">
-                                Share Invitation
+                            <button
+                                onClick={shareInvitation}
+                                className="w-full py-2 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition-colors"
+                            >
+                                {linkCopied ? '✅ Link Copied!' : 'Share Invitation'}
                             </button>
                         </div>
+
+                        {/* Upgrade CTA for Basic Tier */}
+                        {memorial.tier === 'BASIC' && (
+                            <div className="bg-gradient-to-br from-amber-100 to-yellow-50 rounded-2xl p-6 border border-amber-300">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Crown className="w-5 h-5 text-amber-600" />
+                                    <h4 className="font-bold text-gray-900">Upgrade to Featured</h4>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    Get premium styling, priority placement, and more visibility for this memorial.
+                                </p>
+                                <Link
+                                    href={`/memorials/${memorial.id}/upgrade`}
+                                    className="block w-full py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl text-center hover:shadow-lg transition-all"
+                                >
+                                    Upgrade - $29/year
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
+
+            {/* Offering Dialog */}
+            <OfferingDialog
+                memorial={{ id: memorial.id, firstName: memorial.firstName, lastName: memorial.lastName, photoUrl: memorial.photoUrl }}
+                isOpen={offeringDialogOpen}
+                onClose={() => setOfferingDialogOpen(false)}
+            />
         </div>
     );
 }
