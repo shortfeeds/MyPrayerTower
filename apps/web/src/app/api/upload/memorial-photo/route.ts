@@ -3,13 +3,20 @@ import { createClient } from '@supabase/supabase-js';
 import { getUserFromCookie } from '@/lib/auth';
 
 // Initialize Supabase client for storage
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // POST /api/upload/memorial-photo - Upload a memorial photo to Supabase Storage
 export async function POST(request: NextRequest) {
+    // Initialize Supabase client lazily to avoid build-time errors
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+        console.error('Missing Supabase credentials');
+        return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
     try {
         const user = await getUserFromCookie();
         if (!user) {
