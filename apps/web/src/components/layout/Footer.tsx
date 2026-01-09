@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, Smartphone, Gift } from 'lucide-react';
+import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, Smartphone, Gift, Flame } from 'lucide-react';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
 
 // App Store Button Component
@@ -90,10 +90,10 @@ export function Footer() {
 
     const mobileNavItems = [
         { href: '/', label: 'Home', icon: Home },
+        { href: '/memorials', label: 'Memorials', icon: Heart },
         { href: '/churches', label: 'Churches', icon: Church },
-        { href: '/prayer-wall', label: 'Prayers', icon: Heart },
-        { href: '/saints', label: 'Saints', icon: Star },
-        { href: '/mass-offerings', label: 'Mass Offering', icon: Gift },
+        { href: '/candles', label: 'Candles', icon: Flame },
+        { href: '/mass-offerings', label: 'Mass', icon: Gift },
     ];
 
     const isActive = (path: string) => pathname === path;
@@ -154,6 +154,7 @@ export function Footer() {
                                 <ul className="space-y-1 text-gray-400">
                                     <li><Link href="/churches" className="hover:text-gold-400">Find Churches</Link></li>
                                     <li><Link href="/prayers" className="hover:text-gold-400">Common Prayers</Link></li>
+                                    <li><Link href="/memorials" className="hover:text-gold-400 text-gold-200">Eternal Memorials</Link></li>
                                     <li><Link href="/wallpapers" className="hover:text-gold-400">Wallpapers</Link></li>
                                     <li><Link href="/bouquets" className="hover:text-gold-400">Spiritual Bouquets</Link></li>
                                 </ul>
@@ -222,8 +223,8 @@ export function Footer() {
                                 <li><Link href="/churches" className="hover:text-gold-400">Churches</Link></li>
                                 <li><Link href="/prayer-wall" className="hover:text-gold-400">Prayer Wall</Link></li>
                                 <li><Link href="/candles" className="hover:text-gold-400">Candles</Link></li>
+                                <li><Link href="/memorials" className="hover:text-gold-400">Memorials</Link></li>
                                 <li><Link href="/challenges" className="hover:text-gold-400">Challenges</Link></li>
-                                <li><Link href="/examen" className="hover:text-gold-400">Examen</Link></li>
                                 <li><Link href="/partners" className="hover:text-gold-400">Partners</Link></li>
                             </ul>
                         </div>

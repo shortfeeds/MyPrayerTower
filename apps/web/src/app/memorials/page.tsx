@@ -33,16 +33,31 @@ export default function MemorialsPage() {
         try {
             const currentPage = reset ? 1 : page;
             const res = await fetch(`/api/memorials?page=${currentPage}&limit=12&search=${encodeURIComponent(search)}`);
-            const data = await res.json();
-            if (reset) {
-                setMemorials(data.memorials);
-            } else {
-                setMemorials(prev => [...prev, ...data.memorials]);
+
+            if (!res.ok) {
+                console.error('API returned error:', res.status);
+                if (reset) setMemorials([]);
+                setHasMore(false);
+                return;
             }
-            setHasMore(currentPage < data.pagination.totalPages);
+
+            const data = await res.json();
+
+            // Handle case where data or memorials is undefined
+            const memorialsData = data?.memorials || [];
+            const paginationData = data?.pagination || { totalPages: 0 };
+
+            if (reset) {
+                setMemorials(memorialsData);
+            } else {
+                setMemorials(prev => [...prev, ...memorialsData]);
+            }
+            setHasMore(currentPage < (paginationData.totalPages || 0));
             if (reset) setPage(1);
         } catch (error) {
             console.error('Error fetching memorials:', error);
+            if (reset) setMemorials([]);
+            setHasMore(false);
         } finally {
             setLoading(false);
         }

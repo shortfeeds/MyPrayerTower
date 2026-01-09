@@ -57,9 +57,20 @@ export async function GET(request: NextRequest) {
                 totalPages: Math.ceil(total / limit),
             },
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching memorials:', error);
-        return NextResponse.json({ error: 'Failed to fetch memorials' }, { status: 500 });
+        // Return empty result if table doesn't exist yet
+        if (error?.code === 'P2021' || error?.message?.includes('does not exist')) {
+            return NextResponse.json({
+                memorials: [],
+                pagination: { page: 1, limit: 12, total: 0, totalPages: 0 },
+            });
+        }
+        return NextResponse.json({
+            error: 'Failed to fetch memorials',
+            memorials: [],
+            pagination: { page: 1, limit: 12, total: 0, totalPages: 0 },
+        }, { status: 500 });
     }
 }
 

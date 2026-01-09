@@ -37,6 +37,7 @@ import { LiveCommunityPreview } from '@/components/home/LiveCommunityPreview';
 import { ContentPreview } from '@/components/home/ContentPreview';
 import { PromotionalBanner, AppDownloadBanner } from '@/components/home/PromotionalBanner';
 import { CandleBanner } from '@/components/home/CandleBanner';
+import { OfferingsGrid, MemorialPreview } from '@/components/home/OfferingsGrid';
 
 
 
@@ -252,6 +253,12 @@ function LoggedOutHomePage() {
 
             {/* Light a Candle Banner */}
             <CandleBanner />
+
+            {/* Offerings Grid - Candles, Mass, Gifts, Memorials */}
+            <OfferingsGrid />
+
+            {/* Memorial Preview Section */}
+            <MemorialPreview />
 
             {/* Statistics Band */}
             <StatisticsBand />
