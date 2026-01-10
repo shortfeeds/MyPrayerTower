@@ -1,18 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
-    ChevronLeft, Calendar, Flame, Cross, Heart, Share2, Users,
-    MessageSquare, Loader2, ExternalLink, Sparkles, Gift, LogIn, Crown
+    ChevronLeft, Calendar, Cross, Heart, Users,
+    Loader2, ExternalLink, Sparkles, Gift, LogIn, Crown
 } from 'lucide-react';
 import { SmartAdSlot } from '@/components/ads';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { QRCodeGenerator } from '@/components/memorials/QRCodeGenerator';
 import { OfferingDialog } from '@/components/memorials/OfferingDialog';
 
-interface Offering {
+export interface Offering {
     id: string;
     type: string;
     amount: number;
@@ -23,7 +22,7 @@ interface Offering {
     user: { displayName: string | null; avatarUrl: string | null } | null;
 }
 
-interface GuestbookEntry {
+export interface GuestbookEntry {
     id: string;
     message: string;
     guestName: string | null;
@@ -31,7 +30,7 @@ interface GuestbookEntry {
     user: { displayName: string | null; avatarUrl: string | null } | null;
 }
 
-interface Memorial {
+export interface Memorial {
     id: string;
     slug: string;
     firstName: string;
@@ -70,13 +69,9 @@ const OFFERING_LABELS: Record<string, { label: string; icon: string }> = {
     SPIRITUAL_BOUQUET_LEGACY: { label: 'Legacy Remembrance', icon: '💝' },
 };
 
-export default function MemorialDetailPage() {
-    const params = useParams();
-    const id = params.id as string;
-
-    const [memorial, setMemorial] = useState<Memorial | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial }) {
+    // We keep memorial in state to allow updates (e.g. after posting guestbook)
+    const [memorial, setMemorial] = useState<Memorial>(initialMemorial);
     const [newMessage, setNewMessage] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -91,22 +86,6 @@ export default function MemorialDetailPage() {
             .catch(() => setIsLoggedIn(false));
     }, []);
 
-    useEffect(() => {
-        async function fetchMemorial() {
-            try {
-                const res = await fetch(`/api/memorials/${id}`);
-                if (!res.ok) throw new Error('Memorial not found');
-                const data = await res.json();
-                setMemorial(data);
-            } catch (err) {
-                setError('Memorial not found');
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchMemorial();
-    }, [id]);
-
     const submitGuestbook = async () => {
         if (!newMessage.trim() || !memorial) return;
         setSubmitting(true);
@@ -118,9 +97,11 @@ export default function MemorialDetailPage() {
             });
             setNewMessage('');
             // Refresh memorial data
-            const res = await fetch(`/api/memorials/${id}`);
-            const data = await res.json();
-            setMemorial(data);
+            const res = await fetch(`/api/memorials/${memorial.id}`);
+            if (res.ok) {
+                const data = await res.json();
+                setMemorial(data);
+            }
         } catch (err) {
             console.error('Error submitting message:', err);
         } finally {
@@ -174,29 +155,6 @@ export default function MemorialDetailPage() {
         if (diffDays < 7) return `${diffDays}d ago`;
         return date.toLocaleDateString();
     };
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <Loader2 className="w-10 h-10 text-amber-500 animate-spin" />
-            </div>
-        );
-    }
-
-    if (error || !memorial) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <div className="text-center">
-                    <Cross className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Memorial Not Found</h1>
-                    <p className="text-gray-500 mb-6">The memorial you're looking for doesn't exist.</p>
-                    <Link href="/memorials" className="text-amber-600 hover:underline">
-                        ← Back to Memorials
-                    </Link>
-                </div>
-            </div>
-        );
-    }
 
     const fullName = `${memorial.firstName} ${memorial.lastName}`;
     const lifeSpan = memorial.birthDate || memorial.deathDate
@@ -598,7 +556,7 @@ export default function MemorialDetailPage() {
                                     <li className="flex items-center gap-2">✓ <span>Priority placement</span></li>
                                 </ul>
                                 <Link
-                                    href={`/memorials/${memorial.id}/upgrade`}
+                                    href={`/memorials/${memorial.slug}/upgrade`}
                                     className="block w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl text-center shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
                                 >
                                     ⭐ Upgrade Now — $49.99

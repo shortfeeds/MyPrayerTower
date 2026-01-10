@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Calendar, MapPin, BookOpen, Heart, Loader2, Crown, Sparkles, Minus, Plus, Type } from 'lucide-react';
+import { ChevronLeft, Calendar, MapPin, BookOpen, Heart, Crown, Minus, Plus, Type } from 'lucide-react';
 import Link from 'next/link';
 import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 import { ShareButtons } from '@/components/social/ShareButtons';
-import { generateSaintSchema } from '@/lib/seo/structuredData';
 import { SmartAdSlot } from '@/components/ads';
 
 interface Saint {
@@ -34,10 +33,7 @@ const TEXT_SIZES = [
     { label: 'XL', class: 'text-2xl leading-loose' },
 ];
 
-export default function SaintDetailPage({ params }: { params: { id: string } }) {
-    const [saint, setSaint] = useState<Saint | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+export function SaintProfile({ saint }: { saint: Saint }) {
     const [isFavorite, setIsFavorite] = useState(false);
     const [textSizeIndex, setTextSizeIndex] = useState(1); // Default M
 
@@ -47,56 +43,11 @@ export default function SaintDetailPage({ params }: { params: { id: string } }) 
         if (saved) setTextSizeIndex(parseInt(saved, 10) || 1);
     }, []);
 
-    useEffect(() => {
-        async function fetchSaint() {
-            setLoading(true);
-            try {
-                const res = await fetch(`/api/saints/${params.id}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setSaint(data);
-                } else {
-                    setError('Saint not found');
-                }
-            } catch (err) {
-                setError('Failed to load saint');
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchSaint();
-    }, [params.id]);
-
     const handleTextSize = (delta: number) => {
         const newIndex = Math.max(0, Math.min(TEXT_SIZES.length - 1, textSizeIndex + delta));
         setTextSizeIndex(newIndex);
         localStorage.setItem('mpt-text-size', String(newIndex));
     };
-
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-white flex items-center justify-center">
-                <Loader2 className="w-10 h-10 text-amber-500 animate-spin" />
-            </div>
-        );
-    }
-
-    if (error || !saint) {
-        return (
-            <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-white flex items-center justify-center">
-                <div className="text-center bg-white rounded-3xl p-12 shadow-xl border border-gray-100">
-                    <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Crown className="w-10 h-10 text-amber-400" />
-                    </div>
-                    <h1 className="text-2xl font-serif font-bold text-gray-900 mb-4">Saint Not Found</h1>
-                    <p className="text-gray-500 mb-8">The saint you're looking for doesn't exist in our database.</p>
-                    <Link href="/saints" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all">
-                        ← Back to Saints
-                    </Link>
-                </div>
-            </div>
-        );
-    }
 
     const feastDate = saint.feastMonth && saint.feastDayOfMonth
         ? `${MONTHS[saint.feastMonth - 1]} ${saint.feastDayOfMonth}`
@@ -164,20 +115,10 @@ export default function SaintDetailPage({ params }: { params: { id: string } }) 
                                     <Heart className={`w-6 h-6 ${isFavorite ? 'fill-rose-500' : ''}`} />
                                 </button>
                                 <ShareButtons
-                                    url={typeof window !== 'undefined' ? window.location.href : `https://myprayertower.com/saints/${saint.id}`}
+                                    url={typeof window !== 'undefined' ? window.location.href : `https://myprayertower.com/saints/${saint.slug}`}
                                     title={saint.name}
                                     description={`Learn about ${saint.name}, ${saint.title || 'Saint'} - Patron of ${saint.patronOf?.join(', ') || 'the faithful'}`}
                                     variant="compact"
-                                />
-                                <script
-                                    type="application/ld+json"
-                                    dangerouslySetInnerHTML={{
-                                        __html: JSON.stringify(generateSaintSchema({
-                                            ...saint,
-                                            slug: saint.slug || '',
-                                            patronOf: saint.patronOf || undefined
-                                        }))
-                                    }}
                                 />
                             </div>
                         </div>

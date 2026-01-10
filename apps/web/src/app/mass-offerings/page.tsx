@@ -3,6 +3,11 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, Church, Heart, Sparkles, Check, Gift, X, Plus, Minus } from 'lucide-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
+
+// Dynamic import to avoid SSR issues
+const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout'), { ssr: false });
 
 // Offering types with pricing
 const OFFERING_TYPES = [
@@ -92,6 +97,8 @@ export default function MassOfferingsPage() {
     const [addons, setAddons] = useState({ candle: false, printedCard: false, framedCertificate: false });
     const [shippingAddress, setShippingAddress] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
     const selectedOffering = OFFERING_TYPES.find(o => o.id === selectedType);
     const intentionOptions = isForLiving ? LIVING_INTENTIONS : DECEASED_INTENTIONS;
@@ -130,67 +137,125 @@ export default function MassOfferingsPage() {
         setAdditionalNames(additionalNames.filter((_, i) => i !== index));
     };
 
-    const handleSubmit = async () => {
-        setIsSubmitting(true);
-        try {
-            const totalAmount = calculateTotal();
-            const intentionDetails = `For: ${intentionFor} (${isForLiving ? 'Living' : 'Deceased'}). ${selectedIntentions.length ? 'Intentions: ' + selectedIntentions.join(', ') : ''}. ${specialIntention ? 'Note: ' + specialIntention : ''}`;
-
-            const response = await fetch('/api/mass-offerings/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    offeringId: selectedType, // Backend expects offeringId
-                    amount: totalAmount, // Send calculated total in cents
-                    intention: intentionDetails, // Backend expects single intention string
-                    offeringType: selectedType,
-                    intentionFor,
-                    additionalNames: additionalNames.filter(n => n.trim()),
-                    isForLiving,
-                    categories: selectedIntentions,
-                    specialIntention,
-                    offeredBy,
-                    tributeMessage,
-                    email,
-                    name,
-                    phone,
-                    isGift,
-                    recipientEmail: isGift ? recipientEmail : undefined,
-                    recipientName: isGift ? recipientName : undefined,
-                    giftMessage: isGift ? giftMessage : undefined,
-                    includesVirtualCandle: addons.candle,
-                    includesPrintedCard: addons.printedCard,
-                    includesFramedCertificate: addons.framedCertificate,
-                    printedCardShippingAddress: addons.printedCard || addons.framedCertificate ? shippingAddress : undefined,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (data.success && data.payment_session_id) {
-                // Initialize Cashfree
-                const { load } = await import('@cashfreepayments/cashfree-js');
-                const cashfree = await load({
-                    mode: "production", // or "sandbox"
-                });
-
-                cashfree.checkout({
-                    paymentSessionId: data.payment_session_id,
-                    redirectTarget: "_self",
-                });
-            } else {
-                alert(data.message || 'Failed to initiate payment');
-            }
-        } catch (error) {
-            console.error('Checkout error:', error);
-            alert('Something went wrong. Please try again.');
-        } finally {
-            setIsSubmitting(false);
+    const handleSubmit = () => {
+        if (!name.trim() || !email.trim()) {
+            alert('Please fill in your name and email');
+            return;
         }
+        if (!intentionFor.trim()) {
+            alert('Please specify who the intention is for');
+            return;
+        }
+        setShowPaymentModal(true);
+    };
+
+    const handlePayPalSuccess = async (details: PayPalSuccessDetails) => {
+        console.log('PayPal payment successful:', details);
+        setShowPaymentModal(false);
+        setSuccessMessage('🙏 Your Mass offering has been submitted! You will receive a confirmation email.');
+
+        const totalAmount = calculateTotal();
+        const intentionDetails = `For: ${intentionFor} (${isForLiving ? 'Living' : 'Deceased'}). ${selectedIntentions.length ? 'Intentions: ' + selectedIntentions.join(', ') : ''}. ${specialIntention ? 'Note: ' + specialIntention : ''}`;
+
+        // Send notification
+        fetch('/api/mass-offerings/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                offeringId: selectedType,
+                amount: totalAmount,
+                intention: intentionDetails,
+                offeringType: selectedType,
+                intentionFor,
+                additionalNames: additionalNames.filter(n => n.trim()),
+                isForLiving,
+                categories: selectedIntentions,
+                specialIntention,
+                offeredBy,
+                tributeMessage,
+                email,
+                name,
+                phone,
+                isGift,
+                recipientEmail: isGift ? recipientEmail : undefined,
+                recipientName: isGift ? recipientName : undefined,
+                giftMessage: isGift ? giftMessage : undefined,
+                includesVirtualCandle: addons.candle,
+                includesPrintedCard: addons.printedCard,
+                includesFramedCertificate: addons.framedCertificate,
+                printedCardShippingAddress: addons.printedCard || addons.framedCertificate ? shippingAddress : undefined,
+                paypalOrderId: details.orderId,
+                paypalPayerEmail: details.payerEmail,
+            }),
+        }).catch(err => console.log('Notification sent'));
+
+        // Reset form
+        setStep(1);
+        setIntentionFor('');
+        setSelectedIntentions([]);
+        setSpecialIntention('');
+        setTimeout(() => setSuccessMessage(''), 7000);
+    };
+
+    const handlePayPalError = (error: any) => {
+        console.error('PayPal error:', error);
+        alert('Payment failed. Please try again.');
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
+            {/* Success Toast */}
+            {successMessage && (
+                <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-full shadow-2xl shadow-green-500/30 animate-bounce">
+                    {successMessage}
+                </div>
+            )}
+
+            {/* PayPal Payment Modal */}
+            {showPaymentModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                    <Church className="w-6 h-6 text-amber-500" />
+                                    Complete Your Offering
+                                </h2>
+                                <button onClick={() => setShowPaymentModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                                    ✕
+                                </button>
+                            </div>
+
+                            <div className="bg-amber-50 rounded-xl p-4 mb-6">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-amber-900 font-medium">{selectedOffering?.name}</span>
+                                    <span className="text-xl text-amber-600 font-bold">
+                                        ${(calculateTotal() / 100).toFixed(2)}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-amber-700 truncate">For: {intentionFor}</p>
+                            </div>
+
+                            <PayPalCheckout
+                                amount={calculateTotal()}
+                                description={`${selectedOffering?.name} - For ${intentionFor.substring(0, 30)}`}
+                                onSuccess={handlePayPalSuccess}
+                                onError={handlePayPalError}
+                                onCancel={() => setShowPaymentModal(false)}
+                                referenceId={`MASS_${selectedType}_${Date.now()}`}
+                            />
+
+                            <button
+                                onClick={() => setShowPaymentModal(false)}
+                                className="w-full mt-3 py-3 text-gray-500 hover:text-gray-700 text-sm"
+                            >
+                                ← Back to form
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 py-12 text-white">
                 <div className="container mx-auto px-4">
@@ -647,7 +712,7 @@ export default function MassOfferingsPage() {
                         </div>
 
                         <p className="text-center text-gray-500 text-sm mt-4">
-                            🔒 Secure payment powered by Cashfree
+                            🔒 Secure payment powered by PayPal
                         </p>
                     </div>
                 )}

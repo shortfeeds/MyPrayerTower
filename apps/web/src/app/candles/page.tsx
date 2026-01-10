@@ -4,6 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Flame, Heart, Users, Clock, Sparkles, ChevronLeft, X, CreditCard, Lock, Star, Crown } from 'lucide-react';
 import { lightVirtualCandle, getActiveCandles } from '@/app/actions/spiritual';
+import dynamic from 'next/dynamic';
+import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
+
+// Dynamic import to avoid SSR issues with PayPal SDK
+const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout'), { ssr: false });
 
 interface Candle {
     id: string;
@@ -173,6 +178,7 @@ export default function CandleWallPage() {
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
     const [paymentError, setPaymentError] = useState('');
+    const [paymentReferenceId, setPaymentReferenceId] = useState('');
     const [peopleCount, setPeopleCount] = useState(24567);
 
     // Fluctuate people praying count between 18000-35000
@@ -271,6 +277,7 @@ export default function CandleWallPage() {
         }
 
         if (isPaidOption) {
+            setPaymentReferenceId(`CANDLE_${selectedDuration}_${Date.now()}`);
             setShowLightModal(false);
             setShowPaymentModal(true);
             return;
@@ -279,14 +286,18 @@ export default function CandleWallPage() {
         await processCandle();
     };
 
-    const processPayment = async () => {
-        console.log('Starting candle payment process...');
+    // Handle successful PayPal payment
+    const handlePayPalSuccess = async (details: PayPalSuccessDetails) => {
+        console.log('PayPal payment successful:', details);
         setIsProcessingPayment(true);
         setPaymentError('');
 
         try {
-            console.log('Calling /api/candles/checkout...');
-            const response = await fetch('/api/candles/checkout', {
+            // Create the candle in the database
+            await processCandle();
+
+            // Send notification email
+            fetch('/api/candles/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -295,40 +306,23 @@ export default function CandleWallPage() {
                     intention: intention.trim(),
                     name: isAnonymous ? null : userName.trim(),
                     isAnonymous,
+                    paypalOrderId: details.orderId,
+                    paypalPayerEmail: details.payerEmail,
                 }),
-            });
+            }).catch(err => console.log('Notification sent'));
 
-            console.log('Response status:', response.status);
-            const data = await response.json();
-            console.log('Response data:', data);
-
-            if (data.success && data.payment_session_id) {
-                console.log('Initializing Cashfree SDK...');
-                // Initialize Cashfree using the payment session ID
-                // Note: You must ensure @cashfreepayments/cashfree-js is loaded
-                // We'll load it dynamically or assume it's available via global if script tag
-                // But better to use the imported module if installed
-                const { load } = await import('@cashfreepayments/cashfree-js');
-                const cashfree = await load({
-                    mode: "production", // or "sandbox" based on env
-                });
-                console.log('Cashfree SDK loaded, calling checkout...');
-
-                cashfree.checkout({
-                    paymentSessionId: data.payment_session_id,
-                    redirectTarget: "_self", // Redirect to return_url configured in backend
-                });
-
-            } else {
-                console.error('Payment initialization failed:', data.message);
-                setPaymentError(data.message || 'Failed to initiate payment. Please try again.');
-                setIsProcessingPayment(false);
-            }
         } catch (error) {
-            console.error('Payment error:', error);
-            setPaymentError('Something went wrong. Please try again.');
+            console.error('Error processing candle after payment:', error);
+            setPaymentError('Payment succeeded but candle creation failed. Please contact support.');
+        } finally {
             setIsProcessingPayment(false);
         }
+    };
+
+    const handlePayPalError = (error: any) => {
+        console.error('PayPal error:', error);
+        setPaymentError('Payment failed. Please try again.');
+        setIsProcessingPayment(false);
     };
 
     const processCandle = async () => {
@@ -678,23 +672,15 @@ export default function CandleWallPage() {
                                 </div>
                             )}
 
-                            <div className="flex items-center gap-2 text-xs text-gray-500 mb-4">
-                                <Lock className="w-4 h-4" />
-                                Secure payment • 256-bit encryption
-                            </div>
-
-                            <button
-                                onClick={processPayment}
+                            <PayPalCheckout
+                                amount={selectedDurationData?.price || 0}
+                                description={`${selectedDurationData?.label} Prayer Candle - ${intention.substring(0, 50)}`}
+                                onSuccess={handlePayPalSuccess}
+                                onError={handlePayPalError}
+                                onCancel={() => setPaymentError('')}
                                 disabled={isProcessingPayment}
-                                className="w-full py-4 bg-gradient-to-r from-emerald-500 to-green-600 disabled:from-slate-600 disabled:to-slate-600 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg"
-                            >
-                                {isProcessingPayment ? 'Processing...' : (
-                                    <>
-                                        <Lock className="w-5 h-5" />
-                                        Pay {selectedDurationData?.priceDisplay}
-                                    </>
-                                )}
-                            </button>
+                                referenceId={paymentReferenceId}
+                            />
 
                             <button
                                 onClick={() => { setShowPaymentModal(false); setShowLightModal(true); }}

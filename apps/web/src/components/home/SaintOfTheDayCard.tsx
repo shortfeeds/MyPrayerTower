@@ -5,6 +5,7 @@ import { Star, ChevronRight } from 'lucide-react';
 
 interface Saint {
     name: string;
+    slug?: string | null;
     feastDay?: string | null;
     title?: string | null;
     shortBio?: string | null;
@@ -44,7 +45,7 @@ export function SaintOfTheDayCard({ saint }: SaintOfTheDayCardProps) {
     }
 
     return (
-        <Link href={`/saints/${saint.name.toLowerCase().replace(/ /g, '-')}`} className="group block">
+        <Link href={`/saints/${saint.slug || saint.name.toLowerCase().replace(/ /g, '-')}`} className="group block">
             <div className="relative overflow-hidden bg-gradient-to-br from-gold-50 to-cream-100 rounded-2xl p-6 border border-gold-200/50 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 {/* Decorative Cross */}
                 <div className="absolute top-4 right-4 text-gold-300/30">

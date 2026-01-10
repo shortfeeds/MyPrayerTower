@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import { ChevronLeft, Heart, CreditCard, Check, Sparkles, Users, Crown } from 'lucide-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
+
+// Dynamic import to avoid SSR issues
+const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout'), { ssr: false });
 
 // Donation tiers
 const DONATION_TIERS = [
@@ -68,6 +73,9 @@ export default function DonatePage() {
     const [isAnonymous, setIsAnonymous] = useState(false);
     const [coversFee, setCoversFee] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentType, setPaymentType] = useState<'oneTime' | 'subscription'>('oneTime');
+    const [successMessage, setSuccessMessage] = useState('');
 
     const selectedTierData = DONATION_TIERS.find(t => t.id === selectedTier);
     const selectedPlanData = SUBSCRIPTION_PLANS.find(p => p.id === selectedPlan);
@@ -87,92 +95,116 @@ export default function DonatePage() {
         return coversFee ? amount + getFeeAmount() : amount;
     };
 
-    const handleOneTimeDonation = async () => {
+    const handleOneTimeDonation = () => {
         if (!email || !name) {
             alert('Please fill in your name and email');
             return;
         }
-
-        setIsSubmitting(true);
-        try {
-            const response = await fetch('/api/donations/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    amount: getTotal(), // sends total in cents
-                    tier: customAmount ? 'CUSTOM' : selectedTier,
-                    email,
-                    name,
-                    message,
-                    isAnonymous,
-                    coversFee,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (data.success && data.payment_session_id) {
-                const { load } = await import('@cashfreepayments/cashfree-js');
-                const cashfree = await load({ mode: "production" });
-                cashfree.checkout({
-                    paymentSessionId: data.payment_session_id,
-                    redirectTarget: "_self",
-                });
-            } else {
-                alert(data.message || 'Failed to initiate payment');
-            }
-        } catch (error) {
-            console.error('Checkout error:', error);
-            alert('Something went wrong. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-        }
+        setPaymentType('oneTime');
+        setShowPaymentModal(true);
     };
 
-    const handleSubscription = async () => {
+    const handleSubscription = () => {
         if (!email || !name) {
             alert('Please fill in your name and email');
             return;
         }
-
-        setIsSubmitting(true);
-        try {
-            // Use the standard checkout for now (Month 1)
-            // TODO: Implement recurring subscription flow
-            const response = await fetch('/api/donations/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    amount: selectedPlanData?.price || 0,
-                    tier: selectedPlan,
-                    isSubscription: true, // Flag for backend context
-                    email,
-                    name,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (data.success && data.payment_session_id) {
-                const { load } = await import('@cashfreepayments/cashfree-js');
-                const cashfree = await load({ mode: "production" });
-                cashfree.checkout({
-                    paymentSessionId: data.payment_session_id,
-                    redirectTarget: "_self",
-                });
-            } else {
-                alert(data.message || 'Failed to initiate subscription');
-            }
-        } catch (error) {
-            console.error('Subscription error:', error);
-            alert('Something went wrong. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-        }
+        setPaymentType('subscription');
+        setShowPaymentModal(true);
     };
+
+    const handlePayPalSuccess = async (details: PayPalSuccessDetails) => {
+        console.log('PayPal payment successful:', details);
+        setShowPaymentModal(false);
+        setSuccessMessage('🎉 Thank you for your generous donation! God bless you.');
+
+        // Send notification
+        fetch('/api/donations/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: paymentType === 'oneTime' ? getTotal() : (selectedPlanData?.price || 0),
+                tier: paymentType === 'oneTime' ? (customAmount ? 'CUSTOM' : selectedTier) : selectedPlan,
+                email,
+                name,
+                message,
+                isAnonymous,
+                coversFee,
+                isSubscription: paymentType === 'subscription',
+                paypalOrderId: details.orderId,
+                paypalPayerEmail: details.payerEmail,
+            }),
+        }).catch(err => console.log('Notification sent'));
+
+        setTimeout(() => setSuccessMessage(''), 5000);
+    };
+
+    const handlePayPalError = (error: any) => {
+        console.error('PayPal error:', error);
+        alert('Payment failed. Please try again.');
+    };
+
+
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-rose-50 to-white">
+            {/* Success Toast */}
+            {successMessage && (
+                <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-full shadow-2xl shadow-green-500/30 animate-bounce">
+                    {successMessage}
+                </div>
+            )}
+
+            {/* PayPal Payment Modal */}
+            {showPaymentModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+                        <div className="p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                    <Heart className="w-6 h-6 text-rose-500" />
+                                    Complete Donation
+                                </h2>
+                                <button onClick={() => setShowPaymentModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                                    ✕
+                                </button>
+                            </div>
+
+                            <div className="bg-rose-50 rounded-xl p-4 mb-6">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-rose-900 font-medium">
+                                        {paymentType === 'oneTime' ? 'One-Time Donation' : selectedPlanData?.name}
+                                    </span>
+                                    <span className="text-2xl text-rose-600 font-bold">
+                                        ${((paymentType === 'oneTime' ? getTotal() : (selectedPlanData?.price || 0)) / 100).toFixed(2)}
+                                        {paymentType === 'subscription' && <span className="text-sm">/mo</span>}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <PayPalCheckout
+                                amount={paymentType === 'oneTime' ? getTotal() : (selectedPlanData?.price || 0)}
+                                description={paymentType === 'oneTime'
+                                    ? `Donation to MyPrayerTower - ${customAmount ? 'Custom' : selectedTierData?.label}`
+                                    : `${selectedPlanData?.name} Monthly Subscription`
+                                }
+                                onSuccess={handlePayPalSuccess}
+                                onError={handlePayPalError}
+                                onCancel={() => setShowPaymentModal(false)}
+                                referenceId={`DONATE_${paymentType}_${Date.now()}`}
+                            />
+
+                            <button
+                                onClick={() => setShowPaymentModal(false)}
+                                className="w-full mt-3 py-3 text-gray-500 hover:text-gray-700 text-sm"
+                            >
+                                ← Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-red-500 py-12 text-white">
                 <div className="container mx-auto px-4">
@@ -346,7 +378,7 @@ export default function DonatePage() {
                         </button>
 
                         <p className="text-center text-gray-500 text-sm mt-4">
-                            🔒 Secure payment powered by Stripe
+                            🔒 Secure payment powered by PayPal
                         </p>
                     </div>
                 )}
@@ -445,7 +477,7 @@ export default function DonatePage() {
                         </button>
 
                         <p className="text-center text-gray-500 text-sm mt-4">
-                            🔒 Secure subscription via Stripe. Cancel anytime.
+                            🔒 Secure subscription via PayPal. Cancel anytime.
                         </p>
                     </div>
                 )}

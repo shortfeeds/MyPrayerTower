@@ -8,31 +8,31 @@ import {
     CheckCircle2, AlertCircle, Loader2, Share2, Heart, Sparkles, Mail, Send, Shield, Users, Eye,
     User, Image as ImageIcon
 } from 'lucide-react';
-import { SmartAdSlot } from '@/components/ads'; // Import shared ad component
+import { SmartAdSlot } from '@/components/ads';
 
 // Define full interface matching the API response
-interface ChurchStaff {
+export interface ChurchStaff {
     id: string;
     name: string;
     title: string;
     imageUrl: string | null;
 }
 
-interface ChurchImage {
+export interface ChurchImage {
     id: string;
     url: string;
     caption: string | null;
     isPrimary: boolean;
 }
 
-interface ChurchEvent {
+export interface ChurchEvent {
     id: string;
     title: string;
     startDate: string;
     eventType: string;
 }
 
-interface Church {
+export interface Church {
     id: string;
     name: string;
     slug?: string;
@@ -219,61 +219,12 @@ function ClaimForm({ churchId, churchName }: { churchId: string; churchName: str
     );
 }
 
-export default function ChurchDetailPage({ params }: { params: { id: string } }) {
+export function ChurchProfile({ church }: { church: Church }) {
     const searchParams = useSearchParams();
     const showClaim = searchParams.get('claim') === 'true';
 
-    const [church, setChurch] = useState<Church | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [isFavorite, setIsFavorite] = useState(false);
     const [showClaimForm, setShowClaimForm] = useState(showClaim);
-
-    useEffect(() => {
-        async function fetchChurch() {
-            setLoading(true);
-            try {
-                const response = await fetch(`/api/churches/${params.id}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setChurch(data);
-                } else {
-                    setError('Church not found');
-                }
-            } catch (err) {
-                console.error(err);
-                setError('Failed to load church');
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchChurch();
-    }, [params.id]);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-gradient-to-b from-blue-50/50 to-white flex items-center justify-center">
-                <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-            </div>
-        );
-    }
-
-    if (error || !church) {
-        return (
-            <div className="min-h-screen bg-gradient-to-b from-blue-50/50 to-white flex items-center justify-center">
-                <div className="text-center bg-white rounded-3xl p-12 shadow-xl border border-gray-100">
-                    <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Building2 className="w-10 h-10 text-blue-400" />
-                    </div>
-                    <h1 className="text-2xl font-serif font-bold text-gray-900 mb-4">Church Not Found</h1>
-                    <p className="text-gray-500 mb-8">The church you're looking for doesn't exist.</p>
-                    <Link href="/churches" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all">
-                        ← Back to Churches
-                    </Link>
-                </div>
-            </div>
-        );
-    }
 
     const getLocationString = () => {
         const parts = [church.city, church.state, church.country, church.postalCode].filter(Boolean);
@@ -426,7 +377,7 @@ export default function ChurchDetailPage({ params }: { params: { id: string } })
                                         <Clock className="w-6 h-6 text-blue-500" /> Holy Mass
                                     </h2>
                                     <div className="space-y-6">
-                                        {typeof church.massSchedule === 'object' && Object.entries(church.massSchedule).map(([day, times]) => (
+                                        {typeof church.massSchedule === 'object' && Object.entries(church.massSchedule as Record<string, any>).map(([day, times]) => (
                                             <div key={day}>
                                                 <h3 className="font-semibold text-gray-900 mb-3 capitalize">{day}</h3>
                                                 <div className="flex flex-wrap gap-2">
@@ -454,7 +405,7 @@ export default function ChurchDetailPage({ params }: { params: { id: string } })
                                         <Shield className="w-5 h-5 text-purple-500" /> Confession
                                     </h2>
                                     <div className="space-y-3">
-                                        {typeof church.confessionSchedule === 'object' && Object.entries(church.confessionSchedule).map(([day, times]) => (
+                                        {typeof church.confessionSchedule === 'object' && Object.entries(church.confessionSchedule as Record<string, any>).map(([day, times]) => (
                                             <div key={day} className="flex flex-col sm:flex-row sm:items-baseline gap-2">
                                                 <span className="font-medium text-gray-900 w-24 capitalize">{day}:</span>
                                                 <span className="text-gray-600">{Array.isArray(times) ? times.join(', ') : String(times)}</span>
@@ -474,7 +425,7 @@ export default function ChurchDetailPage({ params }: { params: { id: string } })
                                         <Sparkles className="w-5 h-5 text-amber-500" /> Adoration
                                     </h2>
                                     <div className="space-y-3">
-                                        {typeof church.adorationSchedule === 'object' && Object.entries(church.adorationSchedule).map(([day, times]) => (
+                                        {typeof church.adorationSchedule === 'object' && Object.entries(church.adorationSchedule as Record<string, any>).map(([day, times]) => (
                                             <div key={day} className="flex flex-col sm:flex-row sm:items-baseline gap-2">
                                                 <span className="font-medium text-gray-900 w-24 capitalize">{day}:</span>
                                                 <span className="text-gray-600">{Array.isArray(times) ? times.join(', ') : String(times)}</span>
