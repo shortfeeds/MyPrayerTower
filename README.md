@@ -422,6 +422,7 @@ Support the mission with a single contribution.
 - [x] PWA manifest ready
 - [x] Google Search Console verified (HTML file + HTML tag)
 - [x] AdSense configured (ca-pub-1009360672921924)
+- [x] Google Analytics configured (G-1X6N63VWZH)
 
 ---
 

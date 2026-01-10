@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { Inter, Merriweather, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
@@ -158,6 +159,7 @@ export default function RootLayout({
                 </ThemeProvider>
                 <Analytics />
                 <SpeedInsights />
+                <GoogleAnalytics gaId="G-1X6N63VWZH" />
             </body>
         </html>
     );
