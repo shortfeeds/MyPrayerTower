@@ -31,6 +31,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 take: 5000
             }),
             prisma.prayer.findMany({
+                where: {
+                    slug: { not: null }
+                },
                 select: { slug: true },
                 take: 5000
             }),
@@ -58,12 +61,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         // Prayer URLs use the ID since Prayer model doesn't have a slug field
         // The prayers/[slug] route might be using a Title-based approach
-        const prayerRoutes = prayers.map((prayer) => ({
-            url: `${baseUrl}/prayers/${prayer.slug}`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly' as const,
-            priority: 0.6,
-        }));
+        const prayerRoutes = prayers
+            .filter(p => p.slug) // Double check filter
+            .map((prayer) => ({
+                url: `${baseUrl}/prayers/${prayer.slug}`,
+                lastModified: new Date(),
+                changeFrequency: 'monthly' as const,
+                priority: 0.6,
+            }));
 
         const memorialRoutes = memorials.map((memorial) => ({
             url: `${baseUrl}/memorials/${memorial.slug}`,
