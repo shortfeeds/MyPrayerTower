@@ -26,7 +26,7 @@ export function TrendingPrayersCarousel() {
             gradient: "from-blue-600 via-blue-700 to-indigo-900",
             accent: "bg-blue-500/30",
             pattern: "radial-gradient(circle at top right, rgba(255,255,255,0.2) 0%, transparent 40%)",
-            link: "/prayers/rosary"
+            link: "/prayers/the-holy-rosary"
         },
         {
             id: 2,
@@ -48,7 +48,7 @@ export function TrendingPrayersCarousel() {
             gradient: "from-emerald-600 via-emerald-700 to-teal-900",
             accent: "bg-emerald-500/30",
             pattern: "repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,0.05) 20px)",
-            link: "/prayers/novenas"
+            link: "/prayers/st-jude-novena"
         },
         {
             id: 4,
@@ -59,7 +59,7 @@ export function TrendingPrayersCarousel() {
             gradient: "from-amber-400 via-orange-500 to-red-600",
             accent: "bg-amber-500/30",
             pattern: "radial-gradient(circle at bottom left, rgba(255,223,0,0.3) 0%, transparent 50%)",
-            link: "/prayers/morning"
+            link: "/prayers/morning-offering"
         },
         {
             id: 5,
@@ -70,7 +70,7 @@ export function TrendingPrayersCarousel() {
             gradient: "from-indigo-600 via-indigo-800 to-slate-900",
             accent: "bg-indigo-500/30",
             pattern: "radial-gradient(1px 1px at 10% 10%, white 100%, transparent), radial-gradient(1px 1px at 20% 20%, white 100%, transparent)",
-            link: "/prayers/sleep"
+            link: "/prayers/daily-examen"
         }
     ];
 

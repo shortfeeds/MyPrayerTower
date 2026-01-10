@@ -15,14 +15,8 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const prayerId = parseInt(params.slug, 10);
-
-    if (isNaN(prayerId)) {
-        return { title: 'Prayer Not Found' };
-    }
-
     const prayer = await prisma.prayer.findUnique({
-        where: { id: prayerId },
+        where: { slug: params.slug },
     });
 
     if (!prayer) return { title: 'Prayer Not Found' };
@@ -34,14 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PrayerDetailPage({ params }: Props) {
-    const prayerId = parseInt(params.slug, 10);
-
-    if (isNaN(prayerId)) {
-        notFound();
-    }
-
     const prayer = await prisma.prayer.findUnique({
-        where: { id: prayerId },
+        where: { slug: params.slug },
     });
 
     if (!prayer || !prayer.is_active) {
@@ -128,7 +116,7 @@ export default async function PrayerDetailPage({ params }: Props) {
                                     {relatedPrayers.map(rp => (
                                         <Link
                                             key={rp.id.toString()}
-                                            href={`/prayers/${rp.id}`}
+                                            href={`/prayers/${rp.slug}`}
                                             className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg border border-gray-100 transition-all duration-300 hover:-translate-y-1"
                                         >
                                             <h4 className="font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">

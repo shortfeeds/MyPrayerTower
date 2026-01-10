@@ -190,8 +190,8 @@ export default async function PrayersPage({
                                     return (
                                         <>
                                             <Link
-                                                key={prayer.id.toString()}
-                                                href={`/prayers/${prayer.id}`}
+                                                key={prayer.slug || prayer.id.toString()}
+                                                href={`/prayers/${prayer.slug || prayer.id}`}
                                                 className="flex items-center gap-4 px-4 py-3 hover:bg-blue-50/50 transition-colors group"
                                             >
                                                 {/* Play Icon */}

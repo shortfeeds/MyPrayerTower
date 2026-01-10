@@ -892,6 +892,7 @@ model UserReport {
 model Prayer {
   id             BigInt    @id(map: "prayers_pkey") @default(autoincrement())
   title          String
+  slug           String?   @unique
   content        String
   category       String
   category_label String
