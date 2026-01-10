@@ -272,20 +272,54 @@ Cashfree: https://myprayertower.com/api/webhooks/cashfree
 
 ---
 
-## 💳 Subscription Tiers
+## � Pricing & Plans
 
-| Tier | Price | Features |
-|------|-------|----------|
-| **Free** | $0 | Basic prayers, ads supported, 14-day premium trial |
-| **Plus** | $4.99/mo or $39.99/yr | Ad-free, offline mode, audio prayers, 2 family members |
-| **Premium** | $9.99/mo or $79.99/yr | All Plus + AI suggestions, 5 family members, priority support |
-| **Lifetime** | $149.99 (one-time) | All Premium features forever |
+### 🕯️ Virtual Candles
+Light a candle on the global prayer wall for your intentions.
+| Duration | Tier | Price | Features |
+|:---------|:-----|:------|:---------|
+| **1 Day** | Free | $0.00 | Basic white candle, visible for 24 hours |
+| **3 Days** | Basic | $2.99 | 72-hour visibility, basic glow effect |
+| **7 Days** | Standard | $5.99 | 1-week visibility, standard effects |
+| **30 Days** | Premium | $14.99 | 1-month visibility, premium gold/rose effects, "Top Supporter" badge |
 
-### 🕊️ Memorial Pricing
-| Tier | Price | Features |
-|------|-------|----------|
-| **Basic Memorial** | $20 (one-time) | Permanent page, photo, bio, guestbook |
-| **Premium Memorial** | $49 (one-time) | Featured placement, unlimited photos, QR code, video tribute |
+### ⛪ Mass Offerings
+Request Holy Mass to be offered for your specific intentions.
+| Type | Price | Description |
+|:-----|:------|:------------|
+| **Single Mass** | $10.00 | One Mass offered for your intention |
+| **Novena** | $75.00 | 9 consecutive Masses (Great for urgent needs) |
+| **Perpetual** | $100.00 | Enrollment in daily Masses forever (Best Value) |
+| **Gregorian** | $200.00 | 30 consecutive Masses for a deceased soul |
+
+**Add-ons:**
+- 🕯️ **Virtual Candle**: +$5.00 (7-day candle added to request)
+- 📮 **Printed Card**: +$10.00 (Mailed to you or recipient)
+- 🖼️ **Framed Certificate**: +$35.00 (Premium framed enrollment)
+
+### 🕊️ Memorial Tributes
+Create a lasting digital memorial for a departed loved one.
+| Plan | Price | Features |
+|:-----|:------|:---------|
+| **Basic** | **FREE** | Permanent page, 1 photo, biography, guestbook |
+| **Premium** | $49.99 | All Basic + Unlimited photos, Music, Video tribute, "Featured" placement, QR Code |
+
+### 💳 Monthly Subscriptions
+Support the platform and unlock exclusive spiritual benefits.
+| Plan | Price | Benefits |
+|:-----|:------|:---------|
+| **Prayer Partner** | $9.99/mo | 1 Mass/mo, Name on Daily Prayer List, Newsletter |
+| **Family Plan** | $19.99/mo | 3 Masses/mo, Entire family on Prayer List, Priority Requests |
+| **Patron Circle** | $49.99/mo | Unlimited requests, Perpetual Enrollment, VIP Support |
+
+### 💝 One-Time Donations
+Support the mission with a single contribution.
+- **Light a Candle**: $10
+- **Rosary Partner**: $20
+- **Parish Supporter**: $50
+- **Guardian Angel**: $100
+- **Benefactor**: $250
+- **Patron**: $500
 
 ---
 
@@ -386,11 +420,11 @@ Cashfree: https://myprayertower.com/api/webhooks/cashfree
 - [x] Payment webhooks configured
 - [x] Social sharing images working
 - [x] PWA manifest ready
-- [ ] Google Search Console verification pending (placeholder in layout.tsx)
-- [ ] AdSense approval pending
+- [x] Google Search Console verified (HTML file + HTML tag)
+- [x] AdSense configured (ca-pub-1009360672921924)
 
 ---
 
 ## 📃 License
 
-Copyright © 2025-2026 MyPrayerTower. All rights reserved.
+Copyright © 2026 MyPrayerTower. All rights reserved.
