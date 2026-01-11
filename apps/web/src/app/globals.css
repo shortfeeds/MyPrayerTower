@@ -507,10 +507,10 @@ body {
   --sacred-600: 210 40% 80%;
   --sacred-700: 210 40% 90%;
   --sacred-800: 210 40% 96%;
-  
+
   --gold-400: 43 96% 65%;
   --gold-500: 43 96% 58%;
-  
+
   --cream-50: 222 47% 11%;
 }
 
@@ -537,19 +537,31 @@ body {
   background-color: hsl(222.2 47% 11.2%);
 }
 
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700 {
+  color: hsl(210 40% 98%);
+}
+
+.dark .text-gray-600,
+.dark .text-gray-500 {
+  color: hsl(215 20% 80%);
+}
+
+.dark .text-gray-400 {
+  color: hsl(215 20% 65%);
+}
+
 .dark .bg-white {
   background-color: hsl(222.2 47% 11.2%);
 }
 
-.dark .text-gray-900 {
-  color: hsl(210 40% 98%);
+.dark .bg-gray-50 {
+  background-color: hsl(222.2 47% 10%);
 }
 
-.dark .text-gray-600 {
-  color: hsl(215 20% 65%);
-}
-
-.dark .border-gray-100 {
+.dark .border-gray-100,
+.dark .border-gray-200 {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -560,13 +572,16 @@ body {
     transform: translateY(100vh) scale(0);
     opacity: 0;
   }
+
   10% {
     opacity: 0.6;
     transform: translateY(90vh) scale(1);
   }
+
   90% {
     opacity: 0.6;
   }
+
   100% {
     transform: translateY(-10vh) scale(0.5);
     opacity: 0;
@@ -574,19 +589,25 @@ body {
 }
 
 @keyframes sway {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
   }
+
   50% {
     transform: translateX(20px);
   }
 }
 
 @keyframes glow-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     filter: blur(4px);
     opacity: 0.4;
   }
+
   50% {
     filter: blur(8px);
     opacity: 0.8;
@@ -616,15 +637,19 @@ body {
   0% {
     transform: scale(1);
   }
+
   25% {
     transform: scale(1.3);
   }
+
   50% {
     transform: scale(0.9);
   }
+
   75% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
   }
@@ -635,6 +660,7 @@ body {
     opacity: 1;
     transform: translate(0, 0) scale(1);
   }
+
   100% {
     opacity: 0;
     transform: translate(var(--x), var(--y)) scale(0);
@@ -657,30 +683,27 @@ body {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
 }
 
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--muted)) 25%,
-    hsl(var(--muted-foreground) / 0.1) 50%,
-    hsl(var(--muted)) 75%
-  );
+  background: linear-gradient(90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 0.5rem;
 }
 
 .dark .skeleton {
-  background: linear-gradient(
-    90deg,
-    hsl(217.2 32.6% 17.5%) 25%,
-    hsl(215 20% 25%) 50%,
-    hsl(217.2 32.6% 17.5%) 75%
-  );
+  background: linear-gradient(90deg,
+      hsl(217.2 32.6% 17.5%) 25%,
+      hsl(215 20% 25%) 50%,
+      hsl(217.2 32.6% 17.5%) 75%);
   background-size: 200% 100%;
 }
 
@@ -691,6 +714,7 @@ body {
     transform: translateX(100%);
     opacity: 0;
   }
+
   100% {
     transform: translateX(0);
     opacity: 1;
@@ -702,6 +726,7 @@ body {
     transform: translateX(0);
     opacity: 1;
   }
+
   100% {
     transform: translateX(100%);
     opacity: 0;
@@ -723,6 +748,7 @@ body {
     transform: translateY(100%);
     opacity: 0;
   }
+
   100% {
     transform: translateY(0);
     opacity: 1;
@@ -753,9 +779,12 @@ body {
 }
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-4px);
   }
@@ -788,17 +817,42 @@ body {
 /* ==================== FLOATING ACTION BUTTON ==================== */
 
 @keyframes fab-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);
   }
+
   50% {
     box-shadow: 0 4px 20px rgba(212, 175, 55, 0.7);
   }
 }
 
-.fab-pulse {
-  animation: fab-pulse 2s ease-in-out infinite;
+/* AdSense Developer Mode */
+.ad-dev-debug-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 0, 0.1);
+  border: 2px dashed #cca300;
+  pointer-events: none;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.ad-dev-debug-label {
+  background: #cca300;
+  color: black;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
 
 /* ==================== PROGRESSIVE IMAGE LOADING ==================== */
 

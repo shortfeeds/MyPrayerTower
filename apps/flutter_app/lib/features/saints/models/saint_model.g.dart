@@ -21,6 +21,19 @@ _$SaintImpl _$$SaintImplFromJson(Map<String, dynamic> json) => _$SaintImpl(
       ?.map((e) => e as String)
       .toList(),
   prayer: json['prayer'] as String?,
+  bornDate: json['bornDate'] as String?,
+  diedDate: json['diedDate'] as String?,
+  canonizedDate: json['canonizedDate'] as String?,
+  externalId: json['externalId'] as String?,
+  lastSyncedAt: json['lastSyncedAt'] == null
+      ? null
+      : DateTime.parse(json['lastSyncedAt'] as String),
+  createdAt: json['createdAt'] == null
+      ? null
+      : DateTime.parse(json['createdAt'] as String),
+  updatedAt: json['updatedAt'] == null
+      ? null
+      : DateTime.parse(json['updatedAt'] as String),
 );
 
 Map<String, dynamic> _$$SaintImplToJson(_$SaintImpl instance) =>
@@ -37,4 +50,11 @@ Map<String, dynamic> _$$SaintImplToJson(_$SaintImpl instance) =>
       'imageUrl': instance.imageUrl,
       'patronOf': instance.patronOf,
       'prayer': instance.prayer,
+      'bornDate': instance.bornDate,
+      'diedDate': instance.diedDate,
+      'canonizedDate': instance.canonizedDate,
+      'externalId': instance.externalId,
+      'lastSyncedAt': instance.lastSyncedAt?.toIso8601String(),
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
     };

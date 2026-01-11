@@ -59,36 +59,81 @@ async function getAccessToken(): Promise<string> {
 }
 
 /**
+ * Simple item interface for our internal use
+ */
+export interface PayPalItem {
+    name: string;
+    unitAmount: string; // "10.00"
+    quantity: string;   // "1"
+    description?: string;
+}
+
+/**
  * Create a PayPal order
  * @param amount Amount in USD (as a decimal string, e.g. "10.00")
  * @param description Order description
  * @param referenceId Optional reference ID for your records
+ * @param items Optional list of items for detailed receipt
  */
 export async function createPayPalOrder(
     amount: string,
     description: string,
-    referenceId?: string
+    referenceId?: string,
+    items?: PayPalItem[]
 ): Promise<PayPalOrder> {
     const accessToken = await getAccessToken();
 
+    // Base purchase unit structure
+    const purchaseUnit: any = {
+        reference_id: referenceId || `ORDER_${Date.now()}`,
+        description: description.substring(0, 127), // PayPal has 127 char limit
+        amount: {
+            currency_code: 'USD',
+            value: amount,
+        },
+    };
+
+    // If items are provided, we must include breakdown
+    if (items && items.length > 0) {
+        // Calculate item total
+        const itemTotal = items.reduce((sum, item) => {
+            return sum + (parseFloat(item.unitAmount) * parseInt(item.quantity));
+        }, 0).toFixed(2);
+
+        // Sanity check: item total must match main amount for normal flows
+        // (ignoring tax/shipping for now as per current simple model)
+        if (itemTotal === amount) {
+            purchaseUnit.amount.breakdown = {
+                item_total: {
+                    currency_code: 'USD',
+                    value: itemTotal
+                }
+            };
+
+            purchaseUnit.items = items.map(item => ({
+                name: item.name.substring(0, 127),
+                unit_amount: {
+                    currency_code: 'USD',
+                    value: item.unitAmount
+                },
+                quantity: item.quantity,
+                description: item.description ? item.description.substring(0, 127) : undefined,
+                category: 'DIGITAL_GOODS' // Default for our prayers/donations
+            }));
+        } else {
+            console.warn(`PayPal Item mismatch: Total $${amount} vs Item Total $${itemTotal}. Omitting items to prevent error.`);
+        }
+    }
+
     const orderData = {
         intent: 'CAPTURE',
-        purchase_units: [
-            {
-                reference_id: referenceId || `ORDER_${Date.now()}`,
-                description: description.substring(0, 127), // PayPal has 127 char limit
-                amount: {
-                    currency_code: 'USD',
-                    value: amount,
-                },
-            },
-        ],
+        purchase_units: [purchaseUnit],
         application_context: {
             brand_name: 'MyPrayerTower',
             landing_page: 'NO_PREFERENCE',
             user_action: 'PAY_NOW',
-            return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-success`,
-            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-cancelled`,
+            return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3005'}/payment-success`,
+            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3005'}/payment-cancelled`,
         },
     };
 

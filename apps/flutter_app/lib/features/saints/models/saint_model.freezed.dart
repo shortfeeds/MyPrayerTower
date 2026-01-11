@@ -33,6 +33,13 @@ mixin _$Saint {
   String? get imageUrl => throw _privateConstructorUsedError;
   List<String>? get patronOf => throw _privateConstructorUsedError;
   String? get prayer => throw _privateConstructorUsedError;
+  String? get bornDate => throw _privateConstructorUsedError;
+  String? get diedDate => throw _privateConstructorUsedError;
+  String? get canonizedDate => throw _privateConstructorUsedError;
+  String? get externalId => throw _privateConstructorUsedError;
+  DateTime? get lastSyncedAt => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this Saint to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -61,6 +68,13 @@ abstract class $SaintCopyWith<$Res> {
     String? imageUrl,
     List<String>? patronOf,
     String? prayer,
+    String? bornDate,
+    String? diedDate,
+    String? canonizedDate,
+    String? externalId,
+    DateTime? lastSyncedAt,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   });
 }
 
@@ -91,6 +105,13 @@ class _$SaintCopyWithImpl<$Res, $Val extends Saint>
     Object? imageUrl = freezed,
     Object? patronOf = freezed,
     Object? prayer = freezed,
+    Object? bornDate = freezed,
+    Object? diedDate = freezed,
+    Object? canonizedDate = freezed,
+    Object? externalId = freezed,
+    Object? lastSyncedAt = freezed,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -142,6 +163,34 @@ class _$SaintCopyWithImpl<$Res, $Val extends Saint>
                 ? _value.prayer
                 : prayer // ignore: cast_nullable_to_non_nullable
                       as String?,
+            bornDate: freezed == bornDate
+                ? _value.bornDate
+                : bornDate // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            diedDate: freezed == diedDate
+                ? _value.diedDate
+                : diedDate // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            canonizedDate: freezed == canonizedDate
+                ? _value.canonizedDate
+                : canonizedDate // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            externalId: freezed == externalId
+                ? _value.externalId
+                : externalId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            lastSyncedAt: freezed == lastSyncedAt
+                ? _value.lastSyncedAt
+                : lastSyncedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
           )
           as $Val,
     );
@@ -169,6 +218,13 @@ abstract class _$$SaintImplCopyWith<$Res> implements $SaintCopyWith<$Res> {
     String? imageUrl,
     List<String>? patronOf,
     String? prayer,
+    String? bornDate,
+    String? diedDate,
+    String? canonizedDate,
+    String? externalId,
+    DateTime? lastSyncedAt,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   });
 }
 
@@ -198,6 +254,13 @@ class __$$SaintImplCopyWithImpl<$Res>
     Object? imageUrl = freezed,
     Object? patronOf = freezed,
     Object? prayer = freezed,
+    Object? bornDate = freezed,
+    Object? diedDate = freezed,
+    Object? canonizedDate = freezed,
+    Object? externalId = freezed,
+    Object? lastSyncedAt = freezed,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(
       _$SaintImpl(
@@ -249,6 +312,34 @@ class __$$SaintImplCopyWithImpl<$Res>
             ? _value.prayer
             : prayer // ignore: cast_nullable_to_non_nullable
                   as String?,
+        bornDate: freezed == bornDate
+            ? _value.bornDate
+            : bornDate // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        diedDate: freezed == diedDate
+            ? _value.diedDate
+            : diedDate // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        canonizedDate: freezed == canonizedDate
+            ? _value.canonizedDate
+            : canonizedDate // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        externalId: freezed == externalId
+            ? _value.externalId
+            : externalId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        lastSyncedAt: freezed == lastSyncedAt
+            ? _value.lastSyncedAt
+            : lastSyncedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
       ),
     );
   }
@@ -270,6 +361,13 @@ class _$SaintImpl implements _Saint {
     this.imageUrl,
     final List<String>? patronOf,
     this.prayer,
+    this.bornDate,
+    this.diedDate,
+    this.canonizedDate,
+    this.externalId,
+    this.lastSyncedAt,
+    this.createdAt,
+    this.updatedAt,
   }) : _patronOf = patronOf;
 
   factory _$SaintImpl.fromJson(Map<String, dynamic> json) =>
@@ -307,10 +405,24 @@ class _$SaintImpl implements _Saint {
 
   @override
   final String? prayer;
+  @override
+  final String? bornDate;
+  @override
+  final String? diedDate;
+  @override
+  final String? canonizedDate;
+  @override
+  final String? externalId;
+  @override
+  final DateTime? lastSyncedAt;
+  @override
+  final DateTime? createdAt;
+  @override
+  final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'Saint(id: $id, name: $name, slug: $slug, title: $title, feastDay: $feastDay, feastMonth: $feastMonth, feastDayOfMonth: $feastDayOfMonth, biography: $biography, shortBio: $shortBio, imageUrl: $imageUrl, patronOf: $patronOf, prayer: $prayer)';
+    return 'Saint(id: $id, name: $name, slug: $slug, title: $title, feastDay: $feastDay, feastMonth: $feastMonth, feastDayOfMonth: $feastDayOfMonth, biography: $biography, shortBio: $shortBio, imageUrl: $imageUrl, patronOf: $patronOf, prayer: $prayer, bornDate: $bornDate, diedDate: $diedDate, canonizedDate: $canonizedDate, externalId: $externalId, lastSyncedAt: $lastSyncedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -335,12 +447,26 @@ class _$SaintImpl implements _Saint {
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
             const DeepCollectionEquality().equals(other._patronOf, _patronOf) &&
-            (identical(other.prayer, prayer) || other.prayer == prayer));
+            (identical(other.prayer, prayer) || other.prayer == prayer) &&
+            (identical(other.bornDate, bornDate) ||
+                other.bornDate == bornDate) &&
+            (identical(other.diedDate, diedDate) ||
+                other.diedDate == diedDate) &&
+            (identical(other.canonizedDate, canonizedDate) ||
+                other.canonizedDate == canonizedDate) &&
+            (identical(other.externalId, externalId) ||
+                other.externalId == externalId) &&
+            (identical(other.lastSyncedAt, lastSyncedAt) ||
+                other.lastSyncedAt == lastSyncedAt) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     name,
@@ -354,7 +480,14 @@ class _$SaintImpl implements _Saint {
     imageUrl,
     const DeepCollectionEquality().hash(_patronOf),
     prayer,
-  );
+    bornDate,
+    diedDate,
+    canonizedDate,
+    externalId,
+    lastSyncedAt,
+    createdAt,
+    updatedAt,
+  ]);
 
   /// Create a copy of Saint
   /// with the given fields replaced by the non-null parameter values.
@@ -384,6 +517,13 @@ abstract class _Saint implements Saint {
     final String? imageUrl,
     final List<String>? patronOf,
     final String? prayer,
+    final String? bornDate,
+    final String? diedDate,
+    final String? canonizedDate,
+    final String? externalId,
+    final DateTime? lastSyncedAt,
+    final DateTime? createdAt,
+    final DateTime? updatedAt,
   }) = _$SaintImpl;
 
   factory _Saint.fromJson(Map<String, dynamic> json) = _$SaintImpl.fromJson;
@@ -412,6 +552,20 @@ abstract class _Saint implements Saint {
   List<String>? get patronOf;
   @override
   String? get prayer;
+  @override
+  String? get bornDate;
+  @override
+  String? get diedDate;
+  @override
+  String? get canonizedDate;
+  @override
+  String? get externalId;
+  @override
+  DateTime? get lastSyncedAt;
+  @override
+  DateTime? get createdAt;
+  @override
+  DateTime? get updatedAt;
 
   /// Create a copy of Saint
   /// with the given fields replaced by the non-null parameter values.

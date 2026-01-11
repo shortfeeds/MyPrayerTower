@@ -295,14 +295,14 @@ class AppConfig {
       lifetimePrice: 14999,
 
       candleOneDayPrice: 0,
-      candleThreeDayPrice: 300,
-      candleSevenDayPrice: 500,
-      candleThirtyDayPrice: 1500,
+      candleThreeDayPrice: 299,
+      candleSevenDayPrice: 599,
+      candleThirtyDayPrice: 1499,
 
-      massRegularPrice: 1500,
+      massRegularPrice: 1000,
       massExpeditedPrice: 2000,
-      massNovenaPrice: 5000,
-      massGregorianPrice: 15000,
+      massNovenaPrice: 7500,
+      massGregorianPrice: 20000,
       massPerpetualPrice: 10000,
 
       bouquetBasePrice: 1000,

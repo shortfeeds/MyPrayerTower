@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
@@ -115,7 +116,7 @@ class _PremiumFeatureCardState extends State<PremiumFeatureCard>
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         final bool useCompactLayout =
-                            constraints.maxHeight < 100;
+                            constraints.maxHeight < 100 && !widget.isLarge;
 
                         // Content for compact layout (Row)
                         if (useCompactLayout) {

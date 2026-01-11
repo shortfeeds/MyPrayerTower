@@ -72,10 +72,11 @@ class DailyReadingCard extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Expanded(
+                      Flexible(
                         child: Text(
                           reading.text,
                           overflow: TextOverflow.ellipsis,
+                          maxLines: 5,
                           style: GoogleFonts.merriweather(
                             fontSize: 14,
                             color: AppTheme.textSecondary,

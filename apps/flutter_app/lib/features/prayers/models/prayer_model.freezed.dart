@@ -23,6 +23,7 @@ Prayer _$PrayerFromJson(Map<String, dynamic> json) {
 mixin _$Prayer {
   int get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
+  String? get slug => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   String get category => throw _privateConstructorUsedError;
   @JsonKey(name: 'category_label')
@@ -50,6 +51,7 @@ abstract class $PrayerCopyWith<$Res> {
   $Res call({
     int id,
     String title,
+    String? slug,
     String content,
     String category,
     @JsonKey(name: 'category_label') String categoryLabel,
@@ -76,6 +78,7 @@ class _$PrayerCopyWithImpl<$Res, $Val extends Prayer>
   $Res call({
     Object? id = null,
     Object? title = null,
+    Object? slug = freezed,
     Object? content = null,
     Object? category = null,
     Object? categoryLabel = null,
@@ -93,6 +96,10 @@ class _$PrayerCopyWithImpl<$Res, $Val extends Prayer>
                 ? _value.title
                 : title // ignore: cast_nullable_to_non_nullable
                       as String,
+            slug: freezed == slug
+                ? _value.slug
+                : slug // ignore: cast_nullable_to_non_nullable
+                      as String?,
             content: null == content
                 ? _value.content
                 : content // ignore: cast_nullable_to_non_nullable
@@ -134,6 +141,7 @@ abstract class _$$PrayerImplCopyWith<$Res> implements $PrayerCopyWith<$Res> {
   $Res call({
     int id,
     String title,
+    String? slug,
     String content,
     String category,
     @JsonKey(name: 'category_label') String categoryLabel,
@@ -159,6 +167,7 @@ class __$$PrayerImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? title = null,
+    Object? slug = freezed,
     Object? content = null,
     Object? category = null,
     Object? categoryLabel = null,
@@ -176,6 +185,10 @@ class __$$PrayerImplCopyWithImpl<$Res>
             ? _value.title
             : title // ignore: cast_nullable_to_non_nullable
                   as String,
+        slug: freezed == slug
+            ? _value.slug
+            : slug // ignore: cast_nullable_to_non_nullable
+                  as String?,
         content: null == content
             ? _value.content
             : content // ignore: cast_nullable_to_non_nullable
@@ -211,6 +224,7 @@ class _$PrayerImpl implements _Prayer {
   const _$PrayerImpl({
     required this.id,
     required this.title,
+    this.slug,
     required this.content,
     required this.category,
     @JsonKey(name: 'category_label') required this.categoryLabel,
@@ -226,6 +240,8 @@ class _$PrayerImpl implements _Prayer {
   final int id;
   @override
   final String title;
+  @override
+  final String? slug;
   @override
   final String content;
   @override
@@ -251,7 +267,7 @@ class _$PrayerImpl implements _Prayer {
 
   @override
   String toString() {
-    return 'Prayer(id: $id, title: $title, content: $content, category: $category, categoryLabel: $categoryLabel, tags: $tags, isActive: $isActive, createdAt: $createdAt)';
+    return 'Prayer(id: $id, title: $title, slug: $slug, content: $content, category: $category, categoryLabel: $categoryLabel, tags: $tags, isActive: $isActive, createdAt: $createdAt)';
   }
 
   @override
@@ -261,6 +277,7 @@ class _$PrayerImpl implements _Prayer {
             other is _$PrayerImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
+            (identical(other.slug, slug) || other.slug == slug) &&
             (identical(other.content, content) || other.content == content) &&
             (identical(other.category, category) ||
                 other.category == category) &&
@@ -279,6 +296,7 @@ class _$PrayerImpl implements _Prayer {
     runtimeType,
     id,
     title,
+    slug,
     content,
     category,
     categoryLabel,
@@ -305,6 +323,7 @@ abstract class _Prayer implements Prayer {
   const factory _Prayer({
     required final int id,
     required final String title,
+    final String? slug,
     required final String content,
     required final String category,
     @JsonKey(name: 'category_label') required final String categoryLabel,
@@ -319,6 +338,8 @@ abstract class _Prayer implements Prayer {
   int get id;
   @override
   String get title;
+  @override
+  String? get slug;
   @override
   String get content;
   @override

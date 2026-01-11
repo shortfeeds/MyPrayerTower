@@ -1,4 +1,4 @@
-// Refresh IDE
+// Refresh IDE 2
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'prayer_model.freezed.dart';
@@ -9,6 +9,7 @@ class Prayer with _$Prayer {
   const factory Prayer({
     required int id,
     required String title,
+    String? slug,
     required String content,
     required String category,
     @JsonKey(name: 'category_label') required String categoryLabel,

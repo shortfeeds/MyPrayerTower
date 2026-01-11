@@ -5,7 +5,20 @@ import { useRef } from 'react';
 import { Sparkles, ChevronLeft, ChevronRight, Play, Users, Heart, Star, Flame, Sun, Moon } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export function TrendingPrayersCarousel() {
+export interface TrendingPrayer {
+    id: string;
+    title: string;
+    subtitle: string;
+    users: string;
+    link?: string;
+    slug: string;
+}
+
+interface TrendingPrayersCarouselProps {
+    prayers?: TrendingPrayer[];
+}
+
+export function TrendingPrayersCarousel({ prayers = [] }: TrendingPrayersCarouselProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const scroll = (direction: 'left' | 'right') => {
@@ -16,77 +29,65 @@ export function TrendingPrayersCarousel() {
         }
     };
 
-    const trendingItems = [
+    // Styling configurations to cycle through
+    const styleConfigs = [
         {
-            id: 1,
-            title: "The Holy Rosary",
-            subtitle: "Joyful Mysteries",
-            icon: Star, // Marian star
-            users: "1,243",
+            icon: Star,
             gradient: "from-blue-600 via-blue-700 to-indigo-900",
             accent: "bg-blue-500/30",
-            pattern: "radial-gradient(circle at top right, rgba(255,255,255,0.2) 0%, transparent 40%)",
-            link: "/prayers/the-holy-rosary"
+            pattern: "radial-gradient(circle at top right, rgba(255,255,255,0.2) 0%, transparent 40%)"
         },
         {
-            id: 2,
-            title: "Divine Mercy",
-            subtitle: "3:00 PM Chaplet",
             icon: Heart,
-            users: "856",
             gradient: "from-rose-500 via-red-600 to-rose-900",
             accent: "bg-rose-500/30",
-            pattern: "linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent)",
-            link: "/prayers/divine-mercy"
+            pattern: "linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent)"
         },
         {
-            id: 3,
-            title: "St. Jude Novena",
-            subtitle: "For Impossible Causes",
             icon: Flame,
-            users: "543",
             gradient: "from-emerald-600 via-emerald-700 to-teal-900",
             accent: "bg-emerald-500/30",
-            pattern: "repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,0.05) 20px)",
-            link: "/prayers/st-jude-novena"
+            pattern: "repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,0.05) 20px)"
         },
         {
-            id: 4,
-            title: "Morning Offering",
-            subtitle: "Start Your Day",
             icon: Sun,
-            users: "2,102",
             gradient: "from-amber-400 via-orange-500 to-red-600",
             accent: "bg-amber-500/30",
-            pattern: "radial-gradient(circle at bottom left, rgba(255,223,0,0.3) 0%, transparent 50%)",
-            link: "/prayers/morning-offering"
+            pattern: "radial-gradient(circle at bottom left, rgba(255,223,0,0.3) 0%, transparent 50%)"
         },
         {
-            id: 5,
-            title: "Sleep Examen",
-            subtitle: "Night Prayer",
             icon: Moon,
-            users: "900",
             gradient: "from-indigo-600 via-indigo-800 to-slate-900",
             accent: "bg-indigo-500/30",
-            pattern: "radial-gradient(1px 1px at 10% 10%, white 100%, transparent), radial-gradient(1px 1px at 20% 20%, white 100%, transparent)",
-            link: "/prayers/daily-examen"
+            pattern: "radial-gradient(1px 1px at 10% 10%, white 100%, transparent), radial-gradient(1px 1px at 20% 20%, white 100%, transparent)"
         }
     ];
 
+    // Combine data with styles
+    const items = prayers.length > 0 ? prayers.map((p, i) => {
+        const style = styleConfigs[i % styleConfigs.length];
+        return {
+            ...p,
+            ...style,
+            link: p.link || `/prayers/${p.slug}`
+        };
+    }) : []; // If empty, don't show (page component will handle fetching)
+
+    if (items.length === 0) return null;
+
     return (
-        <section className="py-16 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+        <section className="py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950 relative overflow-hidden transition-colors duration-300">
             {/* Decorative background blobs */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-1/2 left-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -translate-y-1/2 -translate-x-1/2"></div>
-                <div className="absolute top-1/2 right-0 w-96 h-96 bg-gold-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -translate-y-1/2 translate-x-1/2"></div>
+                <div className="absolute top-1/2 left-0 w-96 h-96 bg-blue-100 dark:bg-blue-900/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 -translate-y-1/2 -translate-x-1/2"></div>
+                <div className="absolute top-1/2 right-0 w-96 h-96 bg-gold-100 dark:bg-gold-900/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 -translate-y-1/2 translate-x-1/2"></div>
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
                 <div className="flex items-end justify-between mb-10">
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <span className="px-3 py-1 bg-rose-100 text-rose-600 text-xs font-bold rounded-full uppercase tracking-wider flex items-center gap-1">
+                            <span className="px-3 py-1 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-xs font-bold rounded-full uppercase tracking-wider flex items-center gap-1">
                                 <span className="relative flex h-2 w-2">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                                     <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
@@ -94,23 +95,23 @@ export function TrendingPrayersCarousel() {
                                 Live Now
                             </span>
                         </div>
-                        <h2 className="font-display text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
+                        <h2 className="font-display text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
                             Trending Prayers
                         </h2>
-                        <p className="text-gray-500 mt-2 text-lg">Join the community in prayer right now.</p>
+                        <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg">Join the community in prayer right now.</p>
                     </div>
 
                     <div className="flex gap-3">
                         <button
                             onClick={() => scroll('left')}
-                            className="p-3 rounded-full bg-white border border-gray-100 shadow-sm hover:shadow-md hover:bg-gray-50 text-gray-600 transition-all hover:scale-105 active:scale-95"
+                            className="p-3 rounded-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all hover:scale-105 active:scale-95"
                             aria-label="Scroll left"
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
                         <button
                             onClick={() => scroll('right')}
-                            className="p-3 rounded-full bg-white border border-gray-100 shadow-sm hover:shadow-md hover:bg-gray-50 text-gray-600 transition-all hover:scale-105 active:scale-95"
+                            className="p-3 rounded-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all hover:scale-105 active:scale-95"
                             aria-label="Scroll right"
                         >
                             <ChevronRight className="w-5 h-5" />
@@ -123,7 +124,7 @@ export function TrendingPrayersCarousel() {
                     className="flex gap-6 overflow-x-auto pb-12 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                    {trendingItems.map((item) => (
+                    {items.map((item) => (
                         <Link
                             key={item.id}
                             href={item.link}
@@ -157,10 +158,10 @@ export function TrendingPrayersCarousel() {
                                             <item.icon className="w-7 h-7 text-white fill-current opacity-90" />
                                         </div>
 
-                                        <h3 className="font-display text-3xl font-bold mb-2 leading-tight tracking-tight">
+                                        <h3 className="font-display text-3xl font-bold mb-2 leading-tight tracking-tight line-clamp-2">
                                             {item.title}
                                         </h3>
-                                        <p className="text-white/80 text-lg font-medium mb-6">
+                                        <p className="text-white/80 text-lg font-medium mb-6 line-clamp-1">
                                             {item.subtitle}
                                         </p>
 

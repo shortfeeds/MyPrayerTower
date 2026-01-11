@@ -9,7 +9,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'app/app.dart';
 import 'core/constants/app_constants.dart';
-import 'core/services/seeding_service.dart';
+
 import 'core/services/notification_service.dart';
 
 void main() async {
@@ -26,7 +26,9 @@ void main() async {
 
       // Initialize AdMob safely
       try {
-        await MobileAds.instance.initialize();
+        if (!kIsWeb) {
+          await MobileAds.instance.initialize();
+        }
       } catch (e) {
         debugPrint('AdMob initialization skipped: $e');
       }
@@ -57,11 +59,13 @@ void main() async {
           url: ApiConstants.supabaseUrl,
           anonKey: ApiConstants.supabaseAnonKey,
         );
+        debugPrint('Supabase initialized successfully');
       } catch (e) {
         debugPrint('Supabase initialization error: $e');
       }
 
       // Seed Data (Safe to run repeatedly) - skip on error
+      /*
       try {
         final seedingService = SeedingService(Supabase.instance.client);
         await seedingService.seedPrayerLibrary();
@@ -69,6 +73,7 @@ void main() async {
       } catch (e) {
         debugPrint('Seeding skipped: $e');
       }
+      */
 
       // Initialize Hive for local storage
       try {
@@ -79,9 +84,11 @@ void main() async {
 
       // Initialize push notifications with scheduled reminders
       try {
-        final notificationService = NotificationService();
-        await notificationService.initialize();
-        await notificationService.scheduleAllDailyReminders();
+        if (!kIsWeb) {
+          final notificationService = NotificationService();
+          await notificationService.initialize();
+          await notificationService.scheduleAllDailyReminders();
+        }
       } catch (e) {
         debugPrint('Notification setup skipped: $e');
       }

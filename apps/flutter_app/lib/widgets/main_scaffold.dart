@@ -102,32 +102,30 @@ class _PremiumBottomNavBar extends ConsumerWidget {
         label: 'Home',
       ),
       const _NavItem(
-        path: '/bible',
+        path: '/library',
         icon: LucideIcons.bookOpen,
-        activeIcon: LucideIcons.bookOpen,
-        label: 'Bible',
+        activeIcon: LucideIcons.bookOpenCheck,
+        label: 'Pray',
       ),
-      if (isFeatureEnabled(flags, 'rosary_enabled'))
-        const _NavItem(
-          path: '/rosary',
-          icon: LucideIcons.layoutGrid,
-          activeIcon: LucideIcons.layoutGrid,
-          label: 'Rosary',
-        ),
+      const _NavItem(
+        path: '/offerings',
+        icon: LucideIcons.gift,
+        activeIcon: LucideIcons.gift,
+        label: 'Offer',
+      ),
       if (isFeatureEnabled(flags, 'prayer_wall_enabled'))
         const _NavItem(
           path: '/prayer-wall',
           icon: LucideIcons.heartHandshake,
           activeIcon: LucideIcons.heartHandshake,
-          label: 'Wall',
+          label: 'Community',
         ),
-      if (isFeatureEnabled(flags, 'candles_enabled'))
-        const _NavItem(
-          path: '/offerings',
-          icon: LucideIcons.sparkles,
-          activeIcon: LucideIcons.sparkles,
-          label: 'Offerings',
-        ),
+      const _NavItem(
+        path: '/memorials',
+        icon: LucideIcons.scroll,
+        activeIcon: LucideIcons.scrollText,
+        label: 'Memorials',
+      ),
     ];
   }
 

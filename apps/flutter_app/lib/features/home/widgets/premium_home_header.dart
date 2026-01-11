@@ -30,142 +30,109 @@ class PremiumHomeHeader extends ConsumerWidget {
       backgroundColor: AppTheme.sacredNavy950,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
+        stretchModes: const [StretchMode.zoomBackground, StretchMode.fadeTitle],
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // Gradient Background with more depth
+            // Rich Gradient Background
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Color(0xFF0F172A), // Slate 900
-                    Color(0xFF1E1B4B), // Indigo 950
-                    Color(0xFF0F172A), // Fade back
+                    Color(0xFF0F0518), // Deepest Void Purple
+                    Color(0xFF1E1B4B), // Indigo
+                    Color(0xFF2E1065), // Royal Purple
                   ],
-                  stops: [0.0, 0.5, 1.0],
+                  stops: [0.0, 0.6, 1.0],
                   begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+                  end: Alignment.bottomRight,
                 ),
               ),
             ),
 
-            // Decorative elements (multiple glowing orbs)
-            Positioned(
-              top: -50,
-              right: -50,
-              child: Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      AppTheme.gold500.withValues(alpha: 0.15),
-                      AppTheme.gold500.withValues(alpha: 0.0),
-                    ],
-                  ),
-                ),
+            // Texture overlay (Noise) - Simulated via dot pattern
+            Opacity(
+              opacity: 0.03,
+              child: CustomPaint(
+                painter: _DotPatternPainter(),
+                size: Size.infinite,
               ),
             ),
+
+            // Decorative Glowing Orbs
             Positioned(
-              bottom: 20,
-              left: -30,
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      Colors.purple.withValues(alpha: 0.1),
-                      Colors.purple.withValues(alpha: 0.0),
-                    ],
-                  ),
-                ),
-              ),
+              top: -60,
+              right: -40,
+              child: _buildGlowingOrb(AppTheme.gold500, 250),
+            ),
+            Positioned(
+              bottom: 40,
+              left: -40,
+              child: _buildGlowingOrb(AppTheme.royalPurple500, 180),
             ),
 
             // Content
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
+                padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Date badge with glow effect
+                    // Date badge
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
+                        horizontal: 12,
+                        vertical: 6,
                       ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.white.withValues(alpha: 0.15),
-                            Colors.white.withValues(alpha: 0.08),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.15),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.gold500.withValues(alpha: 0.1),
-                            blurRadius: 10,
-                            spreadRadius: -2,
-                          ),
-                        ],
+                      decoration: AppTheme.glassDecoration.copyWith(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: AppTheme.gold400.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              LucideIcons.calendar,
-                              size: 14,
-                              color: AppTheme.gold400,
-                            ),
+                          const Icon(
+                            LucideIcons.calendar,
+                            size: 14,
+                            color: AppTheme.gold400,
                           ),
-                          const SizedBox(width: 10),
-                          Flexible(
-                            child: Text(
-                              _getFormattedDate(),
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white.withValues(alpha: 0.9),
-                              ),
-                              overflow: TextOverflow.ellipsis,
+                          const SizedBox(width: 8),
+                          Text(
+                            _getFormattedDate(),
+                            style: GoogleFonts.outfit(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    // Greeting with better typography
+                    const SizedBox(height: 12),
                     Text(
                       _getGreeting(),
                       style: GoogleFonts.merriweather(
-                        fontSize: 32,
+                        fontSize: 34,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         letterSpacing: -0.5,
+                        shadows: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
-                      'May His grace be with you.',
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        color: Colors.white.withValues(alpha: 0.7),
-                        fontWeight: FontWeight.w400,
+                      'May His grace be with you today.',
+                      style: GoogleFonts.outfit(
+                        fontSize: 16,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ],
@@ -300,6 +267,20 @@ class PremiumHomeHeader extends ConsumerWidget {
     );
   }
 
+  Widget _buildGlowingOrb(Color color, double size) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.0)],
+          stops: const [0.0, 0.7],
+        ),
+      ),
+    );
+  }
+
   String _getFormattedDate() {
     final now = DateTime.now();
     final months = [
@@ -327,4 +308,26 @@ class PremiumHomeHeader extends ConsumerWidget {
     ];
     return '${weekDays[now.weekday - 1]}, ${now.day} ${months[now.month - 1]}';
   }
+}
+
+class _DotPatternPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 1.0;
+
+    const spacing = 20.0;
+    for (double x = 0; x < size.width; x += spacing) {
+      for (double y = 0; y < size.height; y += spacing) {
+        if ((x + y).toInt() % 3 == 0) {
+          // Random-ish pattern
+          canvas.drawCircle(Offset(x, y), 0.5, paint);
+        }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

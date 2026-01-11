@@ -1,4 +1,4 @@
-// Refresh IDE
+// Refresh IDE 2
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'saint_model.freezed.dart';
@@ -19,6 +19,13 @@ class Saint with _$Saint {
     String? imageUrl,
     List<String>? patronOf,
     String? prayer,
+    String? bornDate,
+    String? diedDate,
+    String? canonizedDate,
+    String? externalId,
+    DateTime? lastSyncedAt,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) = _Saint;
 
   factory Saint.fromJson(Map<String, dynamic> json) => _$SaintFromJson(json);

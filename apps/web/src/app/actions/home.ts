@@ -115,10 +115,70 @@ export async function getHomeData(): Promise<HomeData> {
         getUserHomeStreamData()
     ]);
 
+
+
     return {
         liturgicalDay,
         reading,
         saint,
         user,
     };
+}
+
+export async function getRandomTrendingPrayers(limit = 10) {
+    try {
+        // Get count of active prayers
+        const count = await prisma.prayer.count({
+            where: { is_active: true }
+        });
+
+        // Get random valid offsets
+        const maxOffset = Math.max(0, count - limit);
+        const randomSkip = Math.floor(Math.random() * maxOffset);
+
+        // For better randomness if table is small, we could fetch all IDs and pick random,
+        // but skipping by a random amount is a decent approximation for now if we want "trending" which usually implies a set.
+        // Actually, to make it truly random each load (10 random items), we need a different approach.
+        // If the table is small (<1000), fetching all IDs is fine.
+
+        let prayers;
+
+        if (count <= limit) {
+            prayers = await prisma.prayer.findMany({
+                where: { is_active: true },
+                take: limit,
+            });
+        } else {
+            // Use raw query for true randomness which is efficient for larger datasets too
+            // CAST(id AS TEXT) is needed because BigInt cannot be serialized directly by queryRaw in some versions/configs easily
+            // adjusting to use findMany with random ID selection or just shuffling 
+
+            // Strategy: fetch all IDs (lightweight), pick 10 random IDs, then fetch those.
+            const allIds = await prisma.prayer.findMany({
+                where: { is_active: true },
+                select: { id: true }
+            });
+
+            const shuffled = allIds.sort(() => 0.5 - Math.random());
+            const selectedIds = shuffled.slice(0, limit).map(p => p.id);
+
+            prayers = await prisma.prayer.findMany({
+                where: { id: { in: selectedIds } }
+            });
+        }
+
+        // Transform for UI
+        return prayers.map(p => ({
+            id: p.id.toString(), // Handle BigInt
+            title: p.title,
+            subtitle: p.category_label || p.category, // Fallback
+            slug: p.slug || '',
+            // Generate some consistent but varied metadata based on ID
+            users: (100 + (Number(p.id) % 900) * 3).toLocaleString('en-US'),
+        }));
+
+    } catch (error) {
+        console.error('Error fetching trending prayers:', error);
+        return [];
+    }
 }

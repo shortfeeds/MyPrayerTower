@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-
+import '../../payments/services/payment_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../repositories/candle_repository.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -364,78 +364,159 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
   }
 
   Future<void> _handleAction() async {
-    if (!_isValid()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your name and intention'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-    setState(() => _isProcessing = true);
-
-    final selectedOption = _durations.firstWhere(
-      (d) => d['value'] == _selectedDuration,
-    );
-    final isPaid = (selectedOption['price'] as double) > 0;
-    final tier = selectedOption['tier'] as String;
-
-    // Get current user ID if logged in (optional)
-    final authState = ref.read(authProvider);
-    final userId = authState.value?.id;
-
-    // Save to database (works for both guests and logged-in users)
-    final candleRepo = ref.read(candleRepositoryProvider);
-    final candle = await candleRepo.lightCandle(
-      userName: _isAnonymous ? 'Anonymous' : _userName,
-      intention: _intention,
-      duration: _selectedDuration,
-      tier: tier,
-      userId: userId,
-      isAnonymous: _isAnonymous,
-    );
-
-    if (!mounted) return;
-    setState(() => _isProcessing = false);
-
-    if (candle != null) {
-      // Successfully saved to database
-      if (isPaid) {
-        // Payment Flow - candle is saved but needs payment confirmation
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Proceeding to payment for ${selectedOption['priceDisplay']}...',
-            ),
-            backgroundColor: AppTheme.gold500,
-          ),
-        );
-        // In real implementation, show payment sheet here
-        // After successful payment, update candle status
-      } else {
-        // Free Candle Success
+    try {
+      if (!_isValid()) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              '🕯️ Your candle has been lit! It will appear on the wall.',
+            content: Text('Please enter your name and intention'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      setState(() => _isProcessing = true);
+
+      final selectedOption = _durations.firstWhere(
+        (d) => d['value'] == _selectedDuration,
+      );
+      final isPaid = (selectedOption['price'] as double) > 0;
+      final tier = selectedOption['tier'] as String;
+
+      // Get current user ID if logged in (optional)
+      final authState = ref.read(authProvider);
+      final userId = authState.value?.id;
+
+      // Save to database
+      final candleRepo = ref.read(candleRepositoryProvider);
+      debugPrint('Lighting candle: $_intention');
+
+      final candle = await candleRepo.lightCandle(
+        userName: _isAnonymous ? 'Anonymous' : _userName,
+        intention: _intention,
+        duration: _selectedDuration,
+        tier: tier,
+        userId: userId,
+        isAnonymous: _isAnonymous,
+      );
+
+      if (!mounted) return;
+      setState(() => _isProcessing = false);
+
+      if (candle != null) {
+        // Successfully saved to database
+        if (isPaid) {
+          // Payment Flow
+          showModalBottomSheet(
+            context: context,
+            backgroundColor: AppTheme.sacredNavy950,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
+            builder: (context) => Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Complete Payment',
+                    style: GoogleFonts.merriweather(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    selectedOption['priceDisplay'],
+                    style: GoogleFonts.inter(
+                      color: AppTheme.gold500,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  // PayPal Button
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      final service = ref.read(paymentServiceProvider);
+                      service.startPayPalPayment(
+                        context: context,
+                        amount: selectedOption['price'],
+                        currency: 'USD',
+                        description: 'Candle: $_intention',
+                        onSuccess: (id) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Candle sponsored successfully!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                          ref.invalidate(activeCandlesProvider);
+                          Navigator.of(context).pop(); // Close candle screen
+                        },
+                        onError: (error) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Payment failed: $error'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    icon: const Icon(
+                      LucideIcons.creditCard,
+                      color: Colors.white,
+                    ),
+                    label: const Text('Pay with PayPal'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF003087),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else {
+          // Free Candle Success
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                '🕯️ Your candle has been lit! It will appear on the wall.',
+              ),
+              backgroundColor: Colors.green,
+            ),
+          );
+          ref.invalidate(activeCandlesProvider);
+          context.pop();
+        }
+      } else {
+        // Failed to save (likely Supabase 401 or offline)
+        // Show "Local Success" message to allow user to proceed
+        debugPrint(
+          'Failed to save candle to DB (Supabase error likely), showing local success',
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Your candle has been lit locally!'),
             backgroundColor: Colors.green,
           ),
         );
-        // Refresh candles list
-        ref.invalidate(activeCandlesProvider);
         context.pop();
       }
-    } else {
-      // Failed to save - show error but still allow UI flow
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Your candle has been lit locally!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      context.pop();
+    } catch (e, stack) {
+      debugPrint('Error in _handleAction: $e\n$stack');
+      if (mounted) {
+        setState(() => _isProcessing = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 }

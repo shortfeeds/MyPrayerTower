@@ -3,6 +3,14 @@
 import { PayPalScriptProvider, PayPalButtons, FUNDING } from '@paypal/react-paypal-js';
 import { useState } from 'react';
 
+// Add helper type match
+export interface PayPalFrontendItem {
+    name: string;
+    unitAmount: string;
+    quantity: string;
+    description?: string;
+}
+
 interface PayPalCheckoutProps {
     amount: number; // Amount in cents
     description: string;
@@ -11,6 +19,7 @@ interface PayPalCheckoutProps {
     onCancel?: () => void;
     disabled?: boolean;
     referenceId?: string;
+    items?: PayPalFrontendItem[];
 }
 
 export interface PayPalSuccessDetails {
@@ -34,6 +43,7 @@ export default function PayPalCheckout({
     onCancel,
     disabled = false,
     referenceId,
+    items,
 }: PayPalCheckoutProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -93,6 +103,7 @@ export default function PayPalCheckout({
                                     amount,
                                     description,
                                     referenceId,
+                                    items,
                                 }),
                             });
 
@@ -177,6 +188,7 @@ export default function PayPalCheckout({
                                         amount,
                                         description,
                                         referenceId,
+                                        items,
                                     }),
                                 });
 

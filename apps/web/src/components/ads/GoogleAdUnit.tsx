@@ -53,16 +53,22 @@ export function GoogleAdUnit({
         }
     }, []);
 
-    // Don't render if no slot provided
+    const isDev = process.env.NODE_ENV === 'development';
+
     if (!slot) return null;
 
     return (
-        <div className={`adsense-container ${className}`} style={{ minHeight: '100px', ...style }}>
+        <div className={`adsense-container relative ${className}`} style={{ minHeight: '100px', ...style }}>
+            {isDev && (
+                <div className="ad-dev-debug-overlay">
+                    <span className="ad-dev-debug-label">Google Ad: {slot}</span>
+                </div>
+            )}
             <ins
                 ref={adRef}
                 className="adsbygoogle"
-                style={{ display: 'block', width: '100%', ...style }}
-                data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-XXXXXXXXXXXXXXXX'}
+                style={{ display: 'block', width: '100%', height: '100%', ...style }}
+                data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924'}
                 data-ad-slot={slot}
                 data-ad-format={format}
                 data-full-width-responsive={responsive ? 'true' : 'false'}

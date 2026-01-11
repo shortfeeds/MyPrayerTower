@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../screens/candles_screen.dart';
+import '../models/candle_model.dart';
+// Still needed for screen navigation if any
 
 /// Rich, realistic candle widget matching web app premium design
 class PremiumCandleWidget extends StatelessWidget {
-  final VirtualCandle candle;
+  final Candle candle;
   final bool isCompact;
   final VoidCallback? onPray;
 
@@ -104,66 +105,70 @@ class PremiumCandleWidget extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsets.all(isCompact ? 8 : 12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Candle Assembly
-                _buildCandleAssembly(),
-                SizedBox(height: isCompact ? 4 : 8),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Candle Assembly
+                  _buildCandleAssembly(),
+                  SizedBox(height: isCompact ? 4 : 8),
 
-                // User Name
-                Text(
-                  candle.userName,
-                  style: GoogleFonts.inter(
-                    fontSize: isCompact ? 10 : 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
-
-                if (!isCompact) ...[
-                  const SizedBox(height: 2),
+                  // User Name
                   Text(
-                    '"${candle.intention}"',
+                    candle.displayName,
                     style: GoogleFonts.inter(
-                      fontSize: 10,
-                      color: Colors.white70,
-                      fontStyle: FontStyle.italic,
+                      fontSize: isCompact ? 10 : 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 4),
-                  // Time remaining
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        LucideIcons.clock,
-                        size: 10,
-                        color: Colors.grey[500],
+
+                  if (!isCompact) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      '"${candle.intention}"',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        color: Colors.white70,
+                        fontStyle: FontStyle.italic,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${candle.remainingHours}h remaining',
-                        style: GoogleFonts.inter(
-                          fontSize: 9,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    // Time remaining
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          LucideIcons.clock,
+                          size: 10,
                           color: Colors.grey[500],
                         ),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${candle.remainingHours}h remaining',
+                          style: GoogleFonts.inter(
+                            fontSize: 9,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+
+                  const SizedBox(height: 8),
+
+                  // Prayer Button
+                  _buildPrayerButton(),
                 ],
-
-                const SizedBox(height: 8),
-
-                // Prayer Button
-                _buildPrayerButton(),
-              ],
+              ),
             ),
           ),
 
@@ -683,7 +688,6 @@ class PremiumCandleWidget extends StatelessWidget {
       onTap: onPray,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        width: double.infinity,
         padding: EdgeInsets.symmetric(
           vertical: isCompact ? 6 : 10,
           horizontal: 8,

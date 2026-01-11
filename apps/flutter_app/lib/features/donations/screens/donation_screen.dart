@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../payments/services/payment_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../repositories/donations_repository.dart';
 
@@ -385,7 +386,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
               Icon(LucideIcons.shield, size: 14, color: Colors.grey[600]),
               const SizedBox(width: 4),
               Text(
-                'Secure payment powered by Stripe',
+                'Secure payment via PayPal',
                 style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[600]),
               ),
             ],
@@ -582,14 +583,69 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
   }
 
   void _handleDonate() {
-    // NOTE: Integrate with Stripe/Cashfree
-    debugPrint('Processing donation request: \$$_totalAmount');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Processing donation of \$${_totalAmount.toStringAsFixed(2)}...',
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.sacredNavy950,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Select Payment Method',
+              style: GoogleFonts.merriweather(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            // PayPal Button
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+                final service = ref.read(paymentServiceProvider);
+                service.startPayPalPayment(
+                  context: context,
+                  amount: _totalAmount,
+                  currency: 'USD',
+                  description: 'Donation to MyPrayerTower',
+                  onSuccess: (id) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Donation successful! ID: $id'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  },
+                  onError: (error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Payment failed: $error'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  },
+                );
+              },
+              icon: const Icon(LucideIcons.creditCard, color: Colors.white),
+              label: const Text('Pay with PayPal'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF003087), // PayPal Blue
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            const SizedBox(height: 24),
+          ],
         ),
-        backgroundColor: AppTheme.gold500,
       ),
     );
   }
@@ -598,11 +654,10 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
     final plans = ref.read(subscriptionPlansProvider);
     final plan = plans[_selectedPlanIndex!];
 
-    // NOTE: Integrate with Stripe subscriptions
-    debugPrint('Processing subscription: ${plan.id}');
+    // Subscriptions typically handled via Stripe Link or In-App Purchase
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Subscribing to ${plan.name}...'),
+        content: Text('Starting subscription for ${plan.name}...'),
         backgroundColor: AppTheme.gold500,
       ),
     );

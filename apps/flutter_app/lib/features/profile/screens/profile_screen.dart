@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../core/theme/app_theme.dart';
 
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/premium_glass_card.dart';
+import '../../../core/widgets/shiny_button.dart';
+import '../../../core/widgets/premium_scaffold.dart';
 import '../../auth/providers/auth_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -15,259 +20,379 @@ class ProfileScreen extends ConsumerWidget {
     final user = authState.value;
 
     if (authState.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const PremiumScaffold(
+        body: Center(child: CircularProgressIndicator(color: AppTheme.gold500)),
+      );
     }
 
     if (user == null) {
-      // Guest view
+      // Guest view with Premium Styling
       return Scaffold(
+        backgroundColor: AppTheme.deepSpace,
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Guest User',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => context.go('/login'),
-                child: const Text('Sign In'),
-              ),
-            ],
+          child: PremiumGlassCard(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(LucideIcons.user, size: 64, color: Colors.white70),
+                const SizedBox(height: 24),
+                Text(
+                  'Guest Access',
+                  style: GoogleFonts.merriweather(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Sign in to sync your prayers and progress.',
+                  style: GoogleFonts.inter(color: Colors.white70, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                ShinyButton(
+                  label: 'Sign In',
+                  icon: LucideIcons.logIn,
+                  onPressed: () => context.go('/login'),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
-    return Scaffold(
+    return PremiumScaffold(
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
           // App Bar
           SliverAppBar(
             floating: true,
+            pinned: true,
             title: Text(
-              'Profile',
-              style: Theme.of(context).textTheme.headlineSmall,
+              'My Profile',
+              style: GoogleFonts.merriweather(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.white,
+              ),
             ),
-            backgroundColor: AppTheme.darkBg,
+            backgroundColor: AppTheme.sacredNavy900,
+            leading: const SizedBox(),
             actions: [
               IconButton(
-                icon: const Icon(LucideIcons.settings),
+                icon: const Icon(LucideIcons.settings, color: Colors.white70),
                 onPressed: () {},
               ),
             ],
           ),
 
-          // Profile Header
+          // Profile Header (Membership Card)
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Avatar
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: const BoxDecoration(
-                      gradient: AppTheme.primaryGradient,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        user.name?.substring(0, 1).toUpperCase() ?? 'U',
-                        style: Theme.of(context).textTheme.displaySmall
-                            ?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  Text(
-                    user.name ?? 'User',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  Text(
-                    '${user.subscriptionStatus} Member',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: AppTheme.textMuted),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Upgrade Button
-                  if (user.subscriptionStatus == 'FREE')
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () => context.push('/subscription'),
-                        icon: const Icon(LucideIcons.crown, size: 18),
-                        label: const Text('Upgrade to Premium'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.accentGold,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+              padding: const EdgeInsets.all(20),
+              child: _buildMembershipCard(
+                context,
+                user,
+              ).animate().fadeIn().slideY(begin: 0.2, end: 0),
             ),
           ),
 
           // Stats
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppTheme.darkCard,
-                  borderRadius: BorderRadius.circular(16),
-                ),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: PremiumGlassCard(
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const _StatItem(
+                    _StatItem(
                       icon: LucideIcons.flame,
-                      value: '7',
+                      value: '${user.streakCount}',
                       label: 'Day Streak',
+                      color: AppTheme.gold500,
                     ),
-                    Container(width: 1, height: 40, color: AppTheme.darkBorder),
+                    Container(
+                      width: 1,
+                      height: 40,
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
                     const _StatItem(
                       icon: LucideIcons.heart,
                       value: '127',
                       label: 'Prayers',
+                      color: Colors.pink,
                     ),
-                    Container(width: 1, height: 40, color: AppTheme.darkBorder),
+                    Container(
+                      width: 1,
+                      height: 40,
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
                     const _StatItem(
-                      icon: LucideIcons.award,
+                      icon: LucideIcons.trophy,
                       value: '3',
                       label: 'Badges',
+                      color: Colors.amber,
                     ),
                   ],
                 ),
-              ),
+              ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.2, end: 0),
             ),
           ),
 
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-          // Menu Items
+          // Menu Items: Activity
+          _buildSectionHeader('Activity'),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Activity',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            ),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 12)),
-
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
                   _MenuItem(
                     icon: LucideIcons.heart,
                     title: 'My Prayers',
                     subtitle: 'View your prayer requests',
+                    color: Colors.pink,
                     onTap: () {},
                   ),
                   _MenuItem(
                     icon: LucideIcons.flame,
                     title: 'Candles',
                     subtitle: 'Your virtual candles',
+                    color: AppTheme.gold500,
                     onTap: () => context.push('/candles'),
                   ),
                   _MenuItem(
                     icon: LucideIcons.church,
                     title: 'Following',
                     subtitle: 'Churches you follow',
+                    color: Colors.indigo,
                     onTap: () {},
                   ),
                   _MenuItem(
                     icon: LucideIcons.trophy,
                     title: 'Achievements',
                     subtitle: '3 badges earned',
-                    onTap: () {},
+                    color: Colors.amber,
+                    onTap: () => context.push('/achievements'),
                   ),
-                  _MenuItem(
-                    icon: LucideIcons.barChart2,
-                    title: 'Year in Review',
-                    subtitle: 'Your 2026 prayer journey',
-                    onTap: () {},
-                  ),
-                ],
+                ].animate(interval: 50.ms).fadeIn().slideX(begin: 0.1, end: 0),
               ),
             ),
           ),
 
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-          // Settings Section
+          // Menu Items: Settings
+          _buildSectionHeader('Settings'),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Settings',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            ),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 12)),
-
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
                   _MenuItem(
                     icon: LucideIcons.bell,
                     title: 'Notifications',
                     subtitle: 'Prayer reminders & alerts',
+                    color: Colors.blue,
                     onTap: () {},
                   ),
                   _MenuItem(
                     icon: LucideIcons.creditCard,
                     title: 'Subscription',
                     subtitle: 'Manage your plan',
+                    color: Colors.green,
                     onTap: () => context.push('/subscription'),
                   ),
                   _MenuItem(
                     icon: LucideIcons.helpCircle,
                     title: 'Help & Support',
                     subtitle: 'FAQs and contact us',
+                    color: Colors.purple,
                     onTap: () {},
                   ),
                   _MenuItem(
                     icon: LucideIcons.logOut,
                     title: 'Log Out',
                     subtitle: '',
+                    color: AppTheme.error,
                     isDestructive: true,
                     onTap: () {
                       ref.read(authProvider.notifier).logout();
                       context.go('/login');
                     },
                   ),
-                ],
+                ].animate(interval: 50.ms).fadeIn().slideX(begin: 0.1, end: 0),
               ),
             ),
           ),
 
-          // Bottom padding
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Text(
+          title,
+          style: GoogleFonts.merriweather(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMembershipCard(BuildContext context, dynamic user) {
+    bool isPremium = user.subscriptionStatus == 'PREMIUM';
+
+    return Container(
+      height: 220,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isPremium
+              ? [AppTheme.gold500, AppTheme.gold600, Colors.amber.shade900]
+              : [
+                  const Color(0xFF1E293B), // Slate 800
+                  const Color(0xFF0F172A), // Slate 900
+                ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isPremium
+                ? AppTheme.gold500.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          // Background Pattern
+          Positioned(
+            right: -50,
+            top: -50,
+            child: Icon(
+              LucideIcons.crown,
+              size: 250,
+              color: Colors.white.withValues(alpha: 0.05),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'MEMBER CARD',
+                      style: GoogleFonts.inter(
+                        color: Colors.white.withValues(alpha: 0.6),
+                        letterSpacing: 2,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (isPremium)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Text(
+                          'PREMIUM',
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const Spacer(),
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                      child: Text(
+                        user.name?.substring(0, 1).toUpperCase() ?? 'U',
+                        style: GoogleFonts.merriweather(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.name ?? 'Guest User',
+                          style: GoogleFonts.merriweather(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          user.email ?? '',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: Colors.white.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                if (!isPremium) ...[
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => context.push('/subscription'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.gold500,
+                        foregroundColor: AppTheme.sacredNavy900,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Upgrade to Premium'),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -278,30 +403,35 @@ class _StatItem extends StatelessWidget {
   final IconData icon;
   final String value;
   final String label;
+  final Color color;
 
   const _StatItem({
     required this.icon,
     required this.value,
     required this.label,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: AppTheme.accentGold, size: 20),
-        const SizedBox(height: 4),
+        Icon(icon, color: color, size: 24),
+        const SizedBox(height: 8),
         Text(
           value,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: GoogleFonts.merriweather(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.labelSmall?.copyWith(color: AppTheme.textMuted),
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            color: Colors.white.withValues(alpha: 0.6),
+          ),
         ),
       ],
     );
@@ -314,6 +444,7 @@ class _MenuItem extends StatelessWidget {
   final String subtitle;
   final VoidCallback onTap;
   final bool isDestructive;
+  final Color color;
 
   const _MenuItem({
     required this.icon,
@@ -321,62 +452,62 @@ class _MenuItem extends StatelessWidget {
     required this.subtitle,
     required this.onTap,
     this.isDestructive = false,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: GestureDetector(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: PremiumGlassCard(
+        padding: const EdgeInsets.all(0),
         onTap: onTap,
-        child: Container(
+        child: Padding(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppTheme.darkCard,
-            borderRadius: BorderRadius.circular(12),
-          ),
           child: Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: isDestructive
-                      ? AppTheme.error.withValues(alpha: 0.15)
-                      : AppTheme.primaryBlue.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: color.withValues(alpha: 0.3)),
                 ),
                 child: Icon(
                   icon,
-                  size: 20,
-                  color: isDestructive ? AppTheme.error : AppTheme.info,
+                  size: 22,
+                  color: isDestructive ? AppTheme.error : color,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: isDestructive ? AppTheme.error : null,
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: isDestructive ? AppTheme.error : Colors.white,
                       ),
                     ),
                     if (subtitle.isNotEmpty)
                       Text(
                         subtitle,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.textMuted,
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: Colors.white.withValues(alpha: 0.6),
                         ),
                       ),
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 LucideIcons.chevronRight,
                 size: 18,
-                color: AppTheme.textMuted,
+                color: Colors.white.withValues(alpha: 0.3),
               ),
             ],
           ),

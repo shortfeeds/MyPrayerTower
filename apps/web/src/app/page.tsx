@@ -235,7 +235,9 @@ function LoggedOutHomePage() {
             <TrustBar />
 
             {/* Trending Prayers Carousel */}
-            <TrendingPrayersCarousel />
+            <Suspense fallback={<div className="h-96 bg-gray-50/50 animate-pulse" />}>
+                <AsyncTrendingPrayers />
+            </Suspense>
 
             {/* Sacred Services (Offerings) */}
             <SacredMoments />
@@ -296,6 +298,15 @@ async function AsyncDailyJourney() {
     const saint = await getSaintOfTheDay(liturgicalDay.celebrations[0]?.name);
 
     return <DailyJourneyWidget reading={reading} saint={saint} />;
+}
+
+
+
+async function AsyncTrendingPrayers() {
+    // Import here to avoid circular dependencies if any, though imports at top are fine
+    const { getRandomTrendingPrayers } = await import('@/app/actions/home');
+    const prayers = await getRandomTrendingPrayers(10);
+    return <TrendingPrayersCarousel prayers={prayers} />;
 }
 
 // --- Main Homepage Component ---

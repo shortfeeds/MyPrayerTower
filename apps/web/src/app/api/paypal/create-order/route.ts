@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
         const order = await createPayPalOrder(
             dollarAmount,
             description || 'MyPrayerTower Payment',
-            referenceId
+            referenceId,
+            body.items // Pass optional items
         );
 
         console.log('PayPal order created:', order.id);

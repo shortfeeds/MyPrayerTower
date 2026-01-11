@@ -1,27 +1,23 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'paypal_service.dart';
 
 final billingServiceProvider = Provider<BillingService>((ref) {
-  return BillingService();
+  final paypalService = ref.read(paypalServiceProvider);
+  return BillingService(paypalService);
 });
 
 final storeProductsProvider = FutureProvider<List<ProductDetails>>((ref) async {
   final billingService = ref.watch(billingServiceProvider);
   // Wait for initialization
   await Future.delayed(const Duration(seconds: 1));
-  // Note: product_ids.dart needs to be imported if we want to use ProductIds.allProducts here directly,
-  // but to avoid circular imports or just for simplicity, we can rely on the service knowing the IDs
-  // or pass them. However, since we removed the import to fix a lint, we should probably add it back
-  // or define the list here.
-  // Ideally, BillingService should expose 'allProductIds'.
-  // For now, let's hardcode or re-import if needed.
-  // Actually, let's re-import product_ids.dart but use 'show' to be specific
   return billingService.getProducts(_activeProductIds);
 });
 
-// Temporary list to avoid import cycle if any, or just for immediate fix
+// Temporary list to avoid import cycle
 const Set<String> _activeProductIds = {
   'mass_single',
   'mass_novena',
@@ -30,31 +26,50 @@ const Set<String> _activeProductIds = {
   'candle_30d',
   'candle_7d',
   'candle_3d',
+  'memorial_premium_upgrade',
+  'memorial_offering_consumable',
 };
 
 class BillingService {
-  final InAppPurchase _iap = InAppPurchase.instance;
+  final PaypalService _paypalService;
+  late final InAppPurchase _iap;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
+  bool _isAvailable = false;
 
-  BillingService() {
-    _init();
+  BillingService(this._paypalService) {
+    if (kIsWeb) {
+      // debugPrint('Billing: Web detected, using PayPal');
+      _isAvailable = false;
+    } else {
+      _iap = InAppPurchase.instance;
+      _init();
+    }
   }
 
-  void _init() {
-    final purchaseUpdated = _iap.purchaseStream;
-    _subscription = purchaseUpdated.listen(
-      _onPurchaseUpdate,
-      onDone: () {
-        _subscription.cancel();
-      },
-      onError: (error) {
-        // Handle error
-        debugPrint('Billing Error: $error');
-      },
-    );
+  Future<void> _init() async {
+    try {
+      final available = await _iap.isAvailable();
+      _isAvailable = available;
+      if (available) {
+        final purchaseUpdated = _iap.purchaseStream;
+        _subscription = purchaseUpdated.listen(
+          _onPurchaseUpdate,
+          onDone: () {
+            _subscription.cancel();
+          },
+          onError: (error) {
+            debugPrint('Billing Error: $error');
+          },
+        );
+      }
+    } catch (e) {
+      debugPrint('Billing Init Error: $e');
+      _isAvailable = false;
+    }
   }
 
-  Stream<List<PurchaseDetails>> get purchaseStream => _iap.purchaseStream;
+  Stream<List<PurchaseDetails>> get purchaseStream =>
+      kIsWeb || !_isAvailable ? const Stream.empty() : _iap.purchaseStream;
 
   Future<void> _onPurchaseUpdate(
     List<PurchaseDetails> purchaseDetailsList,
@@ -82,42 +97,90 @@ class BillingService {
 
   Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) async {
     // NOTE: Verify with backend (Supabase Function) in production
-    debugPrint('Mock verification: ${purchaseDetails.productID}');
+    // debugPrint('Mock verification: ${purchaseDetails.productID}');
     return true;
   }
 
   Future<bool> isAvailable() async {
-    return _iap.isAvailable();
+    if (kIsWeb) return true; // Web is available via PayPal
+    return _isAvailable;
   }
 
   Future<List<ProductDetails>> getProducts(Set<String> productIds) async {
-    final bool available = await _iap.isAvailable();
-    if (!available) {
+    if (kIsWeb) {
+      // Return mock product details for Web to allow UI to display prices
+      // In a real app, these should be fetched from a backend or config
+      return productIds
+          .map(
+            (id) => ProductDetails(
+              id: id,
+              title: id.replaceAll('_', ' ').toUpperCase(),
+              description: 'Web Item',
+              price: _getPriceForId(id),
+              rawPrice: _getRawPriceForId(id),
+              currencyCode: 'USD',
+            ),
+          )
+          .toList();
+    }
+
+    if (!_isAvailable) {
       return [];
     }
-    final ProductDetailsResponse response = await _iap.queryProductDetails(
-      productIds,
-    );
-    return response.productDetails;
+    try {
+      final ProductDetailsResponse response = await _iap.queryProductDetails(
+        productIds,
+      );
+      return response.productDetails;
+    } catch (e) {
+      debugPrint('Billing Query Error: $e');
+      return [];
+    }
+  }
+
+  // Helper for web prices
+  String _getPriceForId(String id) {
+    if (id.contains('premium_upgrade')) return '\$49.99';
+    if (id.contains('mass')) return '\$15.00';
+    if (id.contains('candle')) return '\$5.00';
+    return '\$9.99';
+  }
+
+  double _getRawPriceForId(String id) {
+    if (id.contains('premium_upgrade')) return 49.99;
+    if (id.contains('mass')) return 15.00;
+    if (id.contains('candle')) return 5.00;
+    return 9.99;
   }
 
   Future<void> buyNonConsumable(ProductDetails product) async {
+    if (kIsWeb) {
+      debugPrint("Web non-consumable not implemented yet");
+      return;
+    }
+    if (!_isAvailable) return;
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
     await _iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   Future<void> restorePurchases() async {
+    if (kIsWeb) return;
+    if (!_isAvailable) return;
     await _iap.restorePurchases();
   }
 
   Future<void> completePurchase(PurchaseDetails purchase) async {
+    if (kIsWeb) return;
+    if (!_isAvailable) return;
     await _iap.completePurchase(purchase);
   }
 
-  // Mock mode for testing without store connection
-  bool isMockMode = false;
-
-  Future<void> buyConsumable(dynamic productOrId) async {
+  Future<void> buyConsumable(
+    dynamic productOrId, {
+    BuildContext? context,
+    double? price,
+    String? itemName,
+  }) async {
     String productId;
     ProductDetails? productDetails;
 
@@ -131,23 +194,44 @@ class BillingService {
       return;
     }
 
-    if (isMockMode) {
-      debugPrint('Billing: Mock purchase started for $productId');
-      await Future.delayed(const Duration(seconds: 1));
+    if (kIsWeb) {
+      // Use PayPal
+      if (context == null) {
+        debugPrint('Billing Error: Context required for Web/PayPal payment');
+        return;
+      }
 
-      final mockPurchase = PurchaseDetails(
-        purchaseID: 'mock_id_${DateTime.now().millisecondsSinceEpoch}',
-        productID: productId,
-        verificationData: PurchaseVerificationData(
-          localVerificationData: 'mock_data',
-          serverVerificationData: 'mock_data',
-          source: 'mock',
-        ),
-        transactionDate: DateTime.now().toString(),
-        status: PurchaseStatus.purchased,
+      final payPrice = price ?? _getRawPriceForId(productId);
+      final name = itemName ?? productId;
+
+      await _paypalService.payWithPaypal(
+        context: context,
+        items: [
+          {
+            "name": name,
+            "quantity": 1,
+            "price": payPrice.toStringAsFixed(2),
+            "currency": "USD",
+          },
+        ],
+        totalAmount: payPrice,
+        onSuccess: (params) {
+          debugPrint("PayPal Success: $params");
+          // Here we should probably trigger a success callback if we had one
+          // But since 'buyConsumable' is Future<void>, the await completes.
+          // However, Navigator.push is async.
+          // The current implementation of payWithPaypal pushes a route.
+          // We can return a specific value or just let the caller handle success.
+        },
+        onError: (err) {
+          debugPrint("PayPal Error: $err");
+          throw Exception("Payment failed: $err");
+        },
+        onCancel: () {
+          debugPrint("PayPal Cancelled");
+          throw Exception("Payment cancelled");
+        },
       );
-
-      _onPurchaseUpdate([mockPurchase]);
       return;
     }
 
@@ -163,13 +247,6 @@ class BillingService {
       });
       if (response.notFoundIDs.contains(productId)) {
         debugPrint('Billing: Product $productId not found in store');
-        // For development smooth sailing, fallback to mock if product not found
-        if (kDebugMode) {
-          debugPrint('Billing: Falling back to mock purchase for debug');
-          isMockMode = true;
-          await buyConsumable(productId);
-          isMockMode = false; // Reset
-        }
         return;
       }
       if (response.productDetails.isEmpty) return;

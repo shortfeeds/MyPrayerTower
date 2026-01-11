@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/providers/scaffold_key_provider.dart';
-import '../../../core/billing/billing_service.dart';
-import '../../../core/billing/product_ids.dart';
+
+import 'package:go_router/go_router.dart';
+import '../../payments/services/payment_service.dart';
 
 // Mass offering types
 class OfferingType {
@@ -117,20 +118,27 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
   String _selectedType = 'REGULAR';
   bool _isForLiving = false;
   String _intentionFor = '';
-  final List<String> _additionalNames = [];
-  String _specialIntention = '';
-  String _offeredBy = '';
-  final String _tributeMessage = '';
-
-  // Contact Info
+  // Contact & Shipping Info
+  // ignore: unused_field
+  String _name = '';
+  // ignore: unused_field
+  String _email = '';
+  // ignore: unused_field
   String _phone = '';
-
-  String _recipientEmail = '';
+  // ignore: unused_field
   String _recipientName = '';
+  // ignore: unused_field
+  String _recipientEmail = '';
+  // ignore: unused_field, prefer_final_fields
+  String _shippingAddress = '';
+  // ignore: unused_field, prefer_final_fields
   String _giftMessage = '';
+  // ignore: unused_field, prefer_final_fields
+  String _offeredBy = '';
+  // ignore: unused_field, prefer_final_fields
+  String _specialIntention = '';
 
-  final String _shippingAddress = '';
-
+  // Add-ons
   final Map<String, bool> _addonsSelected = {
     'candle': false,
     'printedCard': false,
@@ -139,13 +147,6 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
 
   final _selectedIntentions = <String>{};
 
-  final Set<String> _selectedIntentionsLegacy =
-      {}; // Keeping just in case, though _selectedIntentions seems to be the one used or conflicting?
-  // Checking the lints: "Undefined name '_selectedIntentions'" was reported.
-  // And "Undefined name '_addonsSelected'".
-  // Also "Undefined name '_isGift'".
-  String _name = '';
-  String _email = '';
   bool _isGift = false;
   bool _isSubmitting = false;
 
@@ -888,43 +889,52 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
                     ? () async {
                         setState(() => _isSubmitting = true);
                         try {
-                          // Map selection to Product ID
-                          String productId = ProductIds.massSingle;
-                          if (_selectedType == 'NOVENA') {
-                            productId = ProductIds.massNovena;
-                          }
-                          if (_selectedType == 'PERPETUAL') {
-                            productId = ProductIds.massPerpetual;
-                          }
-                          if (_selectedType == 'GREGORIAN') {
-                            productId = ProductIds.massGregorian;
-                          }
+                          final double amount = _calculateTotal() / 100.0;
 
-                          // Trigger Purchase
-                          await ref
-                              .read(billingServiceProvider)
-                              .buyConsumable(productId);
-
-                          // Log details (placeholder for future backend sync)
-                          debugPrint(
-                            'Offering Details: '
-                            'For: $_intentionFor, '
-                            'By: $_offeredBy, '
-                            'Special: $_specialIntention, '
-                            'Tribute: $_tributeMessage, '
-                            'Phone: $_phone, '
-                            'Recipient: $_recipientName ($_recipientEmail), '
-                            'GiftMsg: $_giftMessage, '
-                            'Address: $_shippingAddress, '
-                            'Additional: $_additionalNames, '
-                            'Legacy: $_selectedIntentionsLegacy',
+                          // Trigger PayPal Payment
+                          final paymentService = ref.read(
+                            paymentServiceProvider,
                           );
+                          paymentService.startPayPalPayment(
+                            context: context,
+                            amount: amount,
+                            currency: 'USD',
+                            description: 'Mass Offering: $_selectedType',
+                            onSuccess: (paymentId) async {
+                              // Log details (placeholder for future backend sync)
+                              debugPrint(
+                                'Offering Successful ($paymentId): '
+                                'For: $_intentionFor, '
+                                'By: $_offeredBy',
+                              );
 
-                          // Reset after short delay (actual success handled by stream)
-                          await Future.delayed(const Duration(seconds: 2));
-                          if (mounted) {
-                            setState(() => _isSubmitting = false);
-                          }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Mass offering submitted successfully!',
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+
+                              if (mounted) {
+                                setState(() => _isSubmitting = false);
+                                // Optional: Navigate back or reset
+                                context.pop();
+                              }
+                            },
+                            onError: (error) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Payment failed: $error'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              if (mounted) {
+                                setState(() => _isSubmitting = false);
+                              }
+                            },
+                          );
                         } catch (e) {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -975,7 +985,7 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
         const SizedBox(height: 12),
         Center(
           child: Text(
-            '🔒 Secure payment powered by Stripe',
+            '🔒 Secure payment via PayPal',
             style: GoogleFonts.inter(fontSize: 12, color: Colors.grey),
           ),
         ),
@@ -1055,12 +1065,15 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: isBold ? 16 : 14,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: Colors.amber.shade800,
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: isBold ? 16 : 14,
+                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                color: Colors.amber.shade800,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           Text(

@@ -41,6 +41,37 @@ import '../features/leaderboard/screens/leaderboard_screen.dart';
 
 import '../features/settings/screens/settings_screen.dart';
 import '../features/mass_offering/screens/mass_offering_screen.dart';
+
+// Phase 1 New Features
+import '../features/pilgrimages/screens/pilgrimages_screen.dart';
+import '../features/chaplets/screens/chaplets_screen.dart';
+import '../features/fasting/screens/fasting_screen.dart';
+import '../features/glossary/screens/glossary_screen.dart';
+
+// Phase 2 New Features
+import '../features/memorials/screens/memorials_screen.dart';
+import '../features/hymns/screens/hymns_screen.dart';
+import '../features/news/screens/news_screen.dart';
+import '../features/achievements/screens/achievements_screen.dart';
+
+// Phase 3 New Features
+import '../features/prayer_groups/screens/prayer_groups_screen.dart';
+import '../features/encyclicals/screens/encyclicals_screen.dart';
+import '../features/vatican_ii/screens/vatican_ii_screen.dart';
+import '../features/summa/screens/summa_screen.dart';
+import '../features/hierarchy/screens/hierarchy_screen.dart';
+import '../features/history/screens/history_screen.dart';
+
+// Phase 8 New Features
+import '../features/sacraments/screens/sacrament_records_screen.dart';
+import '../features/certificates/screens/certificates_screen.dart';
+import '../features/chant/screens/chant_screen.dart';
+import '../features/testimonies/screens/testimonies_screen.dart';
+
+// Phase 9 New Features
+import '../features/tracking/screens/year_in_review_screen.dart';
+import '../features/tracking/screens/journey_screen.dart';
+
 import '../widgets/main_scaffold.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -190,6 +221,116 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/mass-offering',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: MassOfferingScreen()),
+          ),
+
+          // Phase 1 Routes
+          GoRoute(
+            path: '/pilgrimages',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: PilgrimagesScreen()),
+          ),
+          GoRoute(
+            path: '/chaplets',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ChapletsScreen()),
+          ),
+          GoRoute(
+            path: '/fasting',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: FastingScreen()),
+          ),
+          GoRoute(
+            path: '/glossary',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: GlossaryScreen()),
+          ),
+
+          // Phase 2 Routes
+          GoRoute(
+            path: '/memorials',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: MemorialsScreen()),
+          ),
+          GoRoute(
+            path: '/hymns',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: HymnsScreen()),
+          ),
+          GoRoute(
+            path: '/news',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: NewsScreen()),
+          ),
+          GoRoute(
+            path: '/achievements',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: AchievementsScreen()),
+          ),
+
+          // Phase 3 Routes
+          GoRoute(
+            path: '/groups',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: PrayerGroupsScreen()),
+          ),
+          GoRoute(
+            path: '/encyclicals',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: EncyclicalsScreen()),
+          ),
+          GoRoute(
+            path: '/vatican-ii',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: VaticanIIScreen()),
+          ),
+          GoRoute(
+            path: '/summa',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: SummaScreen()),
+          ),
+          GoRoute(
+            path: '/hierarchy',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: HierarchyScreen()),
+          ),
+          GoRoute(
+            path: '/history',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: HistoryScreen()),
+          ),
+
+          // Phase 8 Routes
+          GoRoute(
+            path: '/sacraments',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: SacramentRecordsScreen()),
+          ),
+          GoRoute(
+            path: '/certificates',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: CertificatesScreen()),
+          ),
+          GoRoute(
+            path: '/chant',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ChantScreen()),
+          ),
+          GoRoute(
+            path: '/testimonies',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: TestimoniesScreen()),
+          ),
+
+          // Phase 9 Routes
+          GoRoute(
+            path: '/year-in-review',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: YearInReviewScreen()),
+          ),
+          GoRoute(
+            path: '/journey',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: JourneyScreen()),
           ),
         ],
       ),

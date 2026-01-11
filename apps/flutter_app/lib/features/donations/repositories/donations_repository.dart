@@ -12,7 +12,7 @@ Future<String> createCheckoutSession({
   required String successUrl,
   required String cancelUrl,
 }) async {
-  // NOTE: Integrate with Stripe or Cashfree API in future
+  // NOTE: Integrate with PayPal API via PaymentService in future
   debugPrint('Mock Checkout Session for $email');
   return 'session_${DateTime.now().millisecondsSinceEpoch}';
 }
@@ -150,14 +150,14 @@ class DonationsRepository {
     }
   }
 
-  /// Create a checkout session (placeholder for Stripe/Cashfree integration)
+  /// Create a checkout session (placeholder for PayPal integration)
   Future<String> createCheckoutSession({
     required int amount,
     required String email,
     required String successUrl,
     required String cancelUrl,
   }) async {
-    // NOTE: Integrate with Stripe or Cashfree API in future
+    // NOTE: Integrate with PayPal API via PaymentService in future
     debugPrint('Mock Checkout Session for $email');
     return 'session_${DateTime.now().millisecondsSinceEpoch}';
   }

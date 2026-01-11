@@ -479,7 +479,14 @@ class _SpiritualBouquetScreenState
 
       if (productId != null) {
         try {
-          await ref.read(billingServiceProvider).buyConsumable(productId);
+          await ref
+              .read(billingServiceProvider)
+              .buyConsumable(
+                productId,
+                context: context,
+                itemName: 'Spiritual Bouquet',
+                price: _total,
+              );
           // Assume success for UI flow
         } catch (e) {
           if (!mounted) return;

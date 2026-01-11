@@ -49,7 +49,7 @@ export const metadata: Metadata = {
         address: false,
         telephone: false,
     },
-    manifest: '/manifest.json',
+    // manifest property removed to use generated manifest.ts
     icons: {
         icon: [
             { url: '/favicon.ico', sizes: 'any' },

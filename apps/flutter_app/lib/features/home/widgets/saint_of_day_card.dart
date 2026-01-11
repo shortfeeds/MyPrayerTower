@@ -31,7 +31,7 @@ final saintOfTheDayProvider = FutureProvider<Saint>((ref) async {
     name: 'St. Michael the Archangel',
     title: 'Defender in Battle',
     imageUrl:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Guido_Reni_-_Saint_Michael_the_Archangel_-_Google_Art_Project.jpg/800px-Guido_Reni_-_Saint_Michael_the_Archangel_-_Google_Art_Project.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Guido_Reni_-_Saint_Michael_the_Archangel_-_Google_Art_Project.jpg/400px-Guido_Reni_-_Saint_Michael_the_Archangel_-_Google_Art_Project.jpg',
     shortBio:
         'Defend us in battle, be our protection against the wickedness and snares of the devil.',
   );
@@ -131,48 +131,45 @@ class SaintOfDayCard extends ConsumerWidget {
                           ],
                         ),
                       ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                    Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            saint.name,
+                            style: GoogleFonts.merriweather(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (saint.title != null) ...[
+                            const SizedBox(height: 2),
                             Text(
-                              saint.name,
-                              style: GoogleFonts.merriweather(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.textPrimary,
+                              saint.title!,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: AppTheme.gold400,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            if (saint.title != null) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                saint.title!,
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: AppTheme.gold400,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                            const SizedBox(height: 6),
-                            Expanded(
-                              child: Text(
-                                saint.shortBio ?? '',
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: AppTheme.textSecondary,
-                                  height: 1.4,
-                                ),
-                              ),
-                            ),
                           ],
-                        ),
+                          const SizedBox(height: 6),
+                          Text(
+                            saint.shortBio ?? '',
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: AppTheme.textSecondary,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

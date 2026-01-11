@@ -61,7 +61,7 @@ class ApiConstants {
   // Supabase Configuration
   static const String supabaseUrl = 'https://htgvilktnadnwlforyjt.supabase.co';
   static const String supabaseAnonKey =
-      'sb_publishable_14w0nGke1nQwy70q5VfYgw_I6iqux2_';
+      'sb_publishable_14w0nGke1nQwy7Oq5VfYgw_I6iqux2_';
 }
 
 /// App-wide constants

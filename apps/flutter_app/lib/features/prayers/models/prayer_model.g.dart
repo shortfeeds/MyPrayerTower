@@ -9,6 +9,7 @@ part of 'prayer_model.dart';
 _$PrayerImpl _$$PrayerImplFromJson(Map<String, dynamic> json) => _$PrayerImpl(
   id: (json['id'] as num).toInt(),
   title: json['title'] as String,
+  slug: json['slug'] as String?,
   content: json['content'] as String,
   category: json['category'] as String,
   categoryLabel: json['category_label'] as String,
@@ -25,6 +26,7 @@ Map<String, dynamic> _$$PrayerImplToJson(_$PrayerImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
+      'slug': instance.slug,
       'content': instance.content,
       'category': instance.category,
       'category_label': instance.categoryLabel,
