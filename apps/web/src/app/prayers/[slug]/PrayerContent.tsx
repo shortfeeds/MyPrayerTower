@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Heart, Minus, Plus, Type } from 'lucide-react';
 import { ShareButtons } from '@/components/social/ShareButtons';
-import { generatePrayerSchema } from '@/lib/seo/structuredData';
+import { ShareButtons } from '@/components/social/ShareButtons';
 
 const TEXT_SIZES = [
     { label: 'S', class: 'text-base leading-relaxed' },
@@ -85,18 +85,6 @@ export function PrayerContent({ prayerId, prayerTitle, prayerContent, categoryLa
                             <Heart size={18} />
                             <span>Save</span>
                         </button>
-                        <script
-                            type="application/ld+json"
-                            dangerouslySetInnerHTML={{
-                                __html: JSON.stringify(generatePrayerSchema({
-                                    id: prayerId,
-                                    title: prayerTitle,
-                                    content: prayerContent,
-                                    category: category,
-                                    category_label: categoryLabel
-                                }))
-                            }}
-                        />
                     </div>
                     <span className="text-sm text-gray-400">
                         Prayer #{prayerId.toString()}
