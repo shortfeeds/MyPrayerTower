@@ -172,26 +172,29 @@ export default async function PrayerDetailPage({ params }: Props) {
                             {/* Related Prayers */}
                             {relatedPrayers.length > 0 && (
                                 <div className="mt-12 pt-12 border-t border-slate-100">
-                                    <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900 mb-6">
-                                        <BookOpen className="text-blue-600" size={24} />
+                                    <h3 className="flex items-center gap-2 text-lg font-bold text-slate-900 mb-4">
+                                        <BookOpen className="text-blue-600" size={20} />
                                         Related Prayers
                                     </h3>
-                                    <div className="grid sm:grid-cols-2 gap-6">
-                                        {relatedPrayers.map((p) => (
-                                            <Link
-                                                key={p.id}
-                                                href={`/prayers/${p.slug || p.id}`}
-                                                className="group p-5 bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all text-left block"
-                                            >
-                                                <h4 className="font-semibold text-slate-900 group-hover:text-blue-600 mb-2 line-clamp-2">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                                        <div className="flex flex-wrap gap-3 flex-1">
+                                            {relatedPrayers.map((p) => (
+                                                <Link
+                                                    key={p.id}
+                                                    href={`/prayers/${p.slug || p.id}`}
+                                                    className="inline-flex items-center px-3 py-1.5 bg-slate-50 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium transition-colors border border-slate-100"
+                                                >
                                                     {p.title}
-                                                </h4>
-                                                <div className="flex items-center text-sm text-blue-600 font-medium">
-                                                    Read Prayer
-                                                    <ChevronRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
-                                                </div>
-                                            </Link>
-                                        ))}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                        <Link
+                                            href={`/prayers?category=${prayer.category}`}
+                                            className="whitespace-nowrap inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700"
+                                        >
+                                            View all in {prayer.category_label || prayer.category}
+                                            <ChevronRight size={16} className="ml-1" />
+                                        </Link>
                                     </div>
                                 </div>
                             )}

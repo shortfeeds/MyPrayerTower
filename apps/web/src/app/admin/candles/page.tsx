@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Flame, Clock, Calendar, Search, Filter, RefreshCw, ChevronLeft, ChevronRight, Crown, Star, User } from 'lucide-react';
-import { getAdminCandleStats, getCandlesForAdmin } from '@/app/actions/spiritual';
+import { Flame, Clock, Calendar, Search, Filter, RefreshCw, ChevronLeft, ChevronRight, Crown, Star, User, Check, X, Trash2 } from 'lucide-react';
+import { getAdminCandleStats, getCandlesForAdmin, approveCandle, rejectCandle } from '@/app/actions/spiritual';
 
 export default function AdminCandlesPage() {
     const [stats, setStats] = useState<any>(null);
@@ -41,6 +41,18 @@ export default function AdminCandlesPage() {
 
     const formatDate = (date: Date | string) => {
         return new Date(date).toLocaleDateString();
+    };
+
+    const handleApprove = async (id: string) => {
+        if (!confirm('Approve this candle?')) return;
+        await approveCandle(id);
+        loadData();
+    };
+
+    const handleReject = async (id: string) => {
+        if (!confirm('Reject and delete this candle?')) return;
+        await rejectCandle(id);
+        loadData();
     };
 
     if (isLoading && !stats) {
@@ -135,9 +147,9 @@ export default function AdminCandlesPage() {
                             <div key={tier.duration} className="p-6">
                                 <div className="flex items-center justify-between mb-2">
                                     <span className={`text-sm font-medium px-2 py-1 rounded-full ${tier.duration === 'THIRTY_DAYS' ? 'bg-amber-100 text-amber-700' :
-                                            tier.duration === 'SEVEN_DAYS' ? 'bg-sky-100 text-sky-700' :
-                                                tier.duration === 'THREE_DAYS' ? 'bg-rose-100 text-rose-700' :
-                                                    'bg-gray-100 text-gray-700'
+                                        tier.duration === 'SEVEN_DAYS' ? 'bg-sky-100 text-sky-700' :
+                                            tier.duration === 'THREE_DAYS' ? 'bg-rose-100 text-rose-700' :
+                                                'bg-gray-100 text-gray-700'
                                         }`}>
                                         {tier.duration.replace('_', ' ').toLowerCase()}
                                     </span>
@@ -174,6 +186,7 @@ export default function AdminCandlesPage() {
                                 <th className="px-6 py-3">Created</th>
                                 <th className="px-6 py-3">Expires</th>
                                 <th className="px-6 py-3 text-right">Amount</th>
+                                <th className="px-6 py-3 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -237,6 +250,34 @@ export default function AdminCandlesPage() {
                                             <span className="text-green-600">{formatCurrency(candle.amount)}</span>
                                         ) : (
                                             <span className="text-gray-400">Free</span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        {!candle.isActive && !candle.isExpired ? (
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button
+                                                    onClick={() => handleApprove(candle.id)}
+                                                    className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                                    title="Approve"
+                                                >
+                                                    <Check className="w-5 h-5" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleReject(candle.id)}
+                                                    className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                                    title="Reject"
+                                                >
+                                                    <X className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleReject(candle.id)}
+                                                className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                                                title="Delete"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
                                         )}
                                     </td>
                                 </tr>

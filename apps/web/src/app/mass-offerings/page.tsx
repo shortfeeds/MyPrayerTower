@@ -258,19 +258,23 @@ export default function MassOfferingsPage() {
             )}
 
             {/* Header */}
-            <div className="bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 py-12 text-white">
-                <div className="container mx-auto px-4">
-                    <Link href="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-4">
-                        <ChevronLeft className="w-5 h-5" />
+            <div className="relative bg-slate-900 py-16 text-white overflow-hidden">
+                <div className="absolute inset-0 bg-[url('/pattern.svg')] bg-repeat opacity-10" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-slate-700/30 rounded-full blur-2xl translate-y-1/2 -translate-x-1/3" />
+
+                <div className="container mx-auto px-4 relative z-10">
+                    <Link href="/" className="inline-flex items-center gap-2 text-gold-200 hover:text-white mb-6 transition-colors text-sm font-medium tracking-wide uppercase">
+                        <ChevronLeft className="w-4 h-4" />
                         Back to Home
                     </Link>
-                    <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-                            <Church className="w-8 h-8" />
+                    <div className="flex flex-col md:flex-row md:items-center gap-6">
+                        <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-amber-500/20 text-white">
+                            <Church className="w-10 h-10" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold">Request a Holy Mass</h1>
-                            <p className="text-white/80">Have a Mass offered for your intentions</p>
+                            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-2">Request a Holy Mass</h1>
+                            <p className="text-lg text-slate-300 max-w-xl">Have a Mass offered for your intentions. A timeless Catholic tradition of prayer and remembrance.</p>
                         </div>
                     </div>
                 </div>

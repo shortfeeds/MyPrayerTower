@@ -109,16 +109,16 @@ export function Footer() {
                 </div>
 
                 <div className="container mx-auto px-6 py-16 relative z-10">
-                    <div className="grid grid-cols-6 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
                         {/* 1. Brand Identity */}
-                        <div className="col-span-1.5 pr-4">
+                        <div className="col-span-2 md:col-span-4 lg:col-span-2 pr-4">
                             <Link href="/" className="inline-flex items-center gap-3 mb-6">
                                 <span className="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-600 rounded-xl flex items-center justify-center shadow-lg shadow-gold-500/20">
                                     <span className="text-white font-serif font-bold text-lg">M</span>
                                 </span>
                                 <span className="font-serif font-bold text-xl text-white tracking-tight">MyPrayerTower</span>
                             </Link>
-                            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                            <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-sm">
                                 Your digital sanctuary for prayer, community, and spiritual growth. Join us in building a global network of faith.
                             </p>
                             <div className="flex gap-2">
@@ -137,69 +137,55 @@ export function Footer() {
                             </div>
                         </div>
 
-                        {/* 2. Spiritual Growth */}
-                        <div>
-                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider">Spiritual</h4>
+                        {/* 2. PRAY */}
+                        <div className="col-span-1">
+                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider border-b border-gray-800/50 pb-2 inline-block">Pray</h4>
                             <ul className="space-y-3 text-sm">
-                                <li><Link href="/journey" className="hover:text-gold-400 transition-colors">My Journey</Link></li>
-                                <li><Link href="/challenges" className="hover:text-gold-400 transition-colors">Challenges</Link></li>
-                                <li><Link href="/readings" className="hover:text-gold-400 transition-colors">Bible Readings</Link></li>
-                                <li><Link href="/examen" className="hover:text-gold-400 transition-colors">Daily Examen</Link></li>
-                                <li><Link href="/saints" className="hover:text-gold-400 transition-colors">Saints</Link></li>
-                            </ul>
-                        </div>
-
-                        {/* 3. Community */}
-                        <div>
-                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider">Community</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li><Link href="/sessions" className="hover:text-gold-400 transition-colors">Live Sessions</Link></li>
+                                <li><Link href="/readings" className="hover:text-gold-400 transition-colors">Daily Readings</Link></li>
+                                <li><Link href="/prayers/rosary" className="hover:text-gold-400 transition-colors">Holy Rosary</Link></li>
+                                <li><Link href="/prayers" className="hover:text-gold-400 transition-colors">Prayer Library</Link></li>
                                 <li><Link href="/prayer-wall" className="hover:text-gold-400 transition-colors">Prayer Wall</Link></li>
-                                <li><Link href="/partners" className="hover:text-gold-400 transition-colors">Partners</Link></li>
-                                <li><Link href="/candles" className="hover:text-gold-400 transition-colors">Candles</Link></li>
-                                <li><Link href="/leaderboard" className="hover:text-gold-400 transition-colors">Leaderboard</Link></li>
+                                <li><Link href="/sessions" className="hover:text-gold-400 transition-colors">Live Sessions</Link></li>
                             </ul>
                         </div>
 
-                        {/* 4. Resources */}
-                        <div>
-                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider">Resources</h4>
+                        {/* 3. OFFER */}
+                        <div className="col-span-1">
+                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider border-b border-gray-800/50 pb-2 inline-block">Offer</h4>
                             <ul className="space-y-3 text-sm">
-                                <li><Link href="/churches" className="hover:text-gold-400 transition-colors">Find Churches</Link></li>
-                                <li><Link href="/prayers" className="hover:text-gold-400 transition-colors">Common Prayers</Link></li>
-                                <li><Link href="/memorials" className="hover:text-gold-400 transition-colors">Eternal Memorials</Link></li>
+                                <li><Link href="/candles" className="hover:text-gold-400 transition-colors">Light a Candle</Link></li>
+                                <li><Link href="/mass-offerings" className="hover:text-gold-400 transition-colors">Request Mass</Link></li>
+                                <li><Link href="/memorials" className="hover:text-gold-400 transition-colors">Memorials</Link></li>
                                 <li><Link href="/bouquets" className="hover:text-gold-400 transition-colors">Spiritual Bouquets</Link></li>
-                            </ul>
-                        </div>
-
-                        {/* 5. Company (Merged Support & Legal) */}
-                        <div>
-                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider">Company</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li><Link href="/about" className="hover:text-gold-400 transition-colors">About Us</Link></li>
-                                <li><Link href="/contact" className="hover:text-gold-400 transition-colors">Contact</Link></li>
                                 <li><Link href="/donate" className="hover:text-gold-400 transition-colors">Donate</Link></li>
-                                <li><Link href="/mass-offerings" className="hover:text-gold-400 transition-colors">Mass Offerings</Link></li>
-                                <li className="pt-2 border-t border-gray-900 mt-2"></li>
-                                <li><Link href="/privacy" className="hover:text-gold-400 transition-colors text-gray-500">Privacy Policy</Link></li>
-                                <li><Link href="/terms" className="hover:text-gold-400 transition-colors text-gray-500">Terms of Service</Link></li>
-                                <li><Link href="/guidelines" className="hover:text-gold-400 transition-colors text-gray-500">Content Guidelines</Link></li>
                             </ul>
-                            <div className="mt-6 pt-4 border-t border-gray-800">
-                                <div className="flex items-center gap-2 text-xs text-gray-400 bg-gray-900/50 p-3 rounded-lg border border-gray-800">
-                                    <Church className="w-4 h-4 text-gold-500" />
-                                    <span>Faithfully Catholic, open to all.</span>
-                                </div>
-                            </div>
                         </div>
 
-                        {/* 6. Newsletter & App (Wider column) */}
-                        <div className="col-span-1.5">
-                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider">Stay Connected</h4>
-                            <NewsletterForm />
-                            <div className="mt-6">
-                                <p className="text-xs text-gray-500 mb-3 uppercase tracking-wide font-semibold">Download the App</p>
-                                <div className="space-y-2">
+                        {/* 4. LEARN & LOCATE (Merged to save space) */}
+                        <div className="col-span-1">
+                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider border-b border-gray-800/50 pb-2 inline-block">Discover</h4>
+                            <ul className="space-y-3 text-sm">
+                                <li><Link href="/bible" className="hover:text-gold-400 transition-colors">Bible (DuoBiblia)</Link></li>
+                                <li><Link href="/saints" className="hover:text-gold-400 transition-colors">Saints</Link></li>
+                                <li><Link href="/catechism" className="hover:text-gold-400 transition-colors">Catechism</Link></li>
+                                <li className="pt-2"><Link href="/churches" className="hover:text-gold-400 transition-colors flex items-center gap-1"><Church className="w-3 h-3" /> Find Churches</Link></li>
+                                <li><Link href="/confession" className="hover:text-gold-400 transition-colors">Confession Finder</Link></li>
+                            </ul>
+                        </div>
+
+                        {/* 5. COMPANY */}
+                        <div className="col-span-1">
+                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider border-b border-gray-800/50 pb-2 inline-block">Company</h4>
+                            <ul className="space-y-3 text-sm">
+                                <li><Link href="/about" className="hover:text-gold-400 transition-colors">About Mission</Link></li>
+                                <li><Link href="/contact" className="hover:text-gold-400 transition-colors">Contact Us</Link></li>
+                                <li><Link href="/partners" className="hover:text-gold-400 transition-colors">Partners</Link></li>
+                                <li><Link href="/privacy" className="hover:text-gold-400 transition-colors text-gray-500">Privacy Policy</Link></li>
+                            </ul>
+
+                            <div className="mt-8 pt-4 border-t border-gray-800/50">
+                                <h5 className="font-bold text-gray-500 mb-3 uppercase text-[10px] tracking-wider">Get the App</h5>
+                                <div className="flex flex-col gap-2">
                                     <AppStoreButton store="apple" />
                                     <AppStoreButton store="google" />
                                 </div>
@@ -215,7 +201,6 @@ export function Footer() {
                         <div className="flex gap-6 mt-4 md:mt-0">
                             <Link href="/privacy" className="hover:text-gray-400 transition-colors">Privacy</Link>
                             <Link href="/terms" className="hover:text-gray-400 transition-colors">Terms</Link>
-                            <Link href="/refunds" className="hover:text-gray-400 transition-colors">Refunds</Link>
                             <Link href="/sitemap" className="hover:text-gray-400 transition-colors">Sitemap</Link>
                         </div>
                     </div>

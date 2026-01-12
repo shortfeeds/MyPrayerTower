@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, CheckCircle, AlertTriangle, HandsPraying } from 'lucide-react';
+import { X, CheckCircle, AlertTriangle, HelpingHand } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'; // Assuming UI lib or I will build simple overlay if not exists.
 // Actually I'll build a simple custom modal within this file to avoid dependency issues if Shadcn isn't fully set up or I can't find it easily. 
 // Re-checking layout.tsx showed minimal imports. I'll make a self-contained accessible Modal component here to be safe and fast.
@@ -67,8 +67,8 @@ export function ClosingPrayerModal({ isOpen, onClose, onAmen, prayerRequestConte
         <BaseModal isOpen={isOpen} onClose={onClose} title="Lift Up This Intention">
             <div className="text-center space-y-6">
                 <div className="mx-auto w-16 h-16 bg-sacred-100 rounded-full flex items-center justify-center">
-                    <HandsPraying className="w-8 h-8 text-sacred-600" />
-                </div> // Fix: icon name might be wrong via lucide-react, checking common names. 'HandsPraying' is likely not in Lucide. using 'Hand' or 'Heart'.
+                    <Heart className="w-8 h-8 text-sacred-600 fill-current" />
+                </div>
                 {/* Actually let's use a known icon or SVGs. Lucide has 'HandHeart' or similar. I'll rely on generic heart for now if I can't check. */}
 
                 <p className="text-gray-600 italic">

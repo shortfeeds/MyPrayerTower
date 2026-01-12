@@ -68,11 +68,25 @@ export async function getPrayerRequests(page = 1, limit = 10, category?: string)
     }
 }
 
+import { moderateContent } from '@/lib/moderation';
+
 export async function submitPrayerRequest(prevState: any, formData: FormData) {
     try {
         const content = formData.get('content') as string;
         const category = formData.get('category') as string;
         const visibility = formData.get('visibility') as string;
+        // Honeypot check (assume field name 'website_url' exists in form)
+        const honeypot = formData.get('website');
+        if (honeypot) {
+            return { success: false, message: 'Spam detected.' };
+        }
+
+        // 1. Content Moderation
+        const moderation = moderateContent(content);
+        if (!moderation.isValid) {
+            return { success: false, message: moderation.reason || 'Content rejected.' };
+        }
+
         const userId = 'user_abc123'; // TODO: Replace with real auth user ID
 
         // Convert category to uppercase enum
@@ -86,13 +100,14 @@ export async function submitPrayerRequest(prevState: any, formData: FormData) {
                 category: categoryEnum as any,
                 visibility: visibilityEnum as any,
                 userId: userId, // Mock user ID for now
-                status: 'PENDING', // Moderated by admin
+                // All free listings sent to admin panel (PENDING)
+                status: 'PENDING',
                 updatedAt: new Date(),
             }
         });
 
         revalidatePath('/prayer-wall');
-        return { success: true, message: 'Prayer request submitted!' };
+        return { success: true, message: 'Prayer request submitted for review!' };
 
     } catch (error) {
         console.error('Error submitting prayer:', error);

@@ -10,7 +10,8 @@ import { PrayerIntentionsJournal } from '@/components/spiritual/PrayerIntentions
 import { AchievementSystem } from '@/components/gamification/AchievementSystem';
 import { PrayerReminderScheduler } from '@/components/settings/PrayerReminderScheduler';
 import { SavedPrayersList } from '@/components/spiritual/SavedPrayersList';
-import { BarChart3, Target, Heart, Book, Trophy, Bell, Bookmark, Flame } from 'lucide-react';
+import { ActiveCandlesList } from '@/components/spiritual/ActiveCandlesList';
+import { BarChart3, Target, Heart, Book, Trophy, Bell, Bookmark, Flame, Church, Gift, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 type TabId = 'overview' | 'intentions' | 'saved' | 'offerings' | 'challenges' | 'bible' | 'achievements' | 'reminders';
@@ -107,43 +108,95 @@ export default function JourneyContent() {
                     )}
 
                     {activeTab === 'offerings' && (
-                        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-12 text-center">
-                            <Flame className="w-16 h-16 text-gold-200 mx-auto mb-6" />
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">My Offerings</h2>
-                            <p className="text-gray-500 mb-8 max-w-md mx-auto">
-                                View your active candles, mass intentions, and memorial tributes.
-                            </p>
-
-                            <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                                <Link
-                                    href="/candles"
-                                    className="p-6 rounded-xl border border-gold-200 bg-gold-50/50 hover:bg-gold-50 transition-colors text-left group"
-                                >
-                                    <div className="flex items-center gap-3 mb-2 font-bold text-gray-900">
-                                        <div className="w-10 h-10 rounded-full bg-gold-100 flex items-center justify-center text-gold-600 group-hover:scale-110 transition-transform">
-                                            <Flame size={20} />
-                                        </div>
-                                        Light a Virtual Candle
+                        <div className="space-y-8">
+                            {/* Active Offerings Section */}
+                            <div className="grid lg:grid-cols-2 gap-8">
+                                <div className="space-y-6">
+                                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+                                        <ActiveCandlesList />
                                     </div>
-                                    <p className="text-sm text-gray-600 pl-14">
-                                        Light a candle for your intentions or loved ones.
-                                    </p>
-                                </Link>
 
-                                <Link
-                                    href="/mass-offerings"
-                                    className="p-6 rounded-xl border border-sacred-200 bg-sacred-50/50 hover:bg-sacred-50 transition-colors text-left group"
-                                >
-                                    <div className="flex items-center gap-3 mb-2 font-bold text-gray-900">
-                                        <div className="w-10 h-10 rounded-full bg-sacred-100 flex items-center justify-center text-sacred-600 group-hover:scale-110 transition-transform">
-                                            <Church size={20} />
+                                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+                                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                            <Church className="w-5 h-5 text-sacred-600" />
+                                            Active Mass Intentions
+                                        </h3>
+                                        <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                            <p className="text-sm text-gray-500 mb-4">No pending mass requests.</p>
+                                            <Link
+                                                href="/mass-offerings"
+                                                className="inline-flex items-center gap-2 px-4 py-2 bg-sacred-600 hover:bg-sacred-700 text-white rounded-lg text-sm font-medium transition-colors"
+                                            >
+                                                Request Mass
+                                            </Link>
                                         </div>
-                                        Request a Mass
                                     </div>
-                                    <p className="text-sm text-gray-600 pl-14">
-                                        Have a Mass offered for your special intentions.
+                                </div>
+
+                                {/* Create New Offering Actions */}
+                                <div className="bg-gradient-to-br from-sacred-900 to-sacred-800 rounded-2xl p-8 text-white">
+                                    <Flame className="w-12 h-12 text-gold-400 mb-4" />
+                                    <h2 className="text-2xl font-bold mb-2">Make an Offering</h2>
+                                    <p className="text-sacred-200 mb-8">
+                                        Support the mission and lift up your prayers through our sacred offerings.
                                     </p>
-                                </Link>
+
+                                    <div className="space-y-4">
+                                        <Link
+                                            href="/candles"
+                                            className="block p-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition-colors group"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-gold-400/20 rounded-lg text-gold-400">
+                                                        <Flame size={20} />
+                                                    </div>
+                                                    <div className="text-left">
+                                                        <span className="block font-bold">Light a Candle</span>
+                                                        <span className="text-xs text-gray-300">From Free to Premium</span>
+                                                    </div>
+                                                </div>
+                                                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                                            </div>
+                                        </Link>
+
+                                        <Link
+                                            href="/mass-offerings"
+                                            className="block p-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition-colors group"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-blue-400/20 rounded-lg text-blue-400">
+                                                        <Church size={20} />
+                                                    </div>
+                                                    <div className="text-left">
+                                                        <span className="block font-bold">Request a Mass</span>
+                                                        <span className="text-xs text-gray-300">For Living or Deceased</span>
+                                                    </div>
+                                                </div>
+                                                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                                            </div>
+                                        </Link>
+
+                                        <Link
+                                            href="/bouquets"
+                                            className="block p-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition-colors group"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-purple-400/20 rounded-lg text-purple-400">
+                                                        <Gift size={20} />
+                                                    </div>
+                                                    <div className="text-left">
+                                                        <span className="block font-bold">Spiritual Bouquet</span>
+                                                        <span className="text-xs text-gray-300">Send Prayers & Gifts</span>
+                                                    </div>
+                                                </div>
+                                                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                                            </div>
+                                        </Link>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}

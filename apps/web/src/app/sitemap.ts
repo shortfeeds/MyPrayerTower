@@ -9,8 +9,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 1. Static Core Pages
     const coreRoutes = [
         '', '/about', '/contact', '/donate', '/candles', '/mass-offerings',
-        '/memorials', '/prayers', '/saints', '/bible', '/confession', '/rosary',
-        '/login', '/register',
+        '/memorials', '/prayer-wall', '/journey', '/prayers', '/saints', '/bible', '/confession', '/rosary',
+        '/groups', '/login', '/register',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified,

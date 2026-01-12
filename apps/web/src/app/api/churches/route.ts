@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getUserFromCookie } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -10,6 +11,8 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type') || '';
     const denomination = searchParams.get('denomination') || '';
     const hasSchedule = searchParams.get('hasSchedule') || '';
+
+    const user = await getUserFromCookie();
 
     try {
         const skip = (page - 1) * limit;
@@ -88,7 +91,13 @@ export async function GET(request: NextRequest) {
                             name: true,
                             type: true
                         }
-                    }
+                    },
+                    ...(user ? {
+                        ChurchFollower: {
+                            where: { userId: user.id },
+                            select: { id: true }
+                        }
+                    } : {})
                 }
             }),
             db.church.count({ where }),
@@ -114,8 +123,14 @@ export async function GET(request: NextRequest) {
             })
         ]);
 
+        const mappedChurches = churches.map((church: any) => ({
+            ...church,
+            isFollowed: church.ChurchFollower?.length > 0,
+            ChurchFollower: undefined // Clean up
+        }));
+
         return NextResponse.json({
-            churches,
+            churches: mappedChurches,
             total,
             page,
             totalPages: Math.ceil(total / limit),

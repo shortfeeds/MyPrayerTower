@@ -200,40 +200,23 @@ export function PrayerCardGenerator({ title, content, onClose, mode = 'modal' }:
                     </div>
 
                     <div className="pt-6 border-t border-gray-100 mt-auto space-y-3">
-                        {canShare ? (
-                            <button
-                                onClick={handleShare}
-                                disabled={isGenerating}
-                                className="w-full py-3.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-pink-500/25 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
-                            >
-                                {isGenerating ? (
-                                    <>Processing...</>
-                                ) : (
-                                    <>
-                                        <Share2 className="w-5 h-5" />
-                                        Share to Story
-                                    </>
-                                )}
-                            </button>
-                        ) : null}
-
                         <button
-                            onClick={handleDownload}
+                            onClick={canShare ? handleShare : handleDownload}
                             disabled={isGenerating}
-                            className={`w-full py-3.5 font-bold rounded-xl transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2 ${canShare ? 'bg-gray-100 hover:bg-gray-200 text-gray-900' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25'}`}
+                            className={`w-full py-3.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-pink-500/25 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2`}
                         >
-                            {isGenerating && !canShare ? (
+                            {isGenerating ? (
                                 <>Processing...</>
                             ) : (
                                 <>
-                                    <Download className="w-5 h-5" />
-                                    Download Image
+                                    {canShare ? <Share2 className="w-5 h-5" /> : <Download className="w-5 h-5" />}
+                                    {canShare ? 'Share to Story' : 'Download Image'}
                                 </>
                             )}
                         </button>
 
                         <p className="text-xs text-center text-gray-400 mt-2">
-                            Perfect for Instagram Stories & WhatsApp
+                            {canShare ? 'Perfect for Instagram Stories & WhatsApp' : 'Download and share to your story'}
                         </p>
                     </div>
                 </div>

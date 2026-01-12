@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import {
     Menu, X, Building2, Heart, BookOpen, User, Star, Search,
@@ -25,17 +26,18 @@ const useAuth = () => {
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-    const [prayersOpen, setPrayersOpen] = useState(false);
-    const [readingsOpen, setReadingsOpen] = useState(false);
-    const [mobilePrayersOpen, setMobilePrayersOpen] = useState(false);
-    const [mobileReadingsOpen, setMobileReadingsOpen] = useState(false);
-    const [offeringsOpen, setOfferingsOpen] = useState(false);
-    const [mobileOfferingsOpen, setMobileOfferingsOpen] = useState(false);
-    const [searchOpen, setSearchOpen] = useState(false);
+    const [prayOpen, setPrayOpen] = useState(false);
+    const [offerOpen, setOfferOpen] = useState(false);
+    const [learnOpen, setLearnOpen] = useState(false);
+    const [locateOpen, setLocateOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const prayersRef = useRef<HTMLDivElement>(null);
-    const readingsRef = useRef<HTMLDivElement>(null);
-    const offeringsRef = useRef<HTMLDivElement>(null);
+    const [searchOpen, setSearchOpen] = useState(false);
+
+    // Refs
+    const prayRef = useRef<HTMLDivElement>(null);
+    const offerRef = useRef<HTMLDivElement>(null);
+    const learnRef = useRef<HTMLDivElement>(null);
+    const locateRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const { actualTheme, setTheme } = useTheme();
     const { isAuthenticated, user } = useAuth();
@@ -52,14 +54,17 @@ export function Header() {
     // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (prayersRef.current && !prayersRef.current.contains(event.target as Node)) {
-                setPrayersOpen(false);
+            if (prayRef.current && !prayRef.current.contains(event.target as Node)) {
+                setPrayOpen(false);
             }
-            if (readingsRef.current && !readingsRef.current.contains(event.target as Node)) {
-                setReadingsOpen(false);
+            if (offerRef.current && !offerRef.current.contains(event.target as Node)) {
+                setOfferOpen(false);
             }
-            if (offeringsRef.current && !offeringsRef.current.contains(event.target as Node)) {
-                setOfferingsOpen(false);
+            if (learnRef.current && !learnRef.current.contains(event.target as Node)) {
+                setLearnOpen(false);
+            }
+            if (locateRef.current && !locateRef.current.contains(event.target as Node)) {
+                setLocateOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -95,36 +100,49 @@ export function Header() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    // ===== PUBLIC NAVIGATION (Available to all) =====
-    const prayerLinks = [
-        { href: '/prayers', label: 'Browse All Prayers', icon: Sparkles, description: 'Explore our prayer library' },
-        { href: '/prayers/rosary', label: 'Pray the Rosary', icon: Heart, description: 'Guided rosary prayer' },
-        { href: '/saints', label: 'Saints', icon: Star, description: 'Learn about the saints' },
+    // ===== MASTER PLAN NAVIGATION =====
+
+    // 1. PRAY (Core Action)
+    const prayLinks = [
+        { href: '/readings', label: 'Daily Readings', icon: Calendar, description: 'Mass readings & Gospel' },
+        { href: '/prayers/rosary', label: 'Holy Rosary', icon: Heart, description: 'Interactive guided prayer' },
+        { href: '/prayers', label: 'Prayer Library', icon: Book, description: 'Catholic prayers & litanies' },
+        { href: '/prayer-wall', label: 'Prayer Wall', icon: Users, description: 'Community intentions' },
+        { href: '/sessions', label: 'Live Sessions', icon: Sparkles, description: 'Real-time community prayer' },
     ];
 
-    const readingsLinks = [
-        { href: '/readings', label: "Today's Readings", icon: Calendar, description: 'Daily Mass readings' },
-        { href: '/bible', label: 'Bible (DuoBiblia)', icon: Book, description: 'Latin-English parallel' },
-        { href: '/bible/year', label: 'Bible Year Plan', icon: BookOpen, description: 'Read in a year' },
+    // 2. OFFER (Monetization/Action)
+    const offerLinks = [
+        { href: '/candles', label: 'Light a Candle', icon: Flame, description: 'Virtual intentions' },
+        { href: '/mass-offerings', label: 'Request a Mass', icon: Gift, description: 'Have a Mass offered' },
+        { href: '/memorials', label: 'Memorials', icon: Star, description: 'Perpetual remembrance' },
+        { href: '/bouquets', label: 'Spiritual Bouquets', icon: BookOpen, description: 'Send spiritual gifts' },
     ];
 
-    const offeringsLinks = [
-        { href: '/candles', label: 'Light a Candle', icon: Flame, description: 'Virtual prayer candles' },
-        { href: '/mass-offerings', label: 'Mass Offerings', icon: Gift, description: 'Request a Holy Mass' },
-        { href: '/bouquets', label: 'Spiritual Bouquet', icon: Heart, description: 'Send prayers as gifts' },
-        { href: '/donate', label: 'Support Us', icon: CreditCard, description: 'Make a donation' },
+    // 3. LEARN (Education)
+    const learnLinks = [
+        { href: '/bible', label: 'Bible (DuoBiblia)', icon: Book, description: 'Latin-English Scriptures' },
+        { href: '/saints', label: 'Saints', icon: User, description: 'Lives of the Holy Ones' },
+        { href: '/catechism', label: 'Catechism', icon: BookOpen, description: 'Church teachings (CCC)' },
+        // { href: '/encyclicals', label: 'Encyclicals', icon: FileText, description: 'Papal documents' },
     ];
 
-    // ===== AUTHENTICATED NAVIGATION (Only for logged-in users) =====
-    const authenticatedLinks = [
-        { href: '/journey', label: 'My Journey', icon: Compass, description: 'Your spiritual dashboard' },
-        { href: '/sessions', label: 'Live Sessions', icon: Users, description: 'Pray with community' },
+    // 4. LOCATE (Utility)
+    const locateLinks = [
+        { href: '/churches', label: 'Find a Church', icon: MapPin, description: 'Mass times & parishes' },
+        { href: '/saints', label: 'Find a Saint', icon: User, description: 'Search the calendar' },
+        { href: '/groups', label: 'Communities', icon: Users, description: 'Join local groups' },
+        { href: '/confession', label: 'Confession Finder', icon: Compass, description: 'Reconciliation guide' },
     ];
+
+    // 5. DASHBOARD (User) - Handled separately via auth check
 
     const isActive = (path: string) => pathname?.startsWith(path);
-    const isPrayersActive = prayerLinks.some(link => pathname?.startsWith(link.href));
-    const isReadingsActive = readingsLinks.some(link => pathname?.startsWith(link.href));
-    const isOfferingsActive = offeringsLinks.some(link => pathname?.startsWith(link.href));
+    // Helper to check if any child link is active (optional, can be used for parent highlighting)
+    const isPrayActive = prayLinks.some(link => pathname?.startsWith(link.href));
+    const isOfferActive = offerLinks.some(link => pathname?.startsWith(link.href));
+    const isLearnActive = learnLinks.some(link => pathname?.startsWith(link.href));
+    const isLocateActive = locateLinks.some(link => pathname?.startsWith(link.href));
     const isHome = pathname === '/';
 
     return (
@@ -139,11 +157,12 @@ export function Header() {
                     <div className="flex items-center justify-between">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-3 group">
-                            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg group-hover:shadow-gold-500/50 transition-all duration-300 transform group-hover:scale-105">
-                                <img
+                            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg group-hover:shadow-gold-500/50 transition-all duration-300 transform group-hover:scale-105 relative">
+                                <Image
                                     src="/icon.png"
                                     alt="MyPrayerTower"
-                                    className="w-full h-full object-cover"
+                                    fill
+                                    className="object-cover"
                                 />
                             </div>
                             <div className="flex flex-col">
@@ -158,38 +177,35 @@ export function Header() {
 
                         {/* Desktop Nav */}
                         <nav className="hidden lg:flex items-center gap-1 p-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-                            {/* Prayers Dropdown */}
-                            <div className="relative" ref={prayersRef}>
+
+                            {/* 1. PRAY */}
+                            <div className="relative" ref={prayRef}>
                                 <button
-                                    onClick={() => { setPrayersOpen(!prayersOpen); setReadingsOpen(false); }}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isPrayersActive
+                                    onClick={() => { setPrayOpen(!prayOpen); setOfferOpen(false); setLearnOpen(false); setLocateOpen(false); }}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${prayOpen
                                         ? 'bg-white text-sacred-900 shadow-md'
                                         : 'text-white hover:bg-white/20'
                                         }`}
                                 >
-                                    <Sparkles className={`w-4 h-4 ${isPrayersActive ? 'text-gold-600' : ''}`} />
-                                    Prayers
-                                    <ChevronDown className={`w-3 h-3 transition-transform ${prayersOpen ? 'rotate-180' : ''}`} />
+                                    <Sparkles className={`w-4 h-4 ${prayOpen ? 'text-gold-600' : ''}`} />
+                                    Pray
+                                    <ChevronDown className={`w-3 h-3 transition-transform ${prayOpen ? 'rotate-180' : ''}`} />
                                 </button>
-
-                                {prayersOpen && (
-                                    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50">
-                                        {prayerLinks.map((link) => (
+                                {prayOpen && (
+                                    <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50 p-2 grid gap-1">
+                                        {prayLinks.map((link) => (
                                             <Link
                                                 key={link.href}
                                                 href={link.href}
-                                                onClick={() => setPrayersOpen(false)}
-                                                className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${isActive(link.href) ? 'bg-sacred-50' : ''
-                                                    }`}
+                                                onClick={() => setPrayOpen(false)}
+                                                className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
                                             >
-                                                <div className={`p-2 rounded-lg ${isActive(link.href) ? 'bg-sacred-100 text-sacred-600' : 'bg-gray-100 text-gray-500'}`}>
+                                                <div className="p-2 rounded-md bg-sacred-100 text-sacred-600">
                                                     <link.icon className="w-4 h-4" />
                                                 </div>
                                                 <div>
-                                                    <div className={`font-medium ${isActive(link.href) ? 'text-sacred-700' : 'text-gray-900'}`}>
-                                                        {link.label}
-                                                    </div>
-                                                    <div className="text-xs text-gray-500">{link.description}</div>
+                                                    <div className="font-semibold text-gray-900 text-sm">{link.label}</div>
+                                                    <div className="text-xs text-gray-500 line-clamp-1">{link.description}</div>
                                                 </div>
                                             </Link>
                                         ))}
@@ -197,102 +213,34 @@ export function Header() {
                                 )}
                             </div>
 
-                            {/* Readings Dropdown */}
-                            <div className="relative" ref={readingsRef}>
+                            {/* 2. OFFER */}
+                            <div className="relative" ref={offerRef}>
                                 <button
-                                    onClick={() => { setReadingsOpen(!readingsOpen); setPrayersOpen(false); }}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isReadingsActive
+                                    onClick={() => { setOfferOpen(!offerOpen); setPrayOpen(false); setLearnOpen(false); setLocateOpen(false); }}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${offerOpen
                                         ? 'bg-white text-sacred-900 shadow-md'
                                         : 'text-white hover:bg-white/20'
                                         }`}
                                 >
-                                    <BookOpen className={`w-4 h-4 ${isReadingsActive ? 'text-gold-600' : ''}`} />
-                                    Readings
-                                    <ChevronDown className={`w-3 h-3 transition-transform ${readingsOpen ? 'rotate-180' : ''}`} />
-                                </button>
-
-                                {readingsOpen && (
-                                    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50">
-                                        {readingsLinks.map((link) => (
-                                            <Link
-                                                key={link.href}
-                                                href={link.href}
-                                                onClick={() => setReadingsOpen(false)}
-                                                className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${isActive(link.href) ? 'bg-blue-50' : ''
-                                                    }`}
-                                            >
-                                                <div className={`p-2 rounded-lg ${isActive(link.href) ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
-                                                    <link.icon className="w-4 h-4" />
-                                                </div>
-                                                <div>
-                                                    <div className={`font-medium ${isActive(link.href) ? 'text-blue-700' : 'text-gray-900'}`}>
-                                                        {link.label}
-                                                    </div>
-                                                    <div className="text-xs text-gray-500">{link.description}</div>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Churches - Direct Link */}
-                            <Link
-                                href="/churches"
-                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive('/churches')
-                                    ? 'bg-white text-sacred-900 shadow-md'
-                                    : 'text-white hover:bg-white/20'
-                                    }`}
-                            >
-                                <Building2 className={`w-4 h-4 ${isActive('/churches') ? 'text-gold-600' : ''}`} />
-                                Churches
-                            </Link>
-
-                            {/* Memorials - New Primary Feature */}
-                            <Link
-                                href="/memorials"
-                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive('/memorials')
-                                    ? 'bg-white text-sacred-900 shadow-md'
-                                    : 'text-white hover:bg-white/20'
-                                    }`}
-                            >
-                                <Heart className={`w-4 h-4 ${isActive('/memorials') ? 'text-gold-600' : ''}`} />
-                                Memorials
-                            </Link>
-
-                            {/* My Journey - Only for authenticated users */}
-                            {/* Offerings Dropdown */}
-                            <div className="relative" ref={offeringsRef}>
-                                <button
-                                    onClick={() => { setOfferingsOpen(!offeringsOpen); setPrayersOpen(false); setReadingsOpen(false); }}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isOfferingsActive
-                                        ? 'bg-white text-sacred-900 shadow-md'
-                                        : 'text-white hover:bg-white/20'
-                                        }`}
-                                >
-                                    <Heart className={`w-4 h-4 ${isOfferingsActive ? 'text-gold-600' : ''}`} />
+                                    <Heart className={`w-4 h-4 ${offerOpen ? 'text-gold-600' : ''}`} />
                                     Offerings
-                                    <ChevronDown className={`w-3 h-3 transition-transform ${offeringsOpen ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${offerOpen ? 'rotate-180' : ''}`} />
                                 </button>
-
-                                {offeringsOpen && (
-                                    <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50">
-                                        {offeringsLinks.map((link) => (
+                                {offerOpen && (
+                                    <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50 p-2 grid gap-1">
+                                        {offerLinks.map((link) => (
                                             <Link
                                                 key={link.href}
                                                 href={link.href}
-                                                onClick={() => setOfferingsOpen(false)}
-                                                className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${isActive(link.href) ? 'bg-amber-50' : ''
-                                                    }`}
+                                                onClick={() => setOfferOpen(false)}
+                                                className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
                                             >
-                                                <div className={`p-2 rounded-lg ${isActive(link.href) ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-500'}`}>
+                                                <div className="p-2 rounded-md bg-amber-100 text-amber-600">
                                                     <link.icon className="w-4 h-4" />
                                                 </div>
                                                 <div>
-                                                    <div className={`font-medium ${isActive(link.href) ? 'text-amber-700' : 'text-gray-900'}`}>
-                                                        {link.label}
-                                                    </div>
-                                                    <div className="text-xs text-gray-500">{link.description}</div>
+                                                    <div className="font-semibold text-gray-900 text-sm">{link.label}</div>
+                                                    <div className="text-xs text-gray-500 line-clamp-1">{link.description}</div>
                                                 </div>
                                             </Link>
                                         ))}
@@ -300,20 +248,89 @@ export function Header() {
                                 )}
                             </div>
 
-                            {isAuthenticated && (
-                                <Link
-                                    href="/journey"
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive('/journey')
+                            {/* 3. LEARN */}
+                            <div className="relative" ref={learnRef}>
+                                <button
+                                    onClick={() => { setLearnOpen(!learnOpen); setPrayOpen(false); setOfferOpen(false); setLocateOpen(false); }}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${learnOpen
                                         ? 'bg-white text-sacred-900 shadow-md'
                                         : 'text-white hover:bg-white/20'
                                         }`}
                                 >
-                                    <Compass className={`w-4 h-4 ${isActive('/journey') ? 'text-gold-600' : ''}`} />
-                                    My Journey
-                                </Link>
-                            )}
+                                    <BookOpen className={`w-4 h-4 ${learnOpen ? 'text-gold-600' : ''}`} />
+                                    Learn
+                                    <ChevronDown className={`w-3 h-3 transition-transform ${learnOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                {learnOpen && (
+                                    <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50 p-2 grid gap-1">
+                                        {learnLinks.map((link) => (
+                                            <Link
+                                                key={link.href}
+                                                href={link.href}
+                                                onClick={() => setLearnOpen(false)}
+                                                className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                                            >
+                                                <div className="p-2 rounded-md bg-blue-100 text-blue-600">
+                                                    <link.icon className="w-4 h-4" />
+                                                </div>
+                                                <div>
+                                                    <div className="font-semibold text-gray-900 text-sm">{link.label}</div>
+                                                    <div className="text-xs text-gray-500 line-clamp-1">{link.description}</div>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* 4. LOCATE */}
+                            <div className="relative" ref={locateRef}>
+                                <button
+                                    onClick={() => { setLocateOpen(!locateOpen); setPrayOpen(false); setOfferOpen(false); setLearnOpen(false); }}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${locateOpen
+                                        ? 'bg-white text-sacred-900 shadow-md'
+                                        : 'text-white hover:bg-white/20'
+                                        }`}
+                                >
+                                    <MapPin className={`w-4 h-4 ${locateOpen ? 'text-gold-600' : ''}`} />
+                                    Locate
+                                    <ChevronDown className={`w-3 h-3 transition-transform ${locateOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                {locateOpen && (
+                                    <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50 p-2 grid gap-1">
+                                        {locateLinks.map((link) => (
+                                            <Link
+                                                key={link.href}
+                                                href={link.href}
+                                                onClick={() => setLocateOpen(false)}
+                                                className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                                            >
+                                                <div className="p-2 rounded-md bg-emerald-100 text-emerald-600">
+                                                    <link.icon className="w-4 h-4" />
+                                                </div>
+                                                <div>
+                                                    <div className="font-semibold text-gray-900 text-sm">{link.label}</div>
+                                                    <div className="text-xs text-gray-500 line-clamp-1">{link.description}</div>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </nav>
 
+                        {isAuthenticated && (
+                            <Link
+                                href="/journey"
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive('/journey')
+                                    ? 'bg-white text-sacred-900 shadow-md'
+                                    : 'text-white hover:bg-white/20'
+                                    }`}
+                            >
+                                <Compass className={`w-4 h-4 ${isActive('/journey') ? 'text-gold-600' : ''}`} />
+                                My Journey
+                            </Link>
+                        )}
 
 
                         {/* Right Actions */}
@@ -376,12 +393,14 @@ export function Header() {
                         </button>
                     </div>
                 </div>
-            </header>
+            </header >
 
             {/* Mobile Menu Overlay */}
-            {isMenuOpen && (
-                <div className="lg:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />
-            )}
+            {
+                isMenuOpen && (
+                    <div className="lg:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />
+                )
+            }
 
             {/* Mobile Menu Panel */}
             <div className={`lg:hidden fixed top-0 right-0 h-full w-[85%] max-w-sm bg-white dark:bg-gray-900 z-50 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} shadow-2xl`}>
@@ -429,221 +448,143 @@ export function Header() {
                             </Link>
                         )}
 
-                        {/* I'm New Here - Prominent for guests */}
-                        {!isAuthenticated && (
-                            <Link
-                                href="/welcome"
-                                className="flex items-center gap-3 px-4 py-3.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl font-semibold mb-4"
-                                onClick={() => setIsMenuOpen(false)}
-                            >
-                                <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-800 text-emerald-600">
-                                    <Compass className="w-5 h-5" />
-                                </div>
-                                I'm New Here →
-                            </Link>
-                        )}
+                        <p className="px-4 text-xs uppercase tracking-wider text-gray-400 mb-2 mt-4">Explore Series</p>
 
-                        <p className="px-4 text-xs uppercase tracking-wider text-gray-400 mb-2 mt-2">Explore</p>
-
-                        {/* Prayers Expandable */}
+                        {/* 1. PRAY */}
                         <div className="rounded-xl overflow-hidden">
                             <button
-                                onClick={() => setMobilePrayersOpen(!mobilePrayersOpen)}
-                                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors ${isPrayersActive
+                                onClick={() => setPrayOpen(!prayOpen)}
+                                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors ${prayOpen
                                     ? 'bg-sacred-50 dark:bg-sacred-900/20 text-sacred-700 dark:text-sacred-300 font-semibold'
                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     }`}
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className={`p-2 rounded-lg ${isPrayersActive ? 'bg-sacred-100 text-sacred-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                                    <div className={`p-2 rounded-lg ${prayOpen ? 'bg-sacred-100 text-sacred-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
                                         <Sparkles className="w-5 h-5" />
                                     </div>
-                                    Prayers
+                                    Pray
                                 </div>
-                                <ChevronDown className={`w-5 h-5 transition-transform ${mobilePrayersOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`w-5 h-5 transition-transform ${prayOpen ? 'rotate-180' : ''}`} />
                             </button>
-
-                            {mobilePrayersOpen && (
+                            {prayOpen && (
                                 <div className="ml-6 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-4 py-2">
-                                    {prayerLinks.map((link) => (
+                                    {prayLinks.map((link) => (
                                         <Link
                                             key={link.href}
                                             href={link.href}
-                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${isActive(link.href)
-                                                ? 'bg-sacred-50 dark:bg-sacred-900/20 text-sacred-700 dark:text-sacred-300 font-medium'
-                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                                }`}
+                                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             <link.icon className="w-4 h-4" />
-                                            <div>
-                                                <div>{link.label}</div>
-                                                <div className="text-xs text-gray-400">{link.description}</div>
-                                            </div>
+                                            <div>{link.label}</div>
                                         </Link>
                                     ))}
                                 </div>
                             )}
                         </div>
 
-                        {/* Readings Expandable */}
+                        {/* 2. OFFER */}
                         <div className="rounded-xl overflow-hidden">
                             <button
-                                onClick={() => setMobileReadingsOpen(!mobileReadingsOpen)}
-                                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors ${isReadingsActive
-                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-semibold'
-                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                    }`}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={`p-2 rounded-lg ${isReadingsActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
-                                        <BookOpen className="w-5 h-5" />
-                                    </div>
-                                    Readings
-                                </div>
-                                <ChevronDown className={`w-5 h-5 transition-transform ${mobileReadingsOpen ? 'rotate-180' : ''}`} />
-                            </button>
-
-                            {mobileReadingsOpen && (
-                                <div className="ml-6 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-4 py-2">
-                                    {readingsLinks.map((link) => (
-                                        <Link
-                                            key={link.href}
-                                            href={link.href}
-                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${isActive(link.href)
-                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-medium'
-                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                                }`}
-                                            onClick={() => setIsMenuOpen(false)}
-                                        >
-                                            <link.icon className="w-4 h-4" />
-                                            <div>
-                                                <div>{link.label}</div>
-                                                <div className="text-xs text-gray-400">{link.description}</div>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Offerings Expandable */}
-                        <div className="rounded-xl overflow-hidden">
-                            <button
-                                onClick={() => setMobileOfferingsOpen(!mobileOfferingsOpen)}
-                                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors ${isOfferingsActive
+                                onClick={() => setOfferOpen(!offerOpen)}
+                                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors ${offerOpen
                                     ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 font-semibold'
                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     }`}
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className={`p-2 rounded-lg ${isOfferingsActive ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                                    <div className={`p-2 rounded-lg ${offerOpen ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
                                         <Heart className="w-5 h-5" />
                                     </div>
-                                    Offerings
+                                    Offer
                                 </div>
-                                <ChevronDown className={`w-5 h-5 transition-transform ${mobileOfferingsOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`w-5 h-5 transition-transform ${offerOpen ? 'rotate-180' : ''}`} />
                             </button>
-
-                            {mobileOfferingsOpen && (
+                            {offerOpen && (
                                 <div className="ml-6 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-4 py-2">
-                                    {offeringsLinks.map((link) => (
+                                    {offerLinks.map((link) => (
                                         <Link
                                             key={link.href}
                                             href={link.href}
-                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${isActive(link.href)
-                                                ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 font-medium'
-                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                                }`}
+                                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             <link.icon className="w-4 h-4" />
-                                            <div>
-                                                <div>{link.label}</div>
-                                                <div className="text-xs text-gray-400">{link.description}</div>
-                                            </div>
+                                            <div>{link.label}</div>
                                         </Link>
                                     ))}
                                 </div>
                             )}
                         </div>
 
-                        {/* Churches */}
-                        <Link
-                            href="/churches"
-                            className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors ${isActive('/churches')
-                                ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            <div className={`p-2 rounded-lg ${isActive('/churches') ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
-                                <Building2 className="w-5 h-5" />
-                            </div>
-                            Find Churches
-                        </Link>
-
-                        {/* Live Sessions */}
-                        <Link
-                            href="/sessions"
-                            className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors ${isActive('/sessions')
-                                ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-300 font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            <div className={`p-2 rounded-lg ${isActive('/sessions') ? 'bg-rose-100 text-rose-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
-                                <Users className="w-5 h-5" />
-                            </div>
-                            Live Sessions
-                        </Link>
-
-                        {/* Authenticated-only features */}
-                        {isAuthenticated && (
-                            <>
-                                <div className="my-3 border-t border-gray-200 dark:border-gray-700" />
-                                <p className="px-4 text-xs uppercase tracking-wider text-gray-400 mb-2">My Account</p>
-
-                                <Link
-                                    href="/candles"
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive('/candles')
-                                        ? 'bg-amber-50 text-amber-700 font-semibold'
-                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                        }`}
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    <div className={`p-2 rounded-lg ${isActive('/candles') ? 'bg-amber-100 text-amber-600' : 'bg-amber-50 text-amber-500'}`}>
-                                        <Sparkles className="w-5 h-5" />
+                        {/* 3. LEARN */}
+                        <div className="rounded-xl overflow-hidden">
+                            <button
+                                onClick={() => setLearnOpen(!learnOpen)}
+                                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors ${learnOpen
+                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-semibold'
+                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-lg ${learnOpen ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                                        <BookOpen className="w-5 h-5" />
                                     </div>
-                                    My Candles
-                                </Link>
+                                    Learn
+                                </div>
+                                <ChevronDown className={`w-5 h-5 transition-transform ${learnOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            {learnOpen && (
+                                <div className="ml-6 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-4 py-2">
+                                    {learnLinks.map((link) => (
+                                        <Link
+                                            key={link.href}
+                                            href={link.href}
+                                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                            onClick={() => setIsMenuOpen(false)}
+                                        >
+                                            <link.icon className="w-4 h-4" />
+                                            <div>{link.label}</div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
-                                <Link
-                                    href="/challenges"
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive('/challenges')
-                                        ? 'bg-purple-50 text-purple-700 font-semibold'
-                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                        }`}
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    <div className={`p-2 rounded-lg ${isActive('/challenges') ? 'bg-purple-100 text-purple-600' : 'bg-purple-50 text-purple-500'}`}>
-                                        <Star className="w-5 h-5" />
+                        {/* 4. LOCATE */}
+                        <div className="rounded-xl overflow-hidden">
+                            <button
+                                onClick={() => setLocateOpen(!locateOpen)}
+                                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors ${locateOpen
+                                    ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 font-semibold'
+                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-lg ${locateOpen ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                                        <MapPin className="w-5 h-5" />
                                     </div>
-                                    Challenges
-                                </Link>
-
-                                <Link
-                                    href="/settings"
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500">
-                                        <Settings className="w-5 h-5" />
-                                    </div>
-                                    Settings
-                                </Link>
-                            </>
-                        )}
+                                    Locate
+                                </div>
+                                <ChevronDown className={`w-5 h-5 transition-transform ${locateOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            {locateOpen && (
+                                <div className="ml-6 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-4 py-2">
+                                    {locateLinks.map((link) => (
+                                        <Link
+                                            key={link.href}
+                                            href={link.href}
+                                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                            onClick={() => setIsMenuOpen(false)}
+                                        >
+                                            <link.icon className="w-4 h-4" />
+                                            <div>{link.label}</div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
                         <div className="my-4 border-t border-gray-200 dark:border-gray-700" />
 

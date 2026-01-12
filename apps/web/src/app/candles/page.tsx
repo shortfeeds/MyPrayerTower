@@ -551,180 +551,178 @@ export default function CandleWallPage() {
                     </div>
                 </div>
             </div>
-        </div>
 
-            {/* Light Candle Modal */ }
-    {
-        showLightModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                <div className="bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto border border-slate-700 shadow-2xl">
-                    <div className="p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                <Flame className="w-6 h-6 text-amber-400" />
-                                Light a Prayer Candle
-                            </h2>
-                            <button onClick={() => setShowLightModal(false)} className="p-2 hover:bg-slate-700 rounded-lg">
-                                <X className="w-5 h-5 text-gray-400" />
-                            </button>
-                        </div>
-
-                        {/* Duration Selection - Featured highlighted */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-300 mb-3">Choose Duration</label>
-                            <div className="grid grid-cols-2 gap-3">
-                                {[...DURATIONS].reverse().map((duration) => (
-                                    <button
-                                        key={duration.value}
-                                        onClick={() => setSelectedDuration(duration.value)}
-                                        className={`relative p-4 rounded-xl border-2 transition-all text-left ${selectedDuration === duration.value
-                                            ? duration.tier === 'premium'
-                                                ? 'border-amber-400 bg-amber-500/20 ring-2 ring-amber-400/50'
-                                                : 'border-sky-400 bg-sky-500/10'
-                                            : 'border-slate-600 hover:border-slate-500'
-                                            }`}
-                                    >
-                                        {duration.tier === 'premium' && (
-                                            <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-amber-400 to-orange-500 text-[10px] font-bold text-white rounded-full">
-                                                FEATURED
-                                            </div>
-                                        )}
-                                        <div className="flex justify-between items-start">
-                                            <span className="text-white font-semibold">{duration.label}</span>
-                                            <div className="text-right">
-                                                <span className={`block text-sm font-bold ${duration.price === 0 ? 'text-green-400' : 'text-amber-400'}`}>
-                                                    {duration.priceDisplay}
-                                                </span>
-
-                                            </div>
-                                        </div>
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            {duration.tier === 'premium' ? '30 Days • Burns Longest • Max Prayers' :
-                                                duration.tier === 'standard' ? 'High visibility • More prayers' :
-                                                    duration.tier === 'basic' ? 'Standard visibility' : 'Basic listing'}
-                                        </p>
-                                    </button>
-                                ))}
+            {/* Light Candle Modal */}
+            {showLightModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto border border-slate-700 shadow-2xl">
+                        <div className="p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <Flame className="w-6 h-6 text-amber-400" />
+                                    Light a Prayer Candle
+                                </h2>
+                                <button onClick={() => setShowLightModal(false)} className="p-2 hover:bg-slate-700 rounded-lg">
+                                    <X className="w-5 h-5 text-gray-400" />
+                                </button>
                             </div>
-                        </div>
 
-                        {/* Name */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Your Name</label>
-                            <input
-                                type="text"
-                                value={userName}
-                                onChange={(e) => setUserName(e.target.value.slice(0, 30))}
-                                placeholder="Enter your name"
-                                disabled={isAnonymous}
-                                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 disabled:opacity-50"
-                            />
-                            <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                            {/* Duration Selection - Featured highlighted */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-300 mb-3">Choose Duration</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {[...DURATIONS].reverse().map((duration) => (
+                                        <button
+                                            key={duration.value}
+                                            onClick={() => setSelectedDuration(duration.value)}
+                                            className={`relative p-4 rounded-xl border-2 transition-all text-left ${selectedDuration === duration.value
+                                                ? duration.tier === 'premium'
+                                                    ? 'border-amber-400 bg-amber-500/20 ring-2 ring-amber-400/50'
+                                                    : 'border-sky-400 bg-sky-500/10'
+                                                : 'border-slate-600 hover:border-slate-500'
+                                                }`}
+                                        >
+                                            {duration.tier === 'premium' && (
+                                                <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-amber-400 to-orange-500 text-[10px] font-bold text-white rounded-full">
+                                                    FEATURED
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-white font-semibold">{duration.label}</span>
+                                                <div className="text-right">
+                                                    <span className={`block text-sm font-bold ${duration.price === 0 ? 'text-green-400' : 'text-amber-400'}`}>
+                                                        {duration.priceDisplay}
+                                                    </span>
+
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {duration.tier === 'premium' ? '30 Days • Burns Longest • Max Prayers' :
+                                                    duration.tier === 'standard' ? 'High visibility • More prayers' :
+                                                        duration.tier === 'basic' ? 'Standard visibility' : 'Basic listing'}
+                                            </p>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Name */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Your Name</label>
                                 <input
-                                    type="checkbox"
-                                    checked={isAnonymous}
-                                    onChange={(e) => setIsAnonymous(e.target.checked)}
-                                    className="rounded bg-slate-700 border-slate-500"
+                                    type="text"
+                                    value={userName}
+                                    onChange={(e) => setUserName(e.target.value.slice(0, 30))}
+                                    placeholder="Enter your name"
+                                    disabled={isAnonymous}
+                                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 disabled:opacity-50"
                                 />
-                                <span className="text-sm text-gray-400">Post anonymously</span>
-                            </label>
-                        </div>
+                                <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={isAnonymous}
+                                        onChange={(e) => setIsAnonymous(e.target.checked)}
+                                        className="rounded bg-slate-700 border-slate-500"
+                                    />
+                                    <span className="text-sm text-gray-400">Post anonymously</span>
+                                </label>
+                            </div>
 
-                        {/* Intention */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Your Prayer Intention</label>
-                            <input
-                                type="text"
-                                value={intention}
-                                onChange={(e) => setIntention(e.target.value.slice(0, 60))}
-                                placeholder="For healing, peace, guidance..."
-                                maxLength={60}
-                                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-amber-500"
-                            />
-                            <p className="text-xs text-gray-500 mt-1 text-right">{intention.length}/60</p>
-                        </div>
+                            {/* Intention */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Your Prayer Intention</label>
+                                <input
+                                    type="text"
+                                    value={intention}
+                                    onChange={(e) => setIntention(e.target.value.slice(0, 60))}
+                                    placeholder="For healing, peace, guidance..."
+                                    maxLength={60}
+                                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-amber-500"
+                                />
+                                <p className="text-xs text-gray-500 mt-1 text-right">{intention.length}/60</p>
+                            </div>
 
-                        <button
-                            onClick={handleLightCandle}
-                            disabled={isSubmitting || !intention.trim() || (!isAnonymous && !userName.trim())}
-                            className="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 disabled:from-slate-600 disabled:to-slate-600 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-orange-500/30"
-                        >
-                            {isSubmitting ? 'Lighting...' : isPaidOption ? (
-                                <>
-                                    <CreditCard className="w-5 h-5" />
-                                    Continue - {selectedDurationData?.priceDisplay}
-                                </>
-                            ) : (
-                                <>🕯️ Light Free Candle</>
-                            )}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    {/* Payment Modal */ }
-    {
-        showPaymentModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                <div className="bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md border border-slate-700 shadow-2xl">
-                    <div className="p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                <CreditCard className="w-6 h-6 text-amber-400" />
-                                Complete Payment
-                            </h2>
-                            <button onClick={() => setShowPaymentModal(false)} className="p-2 hover:bg-slate-700 rounded-lg">
-                                <X className="w-5 h-5 text-gray-400" />
+                            <button
+                                onClick={handleLightCandle}
+                                disabled={isSubmitting || !intention.trim() || (!isAnonymous && !userName.trim())}
+                                className="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 disabled:from-slate-600 disabled:to-slate-600 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-orange-500/30"
+                            >
+                                {isSubmitting ? 'Lighting...' : isPaidOption ? (
+                                    <>
+                                        <CreditCard className="w-5 h-5" />
+                                        Continue - {selectedDurationData?.priceDisplay}
+                                    </>
+                                ) : (
+                                    <>🕯️ Light Free Candle</>
+                                )}
                             </button>
                         </div>
-
-                        <div className="bg-slate-700/50 rounded-xl p-4 mb-6">
-                            <h3 className="text-sm font-medium text-gray-400 mb-3">Order Summary</h3>
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-white">{selectedDurationData?.label} Prayer Candle</span>
-                                <div className="text-right">
-                                    <span className="block text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
-                                </div>
-                            </div>
-                            <p className="text-xs text-gray-500 truncate">{intention}</p>
-                            <hr className="border-slate-600 my-3" />
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-300 font-medium">Total</span>
-                                <div className="text-right">
-                                    <span className="block text-2xl text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {paymentError && (
-                            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
-                                {paymentError}
-                            </div>
-                        )}
-
-                        <PayPalCheckout
-                            amount={selectedDurationData?.price || 0}
-                            description={`${selectedDurationData?.label} Prayer Candle - ${intention.substring(0, 50)}`}
-                            onSuccess={handlePayPalSuccess}
-                            onError={handlePayPalError}
-                            onCancel={() => setPaymentError('')}
-                            disabled={isProcessingPayment}
-                            referenceId={paymentReferenceId}
-                        />
-
-                        <button
-                            onClick={() => { setShowPaymentModal(false); setShowLightModal(true); }}
-                            className="w-full mt-3 py-3 text-gray-400 hover:text-white text-sm"
-                        >
-                            ← Back to options
-                        </button>
                     </div>
                 </div>
-            </div>
-        )
-    }
+            )
+            }
+
+            {/* Payment Modal */}
+            {
+                showPaymentModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                        <div className="bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md border border-slate-700 shadow-2xl">
+                            <div className="p-6">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                        <CreditCard className="w-6 h-6 text-amber-400" />
+                                        Complete Payment
+                                    </h2>
+                                    <button onClick={() => setShowPaymentModal(false)} className="p-2 hover:bg-slate-700 rounded-lg">
+                                        <X className="w-5 h-5 text-gray-400" />
+                                    </button>
+                                </div>
+
+                                <div className="bg-slate-700/50 rounded-xl p-4 mb-6">
+                                    <h3 className="text-sm font-medium text-gray-400 mb-3">Order Summary</h3>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-white">{selectedDurationData?.label} Prayer Candle</span>
+                                        <div className="text-right">
+                                            <span className="block text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-gray-500 truncate">{intention}</p>
+                                    <hr className="border-slate-600 my-3" />
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-300 font-medium">Total</span>
+                                        <div className="text-right">
+                                            <span className="block text-2xl text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {paymentError && (
+                                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
+                                        {paymentError}
+                                    </div>
+                                )}
+
+                                <PayPalCheckout
+                                    amount={selectedDurationData?.price || 0}
+                                    description={`${selectedDurationData?.label} Prayer Candle - ${intention.substring(0, 50)}`}
+                                    onSuccess={handlePayPalSuccess}
+                                    onError={handlePayPalError}
+                                    onCancel={() => setPaymentError('')}
+                                    disabled={isProcessingPayment}
+                                    referenceId={paymentReferenceId}
+                                />
+
+                                <button
+                                    onClick={() => { setShowPaymentModal(false); setShowLightModal(true); }}
+                                    className="w-full mt-3 py-3 text-gray-400 hover:text-white text-sm"
+                                >
+                                    ← Back to options
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
         </div >
     );
 }

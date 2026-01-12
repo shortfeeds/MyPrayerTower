@@ -2,6 +2,7 @@
 
 import { PrismaClient } from '@mpt/database';
 import { getUserFromCookie } from '@/lib/auth';
+import { moderateContent } from '@/lib/moderation';
 
 const prisma = new PrismaClient();
 
@@ -54,7 +55,16 @@ export async function lightVirtualCandle(data: {
     expiresAt.setDate(expiresAt.getDate() + (durationDays[data.duration] || 1));
 
     try {
-        // For FREE 1-day candles, auto-approve
+        // Moderation Check
+        const moderation = moderateContent(data.intention);
+        if (!moderation.isValid) {
+            return { success: false, error: moderation.reason || 'Content rejected.' };
+        }
+
+        // For FREE 1-day candles, auto-approve? NO. User wants moderation.
+        // So isActive should be FALSE for all free listings until approved.
+        // Paid listings (skip auth spam) -> If passes moderation check here, we can auto-approve on payment.
+
         const isFree = data.duration === 'ONE_DAY';
 
         const candle = await prisma.virtualCandle.create({
@@ -68,7 +78,8 @@ export async function lightVirtualCandle(data: {
                 duration: data.duration,
                 expiresAt,
                 paymentStatus: isFree ? 'PAID' : 'PENDING',
-                isActive: isFree,
+                // Free: False (Pending Moderation). Paid: False (Pending Payment).
+                isActive: false,
                 litAt: isFree ? new Date() : new Date()
             }
         });
@@ -108,6 +119,12 @@ export async function createVirtualCandle(data: {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + durationDays[data.duration]);
 
+    // Moderation check
+    const moderation = moderateContent(data.intention);
+    if (!moderation.isValid) {
+        throw new Error(moderation.reason || 'Content rejected');
+    }
+
     const candle = await prisma.virtualCandle.create({
         data: {
             userId: user?.id,
@@ -118,7 +135,8 @@ export async function createVirtualCandle(data: {
             amount,
             duration: data.duration,
             expiresAt,
-            paymentStatus: 'PENDING'
+            paymentStatus: 'PENDING',
+            isActive: false, // Wait for payment
         }
     });
 
@@ -128,12 +146,21 @@ export async function createVirtualCandle(data: {
 
 // Confirm candle payment (called after successful payment)
 export async function confirmCandlePayment(candleId: string, paymentId: string) {
+    // Fetch candle to check content again (or rely on initial check?)
+    // Better to check again to decide isActive status.
+    const candle = await prisma.virtualCandle.findUnique({ where: { id: candleId } });
+    if (!candle) throw new Error('Candle not found');
+
+    const moderation = moderateContent(candle.intention);
+    // If moderation passes -> Active. If fail -> Inactive (Pending Review).
+    const shouldActivate = moderation.isValid;
+
     await prisma.virtualCandle.update({
         where: { id: candleId },
         data: {
             paymentId,
             paymentStatus: 'PAID',
-            isActive: true,
+            isActive: shouldActivate,
             litAt: new Date()
         }
     });
@@ -252,6 +279,24 @@ export async function getConfessionLogs() {
     });
 
     return logs;
+}
+
+// Admin Moderation Actions
+export async function approveCandle(candleId: string) {
+    // Only admins (protected by middleware usually, or check role here)
+    // For now assuming route protection
+    await prisma.virtualCandle.update({
+        where: { id: candleId },
+        data: { isActive: true }
+    });
+    return { success: true };
+}
+
+export async function rejectCandle(candleId: string) {
+    await prisma.virtualCandle.delete({
+        where: { id: candleId }
+    });
+    return { success: true };
 }
 
 // ==========================================

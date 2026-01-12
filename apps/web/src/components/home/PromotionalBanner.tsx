@@ -46,12 +46,14 @@ export function PromotionalBanner({ variant = 'generic' }: PromotionalBannerProp
         generic: {
             badge: 'GROW IN FAITH',
             title: 'Your Daily Spiritual Companion',
-            description: 'Access prayers, readings, and community—all in one place.',
-            cta: 'Join Our Community',
+            description: 'A sanctuary for your soul. Access daily prayers, mass readings, and a global community of believers.',
+            cta: 'Join Community Free',
             ctaLink: '/register',
-            gradient: 'from-sacred-600 via-sacred-700 to-sacred-800',
-            icon: Heart,
-            bgPattern: 'radial-gradient(circle at 100% 0%, rgba(255,215,0,0.2) 0%, transparent 40%)',
+            // Using standard Tailwind classes for guaranteed visibility
+            gradient: 'from-slate-900 via-slate-800 to-slate-950',
+            icon: Users,
+            // Subtle, premium gold pattern
+            bgPattern: 'radial-gradient(circle at 100% 0%, rgba(245, 158, 11, 0.25) 0%, transparent 60%)',
         },
         app: {
             badge: 'MOBILE APP',
@@ -89,8 +91,13 @@ export function PromotionalBanner({ variant = 'generic' }: PromotionalBannerProp
             <div className="container mx-auto px-4">
                 <div
                     className={`bg-gradient-to-r ${banner.gradient} rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-2xl`}
-                    style={{ backgroundImage: banner.bgPattern }}
                 >
+                    {/* Background Pattern Overlay */}
+                    <div
+                        className="absolute inset-0 z-0 pointer-events-none"
+                        style={{ backgroundImage: banner.bgPattern }}
+                    />
+
                     {/* Decorative elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />

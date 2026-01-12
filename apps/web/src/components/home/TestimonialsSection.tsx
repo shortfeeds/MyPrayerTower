@@ -107,7 +107,7 @@ const TESTIMONIALS = [
 
 export function TestimonialsSection() {
     return (
-        <div className="relative py-24 overflow-hidden bg-gradient-to-b from-cream-50 to-white">
+        <div className="relative py-12 overflow-hidden bg-gradient-to-b from-cream-50 to-white">
             {/* Background Decorations */}
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
             <div className="absolute top-1/2 left-0 w-96 h-96 bg-gold-100/40 rounded-full blur-[100px] -translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
@@ -182,7 +182,7 @@ export function TestimonialsSection() {
                 </div>
 
                 {/* Trust Footer */}
-                <div className="mt-20 text-center border-t border-gray-100 pt-10">
+                <div className="mt-10 text-center border-t border-gray-100 pt-10">
                     <p className="text-sm text-gray-400 font-medium uppercase tracking-widest mb-6">Join believers from</p>
                     <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
                         {/* Placeholder Logos */}
