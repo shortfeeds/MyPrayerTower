@@ -7,7 +7,39 @@ export const revalidate = 60;
 export async function GET() {
     try {
         const settings = await db.appSettings.findFirst({
-            where: { id: 'app_settings' }
+            where: { id: 'app_settings' },
+            select: {
+                maintenanceMode: true,
+                registrationEnabled: true,
+                prayerWallEnabled: true,
+                candlesEnabled: true,
+                massOfferingsEnabled: true,
+                donationsEnabled: true,
+                spiritualBouquetsEnabled: true,
+                challengesEnabled: true,
+                leaderboardEnabled: true,
+                nativeAdsEnabled: true,
+                rewardedAdsEnabled: true,
+                plusMonthlyPrice: true,
+                plusYearlyPrice: true,
+                premiumMonthlyPrice: true,
+                premiumYearlyPrice: true,
+                lifetimePrice: true,
+                candleOneDayPrice: true,
+                candleThreeDayPrice: true,
+                candleSevenDayPrice: true,
+                candleThirtyDayPrice: true,
+                massRegularPrice: true,
+                massExpeditedPrice: true,
+                massNovenaPrice: true,
+                massGregorianPrice: true,
+                massPerpetualPrice: true,
+                bouquetBasePrice: true,
+                bouquetMassAddOn: true,
+                bouquetCandleAddOn: true,
+                siteName: true,
+                siteTagline: true
+            }
         });
 
         if (!settings) {

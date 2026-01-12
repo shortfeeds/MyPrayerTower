@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, CheckCircle, AlertTriangle, HelpingHand } from 'lucide-react';
+import { X, CheckCircle, AlertTriangle, HelpingHand, Heart } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'; // Assuming UI lib or I will build simple overlay if not exists.
 // Actually I'll build a simple custom modal within this file to avoid dependency issues if Shadcn isn't fully set up or I can't find it easily. 
 // Re-checking layout.tsx showed minimal imports. I'll make a self-contained accessible Modal component here to be safe and fast.

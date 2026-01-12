@@ -36,6 +36,22 @@ export async function getAppSettings() {
     try {
         const settings = await prisma.appSettings.findUnique({
             where: { id: 'app_settings' },
+            select: {
+                maintenanceMode: true,
+                registrationEnabled: true,
+                prayerWallEnabled: true,
+                syncEnabled: true,
+                siteName: true,
+                siteTagline: true,
+                candlesEnabled: true,
+                massOfferingsEnabled: true,
+                donationsEnabled: true,
+                spiritualBouquetsEnabled: true,
+                challengesEnabled: true,
+                leaderboardEnabled: true,
+                plusMonthlyPrice: true,
+                plusYearlyPrice: true,
+            }
         });
 
         // Return defaults if not found

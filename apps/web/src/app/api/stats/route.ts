@@ -28,7 +28,7 @@ export async function GET() {
             // Count candles lit today
             prisma.virtualCandle.count({
                 where: {
-                    createdAt: {
+                    litAt: {
                         gte: today
                     }
                 }
