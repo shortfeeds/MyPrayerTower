@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { toSafeJSON } from '@/lib/dto';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -59,7 +60,7 @@ export async function GET(request: NextRequest) {
         }));
 
         return NextResponse.json({
-            saints: transformedSaints,
+            saints: toSafeJSON(transformedSaints),
             total,
             page,
             totalPages: Math.ceil(total / limit)

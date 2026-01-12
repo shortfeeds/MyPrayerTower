@@ -1,11 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Calendar, MapPin, BookOpen, Heart, Crown, Minus, Plus, Type } from 'lucide-react';
+import { ChevronLeft, Calendar, MapPin, BookOpen, Heart, Crown, Minus, Plus, Type, Gift, X, Euro } from 'lucide-react';
 import Link from 'next/link';
 import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { SmartAdSlot } from '@/components/ads';
+import PayPalCheckout from '@/components/PayPalCheckout'; // Ensure default export import
+
+// ... imports
 
 interface Saint {
     id: string;
@@ -35,6 +38,9 @@ const TEXT_SIZES = [
 
 export function SaintProfile({ saint }: { saint: Saint }) {
     const [isFavorite, setIsFavorite] = useState(false);
+    const [showMassModal, setShowMassModal] = useState(false);
+    const [amount, setAmount] = useState(15);
+    const [intention, setIntention] = useState(`In honor of ${saint.name}`);
     const [textSizeIndex, setTextSizeIndex] = useState(1); // Default M
 
     useEffect(() => {
@@ -108,6 +114,14 @@ export function SaintProfile({ saint }: { saint: Saint }) {
 
                             {/* Actions */}
                             <div className="flex gap-3 flex-shrink-0">
+                                <button
+                                    onClick={() => setShowMassModal(true)}
+                                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+                                >
+                                    <Gift className="w-5 h-5" />
+                                    <span className="hidden sm:inline">Offer Mass</span>
+                                    <span className="sm:hidden">Mass</span>
+                                </button>
                                 <button
                                     onClick={() => setIsFavorite(!isFavorite)}
                                     className={`p-4 rounded-2xl transition-all shadow-lg ${isFavorite ? 'bg-white text-rose-500' : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/20'}`}
@@ -243,6 +257,83 @@ export function SaintProfile({ saint }: { saint: Saint }) {
                     </div>
                 </div>
             </div>
+
+            {/* Mass Offering Modal */}
+            {showMassModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-200">
+                        {/* Modal Header */}
+                        <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-6 text-white relative">
+                            <button
+                                onClick={() => setShowMassModal(false)}
+                                className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="p-2 bg-white/20 rounded-xl">
+                                    <Gift className="w-6 h-6 text-white" />
+                                </div>
+                                <h3 className="text-2xl font-serif font-bold">Offer a Mass</h3>
+                            </div>
+                            <p className="text-amber-100 text-sm">
+                                Have a Mass said for your intention or in memory/honor of a loved one.
+                            </p>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                            {/* Intention Input */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Mass Intention
+                                </label>
+                                <textarea
+                                    value={intention}
+                                    onChange={(e) => setIntention(e.target.value)}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition-all resize-none bg-gray-50 font-medium"
+                                    rows={3}
+                                />
+                            </div>
+
+                            {/* Offering Amount */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Offering Amount
+                                </label>
+                                <div className="grid grid-cols-3 gap-3">
+                                    {[10, 15, 25].map((amt) => (
+                                        <button
+                                            key={amt}
+                                            onClick={() => setAmount(amt)}
+                                            className={`py-2 px-3 rounded-xl border-2 font-semibold transition-all ${amount === amt
+                                                    ? 'border-amber-500 bg-amber-50 text-amber-700'
+                                                    : 'border-gray-100 hover:border-amber-200 text-gray-600'
+                                                }`}
+                                        >
+                                            ${amt}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* PayPal Checkout */}
+                            <div className="pt-2">
+                                <PayPalCheckout
+                                    amount={amount * 100} // Convert to cents
+                                    description={`Mass Offering: ${intention}`}
+                                    onSuccess={(details) => {
+                                        alert('Thank you! Your Mass offering has been received.');
+                                        setShowMassModal(false);
+                                    }}
+                                />
+                                <p className="text-xs text-center text-gray-400 mt-3">
+                                    Secure payment via PayPal. 100% goes to the mission.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

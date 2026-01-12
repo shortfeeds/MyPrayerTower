@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { SaintProfile } from '@/components/saints/SaintProfile';
 import { generateSaintSchema } from '@/lib/seo/structuredData';
+import { toSafeJSON } from '@/lib/dto';
 
 const prisma = new PrismaClient();
 
@@ -53,7 +54,7 @@ export default async function SaintDetailPage({ params }: Props) {
                     }))
                 }}
             />
-            <SaintProfile saint={saint} />
+            <SaintProfile saint={toSafeJSON(saint)} />
         </>
     );
 }
