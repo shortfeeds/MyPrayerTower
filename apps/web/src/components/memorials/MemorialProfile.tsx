@@ -255,378 +255,376 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                 </div>
             </div>
 
-        </div>
-            </div >
 
-        {/* Anniversary Notification */ }
-    {
-        (() => {
-            if (!memorial.deathDate && !memorial.birthDate) return null;
-            const today = new Date();
-            const death = memorial.deathDate ? new Date(memorial.deathDate) : null;
-            const birth = memorial.birthDate ? new Date(memorial.birthDate) : null;
+            {/* Anniversary Notification */}
+            {
+                (() => {
+                    if (!memorial.deathDate && !memorial.birthDate) return null;
+                    const today = new Date();
+                    const death = memorial.deathDate ? new Date(memorial.deathDate) : null;
+                    const birth = memorial.birthDate ? new Date(memorial.birthDate) : null;
 
-            let anniversaryType = null;
-            let years = 0;
+                    let anniversaryType = null;
+                    let years = 0;
 
-            if (death && death.getDate() === today.getDate() && death.getMonth() === today.getMonth()) {
-                anniversaryType = 'death';
-                years = today.getFullYear() - death.getFullYear();
-            } else if (birth && birth.getDate() === today.getDate() && birth.getMonth() === today.getMonth()) {
-                anniversaryType = 'birth';
-                years = today.getFullYear() - birth.getFullYear();
+                    if (death && death.getDate() === today.getDate() && death.getMonth() === today.getMonth()) {
+                        anniversaryType = 'death';
+                        years = today.getFullYear() - death.getFullYear();
+                    } else if (birth && birth.getDate() === today.getDate() && birth.getMonth() === today.getMonth()) {
+                        anniversaryType = 'birth';
+                        years = today.getFullYear() - birth.getFullYear();
+                    }
+
+                    if (!anniversaryType) return null;
+
+                    return (
+                        <div className="container mx-auto px-4 -mt-8 mb-6 relative z-30">
+                            <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl p-4 shadow-lg flex items-center justify-between text-white animate-fade-in-up">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
+                                        <Sparkles className="w-6 h-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-lg">
+                                            Today is {memorial.firstName}'s {years > 0 ? `${years}th` : ''} {anniversaryType === 'birth' ? 'Birthday' : 'Remembrance Day'}
+                                        </h3>
+                                        <p className="text-amber-100 text-sm">Light a special candle to honor this memory forever.</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="px-6 py-2 bg-white text-amber-600 font-bold rounded-lg shadow-md hover:bg-amber-50 transition-colors"
+                                >
+                                    Light Candle
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })()
             }
 
-            if (!anniversaryType) return null;
-
-            return (
-                <div className="container mx-auto px-4 -mt-8 mb-6 relative z-30">
-                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl p-4 shadow-lg flex items-center justify-between text-white animate-fade-in-up">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
-                                <Sparkles className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-lg">
-                                    Today is {memorial.firstName}'s {years > 0 ? `${years}th` : ''} {anniversaryType === 'birth' ? 'Birthday' : 'Remembrance Day'}
-                                </h3>
-                                <p className="text-amber-100 text-sm">Light a special candle to honor this memory forever.</p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="px-6 py-2 bg-white text-amber-600 font-bold rounded-lg shadow-md hover:bg-amber-50 transition-colors"
-                        >
-                            Light Candle
-                        </button>
-                    </div>
-                </div>
-            );
-        })()
-    }
-
-    {/* Life Journey Timeline */ }
-    <div className="bg-white border-b border-gray-100 shadow-sm -mt-10 relative z-20 pt-10">
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
-                {memorial.birthDate && (
-                    <div className="text-center group">
-                        <div className="w-12 h-12 mx-auto bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <span className="text-2xl">🌅</span>
-                        </div>
-                        <div className="text-sm text-gray-400 font-medium tracking-wide uppercase">Sunrise</div>
-                        <div className="text-xl font-bold text-gray-900">{formatDate(memorial.birthDate)}</div>
-                    </div>
-                )}
-
-                {(memorial.birthDate && memorial.deathDate) && (
-                    <div className="hidden md:flex flex-1 max-w-xs flex-col items-center gap-2">
-                        <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent relative">
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-gray-400 font-medium">
-                                {(() => {
-                                    const start = new Date(memorial.birthDate!);
-                                    const end = new Date(memorial.deathDate!);
-                                    const age = end.getFullYear() - start.getFullYear();
-                                    return `${age} Years of Grace`;
-                                })()}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {memorial.deathDate && (
-                    <div className="text-center group">
-                        <div className="w-12 h-12 mx-auto bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <span className="text-2xl">🌇</span>
-                        </div>
-                        <div className="text-sm text-gray-400 font-medium tracking-wide uppercase">Sunset</div>
-                        <div className="text-xl font-bold text-gray-900">{formatDate(memorial.deathDate)}</div>
-                    </div>
-                )}
-            </div>
-        </div>
-    </div>
-
-    {/* Stats Bar */ }
-    <div className="bg-slate-50 border-b border-gray-200 shadow-inner relative z-10">
-        <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-center gap-8 text-center">
-                <div>
-                    <div className="text-3xl font-bold text-amber-500">{memorial.totalCandles}</div>
-                    <div className="text-sm text-gray-500">🕯️ Candles</div>
-                </div>
-                <div className="w-px h-10 bg-gray-200" />
-                <div>
-                    <div className="text-3xl font-bold text-blue-500">{memorial.totalMasses}</div>
-                    <div className="text-sm text-gray-500">✝️ Masses</div>
-                </div>
-                <div className="w-px h-10 bg-gray-200" />
-                <div>
-                    <div className="text-3xl font-bold text-rose-500">{memorial.totalFlowers}</div>
-                    <div className="text-sm text-gray-500">🌹 Flowers</div>
-                </div>
-                <div className="w-px h-10 bg-gray-200" />
-                <div>
-                    <div className="text-3xl font-bold text-purple-500">{memorial.totalPrayers}</div>
-                    <div className="text-sm text-gray-500">🙏 Prayers</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {/* Main Content */ }
-    <div className="container mx-auto px-4 py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-            {/* Left Column - Main Content */}
-            <div className="lg:col-span-2 space-y-8">
-                {/* Quick Offerings Section 1 */}
-                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Quick Acts of Love</h3>
-                    <p className="text-gray-500 mb-6">A small gesture, eternal love</p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="flex flex-col items-center p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-100 hover:border-amber-300 transition-all group"
-                        >
-                            <span className="text-3xl mb-2">🕯️</span>
-                            <span className="font-semibold text-gray-900">Candle</span>
-                            <span className="text-sm text-amber-600">$1-5</span>
-                        </button>
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="flex flex-col items-center p-4 bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl border border-rose-100 hover:border-rose-300 transition-all group"
-                        >
-                            <span className="text-3xl mb-2">🌹</span>
-                            <span className="font-semibold text-gray-900">Flowers</span>
-                            <span className="text-sm text-rose-600">$3</span>
-                        </button>
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all group"
-                        >
-                            <span className="text-3xl mb-2">🙏</span>
-                            <span className="font-semibold text-gray-900">Prayer</span>
-                            <span className="text-sm text-blue-600">$2</span>
-                        </button>
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl border border-purple-100 hover:border-purple-300 transition-all group"
-                        >
-                            <span className="text-3xl mb-2">💐</span>
-                            <span className="font-semibold text-gray-900">Bouquet</span>
-                            <span className="text-sm text-purple-600">$7</span>
-                        </button>
-                    </div>
-                </div>
-
-                {/* Sacred Offerings Section 2 */}
-                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Sacred Offerings</h3>
-                    <p className="text-gray-500 mb-6">The greatest gift — a prayer from the Church</p>
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="flex items-center gap-4 p-5 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100 hover:border-indigo-300 transition-all text-left"
-                        >
-                            <span className="text-4xl">💿</span>
-                            <div>
-                                <div className="font-semibold text-gray-900">Rosary</div>
-                                <div className="text-sm text-indigo-600">$5 - $15</div>
-                            </div>
-                        </button>
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="flex items-center gap-4 p-5 bg-gradient-to-br from-blue-50 to-sky-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all text-left"
-                        >
-                            <span className="text-4xl">✝️</span>
-                            <div>
-                                <div className="font-semibold text-gray-900">Holy Mass</div>
-                                <div className="text-sm text-blue-600">$25</div>
-                            </div>
-                            <ExternalLink className="w-4 h-4 ml-auto text-gray-400" />
-                        </button>
-                    </div>
-                </div>
-
-                {/* Spiritual Bouquets */}
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-200">
-                    <div className="flex items-center gap-3 mb-2">
-                        <Gift className="w-6 h-6 text-amber-600" />
-                        <h3 className="text-xl font-bold text-amber-800">Spiritual Bouquets</h3>
-                    </div>
-                    <p className="text-amber-700 mb-6">The most meaningful tribute you can give</p>
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
-                        >
-                            <div className="font-bold text-gray-900">Garden of Grace</div>
-                            <p className="text-sm text-gray-500 mb-2">3 candles + 1 rosary + prayer card</p>
-                            <div className="text-amber-600 font-bold">$19</div>
-                        </button>
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
-                        >
-                            <div className="font-bold text-gray-900">Heavenly Tribute</div>
-                            <p className="text-sm text-gray-500 mb-2">7 candles + 1 Mass + 1 rosary</p>
-                            <div className="text-amber-600 font-bold">$49</div>
-                        </button>
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
-                        >
-                            <div className="font-bold text-gray-900">Eternal Peace</div>
-                            <p className="text-sm text-gray-500 mb-2">30 candles + 3 Masses + 3 rosaries + flowers</p>
-                            <div className="text-amber-600 font-bold">$99</div>
-                        </button>
-                        <button
-                            onClick={() => setOfferingDialogOpen(true)}
-                            className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
-                        >
-                            <div className="font-bold text-gray-900">Legacy Remembrance</div>
-                            <p className="text-sm text-gray-500 mb-2">100 candles + 10 Masses + weekly rosary for 1 year</p>
-                            <div className="text-amber-600 font-bold">$299</div>
-                        </button>
-                    </div>
-                </div>
-
-                {/* Biography */}
-                {memorial.biography && (
-                    <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Life Story</h3>
-                        <div className="text-gray-700 leading-relaxed whitespace-pre-line">
-                            {memorial.biography}
-                        </div>
-                    </div>
-                )}
-
-                {/* Tributes & Memories */}
-                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <Heart className="w-5 h-5 text-rose-500" />
-                        Tributes & Memories
-                    </h3>
-
-                    {/* Add Message - Auth Required */}
-                    {isLoggedIn ? (
-                        <div className="mb-6">
-                            <textarea
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Share a memory or message of tribute..."
-                                className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
-                                rows={3}
-                            />
-                            <button
-                                onClick={submitGuestbook}
-                                disabled={!newMessage.trim() || submitting}
-                                className="mt-2 px-6 py-2 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 disabled:opacity-50 transition-colors"
-                            >
-                                {submitting ? 'Posting...' : 'Share Tribute'}
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="mb-6 p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200">
-                            <div className="flex items-start gap-4">
-                                <div className="p-3 bg-white rounded-xl shadow-sm">
-                                    <LogIn className="w-6 h-6 text-amber-600" />
+            {/* Life Journey Timeline */}
+            <div className="bg-white border-b border-gray-100 shadow-sm -mt-10 relative z-20 pt-10">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+                        {memorial.birthDate && (
+                            <div className="text-center group">
+                                <div className="w-12 h-12 mx-auto bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                    <span className="text-2xl">🌅</span>
                                 </div>
-                                <div className="flex-1">
-                                    <h4 className="font-bold text-gray-900 mb-1">Sign in to Leave a Tribute</h4>
-                                    <p className="text-sm text-gray-600 mb-3">
-                                        Join our community to share memories and messages of remembrance for {fullName}.
-                                    </p>
-                                    <Link
-                                        href={`/auth/signin?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
-                                        className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white font-semibold text-sm rounded-xl hover:bg-amber-600 transition-colors"
-                                    >
-                                        <LogIn className="w-4 h-4" />
-                                        Sign In
-                                    </Link>
-                                </div>
+                                <div className="text-sm text-gray-400 font-medium tracking-wide uppercase">Sunrise</div>
+                                <div className="text-xl font-bold text-gray-900">{formatDate(memorial.birthDate)}</div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* Messages */}
-                    <div className="space-y-4">
-                        {memorial.guestbook.length === 0 ? (
-                            <p className="text-center text-gray-500 py-8">Be the first to share a tribute.</p>
-                        ) : (
-                            memorial.guestbook.map((entry) => (
-                                <div key={entry.id} className="p-4 bg-gray-50 rounded-xl">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className="font-semibold text-gray-900">
-                                            {entry.user?.displayName || entry.guestName || 'Anonymous'}
-                                        </span>
-                                        <span className="text-sm text-gray-400">
-                                            {formatRelativeTime(entry.createdAt)}
-                                        </span>
+                        {(memorial.birthDate && memorial.deathDate) && (
+                            <div className="hidden md:flex flex-1 max-w-xs flex-col items-center gap-2">
+                                <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent relative">
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-gray-400 font-medium">
+                                        {(() => {
+                                            const start = new Date(memorial.birthDate!);
+                                            const end = new Date(memorial.deathDate!);
+                                            const age = end.getFullYear() - start.getFullYear();
+                                            return `${age} Years of Grace`;
+                                        })()}
                                     </div>
-                                    <p className="text-gray-700">{entry.message}</p>
                                 </div>
-                            ))
+                            </div>
+                        )}
+
+                        {memorial.deathDate && (
+                            <div className="text-center group">
+                                <div className="w-12 h-12 mx-auto bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                    <span className="text-2xl">🌇</span>
+                                </div>
+                                <div className="text-sm text-gray-400 font-medium tracking-wide uppercase">Sunset</div>
+                                <div className="text-xl font-bold text-gray-900">{formatDate(memorial.deathDate)}</div>
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
 
-            {/* Right Column - Sidebar */}
-            <div className="space-y-6">
-                {/* Recent Tributes */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h4 className="font-bold text-gray-900 mb-4">Recent Tributes</h4>
-                    {memorial.offerings.length === 0 ? (
-                        <p className="text-sm text-gray-500">No tributes yet. Be the first!</p>
-                    ) : (
-                        <div className="space-y-3">
-                            {memorial.offerings.slice(0, 10).map((offering) => {
-                                const offeringInfo = OFFERING_LABELS[offering.type] || { label: offering.type, icon: '🎁' };
-                                const displayName = offering.isAnonymous
-                                    ? 'Anonymous'
-                                    : offering.user?.displayName || offering.guestName || 'Someone';
-                                return (
-                                    <div key={offering.id} className="flex items-start gap-3 text-sm">
-                                        <span className="text-lg">{offeringInfo.icon}</span>
-                                        <div>
-                                            <span className="font-medium text-gray-900">{displayName}</span>
-                                            <span className="text-gray-500"> sent a {offeringInfo.label}</span>
-                                            <div className="text-xs text-gray-400">
-                                                {formatRelativeTime(offering.createdAt)}
-                                            </div>
+            {/* Stats Bar */}
+            <div className="bg-slate-50 border-b border-gray-200 shadow-inner relative z-10">
+                <div className="container mx-auto px-4 py-4">
+                    <div className="flex items-center justify-center gap-8 text-center">
+                        <div>
+                            <div className="text-3xl font-bold text-amber-500">{memorial.totalCandles}</div>
+                            <div className="text-sm text-gray-500">🕯️ Candles</div>
+                        </div>
+                        <div className="w-px h-10 bg-gray-200" />
+                        <div>
+                            <div className="text-3xl font-bold text-blue-500">{memorial.totalMasses}</div>
+                            <div className="text-sm text-gray-500">✝️ Masses</div>
+                        </div>
+                        <div className="w-px h-10 bg-gray-200" />
+                        <div>
+                            <div className="text-3xl font-bold text-rose-500">{memorial.totalFlowers}</div>
+                            <div className="text-sm text-gray-500">🌹 Flowers</div>
+                        </div>
+                        <div className="w-px h-10 bg-gray-200" />
+                        <div>
+                            <div className="text-3xl font-bold text-purple-500">{memorial.totalPrayers}</div>
+                            <div className="text-sm text-gray-500">🙏 Prayers</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="container mx-auto px-4 py-12">
+                <div className="grid lg:grid-cols-3 gap-8">
+                    {/* Left Column - Main Content */}
+                    <div className="lg:col-span-2 space-y-8">
+                        {/* Quick Offerings Section 1 */}
+                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">Quick Acts of Love</h3>
+                            <p className="text-gray-500 mb-6">A small gesture, eternal love</p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-100 hover:border-amber-300 transition-all group"
+                                >
+                                    <span className="text-3xl mb-2">🕯️</span>
+                                    <span className="font-semibold text-gray-900">Candle</span>
+                                    <span className="text-sm text-amber-600">$1-5</span>
+                                </button>
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl border border-rose-100 hover:border-rose-300 transition-all group"
+                                >
+                                    <span className="text-3xl mb-2">🌹</span>
+                                    <span className="font-semibold text-gray-900">Flowers</span>
+                                    <span className="text-sm text-rose-600">$3</span>
+                                </button>
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all group"
+                                >
+                                    <span className="text-3xl mb-2">🙏</span>
+                                    <span className="font-semibold text-gray-900">Prayer</span>
+                                    <span className="text-sm text-blue-600">$2</span>
+                                </button>
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl border border-purple-100 hover:border-purple-300 transition-all group"
+                                >
+                                    <span className="text-3xl mb-2">💐</span>
+                                    <span className="font-semibold text-gray-900">Bouquet</span>
+                                    <span className="text-sm text-purple-600">$7</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Sacred Offerings Section 2 */}
+                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">Sacred Offerings</h3>
+                            <p className="text-gray-500 mb-6">The greatest gift — a prayer from the Church</p>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="flex items-center gap-4 p-5 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100 hover:border-indigo-300 transition-all text-left"
+                                >
+                                    <span className="text-4xl">💿</span>
+                                    <div>
+                                        <div className="font-semibold text-gray-900">Rosary</div>
+                                        <div className="text-sm text-indigo-600">$5 - $15</div>
+                                    </div>
+                                </button>
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="flex items-center gap-4 p-5 bg-gradient-to-br from-blue-50 to-sky-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all text-left"
+                                >
+                                    <span className="text-4xl">✝️</span>
+                                    <div>
+                                        <div className="font-semibold text-gray-900">Holy Mass</div>
+                                        <div className="text-sm text-blue-600">$25</div>
+                                    </div>
+                                    <ExternalLink className="w-4 h-4 ml-auto text-gray-400" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Spiritual Bouquets */}
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-200">
+                            <div className="flex items-center gap-3 mb-2">
+                                <Gift className="w-6 h-6 text-amber-600" />
+                                <h3 className="text-xl font-bold text-amber-800">Spiritual Bouquets</h3>
+                            </div>
+                            <p className="text-amber-700 mb-6">The most meaningful tribute you can give</p>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
+                                >
+                                    <div className="font-bold text-gray-900">Garden of Grace</div>
+                                    <p className="text-sm text-gray-500 mb-2">3 candles + 1 rosary + prayer card</p>
+                                    <div className="text-amber-600 font-bold">$19</div>
+                                </button>
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
+                                >
+                                    <div className="font-bold text-gray-900">Heavenly Tribute</div>
+                                    <p className="text-sm text-gray-500 mb-2">7 candles + 1 Mass + 1 rosary</p>
+                                    <div className="text-amber-600 font-bold">$49</div>
+                                </button>
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
+                                >
+                                    <div className="font-bold text-gray-900">Eternal Peace</div>
+                                    <p className="text-sm text-gray-500 mb-2">30 candles + 3 Masses + 3 rosaries + flowers</p>
+                                    <div className="text-amber-600 font-bold">$99</div>
+                                </button>
+                                <button
+                                    onClick={() => setOfferingDialogOpen(true)}
+                                    className="p-5 bg-white rounded-2xl border border-amber-200 hover:border-amber-400 transition-all text-left"
+                                >
+                                    <div className="font-bold text-gray-900">Legacy Remembrance</div>
+                                    <p className="text-sm text-gray-500 mb-2">100 candles + 10 Masses + weekly rosary for 1 year</p>
+                                    <div className="text-amber-600 font-bold">$299</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Biography */}
+                        {memorial.biography && (
+                            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                                <h3 className="text-xl font-bold text-gray-900 mb-4">Life Story</h3>
+                                <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                    {memorial.biography}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tributes & Memories */}
+                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                            <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                <Heart className="w-5 h-5 text-rose-500" />
+                                Tributes & Memories
+                            </h3>
+
+                            {/* Add Message - Auth Required */}
+                            {isLoggedIn ? (
+                                <div className="mb-6">
+                                    <textarea
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        placeholder="Share a memory or message of tribute..."
+                                        className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
+                                        rows={3}
+                                    />
+                                    <button
+                                        onClick={submitGuestbook}
+                                        disabled={!newMessage.trim() || submitting}
+                                        className="mt-2 px-6 py-2 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 disabled:opacity-50 transition-colors"
+                                    >
+                                        {submitting ? 'Posting...' : 'Share Tribute'}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="mb-6 p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200">
+                                    <div className="flex items-start gap-4">
+                                        <div className="p-3 bg-white rounded-xl shadow-sm">
+                                            <LogIn className="w-6 h-6 text-amber-600" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-gray-900 mb-1">Sign in to Leave a Tribute</h4>
+                                            <p className="text-sm text-gray-600 mb-3">
+                                                Join our community to share memories and messages of remembrance for {fullName}.
+                                            </p>
+                                            <Link
+                                                href={`/auth/signin?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                                                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white font-semibold text-sm rounded-xl hover:bg-amber-600 transition-colors"
+                                            >
+                                                <LogIn className="w-4 h-4" />
+                                                Sign In
+                                            </Link>
                                         </div>
                                     </div>
-                                );
-                            })}
+                                </div>
+                            )}
+
+                            {/* Messages */}
+                            <div className="space-y-4">
+                                {memorial.guestbook.length === 0 ? (
+                                    <p className="text-center text-gray-500 py-8">Be the first to share a tribute.</p>
+                                ) : (
+                                    memorial.guestbook.map((entry) => (
+                                        <div key={entry.id} className="p-4 bg-gray-50 rounded-xl">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="font-semibold text-gray-900">
+                                                    {entry.user?.displayName || entry.guestName || 'Anonymous'}
+                                                </span>
+                                                <span className="text-sm text-gray-400">
+                                                    {formatRelativeTime(entry.createdAt)}
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-700">{entry.message}</p>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
                         </div>
-                    )}
-                </div>
+                    </div>
 
-                {/* QR Code for Physical Memorials */}
-                <QRCodeGenerator memorialSlug={memorial.slug} memorialName={fullName} />
+                    {/* Right Column - Sidebar */}
+                    <div className="space-y-6">
+                        {/* Recent Tributes */}
+                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-4">Recent Tributes</h4>
+                            {memorial.offerings.length === 0 ? (
+                                <p className="text-sm text-gray-500">No tributes yet. Be the first!</p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {memorial.offerings.slice(0, 10).map((offering) => {
+                                        const offeringInfo = OFFERING_LABELS[offering.type] || { label: offering.type, icon: '🎁' };
+                                        const displayName = offering.isAnonymous
+                                            ? 'Anonymous'
+                                            : offering.user?.displayName || offering.guestName || 'Someone';
+                                        return (
+                                            <div key={offering.id} className="flex items-start gap-3 text-sm">
+                                                <span className="text-lg">{offeringInfo.icon}</span>
+                                                <div>
+                                                    <span className="font-medium text-gray-900">{displayName}</span>
+                                                    <span className="text-gray-500"> sent a {offeringInfo.label}</span>
+                                                    <div className="text-xs text-gray-400">
+                                                        {formatRelativeTime(offering.createdAt)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
 
-                {/* Sidebar Ad */}
-                <SmartAdSlot page="memorials" position="sidebar" />
+                        {/* QR Code for Physical Memorials */}
+                        <QRCodeGenerator memorialSlug={memorial.slug} memorialName={fullName} />
 
-                {/* Invite Family */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-                    <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-                        <Users className="w-5 h-5 text-blue-500" />
-                        Invite Family
-                    </h4>
-                    <p className="text-sm text-gray-600 mb-4">
-                        Invite loved ones to contribute to this memorial.
-                    </p>
-                    <button
-                        onClick={shareInvitation}
-                        className="w-full py-2 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition-colors"
-                    >
-                        {linkCopied ? '✅ Link Copied!' : 'Share Invitation'}
-                    </button>
-                </div>
+                        {/* Sidebar Ad */}
+                        <SmartAdSlot page="memorials" position="sidebar" />
 
-                {/* Upgrade CTA for Basic Tier - HIDDEN until upgrade page is implemented
+                        {/* Invite Family */}
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+                            <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                <Users className="w-5 h-5 text-blue-500" />
+                                Invite Family
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Invite loved ones to contribute to this memorial.
+                            </p>
+                            <button
+                                onClick={shareInvitation}
+                                className="w-full py-2 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition-colors"
+                            >
+                                {linkCopied ? '✅ Link Copied!' : 'Share Invitation'}
+                            </button>
+                        </div>
+
+                        {/* Upgrade CTA for Basic Tier - HIDDEN until upgrade page is implemented
                         {memorial.tier === 'BASIC' && (
                             <div className="bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 rounded-2xl p-6 border-2 border-amber-400 shadow-lg">
                                 <div className="flex items-center gap-2 mb-3">
@@ -649,16 +647,16 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                             </div>
                         )}
                         */}
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    {/* Offering Dialog */ }
-    <OfferingDialog
-        memorial={{ id: memorial.id, firstName: memorial.firstName, lastName: memorial.lastName, photoUrl: memorial.photoUrl }}
-        isOpen={offeringDialogOpen}
-        onClose={() => setOfferingDialogOpen(false)}
-    />
+            {/* Offering Dialog */}
+            <OfferingDialog
+                memorial={{ id: memorial.id, firstName: memorial.firstName, lastName: memorial.lastName, photoUrl: memorial.photoUrl }}
+                isOpen={offeringDialogOpen}
+                onClose={() => setOfferingDialogOpen(false)}
+            />
         </div >
     );
 }
