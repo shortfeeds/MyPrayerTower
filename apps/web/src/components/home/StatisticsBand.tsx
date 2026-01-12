@@ -61,7 +61,7 @@ function StatItem({ icon: Icon, value, label, description, growthRate, delay }: 
             </div>
 
             <div className="font-serif text-3xl lg:text-5xl font-bold text-white mb-2 tracking-tight tabular-nums relative z-10 drop-shadow-sm">
-                {count.toLocaleString()}
+                {count.toLocaleString()}+
             </div>
 
             <div className="font-bold text-gold-200 uppercase tracking-widest text-xs mb-1">
@@ -130,26 +130,26 @@ export function StatisticsBand() {
                     />
                     <StatItem
                         icon={Heart}
-                        value={543921}
-                        growthRate={5}
-                        label="Prayers Completed"
-                        description="Total prayers this month"
+                        value={3900}
+                        growthRate={0}
+                        label="Prayers Included"
+                        description="In our growing library"
                         delay={0.2}
                     />
                     <StatItem
                         icon={Building2}
-                        value={12450}
-                        growthRate={0.1}
+                        value={8500}
+                        growthRate={5}
                         label="Churches Listed"
                         description="Parishes and sanctuaries"
                         delay={0.3}
                     />
                     <StatItem
                         icon={Flame}
-                        value={254203}
-                        growthRate={1}
-                        label="Active Streaks"
-                        description="Users creating habits"
+                        value={6000}
+                        growthRate={3}
+                        label="Saints profiles"
+                        description="Inspiring lives of faith"
                         delay={0.4}
                     />
                 </div>

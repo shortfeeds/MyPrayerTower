@@ -45,11 +45,16 @@ export default async function PrayersPage({
         where.category = categoryFilter;
     }
 
-    const prayers = await db.prayer.findMany({
+    const dbPrayers = await db.prayer.findMany({
         where,
         orderBy: { title: 'asc' },
         take: 100,
     });
+
+    const prayers = dbPrayers.map(p => ({
+        ...p,
+        id: p.id.toString(),
+    }));
 
     const allPrayers = await db.prayer.findMany({
         where: { is_active: true },
@@ -70,7 +75,8 @@ export default async function PrayersPage({
         .map(([slug, data]) => ({ slug, label: data.label, count: data.count }))
         .sort((a, b) => a.label.localeCompare(b.label));
 
-    const totalPrayers = allPrayers.length;
+    // Force display count to 3900+ as requested by user if actual count is lower
+    const totalPrayers = Math.max(allPrayers.length, 3900);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -85,7 +91,7 @@ export default async function PrayersPage({
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-md rounded-full text-white/90 text-sm font-medium mb-4 border border-white/20">
                             <BookOpen className="w-4 h-4" />
-                            <span>{totalPrayers.toLocaleString()} Prayers</span>
+                            <span>{totalPrayers.toLocaleString()}+ Prayers</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">

@@ -140,7 +140,7 @@ export default function ChurchesPage() {
                     <div className="max-w-5xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-white/90 text-sm font-medium mb-4 border border-white/10">
                             <Globe className="w-4 h-4" />
-                            <span>{total.toLocaleString()}+ Catholic Churches</span>
+                            <span>{Math.max(total, 8500).toLocaleString()}+ Catholic Churches</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-3">
@@ -468,7 +468,7 @@ export default function ChurchesPage() {
                                 <div className="space-y-2 text-sm">
                                     <div className="flex justify-between">
                                         <span className="text-slate-500">Total Churches</span>
-                                        <span className="font-semibold text-slate-900">{total.toLocaleString()}</span>
+                                        <span className="font-semibold text-slate-900">{Math.max(total, 8500).toLocaleString()}+</span>
                                     </div>
                                     {filters && (
                                         <>

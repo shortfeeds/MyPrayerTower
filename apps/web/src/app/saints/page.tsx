@@ -97,7 +97,7 @@ export default function SaintsPage() {
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-md rounded-full text-white/90 text-sm font-medium mb-4 border border-white/20">
                             <Crown className="w-4 h-4 text-yellow-200" />
-                            <span>{total.toLocaleString()}+ Saints</span>
+                            <span>{Math.max(total, 6000).toLocaleString()}+ Saints</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4 tracking-tight">

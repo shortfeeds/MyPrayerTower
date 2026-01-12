@@ -905,6 +905,7 @@ model Prayer {
 
   @@index([is_active], map: "prayers_active_idx")
   @@index([category], map: "prayers_category_idx")
+  @@index([is_active, category], map: "prayers_active_category_idx") // Compound index for filtered queries
   @@index([tags], map: "prayers_tags_idx", type: Gin)
 }
 
