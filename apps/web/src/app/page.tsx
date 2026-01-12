@@ -236,7 +236,7 @@ function LoggedOutHomePage() {
                                 className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/20 group"
                             >
                                 <Heart className="w-5 h-5 mr-2 fill-white/20 group-hover:fill-white transition-all" />
-                                Pray Now (Free)
+                                Pray Now
                             </Link>
                             <Link
                                 href="/candles"
@@ -244,12 +244,6 @@ function LoggedOutHomePage() {
                             >
                                 <Flame className="w-5 h-5 mr-2 text-gold-400" />
                                 Light a Candle
-                            </Link>
-                            <Link
-                                href="/prayer-wall"
-                                className="inline-flex items-center justify-center px-8 py-4 text-blue-100 hover:text-white font-semibold text-lg hover:underline underline-offset-4 decoration-gold-400/50 hover:decoration-gold-400 transition-all"
-                            >
-                                Submit Intentions
                             </Link>
                         </div>
                     </div>

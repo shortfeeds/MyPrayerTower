@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
 
 // Dynamic import to avoid SSR issues
-const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout'), { ssr: false });
+const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
 
 // Donation tiers
 const DONATION_TIERS = [

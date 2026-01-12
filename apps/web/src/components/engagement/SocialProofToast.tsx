@@ -132,7 +132,7 @@ export function SocialProofToast({
     if (!enabled || !isClient) return null;
 
     return (
-        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
+        <div className="fixed bottom-24 md:bottom-8 left-4 md:left-8 z-40 max-w-[calc(100vw-2rem)] md:max-w-sm pointer-events-none">
             {toasts.map(toast => (
                 <div
                     key={toast.id}
@@ -143,6 +143,7 @@ export function SocialProofToast({
                         border border-gray-100 dark:border-gray-700
                         p-4 pr-10
                         relative
+                        pointer-events-auto
                     `}
                 >
                     <button

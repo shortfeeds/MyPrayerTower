@@ -36,7 +36,7 @@ export interface PayPalSuccessDetails {
 // LIVE Client ID - Hardcoded for stability as per user confirmation
 const LIVE_CLIENT_ID = 'AZ3c6O0DJtvSCjr7LTBRSgugVnLfCJSZmIeB27xEFsgslNkjTu7wR92V1E-K2luCnN4ZIAreeCvx1-Fc';
 
-export default function PayPalCheckout({
+export function PayPalCheckout({
     amount,
     description,
     onSuccess,

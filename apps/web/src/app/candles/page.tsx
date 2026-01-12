@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
 
 // Dynamic import to avoid SSR issues with PayPal SDK
-const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout'), { ssr: false });
+const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
 
 interface Candle {
     id: string;

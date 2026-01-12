@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
 
 // Dynamic import to avoid SSR issues
-const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout'), { ssr: false });
+const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
 
 // Offering types with pricing
 const OFFERING_TYPES = [
@@ -20,21 +20,22 @@ const OFFERING_TYPES = [
         popular: false,
     },
     {
-        id: 'PERPETUAL',
-        name: 'Perpetual Enrollment',
-        icon: '🌟',
-        price: 10000,
-        description: 'Enrolled forever in daily Masses at our partner monasteries',
-        popular: true,
-        badge: 'BEST VALUE',
-    },
-    {
         id: 'NOVENA',
         name: 'Novena of Masses',
         icon: '💿',
         price: 7500,
         description: '9 consecutive Masses offered for your intention',
+        popular: true,
+        badge: 'POPULAR',
+    },
+    {
+        id: 'PERPETUAL',
+        name: 'Perpetual Enrollment',
+        icon: '🌟',
+        price: 10000,
+        description: 'Enrolled in the Perpetual Mass Association, sharing in daily Masses forever',
         popular: false,
+        badge: 'BEST VALUE',
     },
     {
         id: 'GREGORIAN',

@@ -154,7 +154,7 @@ export function SeasonBadge({ className = '' }: { className?: string }) {
 
     const badges = {
         advent: { label: 'Advent', emoji: '🕯️', bg: 'bg-purple-100 text-purple-700' },
-        christmas: { label: 'Christmas', emoji: '⭐', bg: 'bg-red-100 text-red-700' },
+        christmas: { label: '', emoji: '⭐', bg: 'bg-red-100 text-red-700' },
         lent: { label: 'Lent', emoji: '✝️', bg: 'bg-purple-100 text-purple-700' },
         easter: { label: 'Easter', emoji: '🐣', bg: 'bg-amber-100 text-amber-700' },
         ordinary: { label: 'Ordinary Time', emoji: '🌿', bg: 'bg-green-100 text-green-700' },

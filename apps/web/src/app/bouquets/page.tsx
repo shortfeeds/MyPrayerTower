@@ -2,8 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Heart as HeartIcon, Church, Star, Flower, ChevronLeft, Gift, Mail, Calendar, Send } from 'lucide-react';
-import PayPalCheckout, { PayPalSuccessDetails } from '@/components/PayPalCheckout';
+import { Heart as BouquetHeart, Church, Star, Flower, ChevronLeft, Gift, Mail, Calendar, Send } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
+
+// Dynamic import for PayPal to prevent hydration issues
+const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
 
 const occasions = [
     'Birthday', 'Anniversary', 'Get Well Soon', 'In Sympathy', 'Congratulations',
@@ -12,7 +16,7 @@ const occasions = [
 
 export default function BouquetsPage() {
     const bouquetItems = [
-        { id: 'prayer', name: 'Prayers', price: 0, icon: HeartIcon, description: 'Offer daily prayers', subLabel: 'Your prayer intentions' },
+        { id: 'prayer', name: 'Prayers', price: 0, icon: BouquetHeart, description: 'Offer daily prayers', subLabel: 'Your prayer intentions' },
         { id: 'mass', name: 'Holy Mass', price: 1000, icon: Church, description: 'Have a Mass offered for your intention' },
         { id: 'rosary', name: 'Rosary', price: 500, icon: Star, description: 'Pray a Rosary for the recipient' },
         { id: 'candle', name: 'Virtual Candle', price: 500, icon: Flower, description: 'Light a 5-day candle' },

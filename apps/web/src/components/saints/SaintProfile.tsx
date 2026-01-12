@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { SmartAdSlot } from '@/components/ads';
-import PayPalCheckout from '@/components/PayPalCheckout'; // Ensure default export import
+import { PayPalCheckout } from '@/components/PayPalCheckout';
 
 // ... imports
 
@@ -306,8 +306,8 @@ export function SaintProfile({ saint }: { saint: Saint }) {
                                             key={amt}
                                             onClick={() => setAmount(amt)}
                                             className={`py-2 px-3 rounded-xl border-2 font-semibold transition-all ${amount === amt
-                                                    ? 'border-amber-500 bg-amber-50 text-amber-700'
-                                                    : 'border-gray-100 hover:border-amber-200 text-gray-600'
+                                                ? 'border-amber-500 bg-amber-50 text-amber-700'
+                                                : 'border-gray-100 hover:border-amber-200 text-gray-600'
                                                 }`}
                                         >
                                             ${amt}

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, Smartphone, Gift, Flame } from 'lucide-react';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
+import { UniversalOfferingModal } from '@/components/offerings/UniversalOfferingModal';
 
 // App Store Button Component
 function AppStoreButton({ store }: { store: 'apple' | 'google' }) {
@@ -74,6 +75,7 @@ function NewsletterForm() {
 export function Footer() {
     const [currentYear, setCurrentYear] = React.useState(2026);
     const pathname = usePathname();
+    const [showOfferings, setShowOfferings] = useState(false);
 
     React.useEffect(() => {
         setCurrentYear(new Date().getFullYear());
@@ -92,8 +94,8 @@ export function Footer() {
         { href: '/', label: 'Home', icon: Home },
         { href: '/memorials', label: 'Memorials', icon: Heart },
         { href: '/churches', label: 'Churches', icon: Church },
-        { href: '/candles', label: 'Candles', icon: Flame },
-        { href: '/mass-offerings', label: 'Mass', icon: Gift },
+        { href: '/prayers', label: 'Prayers', icon: Star },
+        { href: '#offerings', label: 'Offerings', icon: Gift, isAction: true },
     ];
 
     const isActive = (path: string) => pathname === path;
@@ -272,6 +274,12 @@ export function Footer() {
                         <Link
                             key={item.href}
                             href={item.href}
+                            onClick={(e) => {
+                                if ((item as any).isAction) {
+                                    e.preventDefault();
+                                    setShowOfferings(true);
+                                }
+                            }}
                             className={`flex flex-col items-center gap-1.5 px-3 py-1 rounded-xl transition-colors ${isActive(item.href) ? 'text-blue-600 dark:text-gold-400' : 'text-gray-400'}`}
                         >
                             <item.icon className="w-5 h-5" strokeWidth={isActive(item.href) ? 2.5 : 2} />
@@ -280,6 +288,7 @@ export function Footer() {
                     ))}
                 </div>
             </nav>
+            <UniversalOfferingModal isOpen={showOfferings} onClose={() => setShowOfferings(false)} />
         </>
     );
 }
