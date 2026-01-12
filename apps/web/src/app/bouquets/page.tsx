@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { ChevronLeft, Heart, Gift, Flower, Church, Star, Send, Mail, Calendar } from 'lucide-react';
 
 const bouquetItems = [
-    { id: 'mass', name: 'Mass Offering', price: 1000, icon: Church, description: 'Have a Mass offered for your intention' },
-    { id: 'rosary', name: 'Rosary', price: 0, icon: Star, description: 'Pray a Rosary for the recipient' },
-    { id: 'prayer', name: 'Prayers', price: 0, icon: Heart, description: 'Offer daily prayers' },
-    { id: 'candle', name: 'Virtual Candle', price: 499, icon: Flower, description: 'Light a 7-day candle' },
+    { id: 'prayer', name: 'Prayers', price: 0, icon: Heart, description: 'Offer daily prayers', subLabel: 'Free' },
+    { id: 'mass', name: 'Holy Mass', price: 1000, icon: Church, description: 'Have a Mass offered for your intention' },
+    { id: 'rosary', name: 'Rosary', price: 500, icon: Star, description: 'Pray a Rosary for the recipient' },
+    { id: 'candle', name: 'Virtual Candle', price: 500, icon: Flower, description: 'Light a 5-day candle' },
 ];
 
 const occasions = [
@@ -158,6 +158,9 @@ export default function BouquetsPage() {
                                             <div className="flex-1">
                                                 <h3 className="font-semibold text-gray-900">{item.name}</h3>
                                                 <p className="text-sm text-gray-500">{item.description}</p>
+                                                {(item as any).subLabel && (
+                                                    <p className="text-sm font-medium text-green-600">{(item as any).subLabel}</p>
+                                                )}
                                                 {item.price > 0 && (
                                                     <p className="text-sm font-medium text-rose-600">${(item.price / 100).toFixed(2)}</p>
                                                 )}

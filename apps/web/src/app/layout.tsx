@@ -108,14 +108,13 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
             <head>
-                {/* Google AdSense - Optimized Load Strategy */}
+                {/* Google AdSense - Direct Injection for Stability */}
                 {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
-                    <Script
+                    <script
                         async
                         src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-                        strategy="lazyOnload"
                         crossOrigin="anonymous"
-                    />
+                    ></script>
                 )}
 
                 {/* Preconnect to critical domains */}

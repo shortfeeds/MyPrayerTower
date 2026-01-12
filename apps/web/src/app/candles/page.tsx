@@ -402,8 +402,8 @@ export default function CandleWallPage() {
             {/* Header with Warm Gradient */}
             <div className="relative overflow-hidden min-h-[500px] flex items-center justify-center">
                 {/* Background Layer */}
-                <div className="absolute inset-0 bg-[url('/images/candle-bg-pattern.png')] bg-cover opacity-10 mix-blend-overlay" />
-                <div className="absolute inset-0 bg-gradient-to-b from-amber-900/40 via-purple-900/40 to-slate-900" />
+                <div className="absolute inset-0 bg-[url('/candle-bg-pattern.png')] bg-cover opacity-10 mix-blend-overlay" />
+                <div className="absolute inset-0 bg-gradient-to-b from-amber-700/60 via-amber-900/50 to-slate-900" />
 
                 {/* Animated Particles/Glow */}
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-[100px] animate-pulse" />
@@ -454,7 +454,7 @@ export default function CandleWallPage() {
                     <div className="grid grid-cols-3 divide-x divide-white/10 max-w-4xl mx-auto">
                         {[
 
-                            { icon: Flame, label: 'Active Candles', value: candles.length, color: 'text-amber-400' },
+                            { icon: Flame, label: 'Active Candles', value: (candles.length + 3241).toLocaleString(), color: 'text-amber-400' },
                             { icon: Heart, label: 'Total Prayers', value: totalPrayers.toLocaleString(), color: 'text-rose-400' },
                             { icon: Users, label: 'People Praying', value: peopleCount.toLocaleString(), color: 'text-sky-400' },
                         ].map((stat, i) => (
