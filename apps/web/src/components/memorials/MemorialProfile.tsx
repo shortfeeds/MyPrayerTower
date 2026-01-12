@@ -168,18 +168,7 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
         <div className="min-h-screen bg-slate-50">
             {/* Premium Shimmer Animation */}
             {memorial.tier === 'PREMIUM' && (
-                <style dangerouslySetInnerHTML={{
-                    __html: `
-                    @keyframes shimmer {
-                        0% { background-position: -200% center; }
-                        100% { background-position: 200% center; }
-                    }
-                    .premium-shimmer {
-                        background: linear-gradient(90deg, transparent, rgba(255,215,0,0.3), transparent);
-                        background-size: 200% 100%;
-                        animation: shimmer 3s infinite;
-                    }
-                `}} />
+                <div className="hidden" /> // Placeholder to keep logic if needed, or just remove
             )}
 
             {/* Featured Memorial Banner for Premium */}
