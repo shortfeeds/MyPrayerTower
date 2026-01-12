@@ -13,7 +13,7 @@ const TEXT_SIZES = [
 ];
 
 interface PrayerContentProps {
-    prayerId: number;
+    prayerId: string;
     prayerTitle: string;
     prayerContent: string;
     categoryLabel?: string;

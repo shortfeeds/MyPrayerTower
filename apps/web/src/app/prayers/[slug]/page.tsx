@@ -90,7 +90,7 @@ export default async function PrayerDetailPage({ params }: Props) {
                     {/* Main Content */}
                     <main className="flex-1">
                         <PrayerContent
-                            prayerId={prayer.id}
+                            prayerId={prayer.id.toString()}
                             prayerTitle={prayer.title}
                             prayerContent={prayer.content}
                             categoryLabel={prayer.category_label || undefined}

@@ -1,10 +1,6 @@
-import { PrismaClient } from '@mpt/database';
-import { Metadata } from 'next';
-import Link from 'next/link';
-import { Search, BookOpen, ChevronRight, Filter, Clock, Play } from 'lucide-react';
-import { SmartAdSlot } from '@/components/ads';
+import { db } from '@/lib/db';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient(); // Removed local instantiation
 
 function getReadingTime(content: string): string {
     const words = content.split(/\s+/).length;
@@ -49,13 +45,13 @@ export default async function PrayersPage({
         where.category = categoryFilter;
     }
 
-    const prayers = await prisma.prayer.findMany({
+    const prayers = await db.prayer.findMany({
         where,
         orderBy: { title: 'asc' },
         take: 100,
     });
 
-    const allPrayers = await prisma.prayer.findMany({
+    const allPrayers = await db.prayer.findMany({
         where: { is_active: true },
         select: { category: true, category_label: true },
     });
