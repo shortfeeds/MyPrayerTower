@@ -8,9 +8,9 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const prayer = await db.prayer.findFirst({
+    const prayer = toSafeJSON(await db.prayer.findFirst({
         where: { slug: params.slug },
-    });
+    }));
 
     if (!prayer) return { title: 'Prayer Not Found' };
 
@@ -21,9 +21,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PrayerDetailPage({ params }: Props) {
-    const prayer = await db.prayer.findFirst({
+    const prayer = toSafeJSON(await db.prayer.findFirst({
         where: { slug: params.slug },
-    });
+    }));
 
     if (!prayer || !prayer.is_active) {
         notFound();
