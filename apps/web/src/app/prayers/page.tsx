@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { toSafeJSON } from '@/lib/dto';
 
 // const prisma = new PrismaClient(); // Removed local instantiation
 
@@ -51,10 +52,7 @@ export default async function PrayersPage({
         take: 100,
     });
 
-    const prayers = dbPrayers.map(p => ({
-        ...p,
-        id: p.id.toString(),
-    }));
+    const prayers = toSafeJSON(dbPrayers);
 
     const allPrayers = await db.prayer.findMany({
         where: { is_active: true },
