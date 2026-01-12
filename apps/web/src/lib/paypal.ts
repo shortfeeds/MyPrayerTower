@@ -5,7 +5,7 @@ const PAYPAL_BASE_URL = process.env.PAYPAL_ENVIRONMENT === 'live'
     ? 'https://api-m.paypal.com'
     : 'https://api-m.sandbox.paypal.com';
 
-const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '';
+const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || 'AZ3c6O0DJtvSCjr7LTBRSgugVnLfCJSZmIeB27xEFsgslNkjTu7wR92V1E-K2luCnN4ZIAreeCvx1-Fc';
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || '';
 
 interface PayPalOrder {
@@ -37,6 +37,20 @@ interface PayPalCaptureResult {
  * Get PayPal access token using client credentials
  */
 async function getAccessToken(): Promise<string> {
+    // Debug logging for troubleshooting
+    console.log('PayPal Config Debug:', {
+        clientIdSet: !!PAYPAL_CLIENT_ID,
+        clientIdPrefix: PAYPAL_CLIENT_ID ? PAYPAL_CLIENT_ID.substring(0, 4) : 'N/A',
+        secretSet: !!PAYPAL_CLIENT_SECRET,
+        secretLength: PAYPAL_CLIENT_SECRET ? PAYPAL_CLIENT_SECRET.length : 0,
+        env: process.env.PAYPAL_ENVIRONMENT
+    });
+
+    if (!PAYPAL_CLIENT_SECRET) {
+        console.error('PayPal Error: PAYPAL_CLIENT_SECRET is missing in environment variables.');
+        throw new Error('Missing PayPal Client Secret');
+    }
+
     const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64');
 
     const response = await fetch(`${PAYPAL_BASE_URL}/v1/oauth2/token`, {
