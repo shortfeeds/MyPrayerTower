@@ -12,7 +12,7 @@ export interface PayPalFrontendItem {
 }
 
 interface PayPalCheckoutProps {
-    amount: number; // Amount in cents
+    amount?: number; // Amount in cents (for one-time)
     description: string;
     onSuccess: (details: PayPalSuccessDetails) => void;
     onError?: (error: any) => void;
@@ -20,6 +20,7 @@ interface PayPalCheckoutProps {
     disabled?: boolean;
     referenceId?: string;
     items?: PayPalFrontendItem[];
+    subscriptionPlanId?: string; // If provided, handles subscription
 }
 
 export interface PayPalSuccessDetails {
@@ -44,6 +45,7 @@ export default function PayPalCheckout({
     disabled = false,
     referenceId,
     items,
+    subscriptionPlanId,
 }: PayPalCheckoutProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -64,7 +66,8 @@ export default function PayPalCheckout({
             options={{
                 clientId: clientId,
                 currency: 'USD',
-                intent: 'capture',
+                intent: subscriptionPlanId ? 'subscription' : 'capture',
+                vault: subscriptionPlanId ? true : false,
             }}
         >
             <div className={`w-full relative z-0 ${disabled || isProcessing ? 'opacity-70 pointer-events-none' : ''}`}>
@@ -82,17 +85,22 @@ export default function PayPalCheckout({
                 )}
 
                 <PayPalButtons
-                    key={referenceId || 'paypal-buttons'}
+                    key={subscriptionPlanId ? `sub-${subscriptionPlanId}` : (referenceId || 'paypal-buttons')}
                     style={{
                         layout: 'vertical',
                         color: 'gold',
                         shape: 'rect',
-                        label: 'pay',
+                        label: subscriptionPlanId ? 'subscribe' : 'pay',
                         height: 48,
                     }}
                     fundingSource={FUNDING.PAYPAL}
                     disabled={disabled || isProcessing}
-                    createOrder={async (data, actions) => {
+                    createSubscription={subscriptionPlanId ? (data, actions) => {
+                        return actions.subscription.create({
+                            plan_id: subscriptionPlanId,
+                        });
+                    } : undefined}
+                    createOrder={!subscriptionPlanId ? async (data, actions) => {
                         setIsProcessing(true);
                         setErrorMessage('');
                         try {
@@ -121,93 +129,27 @@ export default function PayPalCheckout({
                             if (onError) onError(error);
                             throw error;
                         }
-                    }}
+                    } : undefined}
                     onApprove={async (data, actions) => {
-                        try {
-                            const response = await fetch('/api/paypal/capture-order', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ orderId: data.orderID }),
-                            });
-
-                            const captureData = await response.json();
-
-                            if (captureData.success) {
-                                onSuccess({
-                                    orderId: captureData.orderId,
-                                    captureId: captureData.captureId,
-                                    amount: captureData.amount,
-                                    currency: captureData.currency,
-                                    payerEmail: captureData.payerEmail,
-                                    payerName: captureData.payerName,
-                                    status: captureData.status,
-                                });
-                            } else {
-                                throw new Error(captureData.message || 'Payment capture failed');
-                            }
-                        } catch (error: any) {
-                            console.error('PayPal Capture Error:', error);
-                            setErrorMessage('Payment confirmed but processing failed. Please contact support.');
-                            if (onError) onError(error);
-                        } finally {
-                            setIsProcessing(false);
-                        }
-                    }}
-                    onCancel={() => {
-                        setIsProcessing(false);
-                        if (onCancel) onCancel();
-                    }}
-                    onError={(err) => {
-                        setIsProcessing(false);
-                        console.error('PayPal Button Error:', err);
-                        // Don't show generic error to user immediately, let them retry
-                        if (onError) onError(err);
-                    }}
-                />
-
-                <div className="mt-3">
-                    <PayPalButtons
-                        key={`${referenceId}-card`}
-                        style={{
-                            layout: 'vertical',
-                            color: 'black',
-                            shape: 'rect',
-                            label: 'pay',
-                            height: 48,
-                        }}
-                        fundingSource={FUNDING.CARD}
-                        disabled={disabled || isProcessing}
-                        createOrder={async (data, actions) => {
+                        if (subscriptionPlanId) {
                             setIsProcessing(true);
-                            setErrorMessage('');
                             try {
-                                const response = await fetch('/api/paypal/create-order', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                        amount,
-                                        description,
-                                        referenceId,
-                                        items,
-                                    }),
+                                onSuccess({
+                                    orderId: data.subscriptionID || '',
+                                    captureId: data.subscriptionID || '',
+                                    amount: String(amount || 0),
+                                    currency: 'USD',
+                                    payerEmail: '', // Payer details are less accessible for subs directly here
+                                    payerName: 'Subscriber',
+                                    status: 'ACTIVE',
                                 });
-
-                                const responseData = await response.json();
-
-                                if (!responseData.success || !responseData.orderId) {
-                                    throw new Error(responseData.message || 'Failed to initialize payment');
-                                }
-
-                                return responseData.orderId;
                             } catch (error: any) {
-                                setIsProcessing(false);
-                                console.error('PayPal Create Order Error:', error);
-                                setErrorMessage(error.message || 'Failed to start payment');
+                                console.error('Subscription Success Callback Error:', error);
                                 if (onError) onError(error);
-                                throw error;
+                            } finally {
+                                setIsProcessing(false);
                             }
-                        }}
-                        onApprove={async (data, actions) => {
+                        } else {
                             try {
                                 const response = await fetch('/api/paypal/capture-order', {
                                     method: 'POST',
@@ -237,18 +179,105 @@ export default function PayPalCheckout({
                             } finally {
                                 setIsProcessing(false);
                             }
-                        }}
-                        onCancel={() => {
-                            setIsProcessing(false);
-                            if (onCancel) onCancel();
-                        }}
-                        onError={(err) => {
-                            setIsProcessing(false);
-                            console.error('PayPal Button Error:', err);
-                            if (onError) onError(err);
-                        }}
-                    />
-                </div>
+                        }
+                    }}
+                    onCancel={() => {
+                        setIsProcessing(false);
+                        if (onCancel) onCancel();
+                    }}
+                    onError={(err) => {
+                        setIsProcessing(false);
+                        console.error('PayPal Button Error:', err);
+                        if (onError) onError(err);
+                    }}
+                />
+
+                {!subscriptionPlanId && (
+                    <div className="mt-3">
+                        <PayPalButtons
+                            key={`${referenceId}-card`}
+                            style={{
+                                layout: 'vertical',
+                                color: 'black',
+                                shape: 'rect',
+                                label: 'pay',
+                                height: 48,
+                            }}
+                            fundingSource={FUNDING.CARD}
+                            disabled={disabled || isProcessing}
+                            createOrder={async (data, actions) => {
+                                setIsProcessing(true);
+                                setErrorMessage('');
+                                try {
+                                    const response = await fetch('/api/paypal/create-order', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            amount,
+                                            description,
+                                            referenceId,
+                                            items,
+                                        }),
+                                    });
+
+                                    const responseData = await response.json();
+
+                                    if (!responseData.success || !responseData.orderId) {
+                                        throw new Error(responseData.message || 'Failed to initialize payment');
+                                    }
+
+                                    return responseData.orderId;
+                                } catch (error: any) {
+                                    setIsProcessing(false);
+                                    console.error('PayPal Create Order Error:', error);
+                                    setErrorMessage(error.message || 'Failed to start payment');
+                                    if (onError) onError(error);
+                                    throw error;
+                                }
+                            }}
+                            onApprove={async (data, actions) => {
+                                try {
+                                    const response = await fetch('/api/paypal/capture-order', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ orderId: data.orderID }),
+                                    });
+
+                                    const captureData = await response.json();
+
+                                    if (captureData.success) {
+                                        onSuccess({
+                                            orderId: captureData.orderId,
+                                            captureId: captureData.captureId,
+                                            amount: captureData.amount,
+                                            currency: captureData.currency,
+                                            payerEmail: captureData.payerEmail,
+                                            payerName: captureData.payerName,
+                                            status: captureData.status,
+                                        });
+                                    } else {
+                                        throw new Error(captureData.message || 'Payment capture failed');
+                                    }
+                                } catch (error: any) {
+                                    console.error('PayPal Capture Error:', error);
+                                    setErrorMessage('Payment confirmed but processing failed. Please contact support.');
+                                    if (onError) onError(error);
+                                } finally {
+                                    setIsProcessing(false);
+                                }
+                            }}
+                            onCancel={() => {
+                                setIsProcessing(false);
+                                if (onCancel) onCancel();
+                            }}
+                            onError={(err) => {
+                                setIsProcessing(false);
+                                console.error('PayPal Button Error:', err);
+                                if (onError) onError(err);
+                            }}
+                        />
+                    </div>
+                )}
 
                 <p className="text-[10px] text-gray-500 text-center mt-3 opacity-70">
                     <span className="flex items-center justify-center gap-1">

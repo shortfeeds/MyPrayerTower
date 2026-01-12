@@ -1,5 +1,9 @@
 import { db } from '@/lib/db';
 import { toSafeJSON } from '@/lib/dto';
+import { Metadata } from 'next';
+import { BookOpen, Search, Filter, Play, Clock, ChevronRight, Sparkles, Flame, Heart, Scroll } from 'lucide-react';
+import Link from 'next/link';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 // const prisma = new PrismaClient(); // Removed local instantiation
 
@@ -21,6 +25,14 @@ const CATEGORY_COLORS = [
     { bg: 'bg-emerald-100', text: 'text-emerald-700', accent: 'bg-emerald-500' },
     { bg: 'bg-rose-100', text: 'text-rose-700', accent: 'bg-rose-500' },
     { bg: 'bg-cyan-100', text: 'text-cyan-700', accent: 'bg-cyan-500' },
+];
+
+const COLLECTIONS = [
+    { label: 'Marian', query: 'Marian', icon: Heart },
+    { label: 'Saints', query: 'Saint', icon: Sparkles },
+    { label: 'Novenas', query: 'Novena', icon: Flame },
+    { label: 'Healing', query: 'Healing', icon: Play }, // Using Play as generic valid icon, or Heart
+    { label: 'Litanies', query: 'Litany', icon: Scroll },
 ];
 
 export default async function PrayersPage({
@@ -108,6 +120,20 @@ export default async function PrayersPage({
                                 />
                             </div>
                         </form>
+                    </div>
+
+                    {/* Collections / Smart Filters */}
+                    <div className="flex flex-wrap justify-center gap-3 mt-8">
+                        {COLLECTIONS.map((col) => (
+                            <Link
+                                key={col.label}
+                                href={`/prayers?q=${col.query}`}
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium transition-all hover:-translate-y-0.5"
+                            >
+                                <col.icon className="w-3.5 h-3.5 text-gold-300" />
+                                {col.label}
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>

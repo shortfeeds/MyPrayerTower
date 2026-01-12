@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../screens/candles_screen.dart';
+import '../models/candle_model.dart';
 
 class AnimatedCandle extends StatelessWidget {
-  final VirtualCandle candle;
+  final Candle candle;
   final bool isCompact;
   final VoidCallback? onPray;
 
@@ -72,7 +72,7 @@ class AnimatedCandle extends StatelessWidget {
 
                 // Name
                 Text(
-                  candle.userName,
+                  candle.displayName,
                   style: GoogleFonts.inter(
                     fontSize: isCompact ? 10 : 12,
                     fontWeight: FontWeight.bold,
@@ -118,7 +118,21 @@ class AnimatedCandle extends StatelessWidget {
 
   Widget _buildFlame() {
     double size = isCompact ? 24 : 32;
-    Color flameColor = candle.color;
+    Color flameColor;
+
+    switch (candle.color) {
+      case 'gold':
+        flameColor = const Color(0xFFFFD700);
+        break;
+      case 'blue':
+        flameColor = const Color(0xFF60A5FA);
+        break;
+      case 'red':
+        flameColor = const Color(0xFFFB7185);
+        break;
+      default:
+        flameColor = const Color(0xFFFFA500);
+    }
 
     return Stack(
       alignment: Alignment.center,

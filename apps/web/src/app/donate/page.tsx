@@ -23,6 +23,7 @@ const DONATION_TIERS = [
 const SUBSCRIPTION_PLANS = [
     {
         id: 'PRAYER_PARTNER',
+        paypalPlanId: 'P-PRAYER_PARTNER_ID', // Replace with real PayPal Plan ID
         name: 'Prayer Partner',
         icon: '🙏',
         price: 999,
@@ -36,6 +37,7 @@ const SUBSCRIPTION_PLANS = [
     },
     {
         id: 'FAMILY_PLAN',
+        paypalPlanId: 'P-FAMILY_PLAN_ID', // Replace with real PayPal Plan ID
         name: 'Family Plan',
         icon: '👨‍👩‍👧‍👦',
         price: 1999,
@@ -49,6 +51,7 @@ const SUBSCRIPTION_PLANS = [
     },
     {
         id: 'PATRON_CIRCLE',
+        paypalPlanId: 'P-PATRON_CIRCLE_ID', // Replace with real PayPal Plan ID
         name: 'Patron Circle',
         icon: '💎',
         price: 4999,
@@ -71,7 +74,6 @@ export default function DonatePage() {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
-    const [coversFee, setCoversFee] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [paymentType, setPaymentType] = useState<'oneTime' | 'subscription'>('oneTime');
@@ -85,14 +87,8 @@ export default function DonatePage() {
         return selectedTierData?.amount || 0;
     };
 
-    const getFeeAmount = () => {
-        const amount = getAmount();
-        return Math.round(amount * 0.029 + 30); // Stripe fee: 2.9% + 30¢
-    };
-
     const getTotal = () => {
-        const amount = getAmount();
-        return coversFee ? amount + getFeeAmount() : amount;
+        return getAmount();
     };
 
     const handleOneTimeDonation = () => {
@@ -129,7 +125,6 @@ export default function DonatePage() {
                 name,
                 message,
                 isAnonymous,
-                coversFee,
                 isSubscription: paymentType === 'subscription',
                 paypalOrderId: details.orderId,
                 paypalPayerEmail: details.payerEmail,
@@ -183,7 +178,8 @@ export default function DonatePage() {
                             </div>
 
                             <PayPalCheckout
-                                amount={paymentType === 'oneTime' ? getTotal() : (selectedPlanData?.price || 0)}
+                                amount={paymentType === 'oneTime' ? getTotal() : undefined}
+                                subscriptionPlanId={paymentType === 'subscription' ? selectedPlanData?.paypalPlanId : undefined}
                                 description={paymentType === 'oneTime'
                                     ? `Donation to MyPrayerTower - ${customAmount ? 'Custom' : selectedTierData?.label}`
                                     : `${selectedPlanData?.name} Monthly Subscription`
@@ -337,22 +333,9 @@ export default function DonatePage() {
                             </div>
                         </div>
 
-                        {/* Fee Coverage & Summary */}
+                        {/* Summary */}
                         <div className="bg-rose-50 rounded-2xl p-6 mb-6">
-                            <label className="flex items-center gap-3 cursor-pointer mb-4">
-                                <input
-                                    type="checkbox"
-                                    checked={coversFee}
-                                    onChange={(e) => setCoversFee(e.target.checked)}
-                                    className="w-5 h-5 text-rose-500 rounded"
-                                />
-                                <div>
-                                    <span className="font-medium text-rose-900">Cover the processing fee?</span>
-                                    <span className="text-rose-700 ml-2">(+${(getFeeAmount() / 100).toFixed(2)})</span>
-                                </div>
-                            </label>
-
-                            <div className="border-t border-rose-200 pt-4">
+                            <div className="">
                                 <div className="flex justify-between text-rose-900 font-bold text-xl">
                                     <span>Total</span>
                                     <div className="text-right">

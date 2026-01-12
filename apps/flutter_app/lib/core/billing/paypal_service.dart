@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 
 final paypalServiceProvider = Provider<PaypalService>((ref) {
   return PaypalService();
 });
 
 class PaypalService {
-  // TODO: Replace with real credentials from secure storage or constants
-  // For now, using these placeholders. User MUST replace them.
+  // Placeholder credentials. In a real app, fetch these from a secure backend or env.
+  // For now, these are kept here for demonstration.
   static const String _clientId =
       'AZ3c6O0DJtvSCjr7LTBRSgugVnLfCJSZmIeB27xEFsgslNkjTu7wR92V1E-K2luCnN4ZIAreeCvx1-Fc';
   static const String _secretKey =
@@ -40,7 +41,7 @@ class PaypalService {
                   ? 500
                   : double.infinity,
               child: PaypalCheckoutView(
-                sandboxMode: false, // TODO: Switch to false for production
+                sandboxMode: kDebugMode,
                 clientId: _clientId,
                 secretKey: _secretKey,
                 transactions: [

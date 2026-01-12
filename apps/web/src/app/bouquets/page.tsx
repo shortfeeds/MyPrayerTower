@@ -2,14 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Heart, Gift, Flower, Church, Star, Send, Mail, Calendar } from 'lucide-react';
-
-const bouquetItems = [
-    { id: 'prayer', name: 'Prayers', price: 0, icon: Heart, description: 'Offer daily prayers', subLabel: 'Free' },
-    { id: 'mass', name: 'Holy Mass', price: 1000, icon: Church, description: 'Have a Mass offered for your intention' },
-    { id: 'rosary', name: 'Rosary', price: 500, icon: Star, description: 'Pray a Rosary for the recipient' },
-    { id: 'candle', name: 'Virtual Candle', price: 500, icon: Flower, description: 'Light a 5-day candle' },
-];
+import { Heart as HeartIcon, Church, Star, Flower, ChevronLeft, Gift, Mail, Calendar, Send } from 'lucide-react';
+import PayPalCheckout, { PayPalSuccessDetails } from '@/components/PayPalCheckout';
 
 const occasions = [
     'Birthday', 'Anniversary', 'Get Well Soon', 'In Sympathy', 'Congratulations',
@@ -17,11 +11,17 @@ const occasions = [
 ];
 
 export default function BouquetsPage() {
+    const bouquetItems = [
+        { id: 'prayer', name: 'Prayers', price: 0, icon: HeartIcon, description: 'Offer daily prayers', subLabel: 'Your prayer intentions' },
+        { id: 'mass', name: 'Holy Mass', price: 1000, icon: Church, description: 'Have a Mass offered for your intention' },
+        { id: 'rosary', name: 'Rosary', price: 500, icon: Star, description: 'Pray a Rosary for the recipient' },
+        { id: 'candle', name: 'Virtual Candle', price: 500, icon: Flower, description: 'Light a 5-day candle' },
+    ];
     const [step, setStep] = useState(1);
     const [selection, setSelection] = useState<Record<string, number>>({
         mass: 0,
         rosary: 0,
-        prayer: 0,
+        prayer: 1, // Default prayers to 1 as it's free and always included if building
         candle: 0,
     });
     const [recipientName, setRecipientName] = useState('');
@@ -31,7 +31,9 @@ export default function BouquetsPage() {
     const [occasion, setOccasion] = useState('');
     const [message, setMessage] = useState('');
     const [sendDate, setSendDate] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false); // Valid placement
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPayPal, setShowPayPal] = useState(false);
+    const [orderId, setOrderId] = useState<string | null>(null);
 
     const totalItems = Object.values(selection).reduce((a, b) => a + b, 0);
     const totalPrice = bouquetItems.reduce((total, item) => {
@@ -47,6 +49,15 @@ export default function BouquetsPage() {
     };
 
     const handleSendBouquet = async () => {
+        if (totalPrice > 0) {
+            setShowPayPal(true);
+            return;
+        }
+
+        await processCheckout();
+    };
+
+    const processCheckout = async (paypalDetails?: PayPalSuccessDetails) => {
         setIsSubmitting(true);
         try {
             const response = await fetch('/api/bouquets/checkout', {
@@ -62,24 +73,18 @@ export default function BouquetsPage() {
                     occasion,
                     sendDate,
                     isAnonymous: false,
+                    paypalOrderId: paypalDetails?.orderId,
+                    paypalPayerEmail: paypalDetails?.payerEmail,
                 }),
             });
 
             const data = await response.json();
 
             if (data.success) {
-                if (data.payment_session_id) {
-                    const { load } = await import('@cashfreepayments/cashfree-js');
-                    const cashfree = await load({ mode: "production" });
-                    cashfree.checkout({
-                        paymentSessionId: data.payment_session_id,
-                        redirectTarget: "_self",
-                    });
-                } else {
-                    alert('Bouquet sent successfully!');
-                    setStep(1);
-                    setSelection({ mass: 0, rosary: 0, prayer: 0, candle: 0 });
-                }
+                alert(totalPrice > 0 ? 'Payment successful and bouquet sent!' : 'Bouquet sent successfully!');
+                setStep(1);
+                setSelection({ mass: 0, rosary: 0, prayer: 1, candle: 0 });
+                setShowPayPal(false);
             } else {
                 alert(data.message || 'Failed to send bouquet');
             }
@@ -165,21 +170,27 @@ export default function BouquetsPage() {
                                                     <p className="text-sm font-medium text-rose-600">${(item.price / 100).toFixed(2)}</p>
                                                 )}
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => decrementItem(item.id)}
-                                                    className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                                                >
-                                                    -
-                                                </button>
-                                                <span className="w-8 text-center font-semibold">{selection[item.id]}</span>
-                                                <button
-                                                    onClick={() => incrementItem(item.id)}
-                                                    className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center hover:bg-rose-200 transition-colors"
-                                                >
-                                                    +
-                                                </button>
-                                            </div>
+                                            {item.id === 'prayer' ? (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-sm font-semibold text-rose-600 bg-rose-50 px-3 py-1 rounded-full">Included</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => decrementItem(item.id)}
+                                                        className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <span className="w-8 text-center font-semibold">{selection[item.id]}</span>
+                                                    <button
+                                                        onClick={() => incrementItem(item.id)}
+                                                        className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center hover:bg-rose-200 transition-colors"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 })}
@@ -206,6 +217,26 @@ export default function BouquetsPage() {
                             >
                                 Continue
                             </button>
+                        </div>
+                    )}
+
+                    {/* PayPal Modal */}
+                    {showPayPal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                            <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="text-xl font-bold text-gray-900">Complete Payment</h2>
+                                    <button onClick={() => setShowPayPal(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+                                </div>
+                                <PayPalCheckout
+                                    amount={totalPrice}
+                                    description={`Spiritual Bouquet for ${recipientName}`}
+                                    onSuccess={(details) => processCheckout(details)}
+                                    onError={(err) => alert('Payment failed. Please try again.')}
+                                    onCancel={() => setShowPayPal(false)}
+                                    referenceId={`BOUQUET_${Date.now()}`}
+                                />
+                            </div>
                         </div>
                     )}
 
@@ -256,18 +287,18 @@ export default function BouquetsPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Personal Message</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Prayer Request</label>
                                     <textarea
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
-                                        placeholder="Write a heartfelt message..."
+                                        placeholder="Share your specific prayer intention..."
                                         rows={4}
                                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Delivery Date</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Date of Intention</label>
                                     <div className="relative">
                                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <input
@@ -278,7 +309,7 @@ export default function BouquetsPage() {
                                             className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                                         />
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-1">Leave blank to send immediately</p>
+                                    <p className="text-xs text-gray-500 mt-1">When should we start offering these prayers? Returns blank for immediate start.</p>
                                 </div>
                             </div>
 
@@ -315,13 +346,27 @@ export default function BouquetsPage() {
                                 </div>
 
                                 <div className="bg-white/50 rounded-lg p-4 mb-4">
-                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                    <div className="grid grid-cols-1 gap-2 text-sm">
                                         {bouquetItems.filter(item => selection[item.id] > 0).map((item) => (
-                                            <div key={item.id} className="flex justify-between">
-                                                <span className="text-gray-600">{item.name}</span>
-                                                <span className="font-medium text-gray-900">×{selection[item.id]}</span>
+                                            <div key={item.id} className="flex justify-between items-center py-1 border-b border-gray-100 last:border-0">
+                                                <span className="text-gray-600 flex items-center gap-2">
+                                                    <span>{item.name}</span>
+                                                    <span className="text-xs bg-gray-100 text-gray-500 px-1.5 rounded">x{selection[item.id]}</span>
+                                                </span>
+                                                <span className="font-medium text-gray-900">
+                                                    {item.price > 0
+                                                        ? `$${((item.price * selection[item.id]) / 100).toFixed(2)}`
+                                                        : 'Free'
+                                                    }
+                                                </span>
                                             </div>
                                         ))}
+                                        {totalPrice > 0 && (
+                                            <div className="flex justify-between items-center pt-2 mt-2 border-t border-rose-100 font-bold">
+                                                <span className="text-gray-900">Total</span>
+                                                <span className="text-rose-600">${(totalPrice / 100).toFixed(2)}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 

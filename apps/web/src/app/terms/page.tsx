@@ -7,8 +7,8 @@ export const metadata: Metadata = {
 };
 
 export default function TermsOfServicePage() {
-    const lastUpdated = 'January 5, 2026';
-    const effectiveDate = 'January 5, 2026';
+    const lastUpdated = 'January 12, 2026';
+    const effectiveDate = 'January 12, 2026';
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -150,7 +150,7 @@ export default function TermsOfServicePage() {
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Payment Processing</h3>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
                             <li><strong>Android App:</strong> Payments are processed via Google Play Billing</li>
-                            <li><strong>Web:</strong> Payments are processed via Cashfree</li>
+                            <li><strong>Web:</strong> Payments are processed via PayPal</li>
                             <li>Subscriptions purchased on one platform are valid across all platforms when logged in</li>
                         </ul>
 
@@ -159,7 +159,7 @@ export default function TermsOfServicePage() {
                             <li>Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period</li>
                             <li>You may cancel your subscription at any time through Google Play Store or your account settings</li>
                             <li>After cancellation, you retain access until the end of your billing period</li>
-                            <li>Refunds are handled according to Google Play Store or Cashfree policies</li>
+                            <li>Refunds are handled according to Google Play Store or PayPal policies</li>
                         </ul>
 
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">One-Time Purchases</h3>

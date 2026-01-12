@@ -7,8 +7,9 @@ import '../../../core/billing/product_ids.dart';
 import '../../../core/providers/scaffold_key_provider.dart';
 import 'dart:math';
 import '../widgets/premium_candle_widget.dart';
+import '../repositories/candle_repository.dart';
 
-// Local VirtualCandle class removed, using import instead.
+import '../models/candle_model.dart';
 
 // Duration options with pricing
 class CandleDuration {
@@ -64,14 +65,6 @@ const List<CandleDuration> _durations = [
   ),
 ];
 
-// Color scheme for candle tiers
-const Map<String, Color> _tierColors = {
-  'premium': Color(0xFFFFD700), // Gold
-  'standard': Color(0xFF60A5FA), // Blue
-  'basic': Color(0xFFFB7185), // Rose
-  'free': Color(0xFFFFA500), // Orange/White
-};
-
 class CandlesScreen extends ConsumerStatefulWidget {
   const CandlesScreen({super.key});
 
@@ -114,7 +107,7 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
         _sortCandles();
       });
     } catch (e) {
-      print('Error loading candles: \$e');
+      debugPrint('Error loading candles: \$e');
       setState(() {
         _candles = mockCandles;
       });
@@ -617,7 +610,7 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
     required IconData icon,
     required Color iconColor,
     String? badge,
-    required List<VirtualCandle> candles,
+    required List<Candle> candles,
     required int crossAxisCount,
     bool isCompact = false,
   }) {
@@ -692,13 +685,7 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
                     // Optimistic update
                     setState(() {
                       // Create a new candle instance with incremented prayer count
-                      final updatedCandle = VirtualCandle(
-                        id: candle.id,
-                        userName: candle.userName,
-                        intention: candle.intention,
-                        tier: candle.tier,
-                        color: candle.color,
-                        remainingHours: candle.remainingHours,
+                      final updatedCandle = candle.copyWith(
                         prayerCount: candle.prayerCount + 1,
                       );
 
@@ -713,7 +700,7 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('You prayed for ${candle.userName}'),
+                        content: Text('You prayed for ${candle.displayName}'),
                         duration: const Duration(seconds: 1),
                         behavior: SnackBarBehavior.floating,
                         backgroundColor: Colors.pink.shade600,
@@ -771,13 +758,13 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
                   if (mounted) Navigator.pop(context);
                 } else {
                   // FREE CANDLE
-                  final newCandle = VirtualCandle(
+                  final newCandle = Candle(
                     id: 'user-${DateTime.now().millisecondsSinceEpoch}',
-                    userName: localIsAnonymous ? 'Anonymous' : localUserName,
+                    name: localIsAnonymous ? 'Anonymous' : localUserName,
                     intention: localIntention,
-                    tier: 'free',
-                    color: _tierColors['free']!,
-                    remainingHours: 24,
+                    duration: 'ONE_DAY',
+                    litAt: DateTime.now(),
+                    expiresAt: DateTime.now().add(const Duration(days: 1)),
                     prayerCount: 1,
                   );
 

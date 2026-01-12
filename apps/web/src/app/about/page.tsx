@@ -29,7 +29,7 @@ export default function AboutPage() {
                     {/* Mission Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20">
                         <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl">
-                            <div className="text-3xl font-bold text-primary-600 dark:text-gold-400 mb-2">55,000+</div>
+                            <div className="text-3xl font-bold text-primary-600 dark:text-gold-400 mb-2">8,500+</div>
                             <div className="text-sm text-gray-600 dark:text-gray-400">Churches Listed</div>
                         </div>
                         <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl">

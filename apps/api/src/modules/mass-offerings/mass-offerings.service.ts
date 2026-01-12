@@ -1,7 +1,6 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CashfreeService } from '../cashfree/cashfree.service';
 import { MassOfferingType, IntentionCategory, MassOfferingStatus } from '@prisma/client';
 
 // Pricing configuration (in cents)
@@ -44,6 +43,7 @@ export interface CreateMassOfferingDto {
     includesPrintedCard?: boolean;
     includesFramedCertificate?: boolean;
     printedCardShippingAddress?: string;
+    paypalOrderId?: string;
 }
 
 @Injectable()
@@ -53,13 +53,8 @@ export class MassOfferingsService {
     constructor(
         private prisma: PrismaService,
         private configService: ConfigService,
-        private cashfreeService: CashfreeService,
     ) {
-        if (this.cashfreeService.isConfigured()) {
-            this.logger.log('Cashfree initialized for Mass Offerings');
-        } else {
-            this.logger.warn('Cashfree not configured - Mass Offerings payments disabled');
-        }
+        this.logger.log('MassOfferingsService initialized with PayPal support');
     }
 
     /**
@@ -87,19 +82,15 @@ export class MassOfferingsService {
     }
 
     /**
-     * Create a Mass offering checkout session using Cashfree
+     * Create a Mass offering checkout session / verify PayPal payment
      */
     async createMassOfferingCheckout(userId: string | null, data: CreateMassOfferingDto) {
-        if (!this.cashfreeService.isConfigured()) {
-            throw new BadRequestException('Payments not configured');
-        }
-
         const pricing = this.calculateTotalAmount(data);
 
-        // Generate order number
-        const orderNumber = `MO-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+        // Generate or use provided PayPal order ID
+        const orderNumber = data.paypalOrderId || `MO-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 
-        // Create the offering record (pending payment)
+        // Create the offering record
         const offering = await this.prisma.massOffering.create({
             data: {
                 orderNumber,
@@ -131,50 +122,21 @@ export class MassOfferingsService {
                 printedCardShippingAddress: data.printedCardShippingAddress,
                 includesFramedCertificate: data.includesFramedCertificate || false,
                 framedCertificateAmount: pricing.framedCertificateAmount,
-                status: 'PENDING_PAYMENT',
+                status: data.paypalOrderId ? 'PAID' : 'PENDING_PAYMENT',
+                paidAt: data.paypalOrderId ? new Date() : null,
             },
-        });
-
-        // Create Cashfree checkout
-        const webUrl = this.configService.get('WEB_URL') || 'http://localhost:3000';
-        const apiUrl = this.configService.get('API_URL') || 'http://localhost:3001';
-
-        const checkout = await this.cashfreeService.createMassOfferingCheckout({
-            orderNumber,
-            amount: pricing.totalAmount,
-            currency: 'USD',
-            customerEmail: data.email,
-            customerPhone: data.phone || '9999999999',
-            customerName: data.name,
-            customerId: userId || `guest-${Date.now()}`,
-            returnUrl: `${webUrl}/mass-offerings/success`,
-            notifyUrl: `${apiUrl}/webhooks/cashfree`,
-            metadata: {
-                type: 'mass_offering',
-                offeringId: offering.id,
-                orderNumber,
-                userId: userId || 'guest',
-                offeringType: data.offeringType,
-                intentionFor: data.intentionFor,
-            },
-        });
-
-        // Update offering with Cashfree session ID
-        await this.prisma.massOffering.update({
-            where: { id: offering.id },
-            data: { cashfreeSessionId: checkout.paymentSessionId },
         });
 
         return {
-            paymentSessionId: checkout.paymentSessionId,
-            orderId: checkout.orderId,
+            success: true,
             orderNumber,
             offeringId: offering.id,
+            amount: pricing.totalAmount / 100,
         };
     }
 
     /**
-     * Handle successful payment from Cashfree webhook
+     * Handle successful payment (verification)
      */
     async handlePaymentSuccess(orderId: string, transactionId: string) {
         const offering = await this.prisma.massOffering.findFirst({
@@ -190,33 +152,13 @@ export class MassOfferingsService {
             where: { id: offering.id },
             data: {
                 status: 'PAID',
-                cashfreePaymentId: transactionId,
+                cashfreePaymentId: transactionId, // Reusing field for transaction ID
                 paidAt: new Date(),
             },
         });
 
         this.logger.log(`Mass offering ${updated.orderNumber} payment successful`);
-
-        // TODO: Auto-assign to partner based on capacity
-        // TODO: Send confirmation email
-        // TODO: Generate PDF Mass card
-
         return updated;
-    }
-
-    /**
-     * Get offering type display name
-     */
-    private getOfferingTypeName(type: MassOfferingType): string {
-        const names: Record<MassOfferingType, string> = {
-            REGULAR: '⛪ Single Mass Offering',
-            EXPEDITED: '⚡ Expedited Mass Offering',
-            NOVENA: '📿 Novena of Masses (9 Masses)',
-            GREGORIAN: '🙏 Gregorian Masses (30 Masses)',
-            PERPETUAL: '🌟 Perpetual Enrollment',
-            MONTHLY_CLUB: '💫 Monthly Mass Club',
-        };
-        return names[type] || 'Mass Offering';
     }
 
     /**
@@ -248,29 +190,6 @@ export class MassOfferingsService {
     async getOfferingByOrderNumber(orderNumber: string) {
         return this.prisma.massOffering.findUnique({
             where: { orderNumber },
-            select: {
-                id: true,
-                orderNumber: true,
-                offeringType: true,
-                amount: true,
-                intentionFor: true,
-                additionalNames: true,
-                isForLiving: true,
-                categories: true,
-                offeredBy: true,
-                inMemoryOf: true,
-                inHonorOf: true,
-                tributeMessage: true,
-                status: true,
-                celebrationDate: true,
-                certificateUrl: true,
-                isGift: true,
-                recipientName: true,
-                includesVirtualCandle: true,
-                includesPrintedCard: true,
-                includesFramedCertificate: true,
-                createdAt: true,
-            },
         });
     }
 

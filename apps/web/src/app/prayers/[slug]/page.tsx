@@ -1,6 +1,13 @@
+import React from 'react';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { ArrowLeft, Tag, BookOpen, ChevronRight } from 'lucide-react';
 import { db } from '@/lib/db';
 import { toSafeJSON } from '@/lib/dto';
 import { generatePrayerSchema } from '@/lib/seo/structuredData';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
+import { PrayerContent } from './PrayerContent';
 
 // const prisma = new PrismaClient(); // Removed local instantiation
 
@@ -17,7 +24,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     return {
         title: `${prayer.title} | Catholic Prayers`,
-        description: prayer.content.substring(0, 150) + '...',
+        description: (prayer.content || '').substring(0, 150) + '...',
+        openGraph: {
+            title: `${prayer.title} | Catholic Prayers`,
+            description: (prayer.content || '').substring(0, 150) + '...',
+            type: 'article',
+            publishedTime: prayer.created_at || undefined, // Handle null for Metadata type
+            authors: ['MyPrayerTower'],
+        },
     };
 }
 
@@ -31,11 +45,10 @@ export default async function PrayerDetailPage({ params }: Props) {
     }
 
 
-
     const relatedPrayers = toSafeJSON(await db.prayer.findMany({
         where: {
             category: prayer.category,
-            id: { not: prayer.id },
+            id: { not: BigInt(prayer.id) }, // ID is BigInt in schema
             is_active: true,
         },
         take: 3,
@@ -105,36 +118,51 @@ export default async function PrayerDetailPage({ params }: Props) {
                 <div className="max-w-6xl mx-auto px-4 py-8">
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Main Content */}
-                        <main className="flex-1">
+                        <main className="lg:flex-1">
                             <PrayerContent
                                 prayerId={prayer.id.toString()}
                                 prayerTitle={prayer.title}
                                 prayerContent={prayer.content}
-                                categoryLabel={prayer.category_label || undefined}
                                 category={prayer.category}
+                                categoryLabel={prayer.category_label}
                             />
+
+                            {/* Tags */}
+                            {prayer.tags && (prayer.tags as string[]).length > 0 && (
+                                <div className="mt-8 flex flex-wrap gap-2">
+                                    {(prayer.tags as string[]).map((tag, i) => (
+                                        <Link
+                                            key={i}
+                                            href={`/prayers?tag=${tag}`}
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-600 text-sm font-medium rounded-full hover:bg-slate-200 transition-colors"
+                                        >
+                                            <Tag size={14} />
+                                            {tag}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
 
                             {/* Related Prayers */}
                             {relatedPrayers.length > 0 && (
-                                <div className="mt-12">
-                                    <h3 className="text-2xl font-serif font-bold text-gray-900 mb-8 flex items-center gap-3">
-                                        <BookOpen className="w-6 h-6 text-blue-600" />
+                                <div className="mt-12 pt-12 border-t border-slate-100">
+                                    <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900 mb-6">
+                                        <BookOpen className="text-blue-600" size={24} />
                                         Related Prayers
                                     </h3>
-                                    <div className="grid md:grid-cols-3 gap-6">
-                                        {relatedPrayers.map(rp => (
+                                    <div className="grid sm:grid-cols-3 gap-6">
+                                        {relatedPrayers.map((p) => (
                                             <Link
-                                                key={rp.id.toString()}
-                                                href={`/prayers/${rp.slug}`}
-                                                className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg border border-gray-100 transition-all duration-300 hover:-translate-y-1"
+                                                key={p.id}
+                                                href={`/prayers/${p.slug || p.id}`}
+                                                className="group p-5 bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all text-left block"
                                             >
-                                                <h4 className="font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
-                                                    {rp.title}
+                                                <h4 className="font-semibold text-slate-900 group-hover:text-blue-600 mb-2 line-clamp-2">
+                                                    {p.title}
                                                 </h4>
-                                                <p className="text-sm text-gray-500 line-clamp-3 mb-4">{rp.content}</p>
-                                                <div className="flex items-center text-blue-600 text-sm font-medium">
-                                                    <span>Read</span>
-                                                    <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                                <div className="flex items-center text-sm text-blue-600 font-medium">
+                                                    Read Prayer
+                                                    <ChevronRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
                                                 </div>
                                             </Link>
                                         ))}
@@ -169,5 +197,6 @@ export default async function PrayerDetailPage({ params }: Props) {
                     </div>
                 </div>
             </div>
-            );
+        </>
+    );
 }

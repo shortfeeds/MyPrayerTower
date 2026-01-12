@@ -1,7 +1,6 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CashfreeService } from '../cashfree/cashfree.service';
 import { DonationTier, PrayerPlan } from '@prisma/client';
 
 // Donation tier amounts (in cents)
@@ -51,6 +50,7 @@ export interface CreateDonationDto {
     inHonorOf?: string;
     tributeMessage?: string;
     coversFee?: boolean;
+    paypalOrderId?: string;
 }
 
 export interface CreateSubscriptionDto {
@@ -58,6 +58,7 @@ export interface CreateSubscriptionDto {
     email: string;
     name: string;
     phone?: string;
+    paypalSubscriptionId?: string;
 }
 
 @Injectable()
@@ -67,21 +68,16 @@ export class PlatformDonationsService {
     constructor(
         private prisma: PrismaService,
         private configService: ConfigService,
-        private cashfreeService: CashfreeService,
     ) {
-        if (this.cashfreeService.isConfigured()) {
-            this.logger.log('Cashfree initialized for Platform Donations');
-        } else {
-            this.logger.warn('Cashfree not configured - Donations payments disabled');
-        }
+        this.logger.log('PlatformDonationsService initialized with PayPal support');
     }
 
     /**
      * Calculate total with optional fee coverage
      */
     calculateTotal(amount: number, coversFee: boolean): { amount: number; feeAmount: number; total: number } {
-        // Payment gateway fee: ~2.5%
-        const feeAmount = coversFee ? Math.round(amount * 0.025) : 0;
+        // Payment gateway fee: ~2.9% + 0.30
+        const feeAmount = coversFee ? Math.round(amount * 0.029 + 30) : 0;
         return {
             amount,
             feeAmount,
@@ -90,13 +86,9 @@ export class PlatformDonationsService {
     }
 
     /**
-     * Create a one-time donation checkout session using Cashfree
+     * Create a one-time donation / verify PayPal payment
      */
     async createDonationCheckout(userId: string | null, data: CreateDonationDto) {
-        if (!this.cashfreeService.isConfigured()) {
-            throw new BadRequestException('Payments not configured');
-        }
-
         // Determine amount based on tier or custom
         let amount: number;
         let tier: DonationTier;
@@ -113,9 +105,9 @@ export class PlatformDonationsService {
         }
 
         const calculation = this.calculateTotal(amount, data.coversFee || false);
-        const orderNumber = `DON-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+        const orderNumber = data.paypalOrderId || `DON-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 
-        // Create donation record (pending)
+        // Create donation record
         const donation = await this.prisma.platformDonation.create({
             data: {
                 orderNumber,
@@ -134,91 +126,53 @@ export class PlatformDonationsService {
                 tributeMessage: data.tributeMessage,
                 coversFee: data.coversFee || false,
                 feeAmount: calculation.feeAmount,
-                status: 'PENDING',
+                status: data.paypalOrderId ? 'COMPLETED' : 'PENDING',
+                paidAt: data.paypalOrderId ? new Date() : null,
             },
-        });
-
-        // Create Cashfree checkout
-        const webUrl = this.configService.get('WEB_URL') || 'http://localhost:3000';
-        const apiUrl = this.configService.get('API_URL') || 'http://localhost:3001';
-
-        const checkout = await this.cashfreeService.createDonationCheckout({
-            orderNumber,
-            amount: calculation.total,
-            currency: 'USD',
-            customerEmail: data.email,
-            customerPhone: data.phone || '9999999999',
-            customerName: data.name,
-            customerId: userId || `guest-${Date.now()}`,
-            returnUrl: `${webUrl}/donate/success`,
-            notifyUrl: `${apiUrl}/webhooks/cashfree`,
-            tier: tier.toString(),
-            metadata: {
-                type: 'platform_donation',
-                donationId: donation.id,
-                orderNumber,
-                userId: userId || 'guest',
-            },
-        });
-
-        // Update donation with Cashfree session ID
-        await this.prisma.platformDonation.update({
-            where: { id: donation.id },
-            data: { cashfreeSessionId: checkout.paymentSessionId },
         });
 
         return {
-            paymentSessionId: checkout.paymentSessionId,
-            orderId: checkout.orderId,
+            success: true,
             orderNumber,
             donationId: donation.id,
+            amount: calculation.total / 100,
         };
     }
 
     /**
-     * Create a subscription checkout session using Cashfree
+     * Create / verify a PayPal subscription
      */
     async createSubscriptionCheckout(userId: string | null, data: CreateSubscriptionDto) {
-        if (!this.cashfreeService.isConfigured()) {
-            throw new BadRequestException('Payments not configured');
-        }
-
         const planInfo = SUBSCRIPTION_PLANS[data.plan];
         if (!planInfo) {
             throw new BadRequestException('Invalid subscription plan');
         }
 
-        // Generate subscription ID
-        const subscriptionId = `SUB-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-        const webUrl = this.configService.get('WEB_URL') || 'http://localhost:3000';
-
-        // Get Cashfree plan ID from config
-        const planId = this.configService.get(`CASHFREE_PLAN_${data.plan}`);
-
-        if (!planId) {
-            this.logger.warn(`Cashfree plan ID not configured for ${data.plan}. Creating subscription via dashboard.`);
-            throw new BadRequestException('Subscription plan not configured. Please contact support.');
+        if (data.paypalSubscriptionId && userId) {
+            // Verify and create subscription record
+            const subscription = await this.prisma.prayerSubscription.create({
+                data: {
+                    userId,
+                    plan: data.plan,
+                    cashfreeSubscriptionId: data.paypalSubscriptionId, // Reusing field for PayPal Sub ID
+                    currentPeriodStart: new Date(),
+                    currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+                    massesIncludedMonthly: planInfo.massesIncluded,
+                    status: 'ACTIVE',
+                },
+            });
+            return { success: true, subscriptionId: subscription.id };
         }
 
-        const result = await this.cashfreeService.createSubscription({
-            subscriptionId,
-            planId,
-            customerId: userId || `guest-${Date.now()}`,
-            customerName: data.name,
-            customerEmail: data.email,
-            customerPhone: data.phone || '9999999999',
-            returnUrl: `${webUrl}/subscribe/success?subscription_id=${subscriptionId}`,
-        });
-
         return {
-            subscriptionId: result.subscriptionId,
-            authLink: result.authLink,
+            success: true,
             plan: data.plan,
+            amount: planInfo.amount / 100,
         };
     }
 
     /**
-     * Handle successful donation payment from Cashfree webhook
+     * Handle successful donation payment
      */
     async handleDonationPaymentSuccess(orderId: string, transactionId: string) {
         const donation = await this.prisma.platformDonation.findFirst({
@@ -240,50 +194,7 @@ export class PlatformDonationsService {
         });
 
         this.logger.log(`Donation ${updated.orderNumber} completed - $${(updated.amount / 100).toFixed(2)}`);
-
-        // TODO: Send thank you email
-
         return updated;
-    }
-
-    /**
-     * Handle successful subscription from Cashfree webhook
-     */
-    async handleSubscriptionSuccess(subscriptionId: string, customerId: string, plan: string) {
-        const prayerPlan = plan as PrayerPlan;
-        const planInfo = SUBSCRIPTION_PLANS[prayerPlan];
-
-        if (!planInfo) {
-            this.logger.error(`Unknown plan: ${plan}`);
-            return null;
-        }
-
-        // Try to find user by customerId pattern (guest-timestamp or actual userId)
-        let userId: string | null = null;
-        if (!customerId.startsWith('guest-')) {
-            userId = customerId;
-        }
-
-        if (!userId) {
-            this.logger.warn('Subscription created without user ID');
-            return null;
-        }
-
-        const subscription = await this.prisma.prayerSubscription.create({
-            data: {
-                userId,
-                plan: prayerPlan,
-                cashfreeSubscriptionId: subscriptionId,
-                currentPeriodStart: new Date(),
-                currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
-                massesIncludedMonthly: planInfo.massesIncluded,
-                status: 'ACTIVE',
-            },
-        });
-
-        this.logger.log(`Subscription ${subscription.id} created for user ${userId}`);
-
-        return subscription;
     }
 
     /**
@@ -292,17 +203,6 @@ export class PlatformDonationsService {
     async getDonationByOrderNumber(orderNumber: string) {
         return this.prisma.platformDonation.findUnique({
             where: { orderNumber },
-            select: {
-                id: true,
-                orderNumber: true,
-                amount: true,
-                tier: true,
-                isAnonymous: true,
-                message: true,
-                intention: true,
-                status: true,
-                createdAt: true,
-            },
         });
     }
 

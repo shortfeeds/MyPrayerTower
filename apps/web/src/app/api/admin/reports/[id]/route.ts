@@ -12,21 +12,22 @@ export async function PUT(
 
         switch (action) {
             case 'resolve':
-                await db.userReport.update({
+                // In a real app, you might also flagging the content as hidden
+                await db.report.update({
                     where: { id },
                     data: { status: 'RESOLVED' }
                 });
                 break;
 
             case 'dismiss':
-                await db.userReport.update({
+                await db.report.update({
                     where: { id },
                     data: { status: 'DISMISSED' }
                 });
                 break;
 
             case 'delete':
-                await db.userReport.delete({ where: { id } });
+                await db.report.delete({ where: { id } });
                 break;
 
             default:

@@ -7,37 +7,20 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
-    const status = searchParams.get('status') || 'PENDING';
+    const status = (searchParams.get('status') || 'PENDING') as any; // Cast to Enum
 
     try {
         const skip = (page - 1) * limit;
-
         const where: any = { status };
 
         const [reports, total] = await Promise.all([
-            db.userReport.findMany({
+            db.report.findMany({
                 where,
                 skip,
                 take: limit,
                 orderBy: { createdAt: 'desc' },
-                select: {
-                    id: true,
-                    reporterId: true,
-                    reportedUserId: true,
-                    reason: true,
-                    details: true,
-                    status: true,
-                    createdAt: true,
-                    resolvedBy: true,
-                    resolvedAt: true,
-                    User_UserReport_reporterIdToUser: {
-                        select: {
-                            id: true,
-                            displayName: true,
-                            email: true
-                        }
-                    },
-                    User_UserReport_reportedUserIdToUser: {
+                include: {
+                    reporter: {
                         select: {
                             id: true,
                             displayName: true,
@@ -46,29 +29,24 @@ export async function GET(request: NextRequest) {
                     }
                 }
             }),
-            db.userReport.count({ where })
+            db.report.count({ where })
         ]);
 
         return NextResponse.json({
             reports: reports.map(r => ({
                 id: r.id,
                 reason: r.reason,
-                description: r.details,
+                description: r.description || r.details,
                 status: r.status,
                 createdAt: r.createdAt.toISOString(),
-                reporter: r.User_UserReport_reporterIdToUser ? {
-                    id: r.User_UserReport_reporterIdToUser.id,
-                    name: r.User_UserReport_reporterIdToUser.displayName,
-                    email: r.User_UserReport_reporterIdToUser.email
+                reporter: r.reporter ? {
+                    id: r.reporter.id,
+                    name: r.reporter.displayName || 'User',
+                    email: r.reporter.email
                 } : null,
-                reported: r.User_UserReport_reportedUserIdToUser ? {
-                    id: r.User_UserReport_reportedUserIdToUser.id,
-                    name: r.User_UserReport_reportedUserIdToUser.displayName,
-                    email: r.User_UserReport_reportedUserIdToUser.email
-                } : null,
-                type: 'USER_REPORT',
-                targetType: 'user',
-                targetId: r.reportedUserId
+                targetType: r.targetType,
+                targetId: r.targetId,
+                type: 'CONTENT_REPORT' // Frontend uses for badge
             })),
             total,
             page,

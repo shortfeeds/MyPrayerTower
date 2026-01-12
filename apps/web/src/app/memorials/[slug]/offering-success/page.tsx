@@ -56,7 +56,7 @@ export default function OfferingSuccessPage() {
                         guestName: decodeURIComponent(guestName),
                         guestEmail: decodeURIComponent(guestEmail),
                         transactionId: orderId,
-                        paymentSource: 'cashfree',
+                        paymentSource: 'paypal',
                     }),
                 });
 

@@ -144,3 +144,60 @@ export async function prayForRequest(prayerId: string) {
         return { success: false };
     }
 }
+
+export async function markPrayerAnswered(prayerId: string) {
+    try {
+        const userId = 'user_abc123'; // TODO: Real auth
+
+        // Check if user owns the prayer
+        const prayer = await prisma.prayerRequest.findUnique({
+            where: { id: prayerId },
+            select: { userId: true }
+        });
+
+        if (!prayer || prayer.userId !== userId) {
+            return { success: false, message: 'Unauthorized' };
+        }
+
+        await prisma.prayerRequest.update({
+            where: { id: prayerId },
+            data: {
+                isAnswered: true,
+                answeredAt: new Date()
+            }
+        });
+
+        revalidatePath('/prayer-wall');
+        return { success: true };
+    } catch (error) {
+        console.error('Error marking answered:', error);
+        return { success: false, message: 'Failed to update prayer' };
+    }
+}
+
+export async function reportPrayer(prayerId: string, reason: string) {
+    try {
+        const userId = 'user_abc123'; // Mock user
+
+        // Map reason string to Enum if needed, or assume frontend sends valid enum string
+        // Default to OTHER if invalid
+        const validReasons = ['SPAM', 'HARASSMENT', 'INAPPROPRIATE_CONTENT', 'IMPERSONATION', 'MALICIOUS_LINKS', 'OTHER'];
+        const reasonEnum = validReasons.includes(reason) ? reason : 'OTHER';
+
+        await prisma.report.create({
+            data: {
+                reason: reasonEnum as any, // Cast to ReportReason
+                status: 'PENDING',
+                targetType: 'PRAYER_REQUEST',
+                targetId: prayerId,
+                reporterId: userId,
+                description: `Reported for ${reason}`,
+            }
+        });
+
+        return { success: true, message: 'Report submitted for review' };
+    } catch (error) {
+        console.error('Error reporting:', error);
+        return { success: false, message: 'Failed to report' };
+    }
+}

@@ -7,6 +7,10 @@ final candleRepositoryProvider = Provider<CandleRepository>((ref) {
   return CandleRepository(Supabase.instance.client);
 });
 
+final activeCandlesProvider = FutureProvider<List<Candle>>((ref) {
+  return ref.watch(candleRepositoryProvider).getActiveCandles();
+});
+
 class CandleRepository {
   final SupabaseClient _client;
 
@@ -52,17 +56,17 @@ class CandleRepository {
         return Candle.fromJson(candleMap);
       }).toList();
     } catch (e) {
-      // If table not found, try snake_case 'virtual_candle' or 'VirtualCandle'
-      print('Error fetching candles: $e');
+      // If table not found, log silently
       return [];
     }
   }
 
-  Future<void> lightCandle({
+  Future<Candle?> lightCandle({
     required String intention,
     String? name,
     bool isAnonymous = false,
     required String duration, // ONE_DAY, etc.
+    String? userId,
     required int amountInCents,
   }) async {
     // Logic for creating a candle row
@@ -73,17 +77,29 @@ class CandleRepository {
       Duration(days: _getDurationDays(duration)),
     );
 
-    await _client.from('VirtualCandle').insert({
-      'intention': intention,
-      'name': name,
-      'isAnonymous': isAnonymous,
-      'duration': duration,
-      'amount': amountInCents,
-      'litAt': DateTime.now().toIso8601String(),
-      'expiresAt': expiresAt.toIso8601String(),
-      'isActive': true, // Auto-active for now (assumes payment checked)
-      'paymentStatus': 'PAID',
-    });
+    final response = await _client
+        .from('VirtualCandle')
+        .insert({
+          'intention': intention,
+          'name': name,
+          'isAnonymous': isAnonymous,
+          'duration': duration,
+          'userId': userId,
+          'amount': amountInCents,
+          'litAt': DateTime.now().toIso8601String(),
+          'expiresAt': expiresAt.toIso8601String(),
+          'isActive': true, // Auto-active for now (assumes payment checked)
+          'paymentStatus': 'PAID',
+        })
+        .select()
+        .single();
+
+    // Map response to Candle object so UI can use it
+    // Add default prayer count since it's new
+    final data = Map<String, dynamic>.from(response);
+    data['prayerCount'] = 0;
+
+    return Candle.fromJson(data);
   }
 
   int _getDurationDays(String duration) {

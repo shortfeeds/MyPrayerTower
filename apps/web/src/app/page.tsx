@@ -27,6 +27,7 @@ import { SacredMoments } from '@/components/home/SacredMoments';
 // Legacy/Shared Components
 import { LivePrayerSessions } from '@/components/community/LivePrayerSessions';
 import { PrayerRecommendations } from '@/components/personalization/PrayerRecommendations';
+import { LiturgicalCalendar } from '@/components/liturgy/LiturgicalCalendar';
 import { RecentlyViewed } from '@/components/personalization/RecentlyViewed';
 import { StreakBadge } from '@/components/gamification/PrayerStreaks';
 import { DailyChallenges } from '@/components/gamification/DailyChallenges';
@@ -52,36 +53,50 @@ async function getIsLoggedIn() {
 
 // --- Async Wrappers for Suspense ---
 
-async function AsyncPersonalizedGreeting() {
-    const [user, liturgicalDay] = await Promise.all([
-        getUserHomeStreamData(),
-        getLiturgicalData()
-    ]);
+// --- Async Wrappers for Suspense ---
 
-    return (
-        <PersonalizedGreeting
-            userName={user?.firstName}
-            streak={user?.streak}
-            prayedToday={user?.prayedToday}
-            liturgicalDate={liturgicalDay?.celebrations[0]?.name || liturgicalDay?.date}
-            prayersCompletedToday={1}
-            dailyGoal={3}
-        />
-    );
+async function AsyncPersonalizedGreeting() {
+    try {
+        const [user, liturgicalDay] = await Promise.all([
+            getUserHomeStreamData().catch(() => null),
+            getLiturgicalData().catch(() => null)
+        ]);
+
+        return (
+            <PersonalizedGreeting
+                userName={user?.firstName}
+                streak={user?.streak}
+                prayedToday={user?.prayedToday}
+                liturgicalDate={liturgicalDay?.celebrations[0]?.name || liturgicalDay?.date}
+                prayersCompletedToday={1}
+                dailyGoal={3}
+            />
+        );
+    } catch {
+        return null;
+    }
 }
 
 async function AsyncTodaysReadingCard() {
-    const [liturgicalDay, reading] = await Promise.all([
-        getLiturgicalData(),
-        getDailyReading()
-    ]);
-    return <TodaysReadingCard liturgical={liturgicalDay} reading={reading} />;
+    try {
+        const [liturgicalDay, reading] = await Promise.all([
+            getLiturgicalData(),
+            getDailyReading()
+        ]);
+        return <TodaysReadingCard liturgical={liturgicalDay} reading={reading} />;
+    } catch {
+        return <div className="p-4 bg-red-50 text-red-600 rounded-lg">Unable to load daily reading.</div>;
+    }
 }
 
 async function AsyncSaintOfTheDayCard() {
-    const liturgicalDay = await getLiturgicalData();
-    const saint = await getSaintOfTheDay(liturgicalDay.celebrations[0]?.name);
-    return <SaintOfTheDayCard saint={saint} />;
+    try {
+        const liturgicalDay = await getLiturgicalData();
+        const saint = await getSaintOfTheDay(liturgicalDay.celebrations[0]?.name);
+        return <SaintOfTheDayCard saint={saint} />;
+    } catch {
+        return null; // Graceful fallback
+    }
 }
 
 // --- Loading Skeletons ---
@@ -113,6 +128,7 @@ function LoggedInHomePage() {
             }
             dailyFocus={
                 <div className="space-y-6">
+                    <LiturgicalCalendar />
                     <Suspense fallback={<CardSkeleton />}>
                         <AsyncTodaysReadingCard />
                     </Suspense>
@@ -135,22 +151,31 @@ function LoggedInHomePage() {
             }
             community={
                 <div className="space-y-6">
-                    <LivePrayerSessions />
+                    <Suspense fallback={<div className="h-48 animate-pulse bg-indigo-50 rounded-2xl"></div>}>
+                        <LivePrayerSessions />
+                    </Suspense>
                     <GlobalPrayerStats />
-                    <div className="bg-indigo-900 rounded-2xl p-6 text-white relative overflow-hidden">
+                    <div className="bg-indigo-900 rounded-2xl p-6 text-white relative overflow-hidden group hover:bg-indigo-800 transition-colors cursor-pointer">
                         <div className="relative z-10">
-                            <h3 className="font-bold mb-2">Prayer Wall</h3>
+                            <h3 className="font-bold mb-2 flex items-center gap-2">
+                                <Users className="w-5 h-5 text-gold-400" />
+                                Prayer Wall
+                            </h3>
                             <p className="text-sm text-blue-100 mb-4">Pray for others or share your own intention.</p>
-                            <Link href="/prayer-wall" className="text-sm font-bold text-gold-400 hover:text-gold-300">
-                                Visit Wall →
+                            <Link href="/prayer-wall" className="text-sm font-bold text-gold-400 hover:text-gold-300 inline-flex items-center gap-1">
+                                Visit Wall <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
-                        <Users className="absolute bottom-[-10px] right-[-10px] w-24 h-24 text-white/10" />
+                        <Users className="absolute bottom-[-10px] right-[-10px] w-24 h-24 text-white/10 group-hover:text-white/20 transition-all" />
                     </div>
                 </div>
             }
             recommendations={<PrayerRecommendations />}
-            trending={<TrendingPrayers />}
+            trending={
+                <Suspense fallback={<CardSkeleton />}>
+                    <TrendingPrayers />
+                </Suspense>
+            }
             recent={<RecentlyViewed />}
         />
     );
@@ -165,61 +190,66 @@ function LoggedOutHomePage() {
             <LiveStatsBar />
 
             {/* Hero Section */}
-            <section className="relative min-h-[75vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-sacred-600 via-sacred-700 to-sacred-800 text-white pb-32">
-                {/* Animated Background Elements */}
-                <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-gold-500 rounded-full blur-[150px] opacity-20 animate-pulse-soft"></div>
-                    <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500 rounded-full blur-[120px] opacity-15 animate-pulse-soft" style={{ animationDelay: '1s' }}></div>
+            <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-sacred-600 via-sacred-700 to-sacred-800 text-white pb-32">
+                {/* Animated Background Elements - Reduced count/complexity */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-gold-500 rounded-full blur-[150px] opacity-15 animate-pulse-soft"></div>
                 </div>
 
                 {/* Floating Particle Background */}
-                <ParticleBackground count={5} opacity={0.3} />
+                <ParticleBackground count={3} opacity={0.3} />
 
                 {/* Cross Pattern Overlay */}
-                <div className="absolute inset-0 opacity-5 bg-hero-pattern"></div>
+                <div className="absolute inset-0 opacity-5 bg-hero-pattern pointer-events-none"></div>
 
                 <div className="container mx-auto px-4 relative z-10 pt-16 md:pt-20">
                     <div className="max-w-4xl mx-auto text-center">
                         {/* Liturgical Season Badge */}
-                        <div className="mb-4 animate-fade-in">
+                        <div className="mb-6 animate-fade-in flex justify-center">
                             <SeasonBadge />
                         </div>
 
-                        {/* Badge */}
+                        {/* Social Proof Badge */}
                         <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 animate-fade-in">
-                            <Sparkles className="w-4 h-4 text-gold-400" />
-                            <span className="text-sm font-semibold text-gold-200">The #1 Catholic Faith Companion</span>
+                            <Users className="w-4 h-4 text-gold-400" />
+                            <span className="text-sm font-semibold text-gold-200">Trusted by Catholics Worldwide</span>
                         </div>
 
 
                         {/* Main Headline */}
-                        <h1 className="font-display text-4xl md:text-5xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up tracking-tight">
-                            Draw Closer to God,<br />
+                        <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up tracking-tight drop-shadow-lg">
+                            A Global Catholic<br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-200 via-gold-400 to-gold-200">
-                                One Day at a Time
+                                Prayer Community
                             </span>
                         </h1>
 
                         {/* Sub-headline */}
-                        <p className="text-lg md:text-xl text-blue-100/90 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            Join a global community in daily prayer, Mass readings, and sacred traditions. Start your spiritual journey today.
+                        <p className="text-lg md:text-xl text-blue-100/90 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up font-medium" style={{ animationDelay: '0.2s' }}>
+                            Light candles, offer Masses, and pray together. Join thousands of faithful in a sanctuary of daily prayer and support.
                         </p>
 
                         {/* CTAs */}
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up mb-12" style={{ animationDelay: '0.4s' }}>
+                        <div className="flex flex-col sm:flex-row gap-5 justify-center animate-fade-in-up mb-12" style={{ animationDelay: '0.4s' }}>
                             <Link
                                 href="/register"
-                                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg shadow-gold-500/30 group"
+                                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/20 group"
                             >
-                                <Heart className="w-5 h-5 mr-2 group-hover:fill-current" />
-                                Join Free
+                                <Heart className="w-5 h-5 mr-2 fill-white/20 group-hover:fill-white transition-all" />
+                                Pray Now (Free)
                             </Link>
                             <Link
-                                href="/welcome"
-                                className="inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold text-lg rounded-full transition-all duration-300 backdrop-blur-md border border-white/30"
+                                href="/candles"
+                                className="inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold text-lg rounded-full transition-all duration-300 backdrop-blur-md border border-white/30 hover:border-white/50"
                             >
-                                <Star className="w-5 h-5 mr-2" />
-                                How it Works
+                                <Flame className="w-5 h-5 mr-2 text-gold-400" />
+                                Light a Candle
+                            </Link>
+                            <Link
+                                href="/prayer-wall"
+                                className="inline-flex items-center justify-center px-8 py-4 text-blue-100 hover:text-white font-semibold text-lg hover:underline underline-offset-4 decoration-gold-400/50 hover:decoration-gold-400 transition-all"
+                            >
+                                Submit Intentions
                             </Link>
                         </div>
                     </div>
@@ -227,7 +257,7 @@ function LoggedOutHomePage() {
             </section>
 
             {/* Daily Journey Widget - Overlaps Hero */}
-            <Suspense fallback={<div className="h-64 bg-white/50 animate-pulse rounded-3xl container mx-auto" />}>
+            <Suspense fallback={<div className="h-64 bg-white shadow-xl rounded-3xl container mx-auto mb-10 animate-pulse border border-gray-100" />}>
                 <AsyncDailyJourney />
             </Suspense>
 
@@ -235,7 +265,7 @@ function LoggedOutHomePage() {
             <TrustBar />
 
             {/* Trending Prayers Carousel */}
-            <Suspense fallback={<div className="h-96 bg-gray-50/50 animate-pulse" />}>
+            <Suspense fallback={<div className="h-96 container mx-auto bg-gray-50/50 animate-pulse rounded-2xl" />}>
                 <AsyncTrendingPrayers />
             </Suspense>
 

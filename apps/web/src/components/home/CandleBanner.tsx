@@ -187,7 +187,7 @@ export function CandleBanner() {
                                         Share Your Prayer
                                     </h3>
                                     <p className="text-white/80 text-sm mb-6 max-w-xs">
-                                        Light a candle for free or upgrade for extended visibility and more prayers.
+                                        Light a candle for free or choose a premium offering for extended visibility and more prayers.
                                     </p>
                                     <Link
                                         href="/candles"

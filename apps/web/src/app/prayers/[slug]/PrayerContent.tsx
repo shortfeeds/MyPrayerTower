@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Heart, Minus, Plus, Type } from 'lucide-react';
+import { Heart, Minus, Plus, Type, Image as ImageIcon } from 'lucide-react';
 import { ShareButtons } from '@/components/social/ShareButtons';
-import { ShareButtons } from '@/components/social/ShareButtons';
+import { PrayerCardGenerator } from '@/components/prayers/PrayerCardGenerator';
 
 const TEXT_SIZES = [
     { label: 'S', class: 'text-base leading-relaxed' },
@@ -20,8 +20,9 @@ interface PrayerContentProps {
     category: string;
 }
 
-export function PrayerContent({ prayerId, prayerTitle, prayerContent, categoryLabel, category }: PrayerContentProps) {
+export function PrayerContent({ prayerId, prayerTitle, prayerContent = '', categoryLabel, category }: PrayerContentProps) {
     const [textSizeIndex, setTextSizeIndex] = useState(1); // Default M
+    const [isCardGeneratorOpen, setIsCardGeneratorOpen] = useState(false);
 
     useEffect(() => {
         const saved = localStorage.getItem('mpt-text-size');
@@ -78,9 +79,16 @@ export function PrayerContent({ prayerId, prayerTitle, prayerContent, categoryLa
                         <ShareButtons
                             url={`https://myprayertower.com/prayers/${prayerId}`}
                             title={prayerTitle}
-                            description={prayerContent.substring(0, 100) + '...'}
+                            description={(prayerContent || '').substring(0, 100) + '...'}
                             variant="default"
                         />
+                        <button
+                            onClick={() => setIsCardGeneratorOpen(true)}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-xl transition-all font-medium border border-indigo-200"
+                        >
+                            <ImageIcon size={18} />
+                            <span className="hidden sm:inline">Image</span>
+                        </button>
                         <button className="inline-flex items-center gap-2 px-5 py-2.5 text-gray-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all font-medium ml-auto">
                             <Heart size={18} />
                             <span>Save</span>
@@ -91,6 +99,15 @@ export function PrayerContent({ prayerId, prayerTitle, prayerContent, categoryLa
                     </span>
                 </div>
             </div>
+
+            {/* Card Generator Modal */}
+            {isCardGeneratorOpen && (
+                <PrayerCardGenerator
+                    title={prayerTitle}
+                    content={prayerContent}
+                    onClose={() => setIsCardGeneratorOpen(false)}
+                />
+            )}
         </article>
     );
 }

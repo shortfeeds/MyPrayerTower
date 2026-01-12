@@ -1,11 +1,10 @@
-import { Controller, Post, Body, Req, Res, UseGuards, RawBodyRequest, Get, Query } from '@nestjs/common';
-import { StripeService } from './stripe.service';
+import { Controller, Post, Body, UseGuards, Get, Query } from '@nestjs/common';
+import { PayPalService } from './paypal.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Request, Response } from 'express';
 
 @Controller('payments')
 export class PaymentsController {
-    constructor(private readonly stripeService: StripeService) { }
+    constructor(private readonly paypalService: PayPalService) { }
 
     @Post('create-checkout')
     @UseGuards(JwtAuthGuard)
@@ -13,43 +12,27 @@ export class PaymentsController {
         @Body() body: {
             churchId: string;
             tier: 'BASIC' | 'PRO' | 'CATHEDRAL' | 'DIOCESE';
-            successUrl: string;
-            cancelUrl: string;
         }
     ) {
-        return this.stripeService.createCheckoutSession(
+        return this.paypalService.createOrder(
             body.churchId,
-            body.tier as any,
-            body.successUrl,
-            body.cancelUrl
+            body.tier as any
         );
     }
 
-    @Post('webhook')
-    async handleWebhook(
-        @Req() req: RawBodyRequest<Request>,
-        @Res() res: Response
+    @Post('verify-payment')
+    @UseGuards(JwtAuthGuard)
+    async verifyPayment(
+        @Body() body: {
+            paypalOrderId: string;
+            churchId: string;
+            tier: 'BASIC' | 'PRO' | 'CATHEDRAL' | 'DIOCESE';
+        }
     ) {
-        const signature = req.headers['stripe-signature'] as string;
-
-        if (!signature) {
-            return res.status(400).json({ error: 'Missing stripe-signature header' });
-        }
-
-        try {
-            const result = await this.stripeService.handleWebhook(
-                req.rawBody as Buffer,
-                signature
-            );
-            return res.json(result);
-        } catch (error) {
-            console.error('[Stripe Webhook Error]', error);
-            return res.status(400).json({ error: (error as Error).message });
-        }
-    }
-
-    @Get('session-status')
-    async getSessionStatus(@Query('session_id') sessionId: string) {
-        return this.stripeService.getSessionStatus(sessionId);
+        return this.paypalService.verifyAndActivate(
+            body.paypalOrderId,
+            body.churchId,
+            body.tier as any
+        );
     }
 }

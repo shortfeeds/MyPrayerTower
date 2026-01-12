@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, Fragment } from 'react';
-import { X, Plus, Minus, ShoppingCart, Loader2, Check, Trash2 } from 'lucide-react';
+import { X, Plus, Minus, ShoppingCart, Loader2, Check } from 'lucide-react';
+import { PayPalCheckout } from '@/components/PayPalCheckout';
 
 interface Memorial {
     id: string;
@@ -54,6 +55,10 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
     const [isAnonymous, setIsAnonymous] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [showPayPal, setShowPayPal] = useState(false);
+    const [pendingOrder, setPendingOrder] = useState<{ orderId: string; amount: number } | null>(null);
+
+    // Filter logic... (keep existing helper functions or inline them)
 
     if (!isOpen) return null;
 
@@ -104,18 +109,16 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
 
         setSubmitting(true);
         try {
-            // Call payment API
-            const response = await fetch('/api/offerings/checkout', {
+            const response = await fetch(`/api/memorials/${memorial.id}/offering-checkout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    memorialId: memorial.id,
                     items: cartItems.map(item => ({
-                        offeringId: item.offering.id,
+                        type: item.offering.id,
                         quantity: item.quantity,
                         price: item.offering.price,
                     })),
-                    totalAmount: totalPrice * 100, // cents
+                    totalAmount: totalPrice * 100,
                     message,
                     isAnonymous,
                 }),
@@ -123,24 +126,21 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
 
             const data = await response.json();
 
-            if (data.success && data.payment_session_id) {
-                const { load } = await import('@cashfreepayments/cashfree-js');
-                const cashfree = await load({ mode: "production" });
-                cashfree.checkout({
-                    paymentSessionId: data.payment_session_id,
-                    redirectTarget: "_self",
-                });
-            } else if (data.success) {
-                // Free offerings or test mode
-                setSuccess(true);
-                setTimeout(() => {
-                    setSuccess(false);
-                    setCart(new Map());
-                    setMessage('');
-                    onClose();
-                }, 2000);
+            if (data.success) {
+                if (totalPrice > 0) {
+                    setPendingOrder({ orderId: data.payment.orderId, amount: totalPrice });
+                    setShowPayPal(true);
+                } else {
+                    setSuccess(true);
+                    setTimeout(() => {
+                        setSuccess(false);
+                        setCart(new Map());
+                        setMessage('');
+                        onClose();
+                    }, 2000);
+                }
             } else {
-                alert(data.message || 'Failed to process payment');
+                alert(data.message || 'Failed to process checkout');
             }
         } catch (error) {
             console.error('Checkout error:', error);
@@ -148,6 +148,17 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
         } finally {
             setSubmitting(false);
         }
+    };
+
+    const handlePayPalSuccess = async (details: any) => {
+        setSuccess(true);
+        setTimeout(() => {
+            setSuccess(false);
+            setCart(new Map());
+            setMessage('');
+            setShowPayPal(false);
+            onClose();
+        }, 2000);
     };
 
     const fullName = `${memorial.firstName} ${memorial.lastName}`;
@@ -158,8 +169,8 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
             <div
                 key={offering.id}
                 className={`relative p-3 rounded-xl border-2 transition-all ${qty > 0
-                        ? 'border-amber-500 bg-amber-50 shadow-lg'
-                        : 'border-gray-200 hover:border-amber-300 bg-white'
+                    ? 'border-amber-500 bg-amber-50 shadow-lg'
+                    : 'border-gray-200 hover:border-amber-300 bg-white'
                     }`}
             >
                 {qty > 0 && (
@@ -175,25 +186,16 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                 <div className="flex items-center justify-center gap-1 mt-2">
                     {qty > 0 ? (
                         <>
-                            <button
-                                onClick={() => removeFromCart(offering.id)}
-                                className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-                            >
+                            <button onClick={() => removeFromCart(offering.id)} className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center">
                                 <Minus className="w-3 h-3" />
                             </button>
                             <span className="w-6 text-center font-bold text-sm">{qty}</span>
-                            <button
-                                onClick={() => addToCart(offering)}
-                                className="w-7 h-7 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center"
-                            >
+                            <button onClick={() => addToCart(offering)} className="w-7 h-7 rounded-full bg-amber-500 text-white flex items-center justify-center">
                                 <Plus className="w-3 h-3" />
                             </button>
                         </>
                     ) : (
-                        <button
-                            onClick={() => addToCart(offering)}
-                            className="px-3 py-1 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white rounded-full"
-                        >
+                        <button onClick={() => addToCart(offering)} className="px-3 py-1 text-xs font-semibold bg-amber-500 text-white rounded-full">
                             Add
                         </button>
                     )}
@@ -204,34 +206,17 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
 
     return (
         <Fragment>
-            {/* Backdrop */}
-            <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-                onClick={onClose}
-            />
-
-            {/* Dialog */}
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={onClose} />
             <div className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-2xl md:max-h-[90vh] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden">
-                {/* Header */}
                 <div className="relative bg-gradient-to-r from-amber-600 to-orange-600 text-white p-4">
-                    <button
-                        onClick={onClose}
-                        className="absolute top-3 right-3 p-2 hover:bg-white/10 rounded-full transition-colors"
-                    >
+                    <button onClick={onClose} className="absolute top-3 right-3 p-2 hover:bg-white/10 rounded-full">
                         <X className="w-5 h-5" />
                     </button>
-
                     <div className="flex items-center gap-3">
                         {memorial.photoUrl ? (
-                            <img
-                                src={memorial.photoUrl}
-                                alt={fullName}
-                                className="w-12 h-12 rounded-full object-cover border-2 border-white/30"
-                            />
+                            <img src={memorial.photoUrl} alt={fullName} className="w-12 h-12 rounded-full object-cover border-2 border-white/30" />
                         ) : (
-                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-xl">
-                                ✝️
-                            </div>
+                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-xl">✝️</div>
                         )}
                         <div>
                             <div className="text-xs text-white/80">Send tribute to</div>
@@ -240,46 +225,56 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                     </div>
                 </div>
 
-                {/* Success State */}
                 {success ? (
                     <div className="flex-1 flex flex-col items-center justify-center p-8">
                         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4 animate-pulse">
                             <Check className="w-10 h-10 text-green-600" />
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 mb-2">Tributes Sent!</h3>
-                        <p className="text-gray-500 text-center">
-                            Your offerings have been sent in memory of {fullName}.
-                        </p>
+                        <p className="text-gray-500 text-center">Your offerings have been sent in memory of {fullName}.</p>
+                    </div>
+                ) : showPayPal ? (
+                    <div className="flex-1 p-8 overflow-y-auto">
+                        <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Complete Your Offering</h3>
+                        <div className="bg-gray-50 rounded-xl p-4 mb-6">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-gray-600">Total Tribute Amount</span>
+                                <span className="text-xl font-bold text-gray-900">${totalPrice}</span>
+                            </div>
+                        </div>
+                        <PayPalCheckout
+                            amount={totalPrice}
+                            onSuccess={handlePayPalSuccess}
+                            onError={() => alert('Payment failed. Please try again.')}
+                        />
+                        <button
+                            onClick={() => setShowPayPal(false)}
+                            className="w-full mt-4 text-sm text-gray-500 hover:text-gray-700"
+                        >
+                            Go Back
+                        </button>
                     </div>
                 ) : (
                     <>
-                        {/* Content - All offerings in grid */}
                         <div className="flex-1 overflow-y-auto p-4">
-                            {/* Quick Acts */}
                             <div className="mb-4">
                                 <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">🕯️ Quick Acts</h4>
                                 <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                                     {ALL_OFFERINGS.filter(o => o.category === 'quick').map(renderOfferingCard)}
                                 </div>
                             </div>
-
-                            {/* Sacred */}
                             <div className="mb-4">
                                 <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">✝️ Sacred Offerings</h4>
                                 <div className="grid grid-cols-3 gap-2">
                                     {ALL_OFFERINGS.filter(o => o.category === 'sacred').map(renderOfferingCard)}
                                 </div>
                             </div>
-
-                            {/* Bundles */}
                             <div className="mb-4">
                                 <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">💝 Bundles</h4>
                                 <div className="grid grid-cols-3 gap-2">
                                     {ALL_OFFERINGS.filter(o => o.category === 'bouquet').map(renderOfferingCard)}
                                 </div>
                             </div>
-
-                            {/* Message */}
                             {totalItems > 0 && (
                                 <div className="mt-4 space-y-3 bg-gray-50 rounded-xl p-4">
                                     <textarea
@@ -301,48 +296,19 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                                 </div>
                             )}
                         </div>
-
-                        {/* Cart Summary & Checkout */}
-                        <div className="border-t border-gray-200 bg-gray-50">
-                            {/* Cart Items Preview */}
-                            {cartItems.length > 0 && (
-                                <div className="px-4 py-2 border-b border-gray-200 max-h-24 overflow-y-auto">
-                                    <div className="flex flex-wrap gap-2">
-                                        {cartItems.map(item => (
-                                            <div key={item.offering.id} className="flex items-center gap-1 bg-white px-2 py-1 rounded-full border text-sm">
-                                                <span>{item.offering.icon}</span>
-                                                <span className="font-medium">{item.quantity}x</span>
-                                                <button
-                                                    onClick={() => clearItem(item.offering.id)}
-                                                    className="text-gray-400 hover:text-red-500"
-                                                >
-                                                    <X className="w-3 h-3" />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Checkout Button */}
-                            <div className="p-4">
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={cartItems.length === 0 || submitting}
-                                    className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-                                >
-                                    {submitting ? (
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                    ) : cartItems.length > 0 ? (
-                                        <>
-                                            <ShoppingCart className="w-5 h-5" />
-                                            Checkout — {totalItems} item{totalItems !== 1 ? 's' : ''} — ${totalPrice}
-                                        </>
-                                    ) : (
-                                        'Select offerings to continue'
-                                    )}
-                                </button>
-                            </div>
+                        <div className="border-t border-gray-200 bg-gray-50 p-4">
+                            <button
+                                onClick={handleSubmit}
+                                disabled={cartItems.length === 0 || submitting}
+                                className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-lg disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                            >
+                                {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                                    <>
+                                        <ShoppingCart className="w-5 h-5" />
+                                        Checkout — {totalItems} item{totalItems !== 1 ? 's' : ''} — ${totalPrice}
+                                    </>
+                                )}
+                            </button>
                         </div>
                     </>
                 )}

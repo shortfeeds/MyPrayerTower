@@ -121,11 +121,7 @@ export default function RootLayout({
                 <link rel="preconnect" href="https://htgvilktnadnwlforyjt.supabase.co" />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                {/* Cashfree Payments SDK */}
-                <Script
-                    src="https://sdk.cashfree.com/js/v3/cashfree.js"
-                    strategy="beforeInteractive"
-                />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
                 <ThemeProvider>

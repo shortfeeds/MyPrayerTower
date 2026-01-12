@@ -23,24 +23,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const [churches, saints, prayers, memorials] = await Promise.all([
             prisma.church.findMany({
                 select: { slug: true },
-                where: { isVerified: true },
-                take: 10000
+                // where: { isVerified: true }, // Include ALL churches for maximum SEO coverage
+                take: 45000 // Max safe limit per sitemap
             }),
             prisma.saint.findMany({
                 select: { slug: true },
-                take: 5000
+                take: 10000
             }),
             prisma.prayer.findMany({
                 where: {
                     slug: { not: null }
                 },
                 select: { slug: true },
-                take: 5000
+                take: 10000
             }),
             prisma.memorial.findMany({
                 select: { slug: true },
                 where: { isPublic: true },
-                take: 5000
+                take: 10000
             })
         ]);
 

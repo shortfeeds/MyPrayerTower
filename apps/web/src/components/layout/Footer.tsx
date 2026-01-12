@@ -100,103 +100,114 @@ export function Footer() {
 
     return (
         <>
-            {/* Desktop Footer - Compact Single Row */}
-            <footer className="hidden lg:block bg-gradient-to-b from-gray-900 to-black text-gray-300 relative overflow-hidden">
+            {/* Desktop Footer - Professional Grid Layout */}
+            <footer className="hidden lg:block bg-gradient-to-b from-gray-950 to-black text-gray-300 relative overflow-hidden font-sans border-t border-gray-900">
                 <div className="absolute inset-0 opacity-5">
                     <div className="absolute inset-0 bg-[url('/pattern.svg')] bg-repeat opacity-30" />
                 </div>
 
-                <div className="container mx-auto px-4 py-10 relative z-10">
-                    <div className="flex flex-wrap items-start justify-between gap-8">
-                        {/* Brand */}
-                        <div className="w-56">
-                            <Link href="/" className="inline-flex items-center gap-2 mb-3">
-                                <span className="w-8 h-8 bg-gradient-to-br from-gold-400 to-gold-600 rounded-lg flex items-center justify-center">
-                                    <span className="text-white font-serif font-bold">M</span>
+                <div className="container mx-auto px-6 py-16 relative z-10">
+                    <div className="grid grid-cols-6 gap-8">
+                        {/* 1. Brand Identity */}
+                        <div className="col-span-1.5 pr-4">
+                            <Link href="/" className="inline-flex items-center gap-3 mb-6">
+                                <span className="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-600 rounded-xl flex items-center justify-center shadow-lg shadow-gold-500/20">
+                                    <span className="text-white font-serif font-bold text-lg">M</span>
                                 </span>
-                                <span className="font-serif font-bold text-white">MyPrayerTower</span>
+                                <span className="font-serif font-bold text-xl text-white tracking-tight">MyPrayerTower</span>
                             </Link>
-                            <p className="text-gray-400 text-xs mb-3">Your digital sanctuary for prayer and faith.</p>
-                            <div className="flex gap-1.5">
+                            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                                Your digital sanctuary for prayer, community, and spiritual growth. Join us in building a global network of faith.
+                            </p>
+                            <div className="flex gap-2">
                                 {socialLinks.map((s) => (
-                                    <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-7 h-7 flex items-center justify-center bg-gray-800 hover:bg-gold-500 rounded-full transition-colors" title={s.label}>
-                                        <s.icon className="w-3.5 h-3.5 text-gray-400 hover:text-white" />
+                                    <a
+                                        key={s.label}
+                                        href={s.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-8 h-8 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-lg hover:border-gold-500 hover:text-gold-400 transition-all duration-300"
+                                        title={s.label}
+                                    >
+                                        <s.icon className="w-4 h-4" />
                                     </a>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Link Columns - All in one row */}
-                        {/* Link Columns - All in one row */}
-                        <div className="flex gap-8 text-xs">
-                            <div>
-                                <h4 className="font-semibold text-white mb-2">Spiritual Growth</h4>
-                                <ul className="space-y-1 text-gray-400">
-                                    <li><Link href="/journey" className="hover:text-gold-400 text-gold-200">My Journey</Link></li>
-                                    <li><Link href="/challenges" className="hover:text-gold-400">Challenges</Link></li>
-                                    <li><Link href="/readings" className="hover:text-gold-400">Bible Readings</Link></li>
-                                    <li><Link href="/examen" className="hover:text-gold-400">Daily Examen</Link></li>
-                                    <li><Link href="/saints" className="hover:text-gold-400">Saints</Link></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="font-semibold text-white mb-2">Community</h4>
-                                <ul className="space-y-1 text-gray-400">
-                                    <li><Link href="/sessions" className="hover:text-gold-400 text-gold-200">Live Sessions</Link></li>
-                                    <li><Link href="/prayer-wall" className="hover:text-gold-400">Prayer Wall</Link></li>
-                                    <li><Link href="/partners" className="hover:text-gold-400">Partners</Link></li>
-                                    <li><Link href="/candles" className="hover:text-gold-400">Candles</Link></li>
-                                    <li><Link href="/leaderboard" className="hover:text-gold-400">Leaderboard</Link></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="font-semibold text-white mb-2">Resources</h4>
-                                <ul className="space-y-1 text-gray-400">
-                                    <li><Link href="/churches" className="hover:text-gold-400">Find Churches</Link></li>
-                                    <li><Link href="/prayers" className="hover:text-gold-400">Common Prayers</Link></li>
-                                    <li><Link href="/memorials" className="hover:text-gold-400 text-gold-200">Eternal Memorials</Link></li>
-                                    <li><Link href="/bouquets" className="hover:text-gold-400">Spiritual Bouquets</Link></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="font-semibold text-white mb-2">Support</h4>
-                                <ul className="space-y-1 text-gray-400">
-                                    <li><Link href="/mass-offerings" className="hover:text-gold-400">Mass Offerings</Link></li>
-                                    <li><Link href="/donate" className="hover:text-gold-400">Donate</Link></li>
-                                    <li><Link href="/about" className="hover:text-gold-400">About Us</Link></li>
-                                    <li><Link href="/contact" className="hover:text-gold-400">Contact</Link></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="font-semibold text-white mb-2">Legal</h4>
-                                <ul className="space-y-1 text-gray-400">
-                                    <li><Link href="/privacy" className="hover:text-gold-400">Privacy</Link></li>
-                                    <li><Link href="/terms" className="hover:text-gold-400">Terms</Link></li>
-                                    <li><Link href="/refunds" className="hover:text-gold-400">Refunds</Link></li>
-                                </ul>
-                            </div>
+                        {/* 2. Spiritual Growth */}
+                        <div>
+                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider">Spiritual</h4>
+                            <ul className="space-y-3 text-sm">
+                                <li><Link href="/journey" className="hover:text-gold-400 transition-colors">My Journey</Link></li>
+                                <li><Link href="/challenges" className="hover:text-gold-400 transition-colors">Challenges</Link></li>
+                                <li><Link href="/readings" className="hover:text-gold-400 transition-colors">Bible Readings</Link></li>
+                                <li><Link href="/examen" className="hover:text-gold-400 transition-colors">Daily Examen</Link></li>
+                                <li><Link href="/saints" className="hover:text-gold-400 transition-colors">Saints</Link></li>
+                            </ul>
                         </div>
 
-                        {/* Newsletter & Apps */}
-                        <div className="w-64">
+                        {/* 3. Community */}
+                        <div>
+                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider">Community</h4>
+                            <ul className="space-y-3 text-sm">
+                                <li><Link href="/sessions" className="hover:text-gold-400 transition-colors">Live Sessions</Link></li>
+                                <li><Link href="/prayer-wall" className="hover:text-gold-400 transition-colors">Prayer Wall</Link></li>
+                                <li><Link href="/partners" className="hover:text-gold-400 transition-colors">Partners</Link></li>
+                                <li><Link href="/candles" className="hover:text-gold-400 transition-colors">Candles</Link></li>
+                                <li><Link href="/leaderboard" className="hover:text-gold-400 transition-colors">Leaderboard</Link></li>
+                            </ul>
+                        </div>
+
+                        {/* 4. Resources */}
+                        <div>
+                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider">Resources</h4>
+                            <ul className="space-y-3 text-sm">
+                                <li><Link href="/churches" className="hover:text-gold-400 transition-colors">Find Churches</Link></li>
+                                <li><Link href="/prayers" className="hover:text-gold-400 transition-colors">Common Prayers</Link></li>
+                                <li><Link href="/memorials" className="hover:text-gold-400 transition-colors">Eternal Memorials</Link></li>
+                                <li><Link href="/bouquets" className="hover:text-gold-400 transition-colors">Spiritual Bouquets</Link></li>
+                            </ul>
+                        </div>
+
+                        {/* 5. Company (Merged Support & Legal) */}
+                        <div>
+                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider">Company</h4>
+                            <ul className="space-y-3 text-sm">
+                                <li><Link href="/about" className="hover:text-gold-400 transition-colors">About Us</Link></li>
+                                <li><Link href="/contact" className="hover:text-gold-400 transition-colors">Contact</Link></li>
+                                <li><Link href="/donate" className="hover:text-gold-400 transition-colors">Donate</Link></li>
+                                <li><Link href="/mass-offerings" className="hover:text-gold-400 transition-colors">Mass Offerings</Link></li>
+                                <li className="pt-2 border-t border-gray-900 mt-2"></li>
+                                <li><Link href="/privacy" className="hover:text-gold-400 transition-colors text-gray-500">Privacy Policy</Link></li>
+                                <li><Link href="/terms" className="hover:text-gold-400 transition-colors text-gray-500">Terms of Service</Link></li>
+                            </ul>
+                        </div>
+
+                        {/* 6. Newsletter & App (Wider column) */}
+                        <div className="col-span-1.5">
+                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider">Stay Connected</h4>
                             <NewsletterForm />
-                            <div className="mt-3 flex gap-2">
-                                <AppStoreButton store="apple" />
-                                <AppStoreButton store="google" />
+                            <div className="mt-6">
+                                <p className="text-xs text-gray-500 mb-3 uppercase tracking-wide font-semibold">Download the App</p>
+                                <div className="space-y-2">
+                                    <AppStoreButton store="apple" />
+                                    <AppStoreButton store="google" />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="border-t border-gray-800 bg-black/30">
-                    <div className="container mx-auto px-4 py-4 flex justify-between items-center text-xs text-gray-500">
-                        <p>© {currentYear} MyPrayerTower. All rights reserved. <span className="text-gray-600 ml-2">AMDG</span></p>
-                        <div className="flex gap-3">
-                            <Link href="/privacy" className="hover:text-gray-400">Privacy</Link>
-                            <Link href="/terms" className="hover:text-gray-400">Terms</Link>
-                            <Link href="/refunds" className="hover:text-gray-400">Refunds</Link>
-                            <Link href="/sitemap" className="hover:text-gray-400">Sitemap</Link>
+                <div className="border-t border-gray-900 bg-black">
+                    <div className="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-600">
+                        <p>© {currentYear} MyPrayerTower. All rights reserved.</p>
+                        <div className="flex gap-6 mt-4 md:mt-0">
+                            <Link href="/privacy" className="hover:text-gray-400 transition-colors">Privacy</Link>
+                            <Link href="/terms" className="hover:text-gray-400 transition-colors">Terms</Link>
+                            <Link href="/refunds" className="hover:text-gray-400 transition-colors">Refunds</Link>
+                            <Link href="/sitemap" className="hover:text-gray-400 transition-colors">Sitemap</Link>
                         </div>
                     </div>
                 </div>

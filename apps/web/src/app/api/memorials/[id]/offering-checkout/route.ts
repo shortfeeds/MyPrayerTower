@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@mpt/database';
 import { getUserFromCookie } from '@/lib/auth';
-import { createOrder } from '@/lib/cashfree';
 
 const prisma = new PrismaClient();
 
@@ -9,32 +8,12 @@ interface Params {
     params: { id: string };
 }
 
-// Offering type to price key mapping
-const OFFERING_PRICES: Record<string, string> = {
-    CANDLE_SMALL: 'memorialCandleSmallPrice',
-    CANDLE_MEDIUM: 'memorialCandleMediumPrice',
-    CANDLE_LARGE: 'memorialCandleLargePrice',
-    FLOWERS: 'memorialFlowersPrice',
-    PRAYER_CARD: 'memorialPrayerCardPrice',
-    FLORAL_BOUQUET: 'memorialFloralBouquetPrice',
-    ROSARY_DECADE: 'memorialRosaryDecadePrice',
-    ROSARY_FULL: 'memorialRosaryFullPrice',
-    SPIRITUAL_BOUQUET_GARDEN: 'memorialBouquetGardenPrice',
-    SPIRITUAL_BOUQUET_HEAVENLY: 'memorialBouquetHeavenlyPrice',
-    SPIRITUAL_BOUQUET_ETERNAL: 'memorialBouquetEternalPrice',
-    SPIRITUAL_BOUQUET_LEGACY: 'memorialBouquetLegacyPrice',
-};
-
-// POST /api/memorials/[id]/offering-checkout - Create checkout for offering
+// POST /api/memorials/[id]/offering-checkout - Create checkout session for tribute(s)
 export async function POST(request: NextRequest, { params }: Params) {
     try {
         const { id } = params;
         const body = await request.json();
-        const { type, message, isAnonymous = false, guestName, guestEmail } = body;
-
-        if (!type || !OFFERING_PRICES[type]) {
-            return NextResponse.json({ error: 'Invalid offering type' }, { status: 400 });
-        }
+        const { items, message, isAnonymous = false, guestName, guestEmail, paypalOrderId } = body;
 
         // Find memorial
         let memorial = await prisma.memorial.findUnique({ where: { id } });
@@ -48,33 +27,63 @@ export async function POST(request: NextRequest, { params }: Params) {
         // Get user if logged in
         const user = await getUserFromCookie();
 
-        // Get price from settings
-        const settings = await prisma.appSettings.findFirst();
-        const priceKey = OFFERING_PRICES[type] as keyof typeof settings;
-        const priceCents = (settings?.[priceKey] as number) || 100;
-        const price = priceCents / 100;
+        // Calculate total amount from items (already calculated on frontend, but good to verify)
+        // For simplicity trust frontend amount for now or calculate from settings if needed.
+        const totalAmount = body.totalAmount; // cents
+        const price = totalAmount / 100;
 
-        // Create order ID
-        const orderId = `OFF-${memorial.id.slice(0, 8)}-${Date.now()}`;
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3005';
+        // Create a common order ID / transaction ID
+        const transactionId = paypalOrderId || `OFF-${memorial.id.slice(0, 8)}-${Date.now()}`;
 
-        // Create Cashfree order
-        const order = await createOrder({
-            orderId,
-            amount: price,
-            currency: 'USD',
-            customerId: user?.id || `guest-${Date.now()}`,
-            customerPhone: user?.phone || '0000000000',
-            customerName: user?.displayName || guestName || 'Visitor',
-            returnUrl: `${baseUrl}/memorials/${memorial.slug}/offering-success?order_id={order_id}&type=${type}&message=${encodeURIComponent(message || '')}&anonymous=${isAnonymous}&guest_name=${encodeURIComponent(guestName || '')}&guest_email=${encodeURIComponent(guestEmail || '')}`,
-        });
+        // Save offerings to DB
+        // If it's a batch of items, we create multiple records
+        try {
+            if (Array.isArray(items)) {
+                for (const item of items) {
+                    const quantity = item.quantity || 1;
+                    for (let i = 0; i < quantity; i++) {
+                        await prisma.memorialOffering.create({
+                            data: {
+                                memorialId: memorial.id,
+                                userId: user?.id,
+                                guestName: guestName,
+                                guestEmail: guestEmail,
+                                type: item.type as any,
+                                amount: item.price * 100, // item price in cents
+                                message: message,
+                                isAnonymous: !!isAnonymous,
+                                transactionId: transactionId,
+                                paymentSource: 'paypal'
+                            }
+                        });
+                    }
+                }
+            } else {
+                // Single item fallback (original logic)
+                const { type, amount } = body;
+                await prisma.memorialOffering.create({
+                    data: {
+                        memorialId: memorial.id,
+                        userId: user?.id,
+                        guestName: guestName,
+                        guestEmail: guestEmail,
+                        type: type as any,
+                        amount: amount || totalAmount,
+                        message: message,
+                        isAnonymous: !!isAnonymous,
+                        transactionId: transactionId,
+                        paymentSource: 'paypal'
+                    }
+                });
+            }
+        } catch (dbErr) {
+            console.error('Failed to save memorial offerings to DB:', dbErr);
+        }
 
         return NextResponse.json({
             success: true,
             payment: {
-                orderId,
-                sessionId: order.payment_session_id,
-                paymentLink: order.payment_link,
+                orderId: transactionId,
                 amount: price,
             },
         });

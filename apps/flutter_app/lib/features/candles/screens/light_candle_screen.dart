@@ -381,7 +381,7 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
         (d) => d['value'] == _selectedDuration,
       );
       final isPaid = (selectedOption['price'] as double) > 0;
-      final tier = selectedOption['tier'] as String;
+      // tier variable removed as it was unused and causing warnings
 
       // Get current user ID if logged in (optional)
       final authState = ref.read(authProvider);
@@ -392,11 +392,11 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
       debugPrint('Lighting candle: $_intention');
 
       final candle = await candleRepo.lightCandle(
-        userName: _isAnonymous ? 'Anonymous' : _userName,
+        name: _isAnonymous ? 'Anonymous' : _userName,
         intention: _intention,
         duration: _selectedDuration,
-        tier: tier,
         userId: userId,
+        amountInCents: (selectedOption['price'] * 100).toInt(),
         isAnonymous: _isAnonymous,
       );
 

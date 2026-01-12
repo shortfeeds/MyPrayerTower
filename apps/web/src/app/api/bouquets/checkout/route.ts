@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createOrder } from '@/lib/cashfree';
 import { randomUUID } from 'crypto';
 import { notifyBouquet } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { items, recipientName, senderName, senderEmail, message, scheduleDate, isAnonymous } = body;
+        const { items, recipientName, senderName, senderEmail, message, scheduleDate, isAnonymous, occasion, paypalOrderId, paypalPayerEmail } = body;
 
         // items = { [id]: count }
         // Pricing logic must match frontend or DB
         const PRICES: Record<string, number> = {
             'mass': 1000,
-            'rosary': 0,
+            'rosary': 500,
             'prayer': 0,
-            'candle': 499
+            'candle': 500
         };
 
         let totalAmount = 0;
@@ -29,50 +28,60 @@ export async function POST(req: NextRequest) {
             }
         });
 
-        if (totalAmount === 0) {
-            // Free bouquet - still send notification
-            notifyBouquet({
-                recipient: recipientName || 'Unknown',
-                sender: senderName || 'Anonymous',
-                prayerTypes,
-                amount: 0,
-                email: senderEmail
-            }).catch(err => console.error('Failed to send bouquet notification:', err));
+        if (totalAmount === 0 || paypalOrderId) {
+            // Paid or Free bouquet - save to DB
+            try {
+                const { db } = await import('@/lib/db');
+                const orderId = paypalOrderId || `BOUQUET_${randomUUID().slice(0, 8)}_${Date.now()}`;
+                await db.spiritualBouquet.create({
+                    data: {
+                        id: orderId,
+                        creatorName: senderName,
+                        creatorEmail: senderEmail,
+                        recipientName: recipientName || 'Unknown',
+                        recipientEmail: recipientEmail || 'Unknown',
+                        occasion: occasion || 'Other',
+                        message: message || '',
+                        massesCount: items.mass || 0,
+                        rosariesCount: items.rosary || 0,
+                        prayersCount: items.prayer || 0,
+                        candlesCount: items.candle || 0,
+                        amount: totalAmount,
+                        paymentStatus: totalAmount === 0 || paypalOrderId ? 'COMPLETED' : 'PENDING',
+                        sentAt: new Date(),
+                    }
+                });
 
-            return NextResponse.json({
-                success: true,
-                message: 'Free bouquet processed',
-            });
+                // Send notification
+                notifyBouquet({
+                    recipient: recipientName || 'Unknown',
+                    sender: senderName || 'Anonymous',
+                    prayerTypes,
+                    amount: totalAmount,
+                    email: senderEmail
+                }).catch(err => console.error('Failed to send bouquet notification:', err));
+
+                return NextResponse.json({
+                    success: true,
+                    message: totalAmount === 0 ? 'Free bouquet processed' : 'Paid bouquet processed',
+                    order_id: orderId
+                });
+            } catch (dbErr) {
+                console.error('Failed to save bouquet to DB:', dbErr);
+                return NextResponse.json({ success: false, message: 'Database error' }, { status: 500 });
+            }
         }
 
-        const orderId = `BOUQUET_${randomUUID().slice(0, 8)}_${Date.now()}`;
-        const customerId = (senderName || 'sender').replace(/[^\w]/g, '_').substring(0, 20);
-
-        // Convert totalAmount (cents) to dollars
-        const dollarAmount = Number((totalAmount / 100).toFixed(2));
-
-        const order = await createOrder({
-            orderId,
-            amount: dollarAmount,
-            currency: 'USD',
-            customerId,
-            customerPhone: '9999999999',
-            customerName: senderName || 'Sender'
-        });
-
-        // Send admin notification
-        notifyBouquet({
-            recipient: recipientName || 'Unknown',
-            sender: senderName || 'Anonymous',
-            prayerTypes,
-            amount: totalAmount,
-            email: senderEmail
-        }).catch(err => console.error('Failed to send bouquet notification:', err));
+        if (!senderName || !senderEmail) {
+            return NextResponse.json(
+                { success: false, message: 'Sender name and email are required' },
+                { status: 400 }
+            );
+        }
 
         return NextResponse.json({
             success: true,
-            payment_session_id: order.payment_session_id,
-            order_id: order.order_id,
+            amount: totalAmount / 100 // Dollars for PayPal
         });
 
     } catch (error: any) {

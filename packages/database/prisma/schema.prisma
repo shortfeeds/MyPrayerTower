@@ -853,6 +853,7 @@ model User {
   Memorial                                   Memorial[]
   MemorialOffering                           MemorialOffering[]
   MemorialGuestbook                          MemorialGuestbook[]
+  filedReports                               Report[]
 
   @@index([email])
   @@index([homeChurchId])
@@ -1623,6 +1624,7 @@ enum ReportReason {
 
 enum ReportStatus {
   PENDING
+  RESOLVED
   DISMISSED
   WARNED
   SUSPENDED
@@ -1934,4 +1936,30 @@ model AbandonedCart {
   @@index([email])
   @@index([createdAt])
   @@index([converted])
+}
+
+// =========================================
+// MODERATION SYSTEM
+// =========================================
+
+model Report {
+  id          String       @id @default(cuid())
+  reason      ReportReason
+  description String?      @db.Text
+  status      ReportStatus @default(PENDING)
+  
+  reporterId  String?
+  reporter    User?        @relation(fields: [reporterId], references: [id])
+  
+  targetType  String       // PRAYER_REQUEST, USER, COMMENT
+  targetId    String
+
+  details     String?      // Additional JSON details if needed
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([status])
+  @@index([targetType, targetId])
+  @@index([reporterId])
 }

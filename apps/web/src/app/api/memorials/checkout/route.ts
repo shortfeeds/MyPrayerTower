@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@mpt/database';
 import { getUserFromCookie } from '@/lib/auth';
-import { createOrder } from '@/lib/cashfree';
 
 const prisma = new PrismaClient();
 
@@ -59,19 +58,8 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        // Create Cashfree order
+        // Create order ID
         const orderId = `MEM-${memorial.id}-${Date.now()}`;
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3005';
-
-        const order = await createOrder({
-            orderId,
-            amount: price,
-            currency: 'USD',
-            customerId: user.id,
-            customerPhone: user.phone || '0000000000',
-            customerName: user.displayName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User',
-            returnUrl: `${baseUrl}/memorials/payment-success?order_id={order_id}&memorial_id=${memorial.id}`,
-        });
 
         // Update memorial with payment info
         await prisma.memorial.update({
@@ -84,8 +72,7 @@ export async function POST(request: NextRequest) {
             memorial: { id: memorial.id, slug: memorial.slug },
             payment: {
                 orderId,
-                sessionId: order.payment_session_id,
-                paymentLink: order.payment_link,
+                amount: price,
             },
         });
     } catch (error) {

@@ -541,12 +541,12 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                             </button>
                         </div>
 
-                        {/* Upgrade CTA for Basic Tier */}
+                        {/* Upgrade CTA for Basic Tier - HIDDEN until upgrade page is implemented
                         {memorial.tier === 'BASIC' && (
                             <div className="bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 rounded-2xl p-6 border-2 border-amber-400 shadow-lg">
                                 <div className="flex items-center gap-2 mb-3">
                                     <Crown className="w-6 h-6 text-amber-600" />
-                                    <h4 className="text-lg font-bold text-gray-900">Upgrade to Featured</h4>
+                                    <h4 className="text-lg font-bold text-gray-900">Feature Memorial</h4>
                                 </div>
                                 <ul className="text-sm text-gray-700 mb-4 space-y-2">
                                     <li className="flex items-center gap-2">✓ <span>Golden premium styling</span></li>
@@ -557,12 +557,13 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                                 </ul>
                                 <Link
                                     href={`/memorials/${memorial.slug}/upgrade`}
-                                    className="block w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl text-center shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
+                                    className="block w-full py-3 bg-gradient-to-r from-amber-50 to-orange-500 text-white font-bold rounded-xl text-center shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
                                 >
-                                    ⭐ Upgrade Now — $49.99
+                                    ⭐ Feature This Memorial — $49.99
                                 </Link>
                             </div>
                         )}
+                        */}
                     </div>
                 </div>
             </div>

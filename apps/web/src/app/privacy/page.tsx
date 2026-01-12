@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-    const lastUpdated = 'January 5, 2026';
+    const lastUpdated = 'January 12, 2026';
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -92,7 +92,7 @@ export default function PrivacyPolicyPage() {
                         </p>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
                             <li><strong>Google Play Billing:</strong> In-app purchases and subscriptions on Android (see Google's Privacy Policy)</li>
-                            <li><strong>Cashfree Payments:</strong> Web payment processing (see Cashfree's Privacy Policy)</li>
+                            <li><strong>PayPal:</strong> Web payment processing (see PayPal's Privacy Policy)</li>
                             <li><strong>Google AdMob:</strong> Advertising services (see Google's Privacy Policy)</li>
                             <li><strong>Google Analytics:</strong> Usage analytics and insights</li>
                             <li><strong>Firebase:</strong> Push notifications and authentication</li>
@@ -102,7 +102,7 @@ export default function PrivacyPolicyPage() {
 
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Payment Information</h3>
                         <p className="text-gray-600 dark:text-gray-400">
-                            When you make purchases (subscriptions, donations, Mass offerings, virtual candles), payment is processed through Google Play Billing (Android app) or Cashfree (web). We do not store your full credit card details. We receive confirmation of payment and limited billing information to fulfill your order.
+                            When you make purchases (subscriptions, donations, Mass offerings, virtual candles), payment is processed through Google Play Billing (Android app) or PayPal (web). We do not store your full credit card details. We receive confirmation of payment and limited billing information to fulfill your order.
                         </p>
                     </section>
 

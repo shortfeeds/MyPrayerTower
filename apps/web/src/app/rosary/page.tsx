@@ -1,195 +1,136 @@
-'use client';
 
-import { useState } from 'react';
-import { CircleDot, ChevronRight, ChevronLeft, Heart, Sun, Crown, Star, Play, Pause } from 'lucide-react';
-import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
+import { Metadata } from 'next';
+import { BookOpen, Disc, Calendar, Star, Heart } from 'lucide-react';
+import Link from 'next/link';
 
-type MysterySet = 'joyful' | 'sorrowful' | 'glorious' | 'luminous';
+export const metadata: Metadata = {
+    title: 'How to Pray the Rosary | MyPrayerTower',
+    description: 'A step-by-step guide to praying the Holy Rosary, including all Mysteries and prayers.',
+};
 
-interface Mystery {
-    name: string;
-    scripture: string;
-    meditation: string;
-}
-
-const MYSTERIES: Record<MysterySet, { name: string; day: string; color: string; icon: React.ReactNode; mysteries: Mystery[] }> = {
-    joyful: {
+const MYSTERIES = [
+    {
         name: 'Joyful Mysteries',
-        day: 'Monday & Saturday',
-        color: 'from-emerald-600 to-teal-700',
-        icon: <Heart className="w-5 h-5" />,
-        mysteries: [
-            { name: 'The Annunciation', scripture: 'Luke 1:26-38', meditation: 'The angel Gabriel announces to Mary that she will conceive the Son of God.' },
-            { name: 'The Visitation', scripture: 'Luke 1:39-56', meditation: 'Mary visits her cousin Elizabeth, who is pregnant with John the Baptist.' },
-            { name: 'The Nativity', scripture: 'Luke 2:1-20', meditation: 'Jesus is born in a stable in Bethlehem.' },
-            { name: 'The Presentation', scripture: 'Luke 2:22-38', meditation: 'Mary and Joseph present Jesus in the Temple.' },
-            { name: 'Finding in the Temple', scripture: 'Luke 2:41-52', meditation: 'The child Jesus is found teaching in the Temple.' },
-        ]
+        days: ['Monday', 'Saturday'],
+        events: [
+            'The Annunciation',
+            'The Visitation',
+            'The Nativity',
+            'The Presentation',
+            'The Finding in the Temple'
+        ],
+        icon: Star,
+        color: 'text-yellow-600 bg-yellow-100'
     },
-    sorrowful: {
+    {
         name: 'Sorrowful Mysteries',
-        day: 'Tuesday & Friday',
-        color: 'from-purple-700 to-indigo-800',
-        icon: <Crown className="w-5 h-5" />,
-        mysteries: [
-            { name: 'Agony in the Garden', scripture: 'Matthew 26:36-46', meditation: 'Jesus prays in Gethsemane and sweats blood.' },
-            { name: 'Scourging at the Pillar', scripture: 'John 19:1', meditation: 'Jesus is brutally scourged by Roman soldiers.' },
-            { name: 'Crowning with Thorns', scripture: 'Matthew 27:27-31', meditation: 'Soldiers mock Jesus with a crown of thorns.' },
-            { name: 'Carrying the Cross', scripture: 'John 19:17', meditation: 'Jesus carries His cross to Calvary.' },
-            { name: 'The Crucifixion', scripture: 'John 19:18-30', meditation: 'Jesus dies on the cross for our salvation.' },
-        ]
+        days: ['Tuesday', 'Friday'],
+        events: [
+            'The Agony in the Garden',
+            'The Scourging at the Pillar',
+            'The Crowning with Thorns',
+            'The Carrying of the Cross',
+            'The Crucifixion'
+        ],
+        icon: Heart,
+        color: 'text-red-600 bg-red-100'
     },
-    glorious: {
+    {
         name: 'Glorious Mysteries',
-        day: 'Wednesday & Sunday',
-        color: 'from-amber-500 to-orange-600',
-        icon: <Sun className="w-5 h-5" />,
-        mysteries: [
-            { name: 'The Resurrection', scripture: 'Matthew 28:1-10', meditation: 'Jesus rises from the dead on Easter Sunday.' },
-            { name: 'The Ascension', scripture: 'Acts 1:9-11', meditation: 'Jesus ascends into Heaven forty days after Easter.' },
-            { name: 'Descent of the Holy Spirit', scripture: 'Acts 2:1-4', meditation: 'The Holy Spirit descends upon the Apostles at Pentecost.' },
-            { name: 'Assumption of Mary', scripture: 'Rev 12:1', meditation: 'Mary is assumed body and soul into Heaven.' },
-            { name: 'Coronation of Mary', scripture: 'Rev 12:1', meditation: 'Mary is crowned Queen of Heaven and Earth.' },
-        ]
+        days: ['Wednesday', 'Sunday'],
+        events: [
+            'The Resurrection',
+            'The Ascension',
+            'The Descent of the Holy Spirit',
+            'The Assumption of Mary',
+            'The Coronation of Mary'
+        ],
+        icon: Disc,
+        color: 'text-gold-600 bg-gold-100'
     },
-    luminous: {
+    {
         name: 'Luminous Mysteries',
-        day: 'Thursday',
-        color: 'from-blue-500 to-cyan-600',
-        icon: <Star className="w-5 h-5" />,
-        mysteries: [
-            { name: 'Baptism in the Jordan', scripture: 'Matthew 3:13-17', meditation: 'Jesus is baptized and the Spirit descends like a dove.' },
-            { name: 'Wedding at Cana', scripture: 'John 2:1-11', meditation: 'Jesus performs His first miracle at Mary\'s request.' },
-            { name: 'Proclamation of the Kingdom', scripture: 'Mark 1:14-15', meditation: 'Jesus proclaims the Kingdom and calls to conversion.' },
-            { name: 'The Transfiguration', scripture: 'Matthew 17:1-8', meditation: 'Jesus is transfigured on Mount Tabor.' },
-            { name: 'Institution of the Eucharist', scripture: 'Matthew 26:26-28', meditation: 'Jesus institutes the Eucharist at the Last Supper.' },
-        ]
+        days: ['Thursday'],
+        events: [
+            'The Baptism in the Jordan',
+            'The Wedding at Cana',
+            'The Proclamation of the Kingdom',
+            'The Transfiguration',
+            'The Institution of the Eucharist'
+        ],
+        icon: Star,
+        color: 'text-blue-600 bg-blue-100'
     }
-};
-
-const PRAYERS = {
-    ourFather: `Our Father, who art in heaven, hallowed be thy name; thy kingdom come; thy will be done on earth as it is in heaven. Give us this day our daily bread; and forgive us our trespasses as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.`,
-    hailMary: `Hail Mary, full of grace, the Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.`,
-    gloryBe: `Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen.`,
-    fatimaPrayer: `O my Jesus, forgive us our sins, save us from the fires of hell, lead all souls to Heaven, especially those most in need of Thy mercy. Amen.`
-};
+];
 
 export default function RosaryPage() {
-    const [selectedSet, setSelectedSet] = useState<MysterySet>('joyful');
-    const [currentMystery, setCurrentMystery] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(false);
-
-    const currentSetData = MYSTERIES[selectedSet];
-
     return (
         <div className="min-h-screen bg-[#faf9f6]">
             {/* Hero */}
-            <div className={`bg-gradient-to-br ${currentSetData.color} text-white pt-28 pb-16 transition-all duration-500`}>
+            <div className="bg-gradient-to-br from-rose-700 to-sacred-800 text-white pt-28 pb-16">
                 <div className="container mx-auto px-4 text-center">
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur rounded-full text-sm mb-6">
-                        <CircleDot className="w-4 h-4" />
-                        <span>Holy Rosary</span>
+                        <Disc className="w-4 h-4 text-rose-300" />
+                        <span>Daily Devotion</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">Pray the Rosary</h1>
-                    <p className="text-xl opacity-90 max-w-2xl mx-auto">
-                        Meditate on the life of Christ through the eyes of Mary with this centuries-old devotion.
+                    <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">The Holy Rosary</h1>
+                    <p className="text-xl text-rose-100 max-w-2xl mx-auto">
+                        Meditate on the life of Jesus through the eyes of Mary. A powerful prayer for peace and grace.
                     </p>
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-12">
-                {/* Mystery Set Selector */}
-                <div className="flex flex-wrap justify-center gap-4 mb-12">
-                    {(Object.keys(MYSTERIES) as MysterySet[]).map(key => {
-                        const set = MYSTERIES[key];
-                        return (
-                            <button
-                                key={key}
-                                onClick={() => { setSelectedSet(key); setCurrentMystery(0); }}
-                                className={`px-6 py-3 rounded-2xl font-medium flex items-center gap-2 transition-all ${selectedSet === key
-                                    ? `bg-gradient-to-r ${set.color} text-white shadow-lg`
-                                    : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-                                    }`}
-                            >
-                                {set.icon}
-                                <div className="text-left">
-                                    <div className="font-bold">{set.name}</div>
-                                    <div className="text-xs opacity-75">{set.day}</div>
-                                </div>
-                            </button>
-                        );
-                    })}
-                </div>
-
-                {/* Current Mystery */}
-                <div className="max-w-3xl mx-auto">
-                    <div className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden mb-8">
-                        <div className={`bg-gradient-to-r ${currentSetData.color} text-white p-6`}>
-                            <div className="flex items-center justify-between">
-                                <button
-                                    onClick={() => setCurrentMystery(m => Math.max(0, m - 1))}
-                                    disabled={currentMystery === 0}
-                                    className="p-2 hover:bg-white/20 rounded-full disabled:opacity-50"
-                                >
-                                    <ChevronLeft className="w-6 h-6" />
-                                </button>
-                                <div className="text-center">
-                                    <div className="text-sm opacity-75">Mystery {currentMystery + 1} of 5</div>
-                                    <h2 className="text-2xl font-serif font-bold">{currentSetData.mysteries[currentMystery].name}</h2>
-                                </div>
-                                <button
-                                    onClick={() => setCurrentMystery(m => Math.min(4, m + 1))}
-                                    disabled={currentMystery === 4}
-                                    className="p-2 hover:bg-white/20 rounded-full disabled:opacity-50"
-                                >
-                                    <ChevronRight className="w-6 h-6" />
-                                </button>
-                            </div>
-                        </div>
-                        <div className="p-8">
-                            <div className="text-sm text-gray-500 mb-2">{currentSetData.mysteries[currentMystery].scripture}</div>
-                            <p className="text-lg text-gray-700 leading-relaxed mb-8">
-                                {currentSetData.mysteries[currentMystery].meditation}
-                            </p>
-
-                            {/* Prayer sequence */}
-                            <div className="space-y-4">
-                                <div className="bg-amber-50 rounded-xl p-4">
-                                    <h4 className="font-bold text-amber-800 mb-2">1. Our Father</h4>
-                                    <p className="text-amber-700 text-sm">{PRAYERS.ourFather}</p>
-                                </div>
-                                <div className="bg-blue-50 rounded-xl p-4">
-                                    <h4 className="font-bold text-blue-800 mb-2">2. Ten Hail Marys</h4>
-                                    <p className="text-blue-700 text-sm">{PRAYERS.hailMary}</p>
-                                </div>
-                                <div className="bg-purple-50 rounded-xl p-4">
-                                    <h4 className="font-bold text-purple-800 mb-2">3. Glory Be</h4>
-                                    <p className="text-purple-700 text-sm">{PRAYERS.gloryBe}</p>
-                                </div>
-                                <div className="bg-rose-50 rounded-xl p-4">
-                                    <h4 className="font-bold text-rose-800 mb-2">4. Fatima Prayer</h4>
-                                    <p className="text-rose-700 text-sm">{PRAYERS.fatimaPrayer}</p>
-                                </div>
-                            </div>
-                        </div>
+            {/* Guide Section */}
+            <div className="container mx-auto px-4 py-16">
+                <div className="max-w-4xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">How to Pray</h2>
+                        <p className="text-gray-600">The Rosary is a Scripture-based prayer. It begins with the Apostles' Creed, which summarizes the great mysteries of the Catholic faith.</p>
                     </div>
 
-                    {/* Mystery Progress */}
-                    <div className="flex justify-center gap-2">
-                        {currentSetData.mysteries.map((_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setCurrentMystery(i)}
-                                className={`w-4 h-4 rounded-full transition-all ${i === currentMystery
-                                    ? `bg-gradient-to-r ${currentSetData.color} scale-125`
-                                    : i < currentMystery ? 'bg-gray-400' : 'bg-gray-200'
-                                    }`}
-                            />
+                    {/* Mysteries Grid */}
+                    <div className="grid md:grid-cols-2 gap-8 mb-16">
+                        {MYSTERIES.map((m) => (
+                            <div key={m.name} className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${m.color}`}>
+                                        <m.icon className="w-6 h-6" />
+                                    </div>
+                                    <div className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                                        {m.days.join(' • ')}
+                                    </div>
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-4">{m.name}</h3>
+                                <ul className="space-y-2">
+                                    {m.events.map((e, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-gray-600 text-sm">
+                                            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-500">
+                                                {i + 1}
+                                            </span>
+                                            {e}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         ))}
                     </div>
-                    {/* Mass Offering CTA */}
-                    <div className="mt-10">
-                        <MassOfferingCTA variant="inline" context="rosary" />
+
+                    {/* App CTA */}
+                    <div className="bg-sacred-900 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden">
+                        <div className="relative z-10">
+                            <h2 className="text-2xl md:text-3xl font-bold mb-4">Pray with Community</h2>
+                            <p className="text-sacred-100 mb-8 max-w-xl mx-auto">
+                                Join our daily live Rosary sessions or track your personal streaks in the app.
+                            </p>
+                            <Link
+                                href="/journey"
+                                className="inline-flex items-center px-8 py-3 bg-gold-500 hover:bg-gold-600 text-white font-bold rounded-full transition-colors"
+                            >
+                                Start Your Journey
+                            </Link>
+                        </div>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-gold-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
                     </div>
                 </div>
             </div>

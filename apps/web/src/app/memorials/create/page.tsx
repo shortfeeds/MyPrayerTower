@@ -23,10 +23,14 @@ interface FormData {
     tier: Tier;
 }
 
+import { PayPalCheckout } from '@/components/PayPalCheckout';
+
 export default function CreateMemorialPage() {
     const router = useRouter();
     const [step, setStep] = useState<Step>('details');
     const [loading, setLoading] = useState(false);
+    const [showPayPal, setShowPayPal] = useState(false);
+    const [pendingOrder, setPendingOrder] = useState<{ orderId: string; amount: number; memorialId: string } | null>(null);
     const [formData, setFormData] = useState<FormData>({
         firstName: '',
         lastName: '',
@@ -75,9 +79,46 @@ export default function CreateMemorialPage() {
 
     const handleSubmit = async () => {
         setLoading(true);
-        // Simulate API call and payment processing
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setLoading(false);
+        try {
+            // 1. Create memorial via API
+            const response = await fetch('/api/memorials/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    birthDate: formData.birthDate,
+                    deathDate: formData.deathDate,
+                    shortBio: formData.shortBio,
+                    biography: formData.biography,
+                    tier: formData.tier,
+                    // photoUrl: would need to upload photo first in a real app
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setPendingOrder({
+                    orderId: data.payment.orderId,
+                    amount: data.payment.amount,
+                    memorialId: data.memorial.id
+                });
+                setShowPayPal(true);
+            } else {
+                alert(data.error || 'Failed to create memorial');
+            }
+        } catch (error) {
+            console.error('Error creating memorial:', error);
+            alert('Something went wrong. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePayPalSuccess = async (details: any) => {
+        // Activate memorial
+        await fetch(`/api/memorials/verify-payment?memorial_id=${pendingOrder?.memorialId}&paypal_order_id=${details.orderId}`);
         router.push('/memorials');
     };
 
@@ -341,35 +382,24 @@ export default function CreateMemorialPage() {
                                     <div className="text-sm text-gray-500">One-time payment</div>
                                 </div>
 
-                                {/* Placeholder Credit Card Form */}
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                                        <input
-                                            type="text"
-                                            placeholder="0000 0000 0000 0000"
-                                            className="w-full p-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none"
+                                {showPayPal && pendingOrder ? (
+                                    <div className="space-y-4">
+                                        <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                                            <p className="text-sm text-amber-800 font-medium mb-1">Order Details</p>
+                                            <p className="text-xs text-amber-600">Order ID: {pendingOrder.orderId}</p>
+                                        </div>
+                                        <PayPalCheckout
+                                            amount={pendingOrder.amount}
+                                            onSuccess={handlePayPalSuccess}
+                                            onError={() => alert('Payment failed. Please try again.')}
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                                            <input
-                                                type="text"
-                                                placeholder="MM/YY"
-                                                className="w-full p-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">CVC</label>
-                                            <input
-                                                type="text"
-                                                placeholder="123"
-                                                className="w-full p-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none"
-                                            />
-                                        </div>
+                                ) : (
+                                    <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center">
+                                        <Sparkles className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+                                        <p className="text-gray-600 mb-6">Click "Complete Payment" to proceed to secure checkout.</p>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         )}
 
