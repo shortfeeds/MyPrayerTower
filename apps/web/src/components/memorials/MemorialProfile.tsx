@@ -157,15 +157,19 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
     };
 
     const fullName = `${memorial.firstName} ${memorial.lastName}`;
-    const lifeSpan = memorial.birthDate || memorial.deathDate
-        ? `${formatDate(memorial.birthDate) || '?'} — ${formatDate(memorial.deathDate) || '?'}`
+
+    const startDate = formatDate(memorial.birthDate) || '?';
+    const endDate = formatDate(memorial.deathDate) || '?';
+    const lifeSpan = (memorial.birthDate || memorial.deathDate)
+        ? `${startDate} - ${endDate}`
         : null;
 
     return (
         <div className="min-h-screen bg-slate-50">
             {/* Premium Shimmer Animation */}
             {memorial.tier === 'PREMIUM' && (
-                <style>{`
+                <style dangerouslySetInnerHTML={{
+                    __html: `
                     @keyframes shimmer {
                         0% { background-position: -200% center; }
                         100% { background-position: 200% center; }
@@ -175,7 +179,7 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                         background-size: 200% 100%;
                         animation: shimmer 3s infinite;
                     }
-                `}</style>
+                `}} />
             )}
 
             {/* Featured Memorial Banner for Premium */}
