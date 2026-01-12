@@ -171,10 +171,7 @@ export default function ChurchPricingPage() {
                             <Check className="w-5 h-5 text-green-400" />
                             <span>No monthly fees</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Check className="w-5 h-5 text-green-400" />
-                            <span>Lifetime access</span>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -274,7 +271,7 @@ export default function ChurchPricingPage() {
 
                 <div className="max-w-3xl mx-auto space-y-6">
                     {[
-                        { q: 'Is this a subscription?', a: 'No! All our plans are one-time payments. You pay once and get lifetime access to all features in your tier.' },
+                        { q: 'Is this a subscription?', a: 'No! All our plans are one-time payments. You pay once and get access to all features in your tier.' },
                         { q: 'Can I upgrade later?', a: 'Yes! You can upgrade from Basic to Pro or Cathedral at any time. You only pay the difference.' },
                         { q: 'How do I claim my church?', a: 'Search for your church on MyPrayerTower, click "Claim This Listing", and verify your identity via email/phone. It takes about 5 minutes.' },
                         { q: 'What if my church isn\'t listed?', a: 'No problem! You can add your church for free and then upgrade to unlock management features.' },

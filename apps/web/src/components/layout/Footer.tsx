@@ -155,7 +155,6 @@ export function Footer() {
                                     <li><Link href="/churches" className="hover:text-gold-400">Find Churches</Link></li>
                                     <li><Link href="/prayers" className="hover:text-gold-400">Common Prayers</Link></li>
                                     <li><Link href="/memorials" className="hover:text-gold-400 text-gold-200">Eternal Memorials</Link></li>
-                                    <li><Link href="/wallpapers" className="hover:text-gold-400">Wallpapers</Link></li>
                                     <li><Link href="/bouquets" className="hover:text-gold-400">Spiritual Bouquets</Link></li>
                                 </ul>
                             </div>

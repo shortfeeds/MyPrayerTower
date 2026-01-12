@@ -4,11 +4,7 @@ import { useState } from 'react';
 import { CreditCard, CheckCircle, ArrowUpRight, Zap, Crown, Building2 } from 'lucide-react';
 import Link from 'next/link';
 
-const tiers = [
-    { id: 'BASIC', name: 'Basic Parish', price: 99, color: 'border-blue-500', icon: Zap },
-    { id: 'PRO', name: 'Pro Parish', price: 249, color: 'border-gold-500', icon: Crown },
-    { id: 'CATHEDRAL', name: 'Cathedral', price: 499, color: 'border-purple-500', icon: Building2 },
-];
+
 
 export default function BillingPage() {
     const [currentTier] = useState('BASIC'); // In production, fetch from API
@@ -27,7 +23,7 @@ export default function BillingPage() {
                         <p className="text-primary-100 text-sm mb-1">Current Plan</p>
                         <h2 className="text-2xl font-bold mb-2">Basic Parish</h2>
                         <p className="text-primary-100">
-                            Paid $99 · Lifetime access · Active since Dec 2024
+                            Active Account
                         </p>
                     </div>
                     <div className="flex items-center gap-2 px-4 py-2 bg-white/20 rounded-xl">
@@ -37,45 +33,7 @@ export default function BillingPage() {
                 </div>
             </div>
 
-            {/* Upgrade Options */}
-            <div className="mb-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Upgrade Your Plan</h2>
-                <div className="grid md:grid-cols-3 gap-6">
-                    {tiers.map((tier) => {
-                        const isCurrentTier = tier.id === currentTier;
 
-                        return (
-                            <div
-                                key={tier.id}
-                                className={`bg-white rounded-2xl p-6 border-2 ${isCurrentTier ? 'border-primary-500 bg-primary-50' : 'border-gray-100'
-                                    }`}
-                            >
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isCurrentTier ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-600'
-                                        }`}>
-                                        <tier.icon className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-gray-900">{tier.name}</h3>
-                                        <p className="text-gray-500 text-sm">${tier.price} one-time</p>
-                                    </div>
-                                </div>
-
-                                {isCurrentTier ? (
-                                    <div className="flex items-center gap-2 text-primary-600 font-medium">
-                                        <CheckCircle className="w-4 h-4" />
-                                        Current Plan
-                                    </div>
-                                ) : (
-                                    <button className="w-full py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
-                                        Upgrade for ${tier.price - 99}
-                                    </button>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
 
             {/* Payment History */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">

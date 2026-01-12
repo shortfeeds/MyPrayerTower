@@ -47,42 +47,7 @@ export default function PricingPage() {
                         </Link>
                     </div>
 
-                    {/* Premium Tier */}
-                    <div className="card-premium p-8 flex flex-col border-2 border-gold-400 relative transform md:-translate-y-4 shadow-xl">
-                        <div className="absolute top-0 right-0 bg-gold-500 text-white px-4 py-1 rounded-bl-xl rounded-tr-lg text-sm font-bold">
-                            RECOMMENDED
-                        </div>
-                        <div className="mb-4">
-                            <span className="px-3 py-1 bg-gold-100 text-gold-700 rounded-full text-sm font-medium">Premium</span>
-                        </div>
-                        <div className="flex items-baseline gap-1 mb-2">
-                            <h2 className="text-4xl font-bold text-gray-900">$4.99</h2>
-                            <span className="text-lg text-gray-500 font-normal">/mo</span>
-                        </div>
-                        <p className="text-sm text-gray-400 mb-8">or $49.99/year (Save ~15%)</p>
 
-                        <ul className="space-y-4 mb-8 flex-1">
-                            {[
-                                'Everything in Free',
-                                'Ad-free Experience',
-                                'Full Daily Readings & Reflections',
-                                'Prayer Streak Tracking',
-                                'Custom Prayer Lists',
-                                'Exclusive Devotional Content'
-                            ].map((feature, i) => (
-                                <li key={i} className="flex items-center gap-3 text-gray-700">
-                                    <div className="w-5 h-5 rounded-full bg-gold-100 flex items-center justify-center text-gold-600 flex-shrink-0">
-                                        <Check className="w-3 h-3" />
-                                    </div>
-                                    {feature}
-                                </li>
-                            ))}
-                        </ul>
-
-                        <Link href="/register?plan=premium" className="w-full py-3 text-center bg-gold-500 text-white font-bold rounded-xl hover:bg-gold-600 transition-colors shadow-lg">
-                            Start Free Trial
-                        </Link>
-                    </div>
 
                     {/* White-Label / Enterprise */}
                     <div className="card-premium p-8 flex flex-col">

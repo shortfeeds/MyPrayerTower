@@ -144,8 +144,7 @@ export default function TermsOfServicePage() {
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
                             <li><strong>Free:</strong> Basic features with advertisements</li>
                             <li><strong>Plus:</strong> $4.99/month or $39.99/year - Ad-free, offline mode, 2 family members</li>
-                            <li><strong>Premium:</strong> $9.99/month or $79.99/year - All Plus features + AI suggestions, 5 family members</li>
-                            <li><strong>Lifetime:</strong> $149.99 one-time payment - All Premium features forever</li>
+                            <li><strong>Plus:</strong> $4.99/month or $39.99/year - Ad-free, offline mode, 2 family members</li>
                         </ul>
 
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Payment Processing</h3>
