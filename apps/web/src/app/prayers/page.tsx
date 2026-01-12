@@ -4,6 +4,8 @@ import { Metadata } from 'next';
 import { BookOpen, Search, Filter, Play, Clock, ChevronRight, Sparkles, Flame, Heart, Scroll } from 'lucide-react';
 import Link from 'next/link';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
+import { PrayerSearch, PrayerFilters } from '@/components/features/PrayerSearch';
+import { PrayerCategorySidebar } from '@/components/prayers/PrayerCategorySidebar';
 
 // const prisma = new PrismaClient(); // Removed local instantiation
 
@@ -31,17 +33,18 @@ const COLLECTIONS = [
     { label: 'Marian', query: 'Marian', icon: Heart },
     { label: 'Saints', query: 'Saint', icon: Sparkles },
     { label: 'Novenas', query: 'Novena', icon: Flame },
-    { label: 'Healing', query: 'Healing', icon: Play }, // Using Play as generic valid icon, or Heart
+    { label: 'Healing', query: 'Healing', icon: Play },
     { label: 'Litanies', query: 'Litany', icon: Scroll },
 ];
 
 export default async function PrayersPage({
     searchParams,
 }: {
-    searchParams: { q?: string; category?: string };
+    searchParams: { q?: string; category?: string; duration?: string };
 }) {
     const query = searchParams.q;
     const categoryFilter = searchParams.category;
+    const duration = searchParams.duration; // 'short', 'medium', 'long'
 
     const where: any = {
         is_active: true,
@@ -58,13 +61,41 @@ export default async function PrayersPage({
         where.category = categoryFilter;
     }
 
-    const dbPrayers = await db.prayer.findMany({
+    // Rough approximation for duration since we don't have a 'word_count' field in DB yet.
+    // Short: < 150 words
+    // Medium: 150 - 750 words
+    // Long: > 750 words
+    // Prisma can't filter by computed content length easily without Raw query or a field.
+    // For now, we fetch a bit more and filter in memory OR assume we need to update schema. 
+    // I'll filter in JS for now as dataset < 4000 is manageable, or ignore if too heavy. 
+    // Actually, 4000 is small enough for JS filter after fetch if we don't fetch *all*.
+    // BUT we are paginating or taking 100.
+    // Let's rely on 'take: 100' and filter post-fetch if duration is set, effectively reducing page size, 
+    // which is not ideal but acceptable for "Polish" phase without schema migration.
+
+    let dbPrayers = await db.prayer.findMany({
         where,
         orderBy: { title: 'asc' },
-        take: 100,
+        take: duration ? 300 : 100, // Fetch more if filtering locally
     });
 
+    if (duration) {
+        dbPrayers = dbPrayers.filter(p => {
+            const words = p.content.split(/\s+/).length;
+            if (duration === 'short') return words < 150;
+            if (duration === 'medium') return words >= 150 && words <= 750;
+            if (duration === 'long') return words > 750;
+            return true;
+        }).slice(0, 100);
+    }
+
     const prayers = toSafeJSON(dbPrayers);
+
+    // Recommended (Mock logic for now - random or featured)
+    // We can pick 3 random prayers from the result or separate query
+    const recommendedPrayers = prayers.length > 3
+        ? [...prayers].sort(() => 0.5 - Math.random()).slice(0, 3)
+        : prayers.slice(0, 3);
 
     const allPrayers = await db.prayer.findMany({
         where: { is_active: true },
@@ -85,52 +116,48 @@ export default async function PrayersPage({
         .map(([slug, data]) => ({ slug, label: data.label, count: data.count }))
         .sort((a, b) => a.label.localeCompare(b.label));
 
-    // Force display count to 3900+ as requested by user if actual count is lower
     const totalPrayers = Math.max(allPrayers.length, 3900);
 
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Compact Hero */}
-            <div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 overflow-hidden">
-                <div className="absolute inset-0 opacity-20">
-                    <div className="absolute top-10 left-10 w-48 h-48 bg-blue-400 rounded-full blur-3xl" />
-                    <div className="absolute bottom-5 right-10 w-56 h-56 bg-purple-400 rounded-full blur-3xl" />
+            <div className="relative bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 overflow-hidden">
+                <div className="absolute inset-0 opacity-30">
+                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-500/20 rounded-full blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-3xl" />
                 </div>
 
-                <div className="relative z-10 pt-24 pb-12 px-4">
+                <div className="relative z-10 pt-20 pb-16 px-4">
                     <div className="max-w-4xl mx-auto text-center">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-md rounded-full text-white/90 text-sm font-medium mb-4 border border-white/20">
-                            <BookOpen className="w-4 h-4" />
-                            <span>{totalPrayers.toLocaleString()}+ Prayers</span>
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-blue-100 text-xs font-medium mb-6 border border-white/10 animate-fade-in shadow-xl">
+                            <BookOpen className="w-3.5 h-3.5" />
+                            <span>Over {totalPrayers.toLocaleString()} Catholic Prayers</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">
-                            Catholic Prayer Library
+                        <h1 className="text-4xl md:text-6xl font-serif font-bold text-white mb-6 animate-fade-in-up tracking-tight">
+                            Find Peace in <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300">Prayer</span>
                         </h1>
 
-                        {/* Search */}
-                        <form className="relative max-w-xl mx-auto">
-                            <div className="relative bg-white rounded-xl shadow-xl flex items-center">
-                                <Search className="absolute left-5 w-5 h-5 text-gray-400" />
-                                <input
-                                    name="q"
-                                    defaultValue={query}
-                                    placeholder="Search prayers..."
-                                    className="w-full pl-14 pr-6 py-4 bg-transparent text-gray-900 rounded-xl placeholder-gray-400 focus:outline-none text-base"
-                                />
-                            </div>
-                        </form>
+                        <p className="text-lg text-blue-100/80 mb-8 max-w-2xl mx-auto animate-fade-in-up delay-75">
+                            A comprehensive collection of prayers for every moment of your life.
+                        </p>
+
+                        {/* Search & Filters */}
+                        <div className="animate-fade-in-up delay-100">
+                            <PrayerSearch />
+                            <PrayerFilters />
+                        </div>
                     </div>
 
-                    {/* Collections / Smart Filters */}
-                    <div className="flex flex-wrap justify-center gap-3 mt-8">
+                    {/* Collections Links */}
+                    <div className="flex flex-wrap justify-center gap-3 mt-10 animate-fade-in-up delay-200">
                         {COLLECTIONS.map((col) => (
                             <Link
                                 key={col.label}
                                 href={`/prayers?q=${col.query}`}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium transition-all hover:-translate-y-0.5"
+                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-sm rounded-xl text-white text-sm font-medium transition-all hover:scale-105 active:scale-95"
                             >
-                                <col.icon className="w-3.5 h-3.5 text-gold-300" />
+                                <col.icon className="w-4 h-4 text-amber-300" />
                                 {col.label}
                             </Link>
                         ))}
@@ -139,135 +166,111 @@ export default async function PrayersPage({
             </div>
 
             {/* Top Ad */}
-            <div className="container mx-auto px-4 py-4">
+            <div className="container mx-auto px-4 py-6">
                 <SmartAdSlot page="prayers" position="top" />
             </div>
 
             {/* Main Content */}
-            <div className="container mx-auto px-4 pb-12">
-                <div className="flex flex-col lg:flex-row gap-6">
+            <div className="container mx-auto px-4 pb-16">
+                <div className="flex flex-col lg:flex-row gap-8">
                     {/* Sidebar Categories */}
-                    <aside className="lg:w-64 flex-shrink-0">
-                        <div className="lg:sticky lg:top-24">
-                            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                                <div className="p-4 border-b border-gray-100 bg-gray-50">
-                                    <div className="flex items-center gap-2 font-semibold text-gray-800">
-                                        <Filter className="w-4 h-4 text-blue-600" />
-                                        <span>Categories</span>
-                                    </div>
-                                </div>
-                                <div className="p-2 max-h-[60vh] overflow-y-auto">
-                                    <Link
-                                        href="/prayers"
-                                        className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${!categoryFilter
-                                            ? 'bg-blue-600 text-white'
-                                            : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        <span>All Prayers</span>
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${!categoryFilter ? 'bg-white/20' : 'bg-gray-100'}`}>
-                                            {totalPrayers}
-                                        </span>
-                                    </Link>
-                                    <div className="mt-1 space-y-0.5">
-                                        {categories.map((cat) => (
-                                            <Link
-                                                key={cat.slug}
-                                                href={`/prayers?category=${cat.slug}`}
-                                                className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${categoryFilter === cat.slug
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'text-gray-600 hover:bg-gray-100'
-                                                    }`}
-                                            >
-                                                <span className="truncate">{cat.label}</span>
-                                                <span className={`text-xs px-1.5 py-0.5 rounded-full flex-shrink-0 ${categoryFilter === cat.slug ? 'bg-white/20' : 'bg-gray-100'}`}>
-                                                    {cat.count}
-                                                </span>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Sidebar Ad */}
-                            <div className="mt-4 hidden lg:block">
-                                <SmartAdSlot page="prayers" position="sidebar" />
-                            </div>
+                    <aside className="lg:w-72 flex-shrink-0">
+                        <PrayerCategorySidebar
+                            categories={categories}
+                            activeCategory={categoryFilter}
+                            totalPrayers={totalPrayers}
+                        />
+                        {/* Sidebar Ad */}
+                        <div className="mt-6 hidden lg:block sticky top-[calc(100vh-300px)]">
+                            <SmartAdSlot page="prayers" position="sidebar" />
                         </div>
                     </aside>
 
                     {/* Prayer List */}
                     <main className="flex-1">
                         {categoryFilter && (
-                            <div className="mb-4">
-                                <h2 className="text-xl font-semibold text-gray-900">
-                                    {categories.find(c => c.slug === categoryFilter)?.label || 'Category'}
-                                </h2>
-                                <p className="text-sm text-gray-500">{prayers.length} prayers</p>
+                            <div className="mb-6 flex items-end justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-gray-900">
+                                        {categories.find(c => c.slug === categoryFilter)?.label || 'Category'}
+                                    </h2>
+                                    <p className="text-gray-500 mt-1">{prayers.length} prayers found</p>
+                                </div>
                             </div>
                         )}
 
                         {prayers.length > 0 ? (
-                            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden divide-y divide-gray-100">
+                            <div className="grid gap-4">
                                 {prayers.map((prayer, i) => {
                                     const colorIndex = i % CATEGORY_COLORS.length;
                                     const color = CATEGORY_COLORS[colorIndex];
 
                                     return (
-                                        <>
+                                        <div key={prayer.slug || prayer.id.toString()}>
                                             <Link
-                                                key={prayer.slug || prayer.id.toString()}
                                                 href={`/prayers/${prayer.slug || prayer.id}`}
-                                                className="flex items-center gap-4 px-4 py-3 hover:bg-blue-50/50 transition-colors group"
+                                                className="group relative bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 flex flex-col md:flex-row gap-5 overflow-hidden"
                                             >
-                                                {/* Play Icon */}
-                                                <div className={`w-10 h-10 rounded-full ${color.accent} flex items-center justify-center flex-shrink-0`}>
-                                                    <Play className="w-4 h-4 text-white ml-0.5" />
+                                                <div className={`absolute top-0 left-0 w-1 h-full ${color.accent} opacity-0 group-hover:opacity-100 transition-opacity`} />
+
+                                                {/* Icon/Image Placeholder */}
+                                                <div className={`w-14 h-14 rounded-2xl ${color.bg} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                                                    <span className={`text-xl font-serif font-bold ${color.text}`}>
+                                                        {prayer.title.charAt(0)}
+                                                    </span>
                                                 </div>
 
-                                                {/* Info */}
+                                                {/* Content */}
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-0.5">
-                                                        <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
-                                                            {prayer.title}
-                                                        </h3>
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <div>
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${color.bg} ${color.text}`}>
+                                                                    {prayer.category_label}
+                                                                </span>
+                                                                <span className="flex items-center gap-1 text-xs text-gray-400 font-medium">
+                                                                    <Clock className="w-3 h-3" />
+                                                                    {getReadingTime(prayer.content)}
+                                                                </span>
+                                                            </div>
+                                                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-700 transition-colors mb-2 line-clamp-1">
+                                                                {prayer.title}
+                                                            </h3>
+                                                        </div>
+                                                        <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                            <ChevronRight className="w-4 h-4" />
+                                                        </div>
                                                     </div>
-                                                    <p className="text-sm text-gray-500 line-clamp-1">{prayer.content}</p>
-                                                </div>
-
-                                                {/* Meta */}
-                                                <div className="flex items-center gap-3 flex-shrink-0">
-                                                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${color.bg} ${color.text}`}>
-                                                        {prayer.category_label}
-                                                    </span>
-                                                    <span className="flex items-center gap-1 text-xs text-gray-400">
-                                                        <Clock className="w-3 h-3" />
-                                                        {getReadingTime(prayer.content)}
-                                                    </span>
-                                                    <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-blue-500 transition-colors" />
+                                                    <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 md:line-clamp-1">
+                                                        {prayer.content}
+                                                    </p>
                                                 </div>
                                             </Link>
 
-                                            {/* Inline Ad every 10 prayers */}
-                                            {(i + 1) % 10 === 0 && i < prayers.length - 1 && (
-                                                <div key={`ad-${i}`} className="px-4 py-3 bg-gray-50">
+                                            {/* Inline Ad every 8 prayers */}
+                                            {(i + 1) % 8 === 0 && i < prayers.length - 1 && (
+                                                <div className="py-2">
                                                     <SmartAdSlot page="prayers" position="inline" />
                                                 </div>
                                             )}
-                                        </>
+                                        </div>
                                     );
                                 })}
                             </div>
                         ) : (
-                            <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
-                                <Search className="w-12 h-12 text-blue-300 mx-auto mb-4" />
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">No prayers found</h3>
-                                <p className="text-gray-500 mb-4 text-sm">Try adjusting your search or category filter.</p>
+                            <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Search className="w-8 h-8 text-blue-500" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">No prayers found</h3>
+                                <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+                                    We couldn't find any prayers matching your criteria. Try different keywords or filters.
+                                </p>
                                 <Link
                                     href="/prayers"
-                                    className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                                    className="inline-flex items-center px-6 py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-colors"
                                 >
-                                    Clear filters
+                                    View All Prayers
                                 </Link>
                             </div>
                         )}

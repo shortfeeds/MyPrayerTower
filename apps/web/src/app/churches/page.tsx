@@ -77,7 +77,7 @@ export default function ChurchesPage() {
     // Active filters
     const [selectedCountry, setSelectedCountry] = useState('');
     const [selectedType, setSelectedType] = useState('');
-    const [selectedDenomination, setSelectedDenomination] = useState('');
+    const [selectedDenomination, setSelectedDenomination] = useState('Catholic');
     const [showFilters, setShowFilters] = useState(false);
 
     const activeFilterCount = [selectedCountry, selectedType, selectedDenomination].filter(Boolean).length;
@@ -356,14 +356,20 @@ export default function ChurchesPage() {
                                                                 </div>
                                                                 <div className="flex items-center gap-2 flex-shrink-0">
                                                                     {church.isVerified ? (
-                                                                        <div className="group relative">
-                                                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 text-amber-800 text-xs font-bold rounded-full cursor-help shadow-sm">
-                                                                                <ShieldCheck className="w-3.5 h-3.5 text-amber-600" /> Verified Parish
+                                                                        <div className="group relative z-10">
+                                                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-full cursor-help shadow-sm hover:shadow-md transition-all">
+                                                                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                                                                Verified
                                                                             </span>
                                                                             {/* Tooltip */}
-                                                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-[10px] font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10 shadow-xl">
-                                                                                Verified by Parish Administration
-                                                                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                                                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-3 bg-gray-900/95 backdrop-blur text-white text-[11px] font-medium rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl transform group-hover:-translate-y-1">
+                                                                                <div className="font-bold text-emerald-400 mb-1 flex items-center gap-1">
+                                                                                    <ShieldCheck className="w-3 h-3" /> Official Listing
+                                                                                </div>
+                                                                                <p className="leading-relaxed text-gray-300">
+                                                                                    This parish profile is managed and verified by church administration.
+                                                                                </p>
+                                                                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900/95"></div>
                                                                             </div>
                                                                         </div>
                                                                     ) : (

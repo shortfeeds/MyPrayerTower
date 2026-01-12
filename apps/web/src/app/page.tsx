@@ -14,6 +14,7 @@ import { VerseOfTheDay } from '@/components/home/VerseOfTheDay';
 import { LiveStatsBar } from '@/components/home/LiveStatsBar';
 import { QuickAccessBar } from '@/components/home/QuickAccessBar';
 import { TrendingPrayers } from '@/components/home/TrendingPrayers';
+import { HeroSkeleton, PrayerCardSkeleton as CardSkeleton } from '@/components/ui/SkeletonLoaders'; // Imported Skeletons
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay, getUserHomeStreamData } from '@/app/actions/home';
 import { Suspense } from 'react';
 import { MassOfferingCTA, DonationFAB } from '@/components/giving/MassOfferingCTA';
@@ -53,8 +54,6 @@ async function getIsLoggedIn() {
 
 // --- Async Wrappers for Suspense ---
 
-// --- Async Wrappers for Suspense ---
-
 async function AsyncPersonalizedGreeting() {
     try {
         const [user, liturgicalDay] = await Promise.all([
@@ -85,7 +84,7 @@ async function AsyncTodaysReadingCard() {
         ]);
         return <TodaysReadingCard liturgical={liturgicalDay} reading={reading} />;
     } catch {
-        return <div className="p-4 bg-red-50 text-red-600 rounded-lg">Unable to load daily reading.</div>;
+        return <div className="p-4 bg-red-50 text-red-600 rounded-lg shadow-sm border border-red-100">Unable to load daily reading.</div>;
     }
 }
 
@@ -95,25 +94,35 @@ async function AsyncSaintOfTheDayCard() {
         const saint = await getSaintOfTheDay(liturgicalDay.celebrations[0]?.name);
         return <SaintOfTheDayCard saint={saint} />;
     } catch {
-        return null; // Graceful fallback
+        return null;
     }
 }
 
-// --- Loading Skeletons ---
+async function AsyncDailyJourney() {
+    try {
+        const [liturgicalDay, reading] = await Promise.all([
+            getLiturgicalData(),
+            getDailyReading()
+        ]);
+        const saint = await getSaintOfTheDay(liturgicalDay.celebrations[0]?.name);
 
-function GreetingSkeleton() {
-    return (
-        <div className="animate-pulse flex flex-col gap-4 p-6 bg-white rounded-2xl shadow-sm border border-gold-100/50">
-            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-            <div className="h-4 bg-gray-100 rounded w-2/3"></div>
-        </div>
-    );
+        return <DailyJourneyWidget reading={reading} saint={saint} />;
+    } catch (error) {
+        console.error('Failed to load Daily Journey:', error);
+        return null;
+    }
 }
 
-function CardSkeleton() {
-    return (
-        <div className="animate-pulse h-[200px] bg-white rounded-2xl shadow-sm border border-gray-100"></div>
-    );
+async function AsyncTrendingPrayers() {
+    try {
+        // Import here to avoid circular dependencies if any
+        const { getRandomTrendingPrayers } = await import('@/app/actions/home');
+        const prayers = await getRandomTrendingPrayers(10);
+        return <TrendingPrayersCarousel prayers={prayers} />;
+    } catch (error) {
+        console.error('Failed to load Trending Prayers:', error);
+        return null; // Graceful fallback (section disappears)
+    }
 }
 
 // --- Logged-in Dashboard View ---
@@ -122,7 +131,7 @@ function LoggedInHomePage() {
         <DashboardGrid
             statsBar={<LiveStatsBar />}
             greeting={
-                <Suspense fallback={<GreetingSkeleton />}>
+                <Suspense fallback={<CardSkeleton />}>
                     <AsyncPersonalizedGreeting />
                 </Suspense>
             }
@@ -181,13 +190,21 @@ function LoggedInHomePage() {
     );
 }
 
+// --- Main Homepage Component ---
+export default async function HomePage() {
+    const isLoggedIn = await getIsLoggedIn();
 
-// --- Marketing Hero for Logged-out Users ---
+    if (isLoggedIn) {
+        return <LoggedInHomePage />;
+    }
+
+    return <LoggedOutHomePage />;
+}
+
+// --- Logged-out Landing Page ---
 function LoggedOutHomePage() {
     return (
-        <div className="flex flex-col min-h-screen">
-            {/* Live Stats Bar */}
-            <LiveStatsBar />
+        <div className="flex flex-col min-h-screen selection:bg-gold-500/30 selection:text-gold-200">
 
             {/* Hero Section */}
             <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-sacred-600 via-sacred-700 to-sacred-800 text-white pb-32">
@@ -204,39 +221,34 @@ function LoggedOutHomePage() {
 
                 <div className="container mx-auto px-4 relative z-10 pt-16 md:pt-20">
                     <div className="max-w-4xl mx-auto text-center">
-                        {/* Liturgical Season Badge */}
-                        <div className="mb-6 animate-fade-in flex justify-center">
-                            <SeasonBadge />
-                        </div>
 
-                        {/* Social Proof Badge */}
+                        {/* Trust Signal - Simplified */}
                         <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 animate-fade-in">
                             <Users className="w-4 h-4 text-gold-400" />
-                            <span className="text-sm font-semibold text-gold-200">Trusted by Catholics Worldwide</span>
+                            <span className="text-sm font-semibold text-gold-200">Join the Global Catholic Community</span>
                         </div>
 
-
-                        {/* Main Headline */}
+                        {/* Main Headline - Sharpened & Emotional */}
                         <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up tracking-tight drop-shadow-lg">
-                            A Global Catholic<br />
+                            Sanctify Your Day.<br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-200 via-gold-400 to-gold-200">
-                                Prayer Community
+                                Unite in Prayer.
                             </span>
                         </h1>
 
-                        {/* Sub-headline */}
+                        {/* Sub-headline - Clearer Value Prop */}
                         <p className="text-lg md:text-xl text-blue-100/90 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up font-medium" style={{ animationDelay: '0.2s' }}>
-                            Light candles, offer Masses, and pray together. Join thousands of faithful in a sanctuary of daily prayer and support.
+                            Join a global sanctuary of faith. Light a candle, offer a Mass, and lift up your intentions with thousands of Catholics worldwide.
                         </p>
 
-                        {/* CTAs */}
+                        {/* CTAs - Focused */}
                         <div className="flex flex-col sm:flex-row gap-5 justify-center animate-fade-in-up mb-12" style={{ animationDelay: '0.4s' }}>
                             <Link
                                 href="/register"
                                 className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/20 group"
                             >
                                 <Heart className="w-5 h-5 mr-2 fill-white/20 group-hover:fill-white transition-all" />
-                                Pray Now
+                                Start Praying
                             </Link>
                             <Link
                                 href="/candles"
@@ -248,98 +260,32 @@ function LoggedOutHomePage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Curved Divider */}
+                <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0]">
+                    <svg className="relative block w-full h-16 sm:h-24 md:h-32 lg:h-40 text-cream-50" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                        <path d="M985.66,92.83C906.67,72,823.78,31,432.84,37.8c-274.05,4.76-267,71.74-432.84,65C-16.14,101.9-5.71,59.34,0,0v120H1200V0C1175.71,59.34,1186.14,101.9,985.66,92.83Z" className="fill-current"></path>
+                    </svg>
+                </div>
             </section>
 
-            {/* Daily Journey Widget - Overlaps Hero */}
-            <Suspense fallback={<div className="h-64 bg-white shadow-xl rounded-3xl container mx-auto mb-10 animate-pulse border border-gray-100" />}>
-                <AsyncDailyJourney />
-            </Suspense>
-
-            {/* Trust Bar */}
             <TrustBar />
 
-            {/* Trending Prayers Carousel */}
-            <Suspense fallback={<div className="h-96 container mx-auto bg-gray-50/50 animate-pulse rounded-2xl" />}>
-                <AsyncTrendingPrayers />
-            </Suspense>
+            <div className="bg-cream-50 py-16">
+                <HowItWorks />
+            </div>
 
-            {/* Sacred Services (Offerings) */}
-            <SacredMoments />
-
-            {/* Memorials Preview */}
-            <MemorialPreview />
-
-            {/* Statistics & Impact */}
             <StatisticsBand />
 
-            {/* Testimonials */}
-            <section className="py-20 bg-cream-50">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-12">
-                        <h2 className="font-display text-3xl font-bold text-gray-900">Loved by the Faithful</h2>
-                    </div>
-                    <TestimonialsSection />
-                </div>
-            </section>
+            <div className="bg-white py-16">
+                <TestimonialsSection />
+            </div>
 
-            {/* App Download Banner */}
+            <div className="py-16 bg-cream-50">
+                <PromotionalBanner />
+            </div>
+
             <AppDownloadBanner />
-
-            {/* Final CTA */}
-            <section className="py-20 bg-white">
-                <div className="container mx-auto px-4">
-                    <div className="bg-gradient-to-br from-sacred-900 to-sacred-800 rounded-[2.5rem] p-10 md:p-20 text-center relative overflow-hidden shadow-2xl max-w-5xl mx-auto">
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-gold-500 rounded-full blur-[150px] opacity-20"></div>
-                        <div className="relative z-10">
-                            <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-6">
-                                Prepare Your Heart. <br /> Pray with Us.
-                            </h2>
-                            <p className="text-xl text-blue-100 mb-10 max-w-xl mx-auto">
-                                Create your free account to track your prayers, save your favorite saints, and grow in faith.
-                            </p>
-                            <Link
-                                href="/register"
-                                className="inline-flex items-center justify-center px-10 py-5 bg-white text-sacred-900 font-bold text-lg rounded-full transition-all hover:bg-gold-50 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
-                            >
-                                Get Started Now
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Floating Action Button for Mobile */}
-            <DonationFAB />
         </div>
     );
-}
-
-async function AsyncDailyJourney() {
-    const [liturgicalDay, reading] = await Promise.all([
-        getLiturgicalData(),
-        getDailyReading()
-    ]);
-    const saint = await getSaintOfTheDay(liturgicalDay.celebrations[0]?.name);
-
-    return <DailyJourneyWidget reading={reading} saint={saint} />;
-}
-
-
-
-async function AsyncTrendingPrayers() {
-    // Import here to avoid circular dependencies if any, though imports at top are fine
-    const { getRandomTrendingPrayers } = await import('@/app/actions/home');
-    const prayers = await getRandomTrendingPrayers(10);
-    return <TrendingPrayersCarousel prayers={prayers} />;
-}
-
-// --- Main Homepage Component ---
-export default async function HomePage() {
-    const isLoggedIn = await getIsLoggedIn();
-
-    if (isLoggedIn) {
-        return <LoggedInHomePage />;
-    }
-
-    return <LoggedOutHomePage />;
 }

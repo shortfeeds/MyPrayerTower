@@ -108,19 +108,9 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
             <head>
-                {/* Google AdSense - Direct Injection for Stability */}
-                {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
-                    <script
-                        async
-                        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-                        crossOrigin="anonymous"
-                    ></script>
-                )}
-
                 {/* Preconnect to critical domains */}
                 <link rel="preconnect" href="https://htgvilktnadnwlforyjt.supabase.co" />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
@@ -134,29 +124,69 @@ export default function RootLayout({
                     <GlobalEngagement />
                     <BackToTop />
 
-                    <script
+                    {/* Structured Data */}
+                    {/* Structured Data */}
+                    <Script
+                        id="schema-org"
                         type="application/ld+json"
+                        strategy="worker"
                         dangerouslySetInnerHTML={{
                             __html: JSON.stringify({
                                 '@context': 'https://schema.org',
-                                '@type': 'Organization',
-                                name: 'MyPrayerTower',
-                                url: 'https://myprayertower.com',
-                                logo: 'https://myprayertower.com/icon.svg',
-                                sameAs: [
-                                    'https://www.facebook.com/MyPrayerTower2',
-                                    'https://www.youtube.com/c/MyPrayerTower'
-                                ],
-                                description: 'The #1 All-in-One Catholic Services App. Find churches, prayer wall, and daily readings.',
+                                '@graph': [
+                                    {
+                                        '@type': 'Organization',
+                                        '@id': 'https://myprayertower.com/#organization',
+                                        name: 'MyPrayerTower',
+                                        url: 'https://myprayertower.com',
+                                        logo: 'https://myprayertower.com/icon.png',
+                                        sameAs: [
+                                            'https://www.facebook.com/MyPrayerTower2',
+                                            'https://www.youtube.com/c/MyPrayerTower',
+                                            'https://twitter.com/MyPrayerTower',
+                                            'https://www.instagram.com/myprayertower/',
+                                            'https://www.threads.net/@myprayertower',
+                                            'https://www.pinterest.com/myprayertower/'
+                                        ],
+                                        description: 'The #1 All-in-One Catholic Services App. Find churches, prayer wall, and daily readings.',
+                                    },
+                                    {
+                                        '@type': 'WebSite',
+                                        '@id': 'https://myprayertower.com/#website',
+                                        url: 'https://myprayertower.com',
+                                        name: 'MyPrayerTower',
+                                        description: 'The #1 All-in-One Catholic Services App',
+                                        publisher: {
+                                            '@id': 'https://myprayertower.com/#organization'
+                                        },
+                                        potentialAction: {
+                                            '@type': 'SearchAction',
+                                            target: 'https://myprayertower.com/prayers?q={search_term_string}',
+                                            'query-input': 'required name=search_term_string'
+                                        }
+                                    }
+                                ]
                             }),
                         }}
                     />
                 </ThemeProvider>
+
                 <Analytics />
                 <SpeedInsights />
                 <GoogleAnalytics gaId="G-1X6N63VWZH" />
+
+                {/* Google AdSense - Lazy Loaded */}
+                {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
+                    <Script
+                        id="adsense"
+                        async
+                        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+                        crossOrigin="anonymous"
+                        strategy="lazyOnload"
+                    />
+                )}
             </body>
-        </html>
+        </html >
     );
 }
 

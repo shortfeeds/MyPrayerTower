@@ -62,6 +62,14 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+    // Enforce Canonical Domain (non-www)
+    const hostname = request.headers.get('host');
+    if (hostname?.startsWith('www.')) {
+        const newUrl = new URL(request.url);
+        newUrl.hostname = hostname.replace('www.', '');
+        return NextResponse.redirect(newUrl, 301);
+    }
+
     if (pathname.startsWith('/api/')) {
         const rateLimitKey = getRateLimitKey(request);
         if (isRateLimited(rateLimitKey)) {

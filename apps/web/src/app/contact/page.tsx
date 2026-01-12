@@ -1,6 +1,9 @@
 'use client';
 import React from 'react';
 import { Mail, Phone, Clock, MapPin } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+
+import { Suspense } from 'react';
 
 export default function ContactPage() {
     return (
@@ -50,7 +53,9 @@ export default function ContactPage() {
                     <div className="lg:col-span-2">
                         <div className="card-premium p-8 py-10">
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send us a message</h2>
-                            <ContactForm />
+                            <Suspense fallback={<div>Loading form...</div>}>
+                                <ContactForm />
+                            </Suspense>
                         </div>
                     </div>
                 </div>
@@ -62,6 +67,14 @@ export default function ContactPage() {
 function ContactForm() {
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [status, setStatus] = React.useState<{ type: 'success' | 'error'; message: string } | null>(null);
+    const searchParams = useSearchParams();
+    const type = searchParams.get('type');
+
+    const defaultSubject = type === 'diocese' ? 'Diocese Partnership Inquiry' :
+        type === 'parish' ? 'Parish Portal Inquiry' : '';
+
+    const defaultMessage = type === 'diocese' ? 'I represents a Diocese and would like to learn more about the enterprise features.' :
+        type === 'parish' ? 'I would like to claim my parish listing and verify my account.' : '';
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -73,6 +86,7 @@ function ContactForm() {
             firstName: formData.get('firstName') as string,
             lastName: formData.get('lastName') as string,
             email: formData.get('email') as string,
+            subject: formData.get('subject') as string,
             message: formData.get('message') as string,
         };
 
@@ -120,8 +134,12 @@ function ContactForm() {
                 <input name="email" required type="email" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="john@example.com" />
             </div>
             <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject</label>
+                <input name="subject" defaultValue={defaultSubject} required type="text" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="How can we help?" />
+            </div>
+            <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label>
-                <textarea name="message" required rows={5} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-none" placeholder="How can we help you?"></textarea>
+                <textarea name="message" defaultValue={defaultMessage} required rows={5} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-none" placeholder="How can we help you?"></textarea>
             </div>
             <button
                 type="submit"

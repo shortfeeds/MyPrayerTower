@@ -183,7 +183,14 @@ export function Footer() {
                                 <li className="pt-2 border-t border-gray-900 mt-2"></li>
                                 <li><Link href="/privacy" className="hover:text-gold-400 transition-colors text-gray-500">Privacy Policy</Link></li>
                                 <li><Link href="/terms" className="hover:text-gold-400 transition-colors text-gray-500">Terms of Service</Link></li>
+                                <li><Link href="/guidelines" className="hover:text-gold-400 transition-colors text-gray-500">Content Guidelines</Link></li>
                             </ul>
+                            <div className="mt-6 pt-4 border-t border-gray-800">
+                                <div className="flex items-center gap-2 text-xs text-gray-400 bg-gray-900/50 p-3 rounded-lg border border-gray-800">
+                                    <Church className="w-4 h-4 text-gold-500" />
+                                    <span>Faithfully Catholic, open to all.</span>
+                                </div>
+                            </div>
                         </div>
 
                         {/* 6. Newsletter & App (Wider column) */}

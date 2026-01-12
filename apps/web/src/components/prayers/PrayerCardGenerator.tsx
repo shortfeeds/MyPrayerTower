@@ -19,10 +19,70 @@ const BACKGROUNDS = [
     { id: 'paper', name: 'Parchment', classes: 'bg-[#f5e6d3] text-[#5c4033]' },
 ];
 
-export function PrayerCardGenerator({ title, content, onClose }: PrayerCardProps) {
+export function PrayerCardGenerator({ title, content, onClose, mode = 'modal' }: PrayerCardProps & { mode?: 'modal' | 'inline' }) {
     const cardRef = useRef<HTMLDivElement>(null);
     const [selectedBg, setSelectedBg] = useState(BACKGROUNDS[1]);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [canShare, setCanShare] = useState(false);
+
+    React.useEffect(() => {
+        if (typeof navigator !== 'undefined' && navigator.share) {
+            setCanShare(true);
+        }
+    }, []);
+
+    const generateBlob = async () => {
+        if (!cardRef.current) return null;
+        try {
+            const dataUrl = await toPng(cardRef.current, {
+                quality: 0.95,
+                pixelRatio: 2, // High res for mobile
+                cacheBust: true,
+                backgroundColor: 'white', // Ensure no transparency issues
+            });
+
+            const res = await fetch(dataUrl);
+            const blob = await res.blob();
+            // Force strict PNG type
+            return blob.slice(0, blob.size, 'image/png');
+        } catch (err) {
+            console.error('Failed to generate blob', err);
+            return null;
+        }
+    };
+
+    const handleShare = async () => {
+        if (!cardRef.current) return;
+        setIsGenerating(true);
+
+        try {
+            const blob = await generateBlob();
+            if (!blob) throw new Error('Failed to generate image');
+
+            // Sanitize filename
+            const filename = `${title.slice(0, 20).replace(/[^a-z0-9]/gi, '-').toLowerCase()}-prayer.png`;
+            const file = new File([blob], filename, { type: 'image/png' });
+
+            const shareData = {
+                files: [file],
+                title: 'Share Prayer',
+                text: `${title} - Join me in prayer on MyPrayerTower https://myprayertower.com`,
+            };
+
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+            } else {
+                handleDownload();
+            }
+        } catch (err) {
+            console.error('Error sharing:', err);
+            if ((err as Error).name !== 'AbortError') {
+                await handleDownload();
+            }
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
     const handleDownload = async () => {
         if (!cardRef.current) return;
@@ -31,12 +91,14 @@ export function PrayerCardGenerator({ title, content, onClose }: PrayerCardProps
             setIsGenerating(true);
             const dataUrl = await toPng(cardRef.current, {
                 quality: 0.95,
-                pixelRatio: 2, // High res for mobile
+                pixelRatio: 2,
                 cacheBust: true,
+                backgroundColor: 'white',
             });
 
             const link = document.createElement('a');
-            link.download = `${title.slice(0, 20).replace(/\s+/g, '-').toLowerCase()}-prayer-card.png`;
+            // Ensure .png extension
+            link.download = `${title.slice(0, 20).replace(/[^a-z0-9]/gi, '-').toLowerCase()}-prayer.png`;
             link.href = dataUrl;
             link.click();
         } catch (err) {
@@ -46,15 +108,34 @@ export function PrayerCardGenerator({ title, content, onClose }: PrayerCardProps
         }
     };
 
+    const Container = mode === 'modal' ? 'div' : React.Fragment;
+    const containerProps = mode === 'modal'
+        ? { className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" }
+        : {};
+
+    const Wrapper = mode === 'modal' ? 'div' : 'div';
+    const wrapperClasses = mode === 'modal'
+        ? "bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row shadow-2xl relative"
+        : "bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col md:flex-row shadow-sm";
+
+    const contentAreaClasses = mode === 'modal'
+        ? "flex-1 bg-gray-100 p-8 flex items-center justify-center overflow-auto min-h-[400px]"
+        : "flex-1 bg-gray-50/50 p-6 md:p-12 flex items-center justify-center";
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row shadow-2xl">
+        <Container {...containerProps}>
+            <div className={wrapperClasses}>
+                {mode === 'modal' && (
+                    <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-black/10 hover:bg-black/20 rounded-full z-10 md:hidden text-white">
+                        <X className="w-5 h-5" />
+                    </button>
+                )}
 
                 {/* Preview Area */}
-                <div className="flex-1 bg-gray-100 p-8 flex items-center justify-center overflow-auto min-h-[400px]">
+                <div className={contentAreaClasses}>
                     <div
                         ref={cardRef}
-                        className={`w-[350px] aspect-[4/5] rounded-xl p-8 flex flex-col items-center justify-center text-center relative shadow-2xl transition-all duration-300 ${selectedBg.classes}`}
+                        className={`w-full max-w-[350px] aspect-[4/5] rounded-xl p-8 flex flex-col items-center justify-center text-center relative shadow-2xl transition-all duration-300 ${selectedBg.classes}`}
                     >
                         {/* Watermark/Logo */}
                         <div className="absolute top-6 left-0 right-0 flex justify-center opacity-50">
@@ -84,11 +165,13 @@ export function PrayerCardGenerator({ title, content, onClose }: PrayerCardProps
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="font-bold text-gray-900 flex items-center gap-2">
                             <ImageIcon className="w-5 h-5 text-blue-600" />
-                            Customize Card
+                            Customize
                         </h3>
-                        <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                            <X className="w-5 h-5 text-gray-500" />
-                        </button>
+                        {mode === 'modal' && (
+                            <button onClick={onClose} className="hidden md:block p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                <X className="w-5 h-5 text-gray-500" />
+                            </button>
+                        )}
                     </div>
 
                     <div className="space-y-6 flex-1">
@@ -116,13 +199,30 @@ export function PrayerCardGenerator({ title, content, onClose }: PrayerCardProps
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-gray-100 mt-auto">
+                    <div className="pt-6 border-t border-gray-100 mt-auto space-y-3">
+                        {canShare ? (
+                            <button
+                                onClick={handleShare}
+                                disabled={isGenerating}
+                                className="w-full py-3.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-pink-500/25 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
+                            >
+                                {isGenerating ? (
+                                    <>Processing...</>
+                                ) : (
+                                    <>
+                                        <Share2 className="w-5 h-5" />
+                                        Share to Story
+                                    </>
+                                )}
+                            </button>
+                        ) : null}
+
                         <button
                             onClick={handleDownload}
                             disabled={isGenerating}
-                            className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
+                            className={`w-full py-3.5 font-bold rounded-xl transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2 ${canShare ? 'bg-gray-100 hover:bg-gray-200 text-gray-900' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25'}`}
                         >
-                            {isGenerating ? (
+                            {isGenerating && !canShare ? (
                                 <>Processing...</>
                             ) : (
                                 <>
@@ -131,12 +231,13 @@ export function PrayerCardGenerator({ title, content, onClose }: PrayerCardProps
                                 </>
                             )}
                         </button>
-                        <p className="text-xs text-center text-gray-400 mt-3">
+
+                        <p className="text-xs text-center text-gray-400 mt-2">
                             Perfect for Instagram Stories & WhatsApp
                         </p>
                     </div>
                 </div>
             </div>
-        </div>
+        </Container>
     );
 }

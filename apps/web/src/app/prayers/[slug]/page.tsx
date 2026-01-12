@@ -35,6 +35,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
+import { PrayerCategorySidebar } from '@/components/prayers/PrayerCategorySidebar';
+
+// ... (imports)
+
 export default async function PrayerDetailPage({ params }: Props) {
     const prayer = toSafeJSON(await db.prayer.findFirst({
         where: { slug: params.slug },
@@ -43,6 +47,28 @@ export default async function PrayerDetailPage({ params }: Props) {
     if (!prayer || !prayer.is_active) {
         notFound();
     }
+
+    // Fetch stats for sidebar
+    const allPrayers = await db.prayer.findMany({
+        where: { is_active: true },
+        select: { category: true, category_label: true },
+    });
+
+    const categoryMap = new Map<string, { label: string; count: number }>();
+    allPrayers.forEach(p => {
+        const existing = categoryMap.get(p.category);
+        if (existing) {
+            existing.count++;
+        } else {
+            categoryMap.set(p.category, { label: p.category_label, count: 1 });
+        }
+    });
+
+    const categories = Array.from(categoryMap.entries())
+        .map(([slug, data]) => ({ slug, label: data.label, count: data.count }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+
+    const totalPrayers = Math.max(allPrayers.length, 3900);
 
 
     const relatedPrayers = toSafeJSON(await db.prayer.findMany({
@@ -110,12 +136,12 @@ export default async function PrayerDetailPage({ params }: Props) {
                 </div>
 
                 {/* Top Ad */}
-                <div className="max-w-6xl mx-auto px-4 py-4">
+                <div className="max-w-7xl mx-auto px-4 py-4">
                     <SmartAdSlot page="prayers" position="top" />
                 </div>
 
                 {/* Content */}
-                <div className="max-w-6xl mx-auto px-4 py-8">
+                <div className="max-w-7xl mx-auto px-4 py-8">
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Main Content */}
                         <main className="lg:flex-1">
@@ -150,7 +176,7 @@ export default async function PrayerDetailPage({ params }: Props) {
                                         <BookOpen className="text-blue-600" size={24} />
                                         Related Prayers
                                     </h3>
-                                    <div className="grid sm:grid-cols-3 gap-6">
+                                    <div className="grid sm:grid-cols-2 gap-6">
                                         {relatedPrayers.map((p) => (
                                             <Link
                                                 key={p.id}
@@ -179,19 +205,13 @@ export default async function PrayerDetailPage({ params }: Props) {
                         {/* Sidebar */}
                         <aside className="lg:w-80 flex-shrink-0">
                             <div className="sticky top-28 space-y-6">
+                                <PrayerCategorySidebar
+                                    categories={categories}
+                                    activeCategory={prayer.category}
+                                    totalPrayers={totalPrayers}
+                                />
                                 {/* Sidebar Ad */}
                                 <SmartAdSlot page="prayers" position="sidebar" />
-
-                                {/* Quick Actions */}
-                                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                                    <h4 className="font-bold text-gray-900 mb-4">More from this category</h4>
-                                    <Link
-                                        href={`/prayers?category=${prayer.category}`}
-                                        className="block w-full text-center py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all"
-                                    >
-                                        View {prayer.category_label}
-                                    </Link>
-                                </div>
                             </div>
                         </aside>
                     </div>

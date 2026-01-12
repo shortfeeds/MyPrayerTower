@@ -11,6 +11,7 @@ import {
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
+import { GlobalSearch } from '@/components/search/GlobalSearch';
 
 
 
@@ -30,6 +31,7 @@ export function Header() {
     const [mobileReadingsOpen, setMobileReadingsOpen] = useState(false);
     const [offeringsOpen, setOfferingsOpen] = useState(false);
     const [mobileOfferingsOpen, setMobileOfferingsOpen] = useState(false);
+    const [searchOpen, setSearchOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const prayersRef = useRef<HTMLDivElement>(null);
     const readingsRef = useRef<HTMLDivElement>(null);
@@ -80,6 +82,18 @@ export function Header() {
             document.body.style.overflow = 'unset';
         };
     }, [isMenuOpen]);
+
+    // Keyboard shortcut for search
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setSearchOpen(true);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     // ===== PUBLIC NAVIGATION (Available to all) =====
     const prayerLinks = [
@@ -305,10 +319,12 @@ export function Header() {
                         {/* Right Actions */}
                         <div className="hidden lg:flex items-center gap-3">
                             <button
-                                className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                                onClick={() => setSearchOpen(true)}
+                                className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2"
                                 aria-label="Search"
                             >
                                 <Search className="w-5 h-5" />
+                                <span className="hidden xl:inline text-xs bg-white/10 px-1.5 py-0.5 rounded border border-white/20 text-gray-400">⌘K</span>
                             </button>
 
                             {/* Theme Toggle */}
@@ -674,6 +690,9 @@ export function Header() {
                     </nav>
                 </div>
             </div>
+
+            {/* Global Search Modal */}
+            <GlobalSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
         </>
     );
 }
