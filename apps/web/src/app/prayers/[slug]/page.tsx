@@ -1,21 +1,13 @@
-import { PrismaClient } from '@mpt/database';
-import { Metadata } from 'next';
-import Link from 'next/link';
-import { ArrowLeft, Tag, BookOpen, ChevronRight } from 'lucide-react';
-import { notFound } from 'next/navigation';
-import { ShareButtons } from '@/components/social/ShareButtons';
-import { generatePrayerSchema } from '@/lib/seo/structuredData';
-import { SmartAdSlot } from '@/components/ads';
-import { PrayerContent } from './PrayerContent';
+import { db } from '@/lib/db';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient(); // Removed local instantiation
 
 interface Props {
     params: { slug: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const prayer = await prisma.prayer.findUnique({
+    const prayer = await db.prayer.findFirst({
         where: { slug: params.slug },
     });
 
@@ -28,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PrayerDetailPage({ params }: Props) {
-    const prayer = await prisma.prayer.findUnique({
+    const prayer = await db.prayer.findFirst({
         where: { slug: params.slug },
     });
 
@@ -36,7 +28,7 @@ export default async function PrayerDetailPage({ params }: Props) {
         notFound();
     }
 
-    const relatedPrayers = await prisma.prayer.findMany({
+    const relatedPrayers = await db.prayer.findMany({
         where: {
             category: prayer.category,
             id: { not: prayer.id },
