@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@mpt/database';
+
+const prisma = new PrismaClient();
 
 /**
  * Contact Form API
@@ -96,15 +99,16 @@ Sent from MyPrayerTower Contact Form
         // });
 
         // Option 3: Store in database for admin dashboard
-        // await prisma.contactSubmission.create({
-        //     data: {
-        //         firstName: data.firstName,
-        //         lastName: data.lastName,
-        //         email: data.email,
-        //         message: data.message,
-        //         subject,
-        //     }
-        // });
+        await prisma.contactSubmission.create({
+            data: {
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                message: data.message,
+                subject,
+                status: 'PENDING'
+            }
+        });
 
         return NextResponse.json({
             success: true,

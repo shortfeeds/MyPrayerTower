@@ -51,6 +51,7 @@ export default function PrivacyPolicyPage() {
                             <li><strong>Prayer Requests:</strong> Content you submit to the prayer wall (may be public)</li>
                             <li><strong>Church Preferences:</strong> Saved churches, home parish selection</li>
                             <li><strong>Communications:</strong> Messages you send to us or other users</li>
+                            <li><strong>Contact Form Submissions:</strong> Messages sent via our contact form are securely stored in our database for customer support and historical reference.</li>
                         </ul>
 
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Automatically Collected Information</h3>

@@ -102,6 +102,11 @@ export default function TermsOfServicePage() {
                         <p className="text-gray-600 dark:text-gray-400">
                             <strong>You represent that:</strong> You own or have the right to post all content you submit, and your content does not violate any third-party rights or any applicable laws.
                         </p>
+
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Moderation Policy</h3>
+                        <p className="text-gray-600 dark:text-gray-400">
+                            All user-submitted content, including but not limited to Prayer Requests, Memorials, and Spiritual Bouquets, is subject to moderation. Free submissions are typically held in a "Pending" state until approved by an administrator to ensure they align with our community guidelines and Catholic values. We reserve the right to reject or remove any content at our sole discretion.
+                        </p>
                     </section>
 
                     {/* Prohibited Conduct */}
