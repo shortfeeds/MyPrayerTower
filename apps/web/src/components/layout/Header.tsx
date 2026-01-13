@@ -13,6 +13,7 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 
 
@@ -163,6 +164,7 @@ export function Header() {
                                     alt="MyPrayerTower"
                                     fill
                                     className="object-cover"
+                                    sizes="40px"
                                 />
                             </div>
                             <div className="flex flex-col">
@@ -343,6 +345,9 @@ export function Header() {
                                 <Search className="w-5 h-5" />
                                 <span className="hidden xl:inline text-xs bg-white/10 px-1.5 py-0.5 rounded border border-white/20 text-gray-400">⌘K</span>
                             </button>
+
+                            {/* Language Switcher */}
+                            <LanguageSwitcher id="google_translate_desktop" />
 
                             {/* Theme Toggle */}
                             <button
@@ -591,6 +596,9 @@ export function Header() {
                         {/* Auth Buttons */}
                         {!isAuthenticated ? (
                             <div className="flex flex-col gap-3">
+                                <div className="flex justify-center mb-2">
+                                    <LanguageSwitcher id="google_translate_mobile" />
+                                </div>
                                 <Link
                                     href="/login"
                                     className="w-full py-3.5 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl font-medium border border-gray-200 dark:border-gray-700"

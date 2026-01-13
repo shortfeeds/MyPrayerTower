@@ -10,6 +10,8 @@ import { SmartAdSlot } from '@/components/ads';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { QRCodeGenerator } from '@/components/memorials/QRCodeGenerator';
 import { OfferingDialog } from '@/components/memorials/OfferingDialog';
+import { MemorialTimeline } from '@/components/memorials/MemorialTimeline';
+import { Bell, BellOff } from 'lucide-react'; // Added icons
 
 export interface Offering {
     id: string;
@@ -77,6 +79,7 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [offeringDialogOpen, setOfferingDialogOpen] = useState(false);
     const [linkCopied, setLinkCopied] = useState(false);
+    const [remindersEnabled, setRemindersEnabled] = useState(false); // New state
 
     useEffect(() => {
         // Check authentication status
@@ -303,46 +306,13 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                 })()
             }
 
-            {/* Life Journey Timeline */}
-            <div className="bg-white border-b border-gray-100 shadow-sm -mt-10 relative z-20 pt-10">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
-                        {memorial.birthDate && (
-                            <div className="text-center group">
-                                <div className="w-12 h-12 mx-auto bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                                    <span className="text-2xl">🌅</span>
-                                </div>
-                                <div className="text-sm text-gray-400 font-medium tracking-wide uppercase">Sunrise</div>
-                                <div className="text-xl font-bold text-gray-900">{formatDate(memorial.birthDate)}</div>
-                            </div>
-                        )}
-
-                        {(memorial.birthDate && memorial.deathDate) && (
-                            <div className="hidden md:flex flex-1 max-w-xs flex-col items-center gap-2">
-                                <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent relative">
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-gray-400 font-medium">
-                                        {(() => {
-                                            const start = new Date(memorial.birthDate!);
-                                            const end = new Date(memorial.deathDate!);
-                                            const age = end.getFullYear() - start.getFullYear();
-                                            return `${age} Years of Grace`;
-                                        })()}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {memorial.deathDate && (
-                            <div className="text-center group">
-                                <div className="w-12 h-12 mx-auto bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                                    <span className="text-2xl">🌇</span>
-                                </div>
-                                <div className="text-sm text-gray-400 font-medium tracking-wide uppercase">Sunset</div>
-                                <div className="text-xl font-bold text-gray-900">{formatDate(memorial.deathDate)}</div>
-                            </div>
-                        )}
-                    </div>
-                </div>
+            {/* Life Journey Timeline (New Component) */}
+            <div className="bg-white border-b border-gray-100 shadow-sm -mt-10 relative z-20">
+                <MemorialTimeline
+                    birthDate={memorial.birthDate}
+                    deathDate={memorial.deathDate}
+                    createdAt={memorial.createdAt as unknown as string} // Type cast if necessary, though simpler string is better
+                />
             </div>
 
             {/* Stats Bar */}
@@ -603,6 +573,33 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
 
                         {/* QR Code for Physical Memorials */}
                         <QRCodeGenerator memorialSlug={memorial.slug} memorialName={fullName} />
+
+                        {/* Anniversary Reminders */}
+                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                <Bell className="w-5 h-5 text-amber-500" />
+                                Remembrance Days
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Receive a gentle email reminder on {memorial.firstName}'s birthday and anniversary.
+                            </p>
+                            <button
+                                onClick={() => setRemindersEnabled(!remindersEnabled)}
+                                className={`w-full py-2 font-semibold rounded-xl transition-colors border ${remindersEnabled
+                                        ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
+                                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                                    }`}
+                            >
+                                {remindersEnabled ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                        Reminders Active
+                                    </span>
+                                ) : (
+                                    'Enable Reminders'
+                                )}
+                            </button>
+                        </div>
 
                         {/* Sidebar Ad */}
                         <SmartAdSlot page="memorials" position="sidebar" />

@@ -225,8 +225,11 @@ model Church {
   viewCount          Int                  @default(0)
   followerCount      Int                  @default(0)
   createdAt          DateTime             @default(now())
-  updatedAt          DateTime
+  updatedAt          DateTime             @updatedAt
   calendarUrl        String?
+  stripeAccountId    String?
+  totalDonations     Int                  @default(0)
+  donationCount      Int                  @default(0)
   Diocese            Diocese?             @relation(fields: [dioceseId], references: [id])
   ChurchAdmin        ChurchAdmin[]
   ChurchAnnouncement ChurchAnnouncement[]
@@ -240,6 +243,7 @@ model Church {
   SacramentRecord    SacramentRecord[]
   User               User[]
   ConfessionLog      ConfessionLog[]
+  Donation           Donation[]
 
   @@index([city, country])
   @@index([denomination])
@@ -250,7 +254,7 @@ model Church {
 }
 
 model ChurchAdmin {
-  id                   String          @id
+  id                   String          @id @default(cuid())
   churchId             String
   userId               String
   role                 ChurchAdminRole @default(EDITOR)
@@ -263,7 +267,7 @@ model ChurchAdmin {
   invitedAt            DateTime        @default(now())
   acceptedAt           DateTime?
   createdAt            DateTime        @default(now())
-  updatedAt            DateTime
+  updatedAt            DateTime        @updatedAt
   Church               Church          @relation(fields: [churchId], references: [id], onDelete: Cascade)
   User                 User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -273,7 +277,7 @@ model ChurchAdmin {
 }
 
 model ChurchAnnouncement {
-  id          String    @id
+  id          String    @id @default(cuid())
   churchId    String
   title       String
   content     String
@@ -288,7 +292,7 @@ model ChurchAnnouncement {
   pushSentAt  DateTime?
   viewCount   Int       @default(0)
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime  @updatedAt
   Church      Church    @relation(fields: [churchId], references: [id], onDelete: Cascade)
 
   @@index([churchId])
@@ -296,8 +300,8 @@ model ChurchAnnouncement {
 }
 
 model ChurchClaim {
-  id                 String      @id
-  claimCode          String      @unique
+  id                 String      @id @default(cuid())
+  claimCode          String      @unique @default(cuid())
   churchId           String
   userId             String
   claimantName       String
@@ -320,7 +324,7 @@ model ChurchClaim {
   reviewNotes        String?
   rejectionReason    String?
   createdAt          DateTime    @default(now())
-  updatedAt          DateTime
+  updatedAt          DateTime    @updatedAt
   Church             Church      @relation(fields: [churchId], references: [id])
   User               User        @relation(fields: [userId], references: [id])
 
@@ -330,7 +334,7 @@ model ChurchClaim {
 }
 
 model ChurchEvent {
-  id              String    @id
+  id              String    @id @default(cuid())
   churchId        String
   title           String
   description     String?
@@ -346,7 +350,7 @@ model ChurchEvent {
   maxAttendees    Int?
   isPublished     Boolean   @default(false)
   createdAt       DateTime  @default(now())
-  updatedAt       DateTime
+  updatedAt       DateTime  @updatedAt
   Church          Church    @relation(fields: [churchId], references: [id], onDelete: Cascade)
 
   @@index([churchId])
@@ -354,7 +358,7 @@ model ChurchEvent {
 }
 
 model ChurchFollower {
-  id            String   @id
+  id            String   @id @default(cuid())
   churchId      String
   userId        String
   pushEnabled   Boolean  @default(true)
@@ -370,7 +374,7 @@ model ChurchFollower {
 }
 
 model ChurchImage {
-  id        String   @id
+  id        String   @id @default(cuid())
   churchId  String
   url       String
   caption   String?
@@ -383,7 +387,7 @@ model ChurchImage {
 }
 
 model ChurchStaff {
-  id        String   @id
+  id        String   @id @default(cuid())
   churchId  String
   name      String
   title     String
@@ -393,14 +397,14 @@ model ChurchStaff {
   bio       String?
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
   Church    Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
 
   @@index([churchId])
 }
 
 model ChurchSubscription {
-  id                 String     @id
+  id                 String     @id @default(cuid())
   churchId           String     @unique
   tier               ChurchTier @default(UNCLAIMED)
   paidAmount         Float?
@@ -413,7 +417,7 @@ model ChurchSubscription {
   activatedAt        DateTime?
   expiresAt          DateTime?
   createdAt          DateTime   @default(now())
-  updatedAt          DateTime
+  updatedAt          DateTime   @updatedAt
   Church             Church     @relation(fields: [churchId], references: [id], onDelete: Cascade)
 
   @@index([isActive])
@@ -535,7 +539,7 @@ model Ministry {
 }
 
 model NewsArticle {
-  id          String   @id
+  id          String   @id @default(cuid())
   externalId  String   @unique
   source      String
   title       String
@@ -584,7 +588,7 @@ model NewsletterSubscriber {
 }
 
 model PrayerAction {
-  id              String        @id
+  id              String        @id @default(cuid())
   prayerRequestId String
   userId          String
   prayedAt        DateTime      @default(now())
@@ -608,13 +612,14 @@ model PrayerLibraryCategory {
   createdAt                   DateTime                @default(now())
   updatedAt                   DateTime
   PrayerLibraryCategory       PrayerLibraryCategory?  @relation("PrayerLibraryCategoryToPrayerLibraryCategory", fields: [parentId], references: [id])
-  other_PrayerLibraryCategory PrayerLibraryCategory[] @relation("PrayerLibraryCategoryToPrayerLibraryCategory")
+  children                    PrayerLibraryCategory[] @relation("PrayerLibraryCategoryToPrayerLibraryCategory")
+  prayers                     Prayer[]
 
   @@index([parentId])
 }
 
 model PrayerRequest {
-  id              String           @id
+  id              String           @id @default(cuid())
   userId          String
   title           String?
   content         String
@@ -632,13 +637,13 @@ model PrayerRequest {
   answeredAt      DateTime?
   testimony       String?
   createdAt       DateTime         @default(now())
-  updatedAt       DateTime
-  PrayerAction    PrayerAction[]
-  Church          Church?          @relation(fields: [churchId], references: [id])
-  User            User             @relation(fields: [userId], references: [id])
-  PrayerUpdate    PrayerUpdate[]
-  PrayerComment   PrayerComment[]
-  PrayerFollowing PrayerFollowing[]
+  updatedAt       DateTime         @updatedAt
+  prayerActions    PrayerAction[]
+  church           Church?          @relation(fields: [churchId], references: [id])
+  user             User             @relation(fields: [userId], references: [id])
+  prayerUpdates    PrayerUpdate[]
+  prayerComments   PrayerComment[]
+  prayerFollowing  PrayerFollowing[]
 
   @@index([category])
   @@index([isAnswered])
@@ -753,7 +758,7 @@ model SponsoredContent {
 }
 
 model SyncLog {
-  id               String     @id
+  id               String     @id @default(cuid())
   source           String
   type             String
   status           SyncStatus
@@ -794,6 +799,8 @@ model User {
   
   // Google Play Billing
   googlePlayPurchaseToken                    String?
+  subscriptionStatus                         String?
+  subscriptionId                             String?
   googlePlaySubscriptionId                   String?
   googlePlayOrderId                          String?
   homeChurchId                               String?
@@ -804,6 +811,13 @@ model User {
   lastStreakUpdate                           DateTime?
   longestStreak                              Int               @default(0)
   streakCount                                Int               @default(0)
+  currentStreak                              Int               @default(0)
+  totalPrayers                               Int               @default(0)
+  totalPrayedFor                             Int               @default(0)
+  level                                      Int               @default(1)
+  xp                                         Int               @default(0)
+  lastPrayerDate                             DateTime?
+  UserBadge                                  UserBadge[]
   BibleProgress                              BibleProgress[]
   ChurchAdmin                                ChurchAdmin[]
   ChurchClaim                                ChurchClaim[]
@@ -813,7 +827,7 @@ model User {
   PrayerRequest                              PrayerRequest[]
   SacramentRecord                            SacramentRecord[]
   Session                                    Session[]
-  Church                                     Church?           @relation(fields: [homeChurchId], references: [id])
+  homeChurch                                 Church?           @relation(fields: [homeChurchId], references: [id])
   UserBlock_UserBlock_blockedUserIdToUser    UserBlock[]       @relation("UserBlock_blockedUserIdToUser")
   UserBlock_UserBlock_userIdToUser           UserBlock[]       @relation("UserBlock_userIdToUser")
   UserReport_UserReport_reportedUserIdToUser UserReport[]      @relation("UserReport_reportedUserIdToUser")
@@ -828,6 +842,14 @@ model User {
   UserChallenge                              UserChallenge[]
   UserAchievement                            UserAchievement[]
   Leaderboard                                Leaderboard[]
+  Testimony                                  Testimony[]
+  TestimonyUpvote                            TestimonyUpvote[]
+  
+  // Prayer Groups
+  PrayerGroupMember                          PrayerGroupMember[]
+  GroupPrayer                                GroupPrayer[]
+  SentInvites                                PrayerGroupInvite[] @relation("SentInvites")
+  ReceivedInvites                            PrayerGroupInvite[] @relation("ReceivedInvites")
   UserDailyGoal                              UserDailyGoal?
   
   // Community
@@ -837,13 +859,15 @@ model User {
   PrayerPartnership_User2                    PrayerPartnership[] @relation("PartnerUser2")
   
   // Confession & Personalization
+  Donation                                   Donation[]
   ExamenEntry                                ExamenEntry[]
   ConfessionLog                              ConfessionLog[]
   UserPrayerHistory                          UserPrayerHistory[]
   UserReminder                               UserReminder[]
   
   // Virtual Candles & Bouquets
-  VirtualCandle                              VirtualCandle[]
+  PrayerCandle                              PrayerCandle[] @relation("CandleCreator")
+  CandlePrayer                              CandlePrayer[]
   SpiritualBouquet                           SpiritualBouquet[]
   
   // Purchase Events
@@ -891,23 +915,25 @@ model UserReport {
 }
 
 model Prayer {
-  id             BigInt    @id(map: "prayers_pkey") @default(autoincrement())
+  id             String    @id @default(cuid())
   title          String
   slug           String?   @unique
   content        String
-  category       String
-  category_label String
+  categoryId     String
   tags           String[]
-  is_active      Boolean?  @default(true)
-  created_at     DateTime? @default(now()) @db.Timestamptz(6)
+  isPublished    Boolean   @default(true)
+  viewCount      Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  category       PrayerLibraryCategory @relation(fields: [categoryId], references: [id])
   
   // Relations
   UserPrayerHistory UserPrayerHistory[]
 
-  @@index([is_active], map: "prayers_active_idx")
-  @@index([category], map: "prayers_category_idx")
-  @@index([is_active, category], map: "prayers_active_category_idx") // Compound index for filtered queries
-  @@index([tags], map: "prayers_tags_idx", type: Gin)
+  @@index([isPublished])
+  @@index([categoryId])
+  @@index([tags], type: Gin)
 }
 
 // =========================================
@@ -1100,7 +1126,7 @@ model ConfessionLog {
 model UserPrayerHistory {
   id        String   @id @default(cuid())
   userId    String
-  prayerId  BigInt
+  prayerId  String
   viewedAt  DateTime @default(now())
   
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1126,7 +1152,7 @@ model UserReminder {
 // VIRTUAL CANDLES & SPIRITUAL BOUQUETS
 // =========================================
 
-model VirtualCandle {
+model PrayerCandle {
   id            String         @id @default(cuid())
   userId        String?
   intention     String
@@ -1135,6 +1161,8 @@ model VirtualCandle {
   email         String?
   amount        Int            // Cents
   duration      CandleDuration
+  color         String         @default("white")
+  prayerCount   Int            @default(0)
   litAt         DateTime       @default(now())
   expiresAt     DateTime
   isActive      Boolean        @default(true)
@@ -1143,9 +1171,27 @@ model VirtualCandle {
   paymentId     String?
   paymentStatus String         @default("PENDING")
   
-  User          User?          @relation(fields: [userId], references: [id])
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  creator       User?          @relation("CandleCreator", fields: [userId], references: [id])
+  candlePrayers  CandlePrayer[]
   
   @@index([isActive, expiresAt])
+  @@index([userId])
+}
+
+model CandlePrayer {
+  id        String   @id @default(cuid())
+  candleId  String
+  userId    String
+  createdAt DateTime @default(now())
+
+  candle    PrayerCandle @relation(fields: [candleId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([candleId, userId])
+  @@index([candleId])
   @@index([userId])
 }
 
@@ -1273,7 +1319,7 @@ model MassOffering {
   celebrationNotificationSent Boolean   @default(false)
   
   // Upsells/Add-ons
-  includesVirtualCandle   Boolean       @default(false)
+  includesPrayerCandle   Boolean       @default(false)
   virtualCandleAmount     Int           @default(0)
   includesPrintedCard     Boolean       @default(false)
   printedCardAmount       Int           @default(0)
@@ -1578,6 +1624,7 @@ enum ModerationStatus {
   APPROVED
   REJECTED
   ON_HOLD
+  ARCHIVED
 }
 
 enum NotificationType {
@@ -1714,6 +1761,7 @@ enum CandleDuration {
   ONE_DAY
   THREE_DAYS
   SEVEN_DAYS
+  FOURTEEN_DAYS
   THIRTY_DAYS
 }
 
@@ -1981,4 +2029,144 @@ model ContactSubmission {
   
   @@index([email])
   @@index([status])
+}
+
+model Testimony {
+  id              String           @id @default(cuid())
+  userId          String
+  title           String
+  content         String           @db.Text
+  relatedPrayerId String?
+  isAnonymous     Boolean          @default(false)
+  status          ModerationStatus @default(PENDING)
+  isFeatured      Boolean          @default(false)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  TestimonyUpvote TestimonyUpvote[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([isFeatured])
+}
+
+model TestimonyUpvote {
+  id          String    @id @default(cuid())
+  testimonyId String
+  userId      String
+  createdAt   DateTime  @default(now())
+  
+  testimony   Testimony @relation(fields: [testimonyId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([testimonyId, userId])
+}
+
+// =========================================
+// PRAYER GROUPS
+// =========================================
+
+model PrayerGroup {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isPrivate   Boolean  @default(true)
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  members     PrayerGroupMember[]
+  prayers     GroupPrayer[]
+  invites     PrayerGroupInvite[]
+}
+
+model PrayerGroupMember {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
+  role      String   @default("MEMBER")
+  joinedAt  DateTime @default(now())
+  
+  group     PrayerGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@index([userId])
+}
+
+model PrayerGroupInvite {
+  id        String   @id @default(cuid())
+  groupId   String
+  inviterId String
+  inviteeId String
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  group     PrayerGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  inviter   User        @relation("SentInvites", fields: [inviterId], references: [id], onDelete: Cascade)
+  invitee   User        @relation("ReceivedInvites", fields: [inviteeId], references: [id], onDelete: Cascade)
+}
+
+model GroupPrayer {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  
+  group     PrayerGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([groupId])
+  @@index([userId])
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Donation {
+  id              String   @id @default(cuid())
+  churchId        String
+  userId          String?
+  amount          Int
+  currency        String   @default("usd")
+  message         String?  @db.Text
+  isAnonymous     Boolean  @default(false)
+  stripeSessionId String?  @unique
+  status          String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  church          Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  user            User?    @relation(fields: [userId], references: [id])
+
+  @@index([churchId])
+  @@index([userId])
+  @@index([status])
+}
+
+model DailyDevotional {
+  id                 String   @id @default(cuid())
+  title              String
+  scripture          String   @db.Text
+  scriptureReference String
+  reflection         String   @db.Text
+  closingPrayer      String   @db.Text
+  publishDate        DateTime @unique
+  audioUrl           String?
+  isPublished        Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([publishDate])
 }

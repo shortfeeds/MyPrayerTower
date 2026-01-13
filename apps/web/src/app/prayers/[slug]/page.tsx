@@ -36,6 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 import { PrayerCategorySidebar } from '@/components/prayers/PrayerCategorySidebar';
+import { PrayerContextBox } from '@/components/prayers/PrayerContextBox';
 
 // ... (imports)
 
@@ -44,23 +45,30 @@ export default async function PrayerDetailPage({ params }: Props) {
         where: { slug: params.slug },
     }));
 
-    if (!prayer || !prayer.is_active) {
+    if (!prayer || !prayer.isPublished) {
         notFound();
     }
 
     // Fetch stats for sidebar
     const allPrayers = await db.prayer.findMany({
-        where: { is_active: true },
-        select: { category: true, category_label: true },
+        where: { isPublished: true },
+        select: {
+            categoryId: true,
+            category: {
+                select: { name: true, slug: true }
+            }
+        },
     });
 
     const categoryMap = new Map<string, { label: string; count: number }>();
     allPrayers.forEach(p => {
-        const existing = categoryMap.get(p.category);
-        if (existing) {
-            existing.count++;
-        } else {
-            categoryMap.set(p.category, { label: p.category_label, count: 1 });
+        if (p.category) {
+            const existing = categoryMap.get(p.category.slug);
+            if (existing) {
+                existing.count++;
+            } else {
+                categoryMap.set(p.category.slug, { label: p.category.name, count: 1 });
+            }
         }
     });
 
@@ -73,9 +81,9 @@ export default async function PrayerDetailPage({ params }: Props) {
 
     const relatedPrayers = toSafeJSON(await db.prayer.findMany({
         where: {
-            category: prayer.category,
-            id: { not: BigInt(prayer.id) }, // ID is BigInt in schema
-            is_active: true,
+            categoryId: prayer.categoryId,
+            id: { not: prayer.id },
+            isPublished: true,
         },
         take: 3,
     }));
@@ -89,8 +97,8 @@ export default async function PrayerDetailPage({ params }: Props) {
                         id: prayer.id,
                         title: prayer.title,
                         content: prayer.content,
-                        category: prayer.category,
-                        category_label: prayer.category_label || undefined
+                        category: prayer.categoryId,
+                        category_label: undefined
                     }))
                 }}
             />
@@ -145,6 +153,9 @@ export default async function PrayerDetailPage({ params }: Props) {
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Main Content */}
                         <main className="lg:flex-1">
+                            {/* Contextual Notes */}
+                            <PrayerContextBox title={prayer.title} category={prayer.category} />
+
                             <PrayerContent
                                 prayerId={prayer.id.toString()}
                                 prayerTitle={prayer.title}

@@ -58,6 +58,7 @@ export async function getPrayerRequests(page = 1, limit = 10, category?: string)
                 prayerCount: p.prayerCount + (p._count?.PrayerAction || 0), // Use p._count.PrayerAction
                 createdAt: p.createdAt,
                 isAnswered: p.isAnswered,
+                status: p.status,
             })),
             hasMore: prayers.length === limit
         };

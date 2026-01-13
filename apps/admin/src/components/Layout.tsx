@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Layout as AntLayout, Menu } from 'antd';
+import { Layout as AntLayout, Menu, Breadcrumb, Input, Badge, Dropdown, Avatar, theme } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import {
     DashboardOutlined,
@@ -11,6 +11,9 @@ import {
     SettingOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    SearchOutlined,
+    LogoutOutlined,
+    BellOutlined
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = AntLayout;
@@ -58,7 +61,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 icon: <SettingOutlined />
             },
             {
-                type: 'divider',
+                type: 'divider' as const,
             },
             {
                 key: 'logout',

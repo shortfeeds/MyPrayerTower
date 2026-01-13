@@ -39,7 +39,7 @@ export interface CreateMassOfferingDto {
     recipientName?: string;
     giftMessage?: string;
     sendDate?: Date;
-    includesVirtualCandle?: boolean;
+    includesPrayerCandle?: boolean;
     includesPrintedCard?: boolean;
     includesFramedCertificate?: boolean;
     printedCardShippingAddress?: string;
@@ -68,7 +68,7 @@ export class MassOfferingsService {
         totalAmount: number;
     } {
         const baseAmount = MASS_OFFERING_PRICES[data.offeringType] || MASS_OFFERING_PRICES.REGULAR;
-        const candleAmount = data.includesVirtualCandle ? ADDON_PRICES.VIRTUAL_CANDLE : 0;
+        const candleAmount = data.includesPrayerCandle ? ADDON_PRICES.VIRTUAL_CANDLE : 0;
         const printedCardAmount = data.includesPrintedCard ? ADDON_PRICES.PRINTED_CARD : 0;
         const framedCertificateAmount = data.includesFramedCertificate ? ADDON_PRICES.FRAMED_CERTIFICATE : 0;
 
@@ -115,7 +115,7 @@ export class MassOfferingsService {
                 recipientName: data.recipientName,
                 giftMessage: data.giftMessage,
                 sendDate: data.sendDate,
-                includesVirtualCandle: data.includesVirtualCandle || false,
+                includesPrayerCandle: data.includesPrayerCandle || false,
                 virtualCandleAmount: pricing.candleAmount,
                 includesPrintedCard: data.includesPrintedCard || false,
                 printedCardAmount: pricing.printedCardAmount,

@@ -63,7 +63,7 @@ export class AdminService {
     async getPendingClaims() {
         return this.prisma.churchClaim.findMany({
             where: { status: { in: [ClaimStatus.DOCUMENTS_SUBMITTED, ClaimStatus.UNDER_REVIEW] } },
-            include: { church: true, user: { select: { firstName: true, lastName: true, email: true } } },
+            include: { Church: true, User: { select: { firstName: true, lastName: true, email: true } } },
             orderBy: { createdAt: 'asc' },
         });
     }

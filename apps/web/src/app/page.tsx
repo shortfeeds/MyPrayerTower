@@ -40,81 +40,99 @@ function LoggedOutHomePage() {
     return (
         <div className="flex flex-col min-h-screen selection:bg-gold-500/30 selection:text-gold-200">
             {/* Hero Section */}
-            <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-sacred-600 via-sacred-700 to-sacred-800 text-white pb-32">
-                {/* Animated Background Elements */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-gold-500 rounded-full blur-[150px] opacity-15"></div>
-                    <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500 rounded-full blur-[150px] opacity-10"></div>
+            <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-sacred-800 via-sacred-900 to-gray-950 text-white pb-32">
+                {/* Subtle Animated Background - Calmer */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-sacred-600/20 rounded-full blur-[120px]"></div>
+                    <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gold-600/10 rounded-full blur-[100px]"></div>
                 </div>
 
-                <ParticleBackground count={5} opacity={0.3} />
+                {/* Reduced Particles for Calmness */}
+                <div className="opacity-20">
+                    <ParticleBackground count={3} opacity={0.2} />
+                </div>
 
-                <div className="absolute inset-0 opacity-5 bg-[url('/pattern.svg')] pointer-events-none"></div>
+                <div className="absolute inset-0 opacity-[0.03] bg-[url('/pattern.svg')] pointer-events-none mix-blend-overlay"></div>
 
-                <div className="container mx-auto px-4 relative z-10 pt-20 md:pt-24 text-center">
-                    {/* Trust Signal */}
-                    <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 animate-fade-in shadow-lg">
-                        <Users className="w-4 h-4 text-gold-400" />
-                        <span className="text-sm font-semibold text-gold-200 tracking-wide">Joined by 10,000+ Catholics Worldwide</span>
-                    </div>
+                <div className="container mx-auto px-4 relative z-10 pt-20 md:pt-28 text-center">
 
-                    {/* Main Headline */}
+                    {/* Main Headline - Spiritual Focus */}
                     <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight animate-fade-in-up tracking-tight drop-shadow-2xl">
-                        Your Daily<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-200 via-gold-400 to-gold-200">
-                            Catholic Companion
+                        Lift Your Heart<br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-gold-300 to-gold-100">
+                            to God
                         </span>
                     </h1>
 
-                    {/* Sub-headline */}
-                    <p className="text-xl md:text-2xl text-blue-100/90 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-up font-light">
-                        Grow in faith with daily readings, saint biographies, and a global community of prayer.
+                    {/* Sub-headline - Purpose Driven */}
+                    <p className="text-xl md:text-2xl text-blue-100/80 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in-up font-light delay-100">
+                        Join a global community in faith, prayer, and devotion.
                         Sanctify your day, every day.
                     </p>
 
-                    {/* CTAs */}
-                    <div className="flex flex-col sm:flex-row gap-5 justify-center animate-fade-in-up mb-20">
+                    {/* Simplified CTAs - Action Oriented */}
+                    <div className="flex flex-col sm:flex-row gap-5 justify-center animate-fade-in-up mb-16 delay-200">
                         <Link
-                            href="/register"
-                            className="inline-flex items-center justify-center px-10 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/30 group"
+                            href="/prayer-wall"
+                            className="inline-flex items-center justify-center px-10 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/20 group"
                         >
-                            Start Your Journey
+                            Pray Now
                             <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <Link
-                            href="/prayer-wall"
-                            className="inline-flex items-center justify-center px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold text-lg rounded-full transition-all duration-300 backdrop-blur-md border border-white/30 hover:border-white/50 hover:shadow-lg"
+                            href="/candles"
+                            className="inline-flex items-center justify-center px-10 py-4 bg-white/5 hover:bg-white/10 text-white font-medium text-lg rounded-full transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30"
                         >
-                            <Users className="w-5 h-5 mr-2 text-gold-400" />
-                            Visit Prayer Wall
+                            Light a Candle
                         </Link>
+                    </div>
+
+                    {/* Trust Signal - Subtle & Integrated */}
+                    <div className="inline-flex items-center justify-center gap-2 opacity-60 animate-fade-in delay-300">
+                        <Users className="w-4 h-4 text-gold-400" />
+                        <span className="text-sm font-medium text-blue-100 tracking-wide">Praying with 10,000+ Catholics Worldwide</span>
                     </div>
                 </div>
             </section>
 
             {/* Daily Focus Dashboard - Overlapping Hero */}
-            <div className="relative z-30">
-                <Suspense fallback={<div className="container mx-auto px-4 -mt-20"><CardSkeleton className="max-w-6xl mx-auto" /></div>}>
+            <div className="relative z-30 -mt-24">
+                <Suspense fallback={
+                    <div className="container mx-auto px-4">
+                        <div className="max-w-5xl mx-auto h-64 bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl animate-pulse" />
+                    </div>
+                }>
                     <AsyncDailyFocus />
                 </Suspense>
             </div>
 
-            <TrustBar />
+            {/* Reorganized Content Flow - Secondary Features pushed lower */}
+            <div className="py-16">
+                <TrustBar />
+            </div>
 
-            <OfferingsGrid />
-
-            <StatisticsBand />
-
-            <div className="bg-white py-8">
+            <div className="bg-white py-12 border-t border-gray-50">
                 <TestimonialsSection />
             </div>
 
-            <div className="py-8 bg-cream-50">
-                <PromotionalBanner />
+            {/* Moved Offerings & Stats Below the Fold */}
+            <div className="bg-gray-50 py-16">
+                <div className="container mx-auto px-4 mb-16">
+                    <div className="text-center max-w-3xl mx-auto mb-12">
+                        <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">Ways to Participate</h2>
+                        <p className="text-gray-600">Engage deeply with your faith through our community offerings.</p>
+                    </div>
+                    <OfferingsGrid />
+                </div>
+                <StatisticsBand />
             </div>
 
             <div className="py-8 bg-white border-t border-gray-100">
                 <HowItWorks />
+            </div>
+
+            <div className="py-8 bg-cream-50">
+                <PromotionalBanner />
             </div>
 
             <AppDownloadBanner />

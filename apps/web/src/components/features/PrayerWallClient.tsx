@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Heart, Share2, Flag, CheckCircle, Filter, Loader2, MapPin, Clock, Facebook, Twitter, Copy, X, Globe, Sparkles, Church, Bookmark } from 'lucide-react';
+import { Heart, Share2, Flag, CheckCircle, Filter, Loader2, MapPin, Clock, Facebook, Twitter, Copy, X, Globe, Sparkles, Church, Bookmark, MessageCircle, Search, ShieldAlert } from 'lucide-react';
+import { useSpiritualJourney } from '@/components/journey/SpiritualJourneyProvider';
 import { submitPrayerRequest, prayForRequest, markPrayerAnswered, reportPrayer, getPrayerRequests } from '@/app/actions/prayer';
 import Link from 'next/link';
 import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
@@ -20,6 +21,7 @@ export interface Prayer {
     createdAt: Date;
     isAnswered: boolean;
     country?: string;
+    status?: 'PENDING' | 'APPROVED' | 'REJECTED' | 'ON_HOLD' | 'ARCHIVED';
 }
 
 const categories = ['All', 'Health', 'Family', 'Work', 'Finances', 'Relationships', 'Grief', 'Thanksgiving', 'Spiritual', 'World', 'Other'];
@@ -73,7 +75,7 @@ function getTimeAgo(date: Date): string {
     return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-export default function PrayerWallClient({ initialPrayers }: { initialPrayers: Prayer[] }) {
+export default function PrayerWallClient({ initialPrayers, currentUserId }: { initialPrayers: Prayer[], currentUserId?: string }) {
     const [prayers, setPrayers] = useState<Prayer[]>([...SAMPLE_PRAYERS, ...initialPrayers]);
     const [selectedCategory, setSelectedCategory] = useState('All');
     // ... (Keep existing state)
@@ -86,6 +88,7 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
     const [page, setPage] = useState(2);
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+    const { triggerSacredMoment } = useSpiritualJourney();
 
     // -- New Modal States --
     const [closingPrayerFor, setClosingPrayerFor] = useState<Prayer | null>(null);
@@ -149,7 +152,8 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
         // Find the prayer for the modal
         const prayer = prayers.find(p => p.id === prayerId);
         if (prayer) {
-            setClosingPrayerFor(prayer);
+            triggerSacredMoment('prayer');
+            // setClosingPrayerFor(prayer); // Replaced by global modal
         }
 
         setPrayedIds(prev => new Set(Array.from(prev).concat([prayerId])));
@@ -378,7 +382,8 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
                                 {filteredPrayers.map((prayer, index) => (
                                     <div
                                         key={prayer.id}
-                                        className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all hover:shadow-lg hover:-translate-y-0.5 flex flex-col ${prayer.isAnswered ? 'border-2 border-green-200 bg-green-50/30' : ''
+                                        className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all hover:shadow-lg hover:-translate-y-0.5 flex flex-col ${prayer.isAnswered ? 'border-2 border-green-200 bg-green-50/30' :
+                                            prayer.status === 'ARCHIVED' ? 'opacity-75 bg-gray-50 border-gray-200' : ''
                                             }`}
                                     >
                                         {/* Answered Badge */}
@@ -425,13 +430,17 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
                                             <div className="flex items-center justify-between pt-2">
                                                 <button
                                                     onClick={() => handlePray(prayer.id)}
-                                                    disabled={prayedIds.has(prayer.id)}
-                                                    className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-all ${prayedIds.has(prayer.id)
-                                                        ? 'bg-green-100 text-green-700 cursor-default'
-                                                        : 'bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-white shadow-md'
+                                                    disabled={prayedIds.has(prayer.id) || prayer.status === 'ARCHIVED'}
+                                                    className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-all ${prayer.status === 'ARCHIVED'
+                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                        : prayedIds.has(prayer.id)
+                                                            ? 'bg-green-100 text-green-700 cursor-default'
+                                                            : 'bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-white shadow-md'
                                                         }`}
                                                 >
-                                                    {prayedIds.has(prayer.id) ? (
+                                                    {prayer.status === 'ARCHIVED' ? (
+                                                        <span>Archived</span>
+                                                    ) : prayedIds.has(prayer.id) ? (
                                                         <>
                                                             <CheckCircle className="w-3 h-3" />
                                                             <span>Prayed</span>
@@ -466,9 +475,21 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
                                                     <button
                                                         onClick={() => handleReport(prayer.id)}
                                                         className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Report"
                                                     >
                                                         <Flag className="w-4 h-4" />
                                                     </button>
+
+                                                    {/* Owner Actions */}
+                                                    {currentUserId && prayer.userId === currentUserId && !prayer.isAnswered && (
+                                                        <button
+                                                            onClick={() => handleMarkAnswered(prayer.id)}
+                                                            className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                            title="Mark as Answered"
+                                                        >
+                                                            <CheckCircle className="w-4 h-4" />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -705,13 +726,8 @@ export default function PrayerWallClient({ initialPrayers }: { initialPrayers: P
                     </div>
                 )
             }
-            {/* Closing Prayer Modal */}
-            <ClosingPrayerModal
-                isOpen={!!closingPrayerFor}
-                onClose={() => setClosingPrayerFor(null)}
-                onAmen={handleClosingPrayerAmen}
-                prayerRequestContent={closingPrayerFor?.content || ''}
-            />
+            {/* Closing Prayer Modal - Replaced by Global SacredMomentModal */}
+            {/* <ClosingPrayerModal ... /> */}
 
             {/* Report Modal */}
             <ReportModal

@@ -27,7 +27,7 @@ interface GooglePlayPurchaseResponse {
     acknowledgementState: number;
 }
 
-interface VerifyPurchaseResult {
+export interface VerifyPurchaseResult {
     success: boolean;
     tier?: string;
     expiresAt?: Date;

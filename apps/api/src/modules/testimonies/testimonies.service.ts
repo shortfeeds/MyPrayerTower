@@ -42,7 +42,7 @@ export class TestimoniesService {
                     user: {
                         select: { firstName: true, lastName: true },
                     },
-                    _count: { select: { upvotes: true } },
+                    _count: { select: { TestimonyUpvote: true } },
                 },
                 skip,
                 take: limit,
@@ -57,7 +57,7 @@ export class TestimoniesService {
                 title: t.title,
                 content: t.content,
                 userName: t.isAnonymous ? 'Anonymous' : `${t.user.firstName} ${t.user.lastName?.charAt(0) || ''}.`,
-                upvotes: t._count.upvotes,
+                upvotes: t._count.TestimonyUpvote,
                 createdAt: t.createdAt,
             })),
             total,
@@ -77,7 +77,7 @@ export class TestimoniesService {
             },
             include: {
                 user: { select: { firstName: true, lastName: true } },
-                _count: { select: { upvotes: true } },
+                _count: { select: { TestimonyUpvote: true } },
             },
             take: limit,
             orderBy: { createdAt: 'desc' },
@@ -88,7 +88,7 @@ export class TestimoniesService {
             title: t.title,
             content: t.content,
             userName: t.isAnonymous ? 'Anonymous' : `${t.user.firstName} ${t.user.lastName?.charAt(0) || ''}.`,
-            upvotes: t._count.upvotes,
+            upvotes: t._count.TestimonyUpvote,
         }));
     }
 

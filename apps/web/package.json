@@ -12,6 +12,7 @@
     "dependencies": {
         "@cashfreepayments/cashfree-js": "^1.0.5",
         "@ducanh2912/next-pwa": "^10.2.9",
+        "@headlessui/react": "^1.7.19",
         "@hookform/resolvers": "^3.3.0",
         "@mpt/database": "workspace:*",
         "@next/third-parties": "^16.1.1",

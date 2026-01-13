@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
-interface ModerationResult {
+export interface ModerationResult {
     approved: boolean;
     flagged: boolean;
     reasons: string[];

@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { LiturgicalCalendarService } from './liturgical-calendar.service';
+import { LiturgicalCalendarService, LiturgicalDay } from './liturgical-calendar.service';
 
 @Controller('liturgical')
 export class LiturgicalController {

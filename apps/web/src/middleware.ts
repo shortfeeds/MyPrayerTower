@@ -10,9 +10,9 @@ const securityHeaders = {
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self), payment=()',
     'Content-Security-Policy': [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.vercel-scripts.com https://*.vercel-insights.com https://*.adtrafficquality.google",
-        "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.vercel-scripts.com https://*.vercel-insights.com https://*.adtrafficquality.google",
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.vercel-scripts.com https://*.vercel-insights.com https://*.adtrafficquality.google https://translate.googleapis.com https://translate-pa.googleapis.com",
+        "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.vercel-scripts.com https://*.vercel-insights.com https://*.adtrafficquality.google https://translate.googleapis.com https://translate-pa.googleapis.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com",
         "img-src 'self' data: blob: https: http: https://*.paypal.com",
         "font-src 'self' https://fonts.gstatic.com",
         "connect-src 'self' https://*.paypal.com https://*.paypalobjects.com https://*.supabase.co https://*.googleapis.com https://*.google-analytics.com https://*.doubleclick.net https://stats.g.doubleclick.net https://analytics.google.com https://*.googlesyndication.com https://*.gstatic.com https://*.adtrafficquality.google https://*.vercel-scripts.com https://*.vercel-insights.com https://*.neon.tech",

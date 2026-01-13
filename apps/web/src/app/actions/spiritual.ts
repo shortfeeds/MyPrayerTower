@@ -21,7 +21,7 @@ export type VirtualCandle = {
 export async function getActiveCandles(): Promise<VirtualCandle[]> {
     const now = new Date();
 
-    const candles = await prisma.virtualCandle.findMany({
+    const candles = await prisma.prayerCandle.findMany({
         where: {
             isActive: true,
             expiresAt: { gt: now },
@@ -35,24 +35,39 @@ export async function getActiveCandles(): Promise<VirtualCandle[]> {
 }
 
 // Light a virtual candle (free 1-day candles, or creates pending for paid)
+// Update durationDays map
+const DURATION_DAYS: Record<string, number> = {
+    'ONE_DAY': 1,
+    'THREE_DAYS': 3,
+    'SEVEN_DAYS': 7,
+    'FOURTEEN_DAYS': 14,
+    'THIRTY_DAYS': 30
+};
+
+const DURATION_PRICES: Record<string, number> = {
+    'ONE_DAY': 0,
+    'THREE_DAYS': 249,
+    'SEVEN_DAYS': 499,
+    'FOURTEEN_DAYS': 999,
+    'THIRTY_DAYS': 1499
+};
+
+// Light a virtual candle (free or paid)
 export async function lightVirtualCandle(data: {
     intention: string;
     name?: string;
     email?: string;
     isAnonymous?: boolean;
-    duration: 'ONE_DAY' | 'THREE_DAYS' | 'SEVEN_DAYS' | 'THIRTY_DAYS';
+    duration: 'ONE_DAY' | 'THREE_DAYS' | 'SEVEN_DAYS' | 'FOURTEEN_DAYS' | 'THIRTY_DAYS';
+    paymentId?: string;
 }) {
     const user = await getUserFromCookie();
 
-    const durationDays: Record<string, number> = {
-        'ONE_DAY': 1,
-        'THREE_DAYS': 3,
-        'SEVEN_DAYS': 7,
-        'THIRTY_DAYS': 30
-    };
+    const days = DURATION_DAYS[data.duration] || 1;
+    const price = DURATION_PRICES[data.duration] || 0;
 
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + (durationDays[data.duration] || 1));
+    expiresAt.setDate(expiresAt.getDate() + days);
 
     try {
         // Moderation Check
@@ -61,26 +76,24 @@ export async function lightVirtualCandle(data: {
             return { success: false, error: moderation.reason || 'Content rejected.' };
         }
 
-        // For FREE 1-day candles, auto-approve? NO. User wants moderation.
-        // So isActive should be FALSE for all free listings until approved.
-        // Paid listings (skip auth spam) -> If passes moderation check here, we can auto-approve on payment.
+        const isFree = price === 0;
+        const isPaid = !!data.paymentId || isFree;
 
-        const isFree = data.duration === 'ONE_DAY';
-
-        const candle = await prisma.virtualCandle.create({
+        const candle = await prisma.prayerCandle.create({
             data: {
                 userId: user?.id,
                 intention: data.intention,
                 name: data.isAnonymous ? null : (data.name || user?.firstName || null),
                 email: data.email || user?.email,
                 isAnonymous: data.isAnonymous ?? true,
-                amount: isFree ? 0 : 199, // $1.99 for paid
+                amount: price,
                 duration: data.duration,
                 expiresAt,
-                paymentStatus: isFree ? 'PAID' : 'PENDING',
-                // Free: False (Pending Moderation). Paid: False (Pending Payment).
-                isActive: false,
-                litAt: isFree ? new Date() : new Date()
+                paymentId: data.paymentId,
+                paymentStatus: isPaid ? 'PAID' : 'PENDING',
+                // Free/Paid -> Active if moderation passed (auto-approve for now unless explicit blocked words)
+                isActive: true,
+                litAt: new Date()
             }
         });
 
@@ -91,33 +104,21 @@ export async function lightVirtualCandle(data: {
     }
 }
 
-// Create a virtual candle (initiates payment)
+// Create a virtual candle (initiates payment - legacy/alternative flow)
 export async function createVirtualCandle(data: {
     intention: string;
     name?: string;
     email?: string;
     isAnonymous: boolean;
-    duration: 'ONE_DAY' | 'THREE_DAYS' | 'SEVEN_DAYS' | 'THIRTY_DAYS';
+    duration: 'ONE_DAY' | 'THREE_DAYS' | 'SEVEN_DAYS' | 'FOURTEEN_DAYS' | 'THIRTY_DAYS';
 }) {
     const user = await getUserFromCookie();
 
-    const durationPrices = {
-        'ONE_DAY': 199,      // $1.99
-        'THREE_DAYS': 499,   // $4.99
-        'SEVEN_DAYS': 999,   // $9.99
-        'THIRTY_DAYS': 2499  // $24.99
-    };
+    const amount = DURATION_PRICES[data.duration] || 0;
+    const days = DURATION_DAYS[data.duration] || 1;
 
-    const durationDays = {
-        'ONE_DAY': 1,
-        'THREE_DAYS': 3,
-        'SEVEN_DAYS': 7,
-        'THIRTY_DAYS': 30
-    };
-
-    const amount = durationPrices[data.duration];
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + durationDays[data.duration]);
+    expiresAt.setDate(expiresAt.getDate() + days);
 
     // Moderation check
     const moderation = moderateContent(data.intention);
@@ -125,7 +126,7 @@ export async function createVirtualCandle(data: {
         throw new Error(moderation.reason || 'Content rejected');
     }
 
-    const candle = await prisma.virtualCandle.create({
+    const candle = await prisma.prayerCandle.create({
         data: {
             userId: user?.id,
             intention: data.intention,
@@ -148,14 +149,14 @@ export async function createVirtualCandle(data: {
 export async function confirmCandlePayment(candleId: string, paymentId: string) {
     // Fetch candle to check content again (or rely on initial check?)
     // Better to check again to decide isActive status.
-    const candle = await prisma.virtualCandle.findUnique({ where: { id: candleId } });
+    const candle = await prisma.prayerCandle.findUnique({ where: { id: candleId } });
     if (!candle) throw new Error('Candle not found');
 
     const moderation = moderateContent(candle.intention);
     // If moderation passes -> Active. If fail -> Inactive (Pending Review).
     const shouldActivate = moderation.isValid;
 
-    await prisma.virtualCandle.update({
+    await prisma.prayerCandle.update({
         where: { id: candleId },
         data: {
             paymentId,
@@ -285,7 +286,7 @@ export async function getConfessionLogs() {
 export async function approveCandle(candleId: string) {
     // Only admins (protected by middleware usually, or check role here)
     // For now assuming route protection
-    await prisma.virtualCandle.update({
+    await prisma.prayerCandle.update({
         where: { id: candleId },
         data: { isActive: true }
     });
@@ -293,7 +294,7 @@ export async function approveCandle(candleId: string) {
 }
 
 export async function rejectCandle(candleId: string) {
-    await prisma.virtualCandle.delete({
+    await prisma.prayerCandle.delete({
         where: { id: candleId }
     });
     return { success: true };
@@ -305,14 +306,14 @@ export async function rejectCandle(candleId: string) {
 
 export async function getAdminCandleStats() {
     // 1. Total Revenue
-    const revenue = await prisma.virtualCandle.aggregate({
+    const revenue = await prisma.prayerCandle.aggregate({
         _sum: { amount: true },
         where: { paymentStatus: 'PAID' }
     });
 
     // 2. Counts
-    const totalCandles = await prisma.virtualCandle.count();
-    const activeCandles = await prisma.virtualCandle.count({
+    const totalCandles = await prisma.prayerCandle.count();
+    const activeCandles = await prisma.prayerCandle.count({
         where: {
             isActive: true,
             expiresAt: { gt: new Date() }
@@ -320,7 +321,7 @@ export async function getAdminCandleStats() {
     });
 
     // 3. Revenue by Tier (Duration)
-    const tiers = await prisma.virtualCandle.groupBy({
+    const tiers = await prisma.prayerCandle.groupBy({
         by: ['duration'],
         _sum: { amount: true },
         _count: true,
@@ -341,7 +342,7 @@ export async function getAdminCandleStats() {
 }
 
 export async function getCandlesForAdmin(page = 1, limit = 50) {
-    const candles = await prisma.virtualCandle.findMany({
+    const candles = await prisma.prayerCandle.findMany({
         orderBy: { litAt: 'desc' },
         take: limit,
         skip: (page - 1) * limit,
@@ -367,4 +368,19 @@ export async function getCandlesForAdmin(page = 1, limit = 50) {
         // Ensure name is properly resolved
         displayName: c.isAnonymous ? 'Anonymous' : (c.name || 'Unknown')
     }));
+}
+
+export async function prayForCandle(candleId: string) {
+    try {
+        const candle = await prisma.prayerCandle.update({
+            where: { id: candleId },
+            data: {
+                prayerCount: { increment: 1 }
+            }
+        });
+        return { success: true, count: candle.prayerCount };
+    } catch (error) {
+        console.error('Error praying for candle:', error);
+        return { success: false };
+    }
 }

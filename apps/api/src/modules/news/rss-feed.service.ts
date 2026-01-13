@@ -60,7 +60,7 @@ export class RssFeedService {
             if (exists) continue;
 
             // Extract image from content or media
-            let imageUrl = null;
+            let imageUrl: string | null = null;
             if (item.enclosure?.url) {
                 imageUrl = item.enclosure.url;
             } else if (item['media:content']?.['$']?.url) {

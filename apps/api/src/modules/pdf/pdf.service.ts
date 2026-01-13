@@ -54,7 +54,10 @@ export class PdfService {
             const filename = `mass-card-${offering.orderNumber}.pdf`;
             const filepath = path.join(this.uploadsDir, filename);
 
-            await this.createMassCardPdf(offering, filepath);
+            await this.createMassCardPdf({
+                ...offering,
+                offeredBy: offering.offeredBy || undefined,
+            } as any, filepath);
 
             // Update offering with certificate URL
             const publicUrl = `/api/mass-offerings/cards/${filename}`;

@@ -19,7 +19,7 @@ export default function BouquetsPage() {
         { id: 'prayer', name: 'Prayers', price: 0, icon: BouquetHeart, description: 'Offer daily prayers', subLabel: 'Your prayer intentions' },
         { id: 'mass', name: 'Holy Mass', price: 1000, icon: Church, description: 'Have a Mass offered for your intention' },
         { id: 'rosary', name: 'Rosary', price: 500, icon: Star, description: 'Pray a Rosary for the recipient' },
-        { id: 'candle', name: 'Virtual Candle', price: 500, icon: Flower, description: 'Light a 5-day candle' },
+        { id: 'candle', name: 'Virtual Candle', price: 499, icon: Flower, description: 'Light a 7-day candle' },
     ];
     const [step, setStep] = useState(1);
     const [selection, setSelection] = useState<Record<string, number>>({

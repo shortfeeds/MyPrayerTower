@@ -28,9 +28,9 @@ interface OfferingOption {
 
 const ALL_OFFERINGS: OfferingOption[] = [
     // Quick Acts
-    { id: 'CANDLE_SMALL', name: 'Small Candle', icon: '🕯️', price: 1, category: 'quick' },
-    { id: 'CANDLE_MEDIUM', name: 'Candle', icon: '🕯️', price: 3, category: 'quick' },
-    { id: 'CANDLE_LARGE', name: 'Large Candle', icon: '🕯️', price: 5, category: 'quick' },
+    { id: 'CANDLE_SMALL', name: '3-Day Candle', icon: '🕯️', price: 2.49, category: 'quick' },
+    { id: 'CANDLE_MEDIUM', name: '7-Day Candle', icon: '🕯️', price: 4.99, category: 'quick' },
+    { id: 'CANDLE_LARGE', name: '14-Day Candle', icon: '🕯️', price: 9.99, category: 'quick' },
     { id: 'FLOWERS', name: 'Flowers', icon: '🌹', price: 3, category: 'quick' },
     { id: 'PRAYER_CARD', name: 'Prayer Card', icon: '🙏', price: 2, category: 'quick' },
     { id: 'FLORAL_BOUQUET', name: 'Floral Bouquet', icon: '💐', price: 7, category: 'quick' },

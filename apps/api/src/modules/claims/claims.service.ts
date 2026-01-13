@@ -168,7 +168,7 @@ export class ClaimsService {
     async getClaimStatus(claimId: string, userId: string) {
         const claim = await this.prisma.churchClaim.findFirst({
             where: { id: claimId, userId },
-            include: { church: true },
+            include: { Church: true },
         });
 
         if (!claim) {
@@ -182,7 +182,7 @@ export class ClaimsService {
     async getUserClaims(userId: string) {
         return this.prisma.churchClaim.findMany({
             where: { userId },
-            include: { church: true },
+            include: { Church: true },
             orderBy: { createdAt: 'desc' },
         });
     }

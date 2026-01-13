@@ -23,7 +23,23 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Content */}
+            {/* Mission Statement */}
+            <section className="py-16 bg-white dark:bg-black border-b border-gray-100 dark:border-gray-900">
+                <div className="container mx-auto px-4 max-w-4xl text-center">
+                    <div className="inline-flex items-center gap-2 text-gold-500 font-bold tracking-widest uppercase text-xs mb-4">
+                        <Star className="w-4 h-4" /> Our Mission
+                    </div>
+                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-gray-900 dark:text-white mb-8 leading-tight">
+                        "To illuminate the digital world with the light of faith, prayer, and authentic Catholic community."
+                    </h2>
+                    <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-serif italic">
+                        MyPrayerTower is a Catholic digital ministry dedicated to helping the faithful pray, connect, and grow.
+                        We are committed to authentic Catholic teaching, reverent spiritual practice, and the belief that prayer changes things.
+                    </p>
+                </div>
+            </section>
+
+            {/* Content (Existing) */}
             <section className="py-20 bg-white dark:bg-gray-900">
                 <div className="container mx-auto px-4">
                     {/* Mission Stats */}
@@ -113,6 +129,18 @@ export default function AboutPage() {
                                     </Link>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Theology Note */}
+                    <div className="max-w-2xl mx-auto text-center mt-20 pb-12">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                            * We humbly serve as a facilitator for your prayer life. We do not claim to guarantee spiritual outcomes, but we promise to unite your intentions with a believing community.
+                        </p>
+                        <div className="mt-4">
+                            <Link href="/guidelines" className="text-sm text-gold-500 hover:text-gold-400 font-medium">
+                                Read our Community Guidelines
+                            </Link>
                         </div>
                     </div>
                 </div>

@@ -6,12 +6,12 @@ export class UsersService {
     constructor(private prisma: PrismaService) { }
 
     async findById(id: string) {
-        return this.prisma.user.findUnique({
+        const user = await this.prisma.user.findUnique({
             where: { id },
-            include: { Church: true },
+            include: { homeChurch: true },
         });
         if (!user) return null;
-        return { ...user, homeChurch: user.Church };
+        return { ...user }; // homeChurch is already included as homeChurch property now
     }
 
     async findByEmail(email: string) {

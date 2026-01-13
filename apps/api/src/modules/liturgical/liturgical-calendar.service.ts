@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../../prisma/prisma.service';
 
-interface LiturgicalDay {
+export interface LiturgicalDay {
     date: string;
     season: string;
     season_week: number;

@@ -1,6 +1,6 @@
 import { Controller, Post, Body, UseGuards, Request, Get, BadRequestException } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { GooglePlayService } from './google-play.service';
+import { GooglePlayService, VerifyPurchaseResult } from './google-play.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
 interface VerifyGooglePurchaseDto {

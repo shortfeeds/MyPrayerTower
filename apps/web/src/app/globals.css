@@ -4,6 +4,64 @@
 
 /* Fonts are now self-hosted via next/font in layout.tsx */
 
+/* Google Translate Overrides */
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+.goog-te-gadget-icon {
+  display: none !important;
+}
+
+.goog-te-gadget-simple {
+  background-color: transparent !important;
+  border: none !important;
+  font-size: 0.875rem !important;
+  padding: 0 !important;
+  font-family: inherit !important;
+  cursor: pointer !important;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value {
+  color: #d1d5db !important; /* text-gray-300 */
+}
+
+.goog-te-gadget-simple:hover .goog-te-menu-value {
+  color: #ffffff !important;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value span {
+  text-decoration: none !important;
+  border: none !important;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value span:last-child {
+  display: none !important; /* Hide the arrow if possible, or style it */
+}
+
+/* Hide "Powered by Google" */
+.goog-tooltip,
+.goog-logo-link {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  color: transparent !important;
+  font-size: 0 !important;
+}
+
+/* Fix dropdown z-index */
+.goog-te-menu-frame {
+  z-index: 9999 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 0.75rem !important;
+}
+
+
 :root {
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;

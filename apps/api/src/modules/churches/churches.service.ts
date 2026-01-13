@@ -50,9 +50,9 @@ export class ChurchesService {
                 skip,
                 take: limit,
                 include: {
-                    diocese: true,
-                    images: { where: { isPrimary: true }, take: 1 },
-                    _count: { select: { members: true } },
+                    Diocese: true,
+                    ChurchImage: { where: { isPrimary: true }, take: 1 },
+                    _count: { select: { ChurchFollower: true } },
                 },
                 orderBy: { name: 'asc' },
             }),
@@ -91,15 +91,15 @@ export class ChurchesService {
         const church = await this.prisma.church.findUnique({
             where: { id },
             include: {
-                diocese: true,
-                images: { orderBy: { sortOrder: 'asc' } },
-                staff: { orderBy: { sortOrder: 'asc' } },
-                events: {
+                Diocese: true,
+                ChurchImage: { orderBy: { sortOrder: 'asc' } },
+                ChurchStaff: { orderBy: { sortOrder: 'asc' } },
+                ChurchEvent: {
                     where: { startDate: { gte: new Date() }, isPublished: true },
                     orderBy: { startDate: 'asc' },
                     take: 10,
                 },
-                _count: { select: { members: true } },
+                _count: { select: { ChurchFollower: true } },
             },
         });
 
@@ -118,10 +118,10 @@ export class ChurchesService {
         return this.prisma.church.findUnique({
             where: { slug },
             include: {
-                diocese: true,
-                images: { orderBy: { sortOrder: 'asc' } },
-                staff: { orderBy: { sortOrder: 'asc' } },
-                events: {
+                Diocese: true,
+                ChurchImage: { orderBy: { sortOrder: 'asc' } },
+                ChurchStaff: { orderBy: { sortOrder: 'asc' } },
+                ChurchEvent: {
                     where: { startDate: { gte: new Date() }, isPublished: true },
                     orderBy: { startDate: 'asc' },
                     take: 10,

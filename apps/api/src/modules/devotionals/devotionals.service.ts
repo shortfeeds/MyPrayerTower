@@ -108,7 +108,7 @@ export class DevotionalsService {
         const day = date.getDate();
 
         const saint = await this.prisma.saint.findFirst({
-            where: { feastMonth: month, feastDay: day },
+            where: { feastMonth: month, feastDayOfMonth: day },
         });
 
         if (!saint) {
@@ -121,13 +121,13 @@ export class DevotionalsService {
                 reflection: 'Let us begin this day by placing our trust in God, knowing that He guides our steps.',
                 closingPrayer: 'Lord, guide me through this day. Help me to trust in Your plan. Amen.',
                 publishDate: date,
-            };
+            } as any;
         }
 
         return {
             id: `saint-${saint.id}`,
             title: `Feast of ${saint.name}`,
-            scripture: saint.patronOf || 'Saints show us the path to holiness.',
+            scripture: saint.patronOf?.join(', ') || 'Saints show us the path to holiness.',
             scriptureReference: 'See also: Hebrews 12:1',
             reflection: saint.biography?.substring(0, 500) || `Today we celebrate ${saint.name}.`,
             closingPrayer: `Saint ${saint.name}, pray for us that we may follow your example of faith. Amen.`,
@@ -135,9 +135,9 @@ export class DevotionalsService {
             saint: {
                 id: saint.id,
                 name: saint.name,
-                feastDay: `${saint.feastMonth}/${saint.feastDay}`,
+                feastDay: `${saint.feastMonth}/${saint.feastDayOfMonth}`,
             },
-        };
+        } as any;
     }
 
     /**

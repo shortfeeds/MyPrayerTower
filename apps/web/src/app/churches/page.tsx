@@ -79,7 +79,8 @@ export default function ChurchesPage() {
     // Active filters - Default denomination REMOVED
     const [selectedCountry, setSelectedCountry] = useState('');
     const [selectedType, setSelectedType] = useState('');
-    const [selectedDenomination, setSelectedDenomination] = useState('');
+
+    const [selectedDenomination, setSelectedDenomination] = useState('Catholic'); // Default to Catholic
 
     // Claim mode logic
     const searchParams = useSearchParams();
@@ -210,7 +211,7 @@ export default function ChurchesPage() {
     const clearFilters = () => {
         setSelectedCountry('');
         setSelectedType('');
-        setSelectedDenomination('');
+        setSelectedDenomination('Catholic'); // Reset to Catholic default
         setSearchQuery('');
     };
 
@@ -361,8 +362,8 @@ export default function ChurchesPage() {
                                                                     <button
                                                                         onClick={(e) => handleFollow(e, church)}
                                                                         className={`p-1.5 rounded-full transition-colors ${church.isFollowed
-                                                                                ? 'text-blue-600 bg-blue-50 hover:bg-blue-100'
-                                                                                : 'text-slate-400 hover:text-blue-600 hover:bg-slate-50'
+                                                                            ? 'text-blue-600 bg-blue-50 hover:bg-blue-100'
+                                                                            : 'text-slate-400 hover:text-blue-600 hover:bg-slate-50'
                                                                             }`}
                                                                         title={church.isFollowed ? "Unfollow" : "Follow Church"}
                                                                     >

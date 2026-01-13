@@ -15,10 +15,10 @@ export interface PrayerCandle {
 export class PrayerCandleService {
     // Candle colors and meanings
     readonly CANDLE_COLORS = {
-        white: { name: 'White', meaning: 'Purity, Peace, General Intentions', duration: 24 },
-        red: { name: 'Red', meaning: 'Holy Spirit, Healing, Love', duration: 48 },
-        blue: { name: 'Blue', meaning: 'Blessed Mother, Protection', duration: 72 },
-        gold: { name: 'Gold', meaning: 'Saints, Thanksgiving', duration: 168 }, // 7 days
+        white: { name: 'White', meaning: 'Purity, Peace, General Intentions', duration: 24, durationEnum: 'ONE_DAY', amount: 1000 },
+        red: { name: 'Red', meaning: 'Holy Spirit, Healing, Love', duration: 48, durationEnum: 'THREE_DAYS', amount: 1000 },
+        blue: { name: 'Blue', meaning: 'Blessed Mother, Protection', duration: 72, durationEnum: 'THREE_DAYS', amount: 1000 },
+        gold: { name: 'Gold', meaning: 'Saints, Thanksgiving', duration: 168, durationEnum: 'SEVEN_DAYS', amount: 2500 }, // Premium price for gold
     };
 
     constructor(private prisma: PrismaService) { }
@@ -39,16 +39,20 @@ export class PrayerCandleService {
                 userId,
                 intention: data.intention,
                 color,
+                amount: this.CANDLE_COLORS[color].amount,
+                duration: this.CANDLE_COLORS[color].durationEnum as any,
                 expiresAt,
             },
             include: {
-                user: { select: { firstName: true, lastName: true } },
+                creator: { select: { firstName: true, lastName: true } },
             },
         });
 
+        const candleResult = candle as any;
+
         return {
-            ...candle,
-            userName: `${candle.user.firstName} ${candle.user.lastName?.charAt(0) || ''}.`,
+            ...candleResult,
+            userName: candleResult.creator ? `${candleResult.creator.firstName} ${candleResult.creator.lastName?.charAt(0) || ''}.` : 'Anonymous',
             colorInfo: this.CANDLE_COLORS[color],
         };
     }
@@ -62,15 +66,15 @@ export class PrayerCandleService {
                 expiresAt: { gt: new Date() },
             },
             include: {
-                user: { select: { firstName: true, lastName: true } },
+                creator: { select: { firstName: true, lastName: true } },
             },
             orderBy: { createdAt: 'desc' },
             take: limit,
         });
 
-        return candles.map(candle => ({
+        return (candles as any[]).map(candle => ({
             id: candle.id,
-            userName: `${candle.user.firstName} ${candle.user.lastName?.charAt(0) || ''}.`,
+            userName: candle.creator ? `${candle.creator.firstName} ${candle.creator.lastName?.charAt(0) || ''}.` : 'Anonymous',
             intention: candle.intention,
             color: candle.color,
             litAt: candle.createdAt,

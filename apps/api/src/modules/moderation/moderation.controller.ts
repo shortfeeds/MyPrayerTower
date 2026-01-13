@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
-import { ContentModerationService } from './content-moderation.service';
+import { ContentModerationService, ModerationResult } from './content-moderation.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('moderation')

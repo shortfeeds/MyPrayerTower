@@ -73,7 +73,7 @@ const DECEASED_INTENTIONS = [
 
 // Add-ons
 const ADDONS = [
-    { id: 'candle', name: '🕯️ Virtual Candle', price: 500, description: '7-day candle on Prayer Wall' },
+    { id: 'candle', name: '🕯️ Virtual Candle', price: 499, description: '7-day candle on Prayer Wall' },
     { id: 'printedCard', name: '📮 Printed Mass Card', price: 1000, description: 'Beautiful card mailed to you' },
     { id: 'framedCertificate', name: '🖼️ Framed Certificate', price: 3500, description: 'Premium framed memorial' },
 ];

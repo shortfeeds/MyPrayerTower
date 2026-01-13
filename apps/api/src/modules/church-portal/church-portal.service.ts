@@ -260,7 +260,7 @@ export class ChurchPortalService {
         const [followers, total] = await Promise.all([
             this.prisma.churchFollower.findMany({
                 where: { churchId },
-                include: { user: { select: { id: true, displayName: true, avatarUrl: true } } },
+                include: { User: { select: { id: true, displayName: true, avatarUrl: true } } },
                 skip,
                 take: limit,
                 orderBy: { followedAt: 'desc' }
@@ -305,7 +305,6 @@ export class ChurchPortalService {
                 churchId,
                 userId: targetUserId,
                 role,
-                invitedBy: userId,
             }
         });
     }

@@ -5,14 +5,16 @@ import Link from 'next/link';
 import {
     Flame, Sun, Moon, Star, BookOpen, Heart,
     ChevronRight, Calendar, Church, Sparkles,
-    Play, Clock, Quote, Book
+    Play, Clock, Quote, Book, Settings
 } from 'lucide-react';
+import { ReminderPreferences } from '@/components/dashboard/ReminderPreferences';
 
 interface DailyData {
     saint?: { name: string; feastDay: string; slug: string };
     reading?: { title: string; reference: string };
     quote?: { text: string; author: string };
     streak?: { current: number; prayedToday: boolean; longest: number };
+    memorials?: Array<{ name: string; relation: string; anniversary: string }>;
 }
 
 /**
@@ -22,6 +24,8 @@ interface DailyData {
 export function PersonalizedHome({ userId }: { userId?: string }) {
     const [data, setData] = useState<DailyData>({});
     const [loading, setLoading] = useState(true);
+    const [intentionTab, setIntentionTab] = useState<'active' | 'answered'>('active');
+    const [showSettings, setShowSettings] = useState(false);
 
     // Get time-based greeting
     const getGreeting = () => {
@@ -45,7 +49,11 @@ export function PersonalizedHome({ userId }: { userId?: string }) {
                 saint: saint?.saint,
                 reading: reading?.reading,
                 quote: { text: "The Lord is my shepherd; I shall not want.", author: "Psalm 23:1" },
-                streak: { current: 7, prayedToday: true, longest: 14 }
+                streak: { current: 7, prayedToday: true, longest: 14 },
+                memorials: [
+                    { name: "Maria Garcia", relation: "Grandmother", anniversary: "Oct 12" },
+                    { name: "John Smith", relation: "Friend", anniversary: "Mar 15" }
+                ]
             });
             setLoading(false);
         });
@@ -82,9 +90,18 @@ export function PersonalizedHome({ userId }: { userId?: string }) {
                             <Flame className={`w-5 h-5 ${data.streak?.prayedToday ? 'text-white fill-current' : 'text-white/50'}`} />
                             <span className="text-white font-bold text-lg">{data.streak?.current || 0}</span>
                         </div>
-                        <span className="text-white/40 text-xs mt-1">day streak</span>
+                        <span className="text-white/40 text-xs mt-1">days of prayer</span>
                     </div>
+
+                    <button
+                        onClick={() => setShowSettings(!showSettings)}
+                        className="ml-4 p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-white/60 hover:text-white"
+                    >
+                        <Settings className="w-5 h-5" />
+                    </button>
                 </div>
+
+                {showSettings && <ReminderPreferences />}
 
                 {/* Daily Inspiration Quote */}
                 <div className="bg-gradient-to-r from-gold-500/20 to-amber-500/10 rounded-2xl p-5 border border-gold-500/20 backdrop-blur-md">
@@ -211,32 +228,93 @@ export function PersonalizedHome({ userId }: { userId?: string }) {
 
                 {/* Right Column: Personal State */}
                 <div className="space-y-4">
-                    {/* My Intentions */}
+                    {/* My Intentions & Answered Prayers */}
                     <div className="bg-white/5 rounded-3xl p-6 border border-white/10 shadow-xl">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-white font-semibold flex items-center gap-2">
-                                <Heart className="w-4 h-4 text-rose-400" /> My Intentions
+                                <Heart className="w-4 h-4 text-rose-400" /> My Prayer Intentions
                             </h3>
                             <button className="text-xs text-rose-300 hover:text-rose-200 bg-rose-500/10 px-2 py-1 rounded-lg border border-rose-500/20">
                                 + Add New
                             </button>
                         </div>
+
+                        {/* Tabs */}
+                        <div className="flex gap-4 border-b border-white/10 mb-4 pb-2">
+                            <button
+                                onClick={() => setIntentionTab('active')}
+                                className={`text-sm font-medium pb-1 transition-colors relative ${intentionTab === 'active' ? 'text-white' : 'text-white/40 hover:text-white/60'}`}
+                            >
+                                Active
+                                {intentionTab === 'active' && <div className="absolute bottom-[-9px] left-0 right-0 h-0.5 bg-rose-500 rounded-full" />}
+                            </button>
+                            <button
+                                onClick={() => setIntentionTab('answered')}
+                                className={`text-sm font-medium pb-1 transition-colors relative ${intentionTab === 'answered' ? 'text-emerald-300' : 'text-white/40 hover:text-white/60'}`}
+                            >
+                                Answered
+                                {intentionTab === 'answered' && <div className="absolute bottom-[-9px] left-0 right-0 h-0.5 bg-emerald-500 rounded-full" />}
+                            </button>
+                        </div>
+
                         <div className="space-y-3">
-                            {[
-                                { text: "For my grandmother's health", date: 'Added 2 days ago' },
-                                { text: "For peace in my family", date: 'Added 5 days ago' },
-                                { text: "For guidance in my career", date: 'Added 1 week ago' }
-                            ].map((intention, i) => (
-                                <div key={i} className="flex gap-3 items-start p-3 rounded-xl bg-gradient-to-br from-rose-500/5 to-rose-900/5 border border-rose-500/10 hover:border-rose-500/30 transition-all">
-                                    <div className="mt-1 w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]" />
-                                    <div>
-                                        <p className="text-white/90 text-sm italic">"{intention.text}"</p>
-                                        <p className="text-white/30 text-[10px] mt-1">{intention.date}</p>
+                            {intentionTab === 'active' ? (
+                                [
+                                    { text: "For my grandmother's health", date: 'Added 2 days ago' },
+                                    { text: "For peace in my family", date: 'Added 5 days ago' },
+                                    { text: "For guidance in my career", date: 'Added 1 week ago' }
+                                ].map((intention, i) => (
+                                    <div key={i} className="flex gap-3 items-start p-3 rounded-xl bg-gradient-to-br from-rose-500/5 to-rose-900/5 border border-rose-500/10 hover:border-rose-500/30 transition-all">
+                                        <div className="mt-1 w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]" />
+                                        <div>
+                                            <p className="text-white/90 text-sm italic">"{intention.text}"</p>
+                                            <p className="text-white/30 text-[10px] mt-1">{intention.date}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                [
+                                    { text: "Recovery from surgery", date: 'Answered last month' },
+                                    { text: "Safe travels", date: 'Answered in Dec' }
+                                ].map((intention, i) => (
+                                    <div key={i} className="flex gap-3 items-start p-3 rounded-xl bg-gradient-to-br from-emerald-500/5 to-emerald-900/5 border border-emerald-500/10 hover:border-emerald-500/30 transition-all">
+                                        <div className="mt-1 flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400">
+                                            <Sparkles className="w-2.5 h-2.5" />
+                                        </div>
+                                        <div>
+                                            <p className="text-white/90 text-sm italic">"{intention.text}"</p>
+                                            <p className="text-emerald-400/60 text-[10px] mt-1">{intention.date}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
+
+                    {/* Memorials I'm Remembering */}
+                    {data.memorials && (
+                        <div className="bg-white/5 rounded-3xl p-6 border border-white/10">
+                            <h3 className="text-white font-semibold flex items-center gap-2 mb-4">
+                                <Star className="w-4 h-4 text-purple-300" /> Memorials
+                            </h3>
+                            <div className="space-y-3">
+                                {data.memorials.map((memorial, i) => (
+                                    <Link key={i} href="/memorials" className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-300 font-serif">
+                                                {memorial.name[0]}
+                                            </div>
+                                            <div>
+                                                <div className="text-white font-medium text-sm">{memorial.name}</div>
+                                                <div className="text-white/40 text-xs">{memorial.relation} • {memorial.anniversary}</div>
+                                            </div>
+                                        </div>
+                                        <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/60" />
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Active Candles */}
                     <div className="bg-gradient-to-br from-amber-900/20 to-orange-900/20 rounded-3xl p-6 border border-amber-500/20">
@@ -265,9 +343,9 @@ export function PersonalizedHome({ userId }: { userId?: string }) {
                         </div>
                     </div>
 
-                    {/* Weekly Streak Calendar (Moved here) */}
+                    {/* Prayer Journey (Formerly Weekly Streak) */}
                     <div className="bg-white/5 rounded-3xl p-6 border border-white/10">
-                        <h2 className="text-white/80 font-semibold text-lg mb-4">Weekly Progress</h2>
+                        <h2 className="text-white/80 font-semibold text-lg mb-4">Prayer Journey</h2>
                         <div className="flex justify-between items-center px-2">
                             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => {
                                 const isToday = i === new Date().getDay();

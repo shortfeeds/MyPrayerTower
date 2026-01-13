@@ -42,7 +42,7 @@ export class EmailService {
     }
 
     try {
-      const msg: sgMail.MailDataRequired = {
+      const msg: any = {
         to: options.to,
         from: { email: this.fromEmail, name: this.fromName },
         subject: options.subject,

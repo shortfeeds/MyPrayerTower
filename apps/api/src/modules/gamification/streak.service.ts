@@ -122,7 +122,7 @@ export class StreakService {
         // Get prayer counts
         const prayerCount = await this.prisma.prayerRequest.count({ where: { userId } });
         const prayedForCount = await this.prisma.prayerAction.count({
-            where: { userId, actionType: 'PRAYED' }
+            where: { userId }
         });
         const followedChurches = await this.prisma.churchFollower.count({ where: { userId } });
 

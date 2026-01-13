@@ -91,9 +91,9 @@ export class ChurchesSortedService {
             const fullChurches = await this.prisma.church.findMany({
                 where: { id: { in: churchIds } },
                 include: {
-                    diocese: true,
-                    images: { where: { isPrimary: true }, take: 1 },
-                    _count: { select: { members: true } },
+                    Diocese: true,
+                    ChurchImage: { where: { isPrimary: true }, take: 1 },
+                    _count: { select: { ChurchFollower: true } },
                 }
             });
 
@@ -130,9 +130,9 @@ export class ChurchesSortedService {
                 take: limit,
                 orderBy,
                 include: {
-                    diocese: true,
-                    images: { where: { isPrimary: true }, take: 1 },
-                    _count: { select: { members: true } },
+                    Diocese: true,
+                    ChurchImage: { where: { isPrimary: true }, take: 1 },
+                    _count: { select: { ChurchFollower: true } },
                 },
             }),
             this.prisma.church.count({ where }),

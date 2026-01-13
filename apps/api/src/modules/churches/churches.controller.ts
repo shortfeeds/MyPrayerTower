@@ -1,3 +1,5 @@
+import { Controller, Get, Query, Param } from '@nestjs/common';
+import { ChurchesService } from './churches.service';
 import { ChurchesSortedService } from './churches-sorted.service';
 
 @Controller('churches')

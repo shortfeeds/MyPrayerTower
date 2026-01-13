@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { PrismaService } from '../../prisma/prisma.service';
+import { SubscriptionTier } from '@prisma/client';
 
 export interface CreateSubscriptionDto {
     userId: string;
@@ -199,9 +200,9 @@ export class PaymentService {
 
         if (!userId || !planId) return;
 
-        const tier = planId.includes('premium') ? 'premium'
-            : planId.includes('plus') ? 'plus'
-                : 'free';
+        const tier = planId.includes('premium') ? SubscriptionTier.PREMIUM
+            : planId.includes('plus') ? SubscriptionTier.PLUS
+                : SubscriptionTier.FREE;
 
         await this.prisma.user.update({
             where: { id: userId },
@@ -241,7 +242,7 @@ export class PaymentService {
             await this.prisma.user.update({
                 where: { id: user.id },
                 data: {
-                    subscriptionTier: 'free',
+                    subscriptionTier: SubscriptionTier.FREE,
                     subscriptionStatus: 'canceled',
                 },
             });

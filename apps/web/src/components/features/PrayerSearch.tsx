@@ -72,9 +72,9 @@ export function PrayerFilters() {
                 const isActive = currentDuration === dur;
                 let label = '';
                 switch (dur) {
-                    case 'short': label = '< 1 min'; break;
-                    case 'medium': label = '1-5 mins'; break;
-                    case 'long': label = '5+ mins'; break;
+                    case 'short': label = 'Short (< 1 min)'; break;
+                    case 'medium': label = 'Standard (1-5 min)'; break;
+                    case 'long': label = 'Deep Focus (5+ min)'; break;
                 }
 
                 return (
@@ -82,8 +82,8 @@ export function PrayerFilters() {
                         key={dur}
                         onClick={() => updateDuration(isActive ? null : dur)}
                         className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all ${isActive
-                                ? 'bg-white text-blue-600 border-white shadow-lg scale-105'
-                                : 'bg-white/10 text-blue-50 border-white/20 hover:bg-white/20'
+                            ? 'bg-white text-blue-600 border-white shadow-lg scale-105'
+                            : 'bg-white/10 text-blue-50 border-white/20 hover:bg-white/20'
                             }`}
                     >
                         {label}

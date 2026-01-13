@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, ChevronRight, Star, Heart, Building2, Flame, ArrowUpRight, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { Search, X, Star, Heart, Building2, Flame, ArrowUpRight, Loader2, BookOpen, Cross } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface SearchResult {
@@ -11,7 +10,6 @@ interface SearchResult {
     title: string;
     subtitle?: string;
     url: string;
-    icon?: any;
 }
 
 interface GlobalSearchProps {
@@ -31,6 +29,10 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
         if (isOpen && inputRef.current) {
             setTimeout(() => inputRef.current?.focus(), 100);
         }
+        if (!isOpen) {
+            setQuery('');
+            setResults([]);
+        }
     }, [isOpen]);
 
     // Handle Esc key
@@ -39,45 +41,120 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
             if (e.key === 'Escape') onClose();
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
-                onClose(); // Toggle logic handling should be in parent or here effectively
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onClose]);
 
-    // Mock Search Logic
+    // Real Search Logic - Fetch from APIs
     useEffect(() => {
-        if (!query.trim()) {
+        if (!query.trim() || query.length < 2) {
             setResults([]);
             return;
         }
 
+        const controller = new AbortController();
         setLoading(true);
-        const timer = setTimeout(() => {
-            // Mock Data
-            const mockResults: SearchResult[] = [
-                { id: '1', type: 'prayer', title: 'Hail Mary', subtitle: 'Common Prayer', url: '/prayers/hail-mary', icon: Heart },
-                { id: '2', type: 'prayer', title: 'Our Father', subtitle: 'Common Prayer', url: '/prayers/our-father', icon: Heart },
-                { id: '3', type: 'saint', title: 'St. Michael the Archangel', subtitle: 'Feast Day: Sept 29', url: '/saints/st-michael', icon: Star },
-                { id: '4', type: 'saint', title: 'St. Francis of Assisi', subtitle: 'Feast Day: Oct 4', url: '/saints/st-francis', icon: Star },
-                { id: '5', type: 'church', title: 'St. Patrick\'s Cathedral', subtitle: 'New York, NY', url: '/churches/st-patricks-nyc', icon: Building2 },
-            ];
 
-            const filtered = mockResults.filter(item =>
-                item.title.toLowerCase().includes(query.toLowerCase()) ||
-                item.type.includes(query.toLowerCase())
-            );
-            setResults(filtered);
-            setLoading(false);
-        }, 500);
+        const searchAll = async () => {
+            try {
+                // Fetch from all three APIs in parallel
+                const [prayersRes, saintsRes, churchesRes] = await Promise.allSettled([
+                    fetch(`/api/prayers?search=${encodeURIComponent(query)}&limit=5`, { signal: controller.signal }),
+                    fetch(`/api/saints?search=${encodeURIComponent(query)}&limit=5`, { signal: controller.signal }),
+                    fetch(`/api/churches?search=${encodeURIComponent(query)}&limit=5`, { signal: controller.signal }),
+                ]);
 
-        return () => clearTimeout(timer);
+                const allResults: SearchResult[] = [];
+
+                // Process Prayers
+                if (prayersRes.status === 'fulfilled' && prayersRes.value.ok) {
+                    const data = await prayersRes.value.json();
+                    if (data.prayers) {
+                        data.prayers.forEach((p: any) => {
+                            allResults.push({
+                                id: p.id,
+                                type: 'prayer',
+                                title: p.title,
+                                subtitle: p.categoryName || 'Prayer',
+                                url: `/prayers/${p.slug || p.id}`
+                            });
+                        });
+                    }
+                }
+
+                // Process Saints
+                if (saintsRes.status === 'fulfilled' && saintsRes.value.ok) {
+                    const data = await saintsRes.value.json();
+                    if (data.saints) {
+                        data.saints.forEach((s: any) => {
+                            allResults.push({
+                                id: s.id,
+                                type: 'saint',
+                                title: s.name,
+                                subtitle: s.feastDay ? `Feast: ${s.feastDay}` : 'Saint',
+                                url: `/saints/${s.slug || s.id}`
+                            });
+                        });
+                    }
+                }
+
+                // Process Churches
+                if (churchesRes.status === 'fulfilled' && churchesRes.value.ok) {
+                    const data = await churchesRes.value.json();
+                    if (data.churches) {
+                        data.churches.forEach((c: any) => {
+                            allResults.push({
+                                id: c.id,
+                                type: 'church',
+                                title: c.name,
+                                subtitle: c.city ? `${c.city}, ${c.country}` : c.country || 'Church',
+                                url: `/churches/${c.slug || c.id}`
+                            });
+                        });
+                    }
+                }
+
+                setResults(allResults.slice(0, 12)); // Max 12 results
+            } catch (err: any) {
+                if (err.name !== 'AbortError') {
+                    console.error('Search error:', err);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const timer = setTimeout(searchAll, 300); // Debounce
+
+        return () => {
+            clearTimeout(timer);
+            controller.abort();
+        };
     }, [query]);
 
     const handleSelect = (url: string) => {
         router.push(url);
         onClose();
+    };
+
+    const getIconForType = (type: string) => {
+        switch (type) {
+            case 'prayer': return Heart;
+            case 'saint': return Star;
+            case 'church': return Building2;
+            default: return BookOpen;
+        }
+    };
+
+    const getColorForType = (type: string) => {
+        switch (type) {
+            case 'prayer': return 'bg-rose-100 text-rose-600 dark:bg-rose-900/30';
+            case 'saint': return 'bg-purple-100 text-purple-600 dark:bg-purple-900/30';
+            case 'church': return 'bg-blue-100 text-blue-600 dark:bg-blue-900/30';
+            default: return 'bg-gray-100 text-gray-600';
+        }
     };
 
     if (!isOpen) return null;
@@ -114,35 +191,47 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                     </div>
                 </div>
 
-                {/* Results / Empty State */}
+                {/* Results / Quick Links */}
                 <div className="max-h-[60vh] overflow-y-auto">
-                    {query.trim() === '' ? (
+                    {query.trim().length < 2 ? (
                         <div className="p-6">
-                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Trending Searches</h3>
+                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Quick Links</h3>
                             <div className="grid grid-cols-2 gap-3">
-                                <button onClick={() => handleSelect('/prayers/rosary')} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left group">
-                                    <div className="p-2 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-lg group-hover:bg-white dark:group-hover:bg-rose-900 transition-colors">
+                                <button onClick={() => handleSelect('/prayers')} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left group">
+                                    <div className="p-2 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-lg">
                                         <Heart className="w-4 h-4" />
                                     </div>
-                                    <span className="font-medium text-gray-700 dark:text-gray-300">Holy Rosary</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">Prayer Library</span>
                                 </button>
                                 <button onClick={() => handleSelect('/candles')} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left group">
-                                    <div className="p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-lg group-hover:bg-white dark:group-hover:bg-amber-900 transition-colors">
+                                    <div className="p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-lg">
                                         <Flame className="w-4 h-4" />
                                     </div>
                                     <span className="font-medium text-gray-700 dark:text-gray-300">Light a Candle</span>
                                 </button>
                                 <button onClick={() => handleSelect('/saints')} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left group">
-                                    <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-lg group-hover:bg-white dark:group-hover:bg-purple-900 transition-colors">
+                                    <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-lg">
                                         <Star className="w-4 h-4" />
                                     </div>
-                                    <span className="font-medium text-gray-700 dark:text-gray-300">Saint of the Day</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">All Saints</span>
                                 </button>
                                 <button onClick={() => handleSelect('/churches')} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left group">
-                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg group-hover:bg-white dark:group-hover:bg-blue-900 transition-colors">
+                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
                                         <Building2 className="w-4 h-4" />
                                     </div>
                                     <span className="font-medium text-gray-700 dark:text-gray-300">Find a Parish</span>
+                                </button>
+                                <button onClick={() => handleSelect('/mass-offerings')} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left group">
+                                    <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-lg">
+                                        <Cross className="w-4 h-4" />
+                                    </div>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">Mass Offerings</span>
+                                </button>
+                                <button onClick={() => handleSelect('/donate')} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left group">
+                                    <div className="p-2 bg-gold-100 dark:bg-gold-900/30 text-gold-600 rounded-lg">
+                                        <Heart className="w-4 h-4" />
+                                    </div>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">Donate</span>
                                 </button>
                             </div>
                         </div>
@@ -150,38 +239,39 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                         <div className="p-2">
                             {results.length > 0 ? (
                                 <div className="space-y-1">
-                                    {results.map((result) => (
-                                        <button
-                                            key={result.id}
-                                            onClick={() => handleSelect(result.url)}
-                                            className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left group"
-                                        >
-                                            <div className={`p-2 rounded-lg ${result.type === 'prayer' ? 'bg-rose-100 text-rose-600' :
-                                                    result.type === 'saint' ? 'bg-purple-100 text-purple-600' :
-                                                        'bg-blue-100 text-blue-600'
-                                                }`}>
-                                                {result.icon && <result.icon className="w-5 h-5" />}
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                                                    {result.title}
-                                                    <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">
-                                                        {result.type}
-                                                    </span>
+                                    {results.map((result) => {
+                                        const Icon = getIconForType(result.type);
+                                        return (
+                                            <button
+                                                key={`${result.type}-${result.id}`}
+                                                onClick={() => handleSelect(result.url)}
+                                                className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left group"
+                                            >
+                                                <div className={`p-2 rounded-lg ${getColorForType(result.type)}`}>
+                                                    <Icon className="w-5 h-5" />
                                                 </div>
-                                                {result.subtitle && (
-                                                    <div className="text-sm text-gray-500 dark:text-gray-400">{result.subtitle}</div>
-                                                )}
-                                            </div>
-                                            <ArrowUpRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
-                                        </button>
-                                    ))}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="font-semibold text-gray-900 dark:text-white flex items-center gap-2 truncate">
+                                                        {result.title}
+                                                        <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 font-medium shrink-0">
+                                                            {result.type}
+                                                        </span>
+                                                    </div>
+                                                    {result.subtitle && (
+                                                        <div className="text-sm text-gray-500 dark:text-gray-400 truncate">{result.subtitle}</div>
+                                                    )}
+                                                </div>
+                                                <ArrowUpRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-all shrink-0" />
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             ) : (
                                 !loading && (
                                     <div className="py-12 text-center text-gray-500">
                                         <Search className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                                         <p>No results found for "{query}"</p>
+                                        <p className="text-sm mt-2">Try searching for prayers, saints, or churches</p>
                                     </div>
                                 )
                             )}
@@ -195,7 +285,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                         Press <kbd className="font-sans px-1.5 py-0.5 rounded bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 mx-1">Esc</kbd> to close
                     </div>
                     <div>
-                        MyPrayerTower Global Search
+                        MyPrayerTower Search
                     </div>
                 </div>
             </div>

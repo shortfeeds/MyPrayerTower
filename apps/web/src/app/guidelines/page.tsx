@@ -1,208 +1,119 @@
-import { Metadata } from 'next';
-import { Heart, MessageCircle, Users, AlertTriangle, Shield, ThumbsUp, ThumbsDown, Ban } from 'lucide-react';
+import { Shield, Heart, AlertCircle, CheckCircle2, Flag } from 'lucide-react';
 import Link from 'next/link';
 
-export const metadata: Metadata = {
-    title: 'Community Guidelines | MyPrayerTower',
-    description: 'Community Guidelines for MyPrayerTower - Rules for respectful and faith-filled interaction in our Catholic community.',
-};
-
-export default function CommunityGuidelinesPage() {
-    const lastUpdated = 'January 5, 2026';
-
+export default function GuidelinesPage() {
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-gray-50 dark:bg-black">
             {/* Header */}
-            <div className="bg-gradient-to-br from-sacred-700 to-sacred-800 text-white py-16">
+            <div className="bg-primary-950 text-white py-16">
                 <div className="container mx-auto px-4 text-center">
-                    <Users className="w-16 h-16 mx-auto mb-4 opacity-80" />
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Community Guidelines</h1>
-                    <p className="text-sacred-100 max-w-2xl mx-auto">
-                        Our community is built on faith, respect, and love. These guidelines help us create a welcoming space for all Catholics and those interested in the faith.
+                    <div className="inline-flex items-center justify-center p-3 bg-white/10 rounded-2xl mb-6 backdrop-blur-sm">
+                        <Shield className="w-8 h-8 text-gold-400" />
+                    </div>
+                    <h1 className="text-3xl md:text-5xl font-serif font-bold mb-4">Community Guidelines</h1>
+                    <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+                        Maintaining a sacred, safe, and reverent space for prayer and spiritual growth.
                     </p>
-                    <p className="text-sm text-sacred-200 mt-4">Last Updated: {lastUpdated}</p>
                 </div>
             </div>
 
-            {/* Content */}
             <div className="container mx-auto px-4 py-12 max-w-4xl">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 md:p-12 space-y-8">
+                {/* Introduction */}
+                <div className="prose prose-lg dark:prose-invert max-w-none mb-12">
+                    <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed text-center">
+                        MyPrayerTower is a Catholic ministry committed to authentic faith and charity.
+                        We welcome believers from all walks of life to join us in prayer. To preserve the spiritual integrity of our community,
+                        we uphold the following principles for all content shared on our platform.
+                    </p>
+                </div>
 
-                    {/* Our Mission */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <div className="grid md:grid-cols-2 gap-8 mb-16">
+                    {/* Prayer Requests */}
+                    <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <div className="flex items-center gap-3 mb-6">
                             <Heart className="w-6 h-6 text-rose-500" />
-                            Our Mission
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            MyPrayerTower is a community of Catholics united in prayer. We aim to support each other's spiritual journey, share prayer intentions, and grow closer to God together. Our community is grounded in the teachings of the Catholic Church and the love of Christ.
-                        </p>
-                    </section>
-
-                    {/* Core Values */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Core Values</h2>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div className="p-4 bg-sacred-50 dark:bg-sacred-900/20 rounded-xl">
-                                <h3 className="font-bold text-sacred-700 dark:text-sacred-400 mb-2">🙏 Faith</h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Rooted in Catholic tradition and open to all seeking God</p>
-                            </div>
-                            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                                <h3 className="font-bold text-blue-700 dark:text-blue-400 mb-2">💙 Charity</h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Treating all with love, compassion, and understanding</p>
-                            </div>
-                            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                                <h3 className="font-bold text-purple-700 dark:text-purple-400 mb-2">🤝 Respect</h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Honoring the dignity of every person as a child of God</p>
-                            </div>
-                            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                                <h3 className="font-bold text-green-700 dark:text-green-400 mb-2">🌟 Hope</h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Encouraging and uplifting one another in times of struggle</p>
-                            </div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Prayer Requests</h2>
                         </div>
-                    </section>
-
-                    {/* Do's */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <ThumbsUp className="w-6 h-6 text-green-500" />
-                            We Encourage
-                        </h2>
-                        <ul className="space-y-3 text-gray-600 dark:text-gray-400">
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Sharing prayer intentions and praying for others</span>
+                        <ul className="space-y-4">
+                            <li className="flex gap-3">
+                                <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                <span className="text-gray-600 dark:text-gray-300">
+                                    <strong>Genuine Intentions:</strong> Prayers should be sincere requests for grace, healing, guidance, or thanksgiving.
+                                </span>
                             </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Offering words of encouragement and support</span>
+                            <li className="flex gap-3">
+                                <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                <span className="text-gray-600 dark:text-gray-300">
+                                    <strong>Respectful Language:</strong> Use reverent and charitable language suitable for a prayer wall.
+                                </span>
                             </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Sharing testimonies of faith (with appropriate discretion)</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Asking questions about the faith respectfully</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Reporting content that violates these guidelines</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Being patient and understanding with newcomers</span>
+                            <li className="flex gap-3">
+                                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                                <span className="text-gray-600 dark:text-gray-300">
+                                    <strong>No Political Statements:</strong> Prayers used as vehicles for political campaigning or divisive rhetoric will be removed.
+                                </span>
                             </li>
                         </ul>
-                    </section>
+                    </div>
 
-                    {/* Don'ts */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <ThumbsDown className="w-6 h-6 text-red-500" />
-                            We Prohibit
-                        </h2>
-                        <ul className="space-y-3 text-gray-600 dark:text-gray-400">
-                            <li className="flex items-start gap-2">
-                                <span className="text-red-500">✗</span>
-                                <span>Hate speech, discrimination, or harassment of any kind</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-red-500">✗</span>
-                                <span>Content that contradicts Catholic moral teaching</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-red-500">✗</span>
-                                <span>Spam, self-promotion, or commercial solicitation</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-red-500">✗</span>
-                                <span>Sharing personal information of others without consent</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-red-500">✗</span>
-                                <span>Political propaganda or divisive content</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-red-500">✗</span>
-                                <span>False claims about churches, clergy, or other members</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-red-500">✗</span>
-                                <span>Graphic, violent, or sexually explicit content</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-red-500">✗</span>
-                                <span>Impersonating priests, religious, or Church officials</span>
-                            </li>
-                        </ul>
-                    </section>
-
-                    {/* Prayer Wall Guidelines */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <MessageCircle className="w-6 h-6 text-sacred-600" />
-                            Prayer Wall Guidelines
-                        </h2>
-                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li>Keep prayer requests appropriate for a public, faith-based forum</li>
-                            <li>Do not share identifying details of others without permission</li>
-                            <li>Focus on the prayer intention, not detailed personal grievances</li>
-                            <li>Responses should be prayerful and supportive, not advice-giving</li>
-                            <li>Remember that prayer requests may be visible to all users</li>
-                        </ul>
-                    </section>
-
-                    {/* Enforcement */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <Ban className="w-6 h-6 text-orange-500" />
-                            Enforcement
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            Violations of these guidelines may result in:
-                        </p>
-                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li><strong>Warning:</strong> First-time minor violations</li>
-                            <li><strong>Content Removal:</strong> Inappropriate content will be removed</li>
-                            <li><strong>Temporary Suspension:</strong> Repeated or serious violations</li>
-                            <li><strong>Permanent Ban:</strong> Severe or continued violations</li>
-                        </ul>
-                    </section>
-
-                    {/* Reporting */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <AlertTriangle className="w-6 h-6 text-yellow-500" />
-                            Reporting Violations
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            If you see content that violates these guidelines, please report it:
-                        </p>
-                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li>Use the "Report" button on any post or comment</li>
-                            <li>Email us at: <a href="mailto:moderation@myprayertower.com" className="text-primary-600 hover:underline">moderation@myprayertower.com</a></li>
-                            <li>Include details about the violation and a link if possible</li>
-                        </ul>
-                    </section>
-
-                    {/* Quote */}
-                    <section className="text-center p-6 bg-sacred-50 dark:bg-sacred-900/20 rounded-2xl">
-                        <p className="text-xl italic text-sacred-700 dark:text-sacred-300">
-                            "A new command I give you: Love one another. As I have loved you, so you must love one another."
-                        </p>
-                        <p className="text-sm text-sacred-600 dark:text-sacred-400 mt-2">— John 13:34</p>
-                    </section>
-
-                    {/* Related Links */}
-                    <section className="pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Related Policies</h3>
-                        <div className="flex flex-wrap gap-4">
-                            <Link href="/terms" className="text-primary-600 hover:underline">Terms of Service</Link>
-                            <Link href="/privacy" className="text-primary-600 hover:underline">Privacy Policy</Link>
+                    {/* Prohibited Content */}
+                    <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <div className="flex items-center gap-3 mb-6">
+                            <Flag className="w-6 h-6 text-orange-500" />
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Zero Tolerance</h2>
                         </div>
-                    </section>
+                        <ul className="space-y-4">
+                            <li className="flex gap-3">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-400 mt-2.5 flex-shrink-0" />
+                                <span className="text-gray-600 dark:text-gray-300">
+                                    Hate speech, harassment, or threats of any kind.
+                                </span>
+                            </li>
+                            <li className="flex gap-3">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-400 mt-2.5 flex-shrink-0" />
+                                <span className="text-gray-600 dark:text-gray-300">
+                                    Commercial solicitation, spam, or fundraising links.
+                                </span>
+                            </li>
+                            <li className="flex gap-3">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-400 mt-2.5 flex-shrink-0" />
+                                <span className="text-gray-600 dark:text-gray-300">
+                                    Private information about others without their consent.
+                                </span>
+                            </li>
+                            <li className="flex gap-3">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-400 mt-2.5 flex-shrink-0" />
+                                <span className="text-gray-600 dark:text-gray-300">
+                                    Content contrary to the teachings of the Catholic Church.
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
+                {/* Mass Offerings & Donations */}
+                <div className="bg-sacred-900 text-white rounded-3xl p-8 md:p-12 text-center mb-16 relative overflow-hidden">
+                    <div className="relative z-10">
+                        <h2 className="text-2xl font-bold mb-4 font-serif">A Note on Offering Integrity</h2>
+                        <p className="max-w-2xl mx-auto text-blue-100 mb-8 leading-relaxed">
+                            We take the responsibility of handling Mass intentions and offerings with utmost seriousness.
+                            100% of the stipend for Mass offerings is transferred directly to the celebrating priest or parish.
+                            Donations support the maintenance of this platform and our charitable partners.
+                        </p>
+                    </div>
+                    {/* Decorative Elements */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-gold-500/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                </div>
+
+                {/* Reporting */}
+                <div className="text-center">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">See something incorrect?</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        If you encounter content that violates these guidelines, please use the "Report" flag on the item or contact us directly.
+                    </p>
+                    <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl text-gray-900 dark:text-white font-medium transition-colors">
+                        Contact Moderation Team
+                    </Link>
                 </div>
             </div>
         </div>

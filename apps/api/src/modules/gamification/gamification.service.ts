@@ -62,7 +62,7 @@ export class GamificationService {
             orderBy: { earnedAt: 'desc' },
         });
 
-        const savedChurches = await this.prisma.savedChurch.count({
+        const savedChurches = await this.prisma.churchFollower.count({
             where: { userId },
         });
 

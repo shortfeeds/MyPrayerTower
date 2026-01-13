@@ -112,7 +112,7 @@ export function SmartAdSlot({
         // Render Google Ad if source is Google
         if (ad?.adSource === 'GOOGLE' && ad.googleAdUnitId) {
             return (
-                <div className={`relative ${className}`}>
+                <div className={`text-center my-4 relative z-0 ${className}`}>
                     <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/50 text-white text-[9px] font-medium rounded">
                         Ad
                     </div>
@@ -129,7 +129,7 @@ export function SmartAdSlot({
             const aspectRatio = position === 'sidebar' ? '300/250' : position === 'top' ? '728/90' : '100%';
 
             return (
-                <div className={`relative ${className}`}>
+                <div className={`relative z-0 ${className}`}>
                     <div className="absolute top-2 left-2 z-10 px-2 py-0.5 bg-black/60 text-white text-[10px] font-medium rounded uppercase tracking-wide">
                         Sponsored
                     </div>
