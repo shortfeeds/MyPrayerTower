@@ -21,6 +21,9 @@ interface PayPalCheckoutProps {
     referenceId?: string;
     items?: PayPalFrontendItem[];
     subscriptionPlanId?: string; // If provided, handles subscription
+    createOrderUrl?: string;
+    captureOrderUrl?: string;
+    metadata?: any;
 }
 
 export interface PayPalSuccessDetails {
@@ -46,6 +49,9 @@ export function PayPalCheckout({
     referenceId,
     items,
     subscriptionPlanId,
+    createOrderUrl = '/api/paypal/create-order',
+    captureOrderUrl = '/api/paypal/capture-order',
+    metadata,
 }: PayPalCheckoutProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -104,7 +110,7 @@ export function PayPalCheckout({
                         setIsProcessing(true);
                         setErrorMessage('');
                         try {
-                            const response = await fetch('/api/paypal/create-order', {
+                            const response = await fetch(createOrderUrl, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -112,6 +118,7 @@ export function PayPalCheckout({
                                     description,
                                     referenceId,
                                     items,
+                                    metadata, // Pass metadata if creating custom order
                                 }),
                             });
 
@@ -151,7 +158,7 @@ export function PayPalCheckout({
                             }
                         } else {
                             try {
-                                const response = await fetch('/api/paypal/capture-order', {
+                                const response = await fetch(captureOrderUrl, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ orderId: data.orderID }),
@@ -209,7 +216,7 @@ export function PayPalCheckout({
                                 setIsProcessing(true);
                                 setErrorMessage('');
                                 try {
-                                    const response = await fetch('/api/paypal/create-order', {
+                                    const response = await fetch(createOrderUrl, {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({
@@ -217,6 +224,7 @@ export function PayPalCheckout({
                                             description,
                                             referenceId,
                                             items,
+                                            metadata,
                                         }),
                                     });
 
@@ -237,8 +245,8 @@ export function PayPalCheckout({
                             }}
                             onApprove={async (data, actions) => {
                                 try {
-                                    const response = await fetch('/api/paypal/capture-order', {
-                                        method: 'POST',
+                                    const response = await fetch(captureOrderUrl, {
+                                        method: 'POST', // Usually POST for capture
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ orderId: data.orderID }),
                                     });

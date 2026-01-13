@@ -3,24 +3,7 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, TrendingDown, Calendar, Download, Filter, BarChart3, PieChart, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
-interface RevenueData {
-    period: string;
-    massOfferings: number;
-    donations: number;
-    subscriptions: number;
-    total: number;
-}
-
-interface RevenueStats {
-    totalRevenue: number;
-    massOfferingsRevenue: number;
-    donationsRevenue: number;
-    subscriptionsRevenue: number;
-    growthPercent: number;
-    avgOrderValue: number;
-    topOfferingType: string;
-    topDonationTier: string;
-}
+import { getRevenueStats, type RevenueStats, type RevenueData } from '@/app/actions/revenue';
 
 // Mock data - replace with API calls
 const MOCK_MONTHLY_DATA: RevenueData[] = [
@@ -36,15 +19,29 @@ export default function AdminRevenueReportsPage() {
     const [period, setPeriod] = useState<'7d' | '30d' | '90d' | '12m' | 'ytd'>('30d');
     const [revenueData, setRevenueData] = useState<RevenueData[]>(MOCK_MONTHLY_DATA);
     const [stats, setStats] = useState<RevenueStats>({
-        totalRevenue: 341600,
-        massOfferingsRevenue: 185600,
-        donationsRevenue: 124000,
-        subscriptionsRevenue: 32000,
-        growthPercent: 14.5,
-        avgOrderValue: 4250,
-        topOfferingType: 'Perpetual Enrollment',
-        topDonationTier: 'Guardian Angel',
+        totalRevenue: 0,
+        massOfferingsRevenue: 0,
+        donationsRevenue: 0,
+        subscriptionsRevenue: 0,
+        growthPercent: 0,
+        avgOrderValue: 0,
+        topOfferingType: 'Loading...',
+        topDonationTier: 'Loading...',
     });
+
+    useEffect(() => {
+        const loadStats = async () => {
+            try {
+                // Dynamically import action to avoid server-client boundary issues if any
+                const { getRevenueStats } = await import('@/app/actions/revenue');
+                const data = await getRevenueStats();
+                setStats(data);
+            } catch (err) {
+                console.error('Failed to load revenue stats', err);
+            }
+        };
+        loadStats();
+    }, []);
 
     const formatCurrency = (cents: number) => {
         return new Intl.NumberFormat('en-US', {

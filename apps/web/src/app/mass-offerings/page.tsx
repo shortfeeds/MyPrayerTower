@@ -158,37 +158,7 @@ export default function MassOfferingsPage() {
         const totalAmount = calculateTotal();
         const intentionDetails = `For: ${intentionFor} (${isForLiving ? 'Living' : 'Deceased'}). ${selectedIntentions.length ? 'Intentions: ' + selectedIntentions.join(', ') : ''}. ${specialIntention ? 'Note: ' + specialIntention : ''}`;
 
-        // Send notification
-        fetch('/api/mass-offerings/checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                offeringId: selectedType,
-                amount: totalAmount,
-                intention: intentionDetails,
-                offeringType: selectedType,
-                intentionFor,
-                additionalNames: additionalNames.filter(n => n.trim()),
-                isForLiving,
-                categories: selectedIntentions,
-                specialIntention,
-                offeredBy,
-                tributeMessage,
-                email,
-                name,
-                phone,
-                isGift,
-                recipientEmail: isGift ? recipientEmail : undefined,
-                recipientName: isGift ? recipientName : undefined,
-                giftMessage: isGift ? giftMessage : undefined,
-                includesVirtualCandle: addons.candle,
-                includesPrintedCard: addons.printedCard,
-                includesFramedCertificate: addons.framedCertificate,
-                printedCardShippingAddress: addons.printedCard || addons.framedCertificate ? shippingAddress : undefined,
-                paypalOrderId: details.orderId,
-                paypalPayerEmail: details.payerEmail,
-            }),
-        }).catch(err => console.log('Notification sent'));
+
 
         // Reset form
         setStep(1);
@@ -244,6 +214,29 @@ export default function MassOfferingsPage() {
                                 onError={handlePayPalError}
                                 onCancel={() => setShowPaymentModal(false)}
                                 referenceId={`MASS_${selectedType}_${Date.now()}`}
+                                createOrderUrl="/api/mass-offerings/payment/create"
+                                captureOrderUrl="/api/mass-offerings/payment/capture"
+                                metadata={{
+                                    offeringType: selectedType,
+                                    intentionFor,
+                                    additionalNames: additionalNames.filter(n => n.trim()),
+                                    isForLiving,
+                                    categories: selectedIntentions,
+                                    specialIntention,
+                                    offeredBy,
+                                    tributeMessage,
+                                    email,
+                                    name,
+                                    phone,
+                                    isGift,
+                                    recipientEmail,
+                                    recipientName,
+                                    giftMessage,
+                                    includesVirtualCandle: addons.candle,
+                                    includesPrintedCard: addons.printedCard,
+                                    includesFramedCertificate: addons.framedCertificate,
+                                    printedCardShippingAddress: shippingAddress
+                                }}
                             />
 
                             <button
