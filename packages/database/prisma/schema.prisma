@@ -613,7 +613,6 @@ model PrayerLibraryCategory {
   updatedAt                   DateTime
   PrayerLibraryCategory       PrayerLibraryCategory?  @relation("PrayerLibraryCategoryToPrayerLibraryCategory", fields: [parentId], references: [id])
   children                    PrayerLibraryCategory[] @relation("PrayerLibraryCategoryToPrayerLibraryCategory")
-  prayers                     Prayer[]
 
   @@index([parentId])
 }
