@@ -919,20 +919,19 @@ model Prayer {
   title          String
   slug           String?   @unique
   content        String
-  categoryId     String
+  category       String    // Slug: "children"
+  categoryLabel  String?   @map("category_label") // Name: "Children & Youth Prayers"
   tags           String[]
-  isPublished    Boolean   @default(true)
+  isActive       Boolean   @default(true) @map("is_active")
   viewCount      Int       @default(0)
-  createdAt      DateTime  @default(now())
+  createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt
-  
-  category       PrayerLibraryCategory @relation(fields: [categoryId], references: [id])
   
   // Relations
   UserPrayerHistory UserPrayerHistory[]
 
-  @@index([isPublished])
-  @@index([categoryId])
+  @@index([isActive])
+  @@index([category])
   @@index([tags], type: Gin)
 }
 

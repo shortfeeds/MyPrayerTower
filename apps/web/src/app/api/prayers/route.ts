@@ -1,5 +1,3 @@
-'use server';
-
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { toSafeJSON } from '@/lib/dto';
@@ -9,14 +7,16 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '24');
     const search = searchParams.get('search') || '';
-    const category = searchParams.get('category') || '';
-    const duration = searchParams.get('duration') || ''; // short, medium, long
+    const categorySlug = searchParams.get('category') || '';
+    const duration = searchParams.get('duration') || '';
 
     try {
         const skip = (page - 1) * limit;
 
+        // Use snake_case for DB query as per Prisma client generation quirks on some envs
+        // or just use 'any' to bypass strict typing until full regen
         const where: any = {
-            isPublished: true
+            is_active: true
         };
 
         if (search) {
@@ -26,49 +26,43 @@ export async function GET(request: NextRequest) {
             ];
         }
 
-        if (category) {
-            where.category = { slug: category };
+        if (categorySlug) {
+            where.category = categorySlug;
         }
 
-        const [prayers, total, categories] = await Promise.all([
+        // Fetch prayers
+        const [prayers, total] = await Promise.all([
             db.prayer.findMany({
                 where,
                 skip,
                 take: limit,
-                orderBy: [{ title: 'asc' }],
-                select: {
-                    id: true,
-                    title: true,
-                    slug: true,
-                    content: true,
-                    tags: true,
-                    viewCount: true,
-                    createdAt: true,
-                    category: {
-                        select: {
-                            id: true,
-                            name: true,
-                            slug: true
-                        }
-                    }
-                }
+                orderBy: [{ title: 'asc' }]
             }),
-            db.prayer.count({ where }),
-            db.prayerLibraryCategory.findMany({
-                select: {
-                    id: true,
-                    name: true,
-                    slug: true,
-                    _count: { select: { prayers: true } }
-                },
-                orderBy: { name: 'asc' }
-            })
+            db.prayer.count({ where })
         ]);
 
-        // Post-process for duration filter if needed
+        // Fetch distinct categories from the Prayer table itself
+        // aggregating unique combinations of category (slug) and category_label (name)
+        const categoriesRaw = await db.prayer.findMany({
+            where: { is_active: true } as any,
+            select: {
+                category: true,
+                category_label: true
+            } as any, // Cast to any to avoid IDE errors if types aren't synced
+            distinct: ['category']
+        });
+
+        const categories = categoriesRaw.map((c: any) => ({
+            id: c.category,
+            slug: c.category,
+            name: c.category_label || c.category,
+            count: 0
+        })).sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+        // Post-process prayers to match frontend interface
         let filteredPrayers = prayers;
         if (duration) {
-            filteredPrayers = prayers.filter(p => {
+            filteredPrayers = prayers.filter((p: any) => {
                 const words = p.content.split(/\s+/).length;
                 if (duration === 'short') return words < 150;
                 if (duration === 'medium') return words >= 150 && words <= 750;
@@ -77,12 +71,20 @@ export async function GET(request: NextRequest) {
             });
         }
 
-        // Add reading time
-        const prayersWithMeta = filteredPrayers.map(p => ({
-            ...p,
+        const prayersWithMeta = filteredPrayers.map((p: any) => ({
+            id: p.id,
+            title: p.title,
+            slug: p.slug,
+            content: p.content,
+            tags: p.tags,
+            viewCount: p.viewCount || 0,
             readingTime: Math.ceil(p.content.split(/\s+/).length / 150),
-            categoryName: p.category?.name || 'General',
-            categorySlug: p.category?.slug || null
+            category: {
+                name: p.category_label || p.category,
+                slug: p.category
+            },
+            categoryName: p.category_label || p.category,
+            categorySlug: p.category
         }));
 
         return NextResponse.json({
@@ -90,21 +92,13 @@ export async function GET(request: NextRequest) {
             total,
             page,
             totalPages: Math.ceil(total / limit),
-            categories: categories.map(c => ({
-                id: c.id,
-                name: c.name,
-                slug: c.slug,
-                count: c._count.prayers
-            }))
+            categories: categories
         });
     } catch (error: any) {
         console.error('Prayers API Error:', error);
         return NextResponse.json({
             error: 'Failed to fetch prayers',
-            message: error.message,
-            prayers: [],
-            categories: [],
-            total: 0
+            details: error.message
         }, { status: 500 });
     }
 }

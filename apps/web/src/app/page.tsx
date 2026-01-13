@@ -106,25 +106,28 @@ function LoggedOutHomePage() {
                 </Suspense>
             </div>
 
-            {/* Reorganized Content Flow - Secondary Features pushed lower */}
+            {/* Reorganized Content Flow */}
             <div className="py-16">
                 <TrustBar />
             </div>
 
-            <div className="bg-white py-12 border-t border-gray-50">
-                <TestimonialsSection />
-            </div>
-
-            {/* Moved Offerings & Stats Below the Fold */}
-            <div className="bg-gray-50 py-16">
-                <div className="container mx-auto px-4 mb-16">
+            {/* Offerings Grid - Moved below TrustBar */}
+            <div className="bg-gray-50 py-16 border-t border-gray-100">
+                <div className="container mx-auto px-4">
                     <div className="text-center max-w-3xl mx-auto mb-12">
                         <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">Ways to Participate</h2>
                         <p className="text-gray-600">Engage deeply with your faith through our community offerings.</p>
                     </div>
                     <OfferingsGrid />
                 </div>
-                <StatisticsBand />
+            </div>
+
+            {/* Statistics Band - "A Global Community United in Prayer" */}
+            <StatisticsBand />
+
+            {/* Testimonials - "Stories of Grace & Growth" - Moved below Statistics */}
+            <div className="bg-white py-20 border-t border-gray-50">
+                <TestimonialsSection />
             </div>
 
             <div className="py-8 bg-white border-t border-gray-100">
