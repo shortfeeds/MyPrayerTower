@@ -292,439 +292,433 @@ export default function CandleWallPage() {
         setIsProcessingPayment(true);
         setPaymentError('');
 
-        try {
-            // Create the candle in the database
-            await processCandle();
+        // Candle is already created and activated by server-side capture
 
-            // Send notification email
-            fetch('/api/candles/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    duration: selectedDuration,
-                    amount: selectedDurationData?.price || 0,
-                    intention: intention.trim(),
-                    name: isAnonymous ? null : userName.trim(),
-                    isAnonymous,
-                    paypalOrderId: details.orderId,
-                    paypalPayerEmail: details.payerEmail,
-                }),
-            }).catch(err => console.log('Notification sent'));
+        // Just refresh the list
+        const dbCandles = await getActiveCandles();
+        // ... (rest of simple refresh logic if needed, or just reload page)
+        // Ideally we re-fetch active candles:
+        window.location.reload(); // Simple refresh to show new candle
 
-        } catch (error) {
-            console.error('Error processing candle after payment:', error);
-            setPaymentError('Payment succeeded but candle creation failed. Please contact support.');
-        } finally {
-            setIsProcessingPayment(false);
-        }
-    };
-
-    const handlePayPalError = (error: any) => {
-        console.error('PayPal error:', error);
-        setPaymentError('Payment failed. Please try again.');
         setIsProcessingPayment(false);
-    };
+    }
+};
 
-    const processCandle = async () => {
-        setIsSubmitting(true);
-        try {
-            const result = await lightVirtualCandle({
-                intention: intention.trim(),
-                name: isAnonymous ? undefined : userName.trim() || undefined,
-                isAnonymous,
-                duration: selectedDuration as any,
+const handlePayPalError = (error: any) => {
+    console.error('PayPal error:', error);
+    setPaymentError('Payment failed. Please try again.');
+    setIsProcessingPayment(false);
+};
+
+const processCandle = async () => {
+    setIsSubmitting(true);
+    try {
+        const result = await lightVirtualCandle({
+            intention: intention.trim(),
+            name: isAnonymous ? undefined : userName.trim() || undefined,
+            isAnonymous,
+            duration: selectedDuration as any,
+        });
+
+        if (result.success && result.candle) {
+            const durationHours = DURATIONS.find(d => d.value === selectedDuration)?.hours || 24;
+            const newCandle: Candle = {
+                id: result.candle.id,
+                userName: isAnonymous ? 'Anonymous' : (userName || 'Anonymous'),
+                intention: intention,
+                color: mapDurationToColor(selectedDuration),
+                remainingHours: durationHours,
+                prayerCount: 1,
+                isUserCandle: true,
+                tier: mapDurationToTier(selectedDuration),
+            };
+            // Insert at the right position based on tier
+            setCandles(prev => {
+                const tierOrder = { premium: 0, standard: 1, basic: 2, free: 3 };
+                const newTierIndex = tierOrder[newCandle.tier];
+                let insertIndex = 0;
+                for (let i = 0; i < prev.length; i++) {
+                    if (tierOrder[prev[i].tier] > newTierIndex) {
+                        insertIndex = i;
+                        break;
+                    }
+                    insertIndex = i + 1;
+                }
+                return [...prev.slice(0, insertIndex), newCandle, ...prev.slice(insertIndex)];
             });
 
-            if (result.success && result.candle) {
-                const durationHours = DURATIONS.find(d => d.value === selectedDuration)?.hours || 24;
-                const newCandle: Candle = {
-                    id: result.candle.id,
-                    userName: isAnonymous ? 'Anonymous' : (userName || 'Anonymous'),
-                    intention: intention,
-                    color: mapDurationToColor(selectedDuration),
-                    remainingHours: durationHours,
-                    prayerCount: 1,
-                    isUserCandle: true,
-                    tier: mapDurationToTier(selectedDuration),
-                };
-                // Insert at the right position based on tier
-                setCandles(prev => {
-                    const tierOrder = { premium: 0, standard: 1, basic: 2, free: 3 };
-                    const newTierIndex = tierOrder[newCandle.tier];
-                    let insertIndex = 0;
-                    for (let i = 0; i < prev.length; i++) {
-                        if (tierOrder[prev[i].tier] > newTierIndex) {
-                            insertIndex = i;
-                            break;
-                        }
-                        insertIndex = i + 1;
-                    }
-                    return [...prev.slice(0, insertIndex), newCandle, ...prev.slice(insertIndex)];
-                });
-
-                setShowLightModal(false);
-                setShowPaymentModal(false);
-                setIntention('');
-                setUserName('');
-                setIsAnonymous(false);
-                setSelectedDuration('THIRTY_DAYS');
-                setSuccessMessage('🕯️ Your candle is lit! The community is now praying for you.');
-                setTimeout(() => setSuccessMessage(''), 5000);
-            } else {
-                alert(result.error || 'Failed to light candle');
-            }
-        } catch (error) {
-            console.error('Error lighting candle:', error);
-            alert('Something went wrong. Please try again.');
-        } finally {
-            setIsSubmitting(false);
+            setShowLightModal(false);
+            setShowPaymentModal(false);
+            setIntention('');
+            setUserName('');
+            setIsAnonymous(false);
+            setSelectedDuration('THIRTY_DAYS');
+            setSuccessMessage('🕯️ Your candle is lit! The community is now praying for you.');
+            setTimeout(() => setSuccessMessage(''), 5000);
+        } else {
+            alert(result.error || 'Failed to light candle');
         }
-    };
+    } catch (error) {
+        console.error('Error lighting candle:', error);
+        alert('Something went wrong. Please try again.');
+    } finally {
+        setIsSubmitting(false);
+    }
+};
 
-    const totalPrayers = candles.reduce((s, c) => s + c.prayerCount, 0);
+const totalPrayers = candles.reduce((s, c) => s + c.prayerCount, 0);
 
-    // Group candles by tier for display
-    const premiumCandles = candles.filter(c => c.tier === 'premium');
-    const standardCandles = candles.filter(c => c.tier === 'standard');
-    const basicCandles = candles.filter(c => c.tier === 'basic');
-    const freeCandles = candles.filter(c => c.tier === 'free');
+// Group candles by tier for display
+const premiumCandles = candles.filter(c => c.tier === 'premium');
+const standardCandles = candles.filter(c => c.tier === 'standard');
+const basicCandles = candles.filter(c => c.tier === 'basic');
+const freeCandles = candles.filter(c => c.tier === 'free');
 
-    return (
-        <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-950 to-slate-900">
-            {/* Success Toast */}
-            {successMessage && (
-                <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-full shadow-2xl shadow-green-500/30 animate-fade-in flex items-center gap-2">
-                    <Sparkles className="w-5 h-5" />
-                    {successMessage}
+return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-950 to-slate-900">
+        {/* Success Toast */}
+        {successMessage && (
+            <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-full shadow-2xl shadow-green-500/30 animate-fade-in flex items-center gap-2">
+                <Sparkles className="w-5 h-5" />
+                {successMessage}
+            </div>
+        )}
+
+        {/* Header with Warm Gradient */}
+        <div className="relative overflow-hidden min-h-[500px] flex items-center justify-center">
+            {/* Background Layer */}
+            <div className="absolute inset-0 bg-[url('/candle-bg-pattern.png')] bg-cover opacity-10 mix-blend-overlay" />
+            <div className="absolute inset-0 bg-gradient-to-b from-amber-700/60 via-amber-900/50 to-slate-900" />
+
+            {/* Animated Particles/Glow */}
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-[100px] animate-pulse" />
+            <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-rose-500/20 rounded-full blur-[80px]" />
+
+            <div className="relative z-10 text-center px-4 w-full max-w-4xl mx-auto">
+                <Link href="/" className="inline-flex items-center gap-2 text-amber-200/80 hover:text-white mb-8 transition-colors bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">
+                    <ChevronLeft className="w-4 h-4" />
+                    Back to Home
+                </Link>
+
+                <div className="flex flex-col items-center justify-center mb-6">
+                    <div className="relative mb-6">
+                        <div className="absolute inset-0 blur-2xl bg-amber-500/30 rounded-full animate-pulse" />
+                        <Flame className="w-20 h-20 text-amber-400 relative z-10 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]" />
+                    </div>
+                    <h1 className="font-serif text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg tracking-tight">
+                        Virtual Prayer Candles
+                    </h1>
                 </div>
-            )}
 
-            {/* Header with Warm Gradient */}
-            <div className="relative overflow-hidden min-h-[500px] flex items-center justify-center">
-                {/* Background Layer */}
-                <div className="absolute inset-0 bg-[url('/candle-bg-pattern.png')] bg-cover opacity-10 mix-blend-overlay" />
-                <div className="absolute inset-0 bg-gradient-to-b from-amber-700/60 via-amber-900/50 to-slate-900" />
+                <p className="text-xl md:text-2xl text-amber-100/90 max-w-2xl mx-auto mb-8 font-light leading-relaxed">
+                    Light a candle for your intentions and join a global community of faith united in prayer.
+                </p>
 
-                {/* Animated Particles/Glow */}
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-[100px] animate-pulse" />
-                <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-rose-500/20 rounded-full blur-[80px]" />
-
-                <div className="relative z-10 text-center px-4 w-full max-w-4xl mx-auto">
-                    <Link href="/" className="inline-flex items-center gap-2 text-amber-200/80 hover:text-white mb-8 transition-colors bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">
-                        <ChevronLeft className="w-4 h-4" />
-                        Back to Home
-                    </Link>
-
-                    <div className="flex flex-col items-center justify-center mb-6">
-                        <div className="relative mb-6">
-                            <div className="absolute inset-0 blur-2xl bg-amber-500/30 rounded-full animate-pulse" />
-                            <Flame className="w-20 h-20 text-amber-400 relative z-10 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]" />
-                        </div>
-                        <h1 className="font-serif text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg tracking-tight">
-                            Virtual Prayer Candles
-                        </h1>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+                    <div className="px-6 py-2 bg-black/30 rounded-full border border-amber-500/20 backdrop-blur-md text-amber-200 text-sm">
+                        Premium candles receive <span className="text-white font-bold">4x more prayers</span>
                     </div>
+                </div>
 
-                    <p className="text-xl md:text-2xl text-amber-100/90 max-w-2xl mx-auto mb-8 font-light leading-relaxed">
-                        Light a candle for your intentions and join a global community of faith united in prayer.
-                    </p>
+                <button
+                    onClick={() => setShowLightModal(true)}
+                    className="group relative px-10 py-5 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white rounded-full font-bold text-lg shadow-[0_0_30px_rgba(245,158,11,0.3)] hover:shadow-[0_0_50px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 overflow-hidden"
+                >
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                    <span className="relative flex items-center gap-3">
+                        <Flame className="w-6 h-6 fill-current" />
+                        Light Your Candle
+                    </span>
+                </button>
+            </div>
+        </div>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-                        <div className="px-6 py-2 bg-black/30 rounded-full border border-amber-500/20 backdrop-blur-md text-amber-200 text-sm">
-                            Premium candles receive <span className="text-white font-bold">4x more prayers</span>
+        {/* Stats Bar */}
+        <div className="bg-slate-900/50 border-y border-white/5 backdrop-blur-md">
+            <div className="container mx-auto px-4">
+                <div className="grid grid-cols-3 divide-x divide-white/10 max-w-4xl mx-auto">
+                    {[
+
+                        { icon: Flame, label: 'Active Candles', value: (candles.length + 3241).toLocaleString(), color: 'text-amber-400' },
+                        { icon: Heart, label: 'Total Prayers', value: totalPrayers.toLocaleString(), color: 'text-rose-400' },
+                        { icon: Users, label: 'People Praying', value: peopleCount.toLocaleString(), color: 'text-sky-400' },
+                    ].map((stat, i) => (
+                        <div key={i} className="text-center">
+                            <stat.icon className={`w-6 h-6 mx-auto ${stat.color} mb-1`} />
+                            <p className="text-2xl font-bold text-white">{stat.value}</p>
+                            <p className="text-xs text-gray-400">{stat.label}</p>
                         </div>
-                    </div>
+                    ))}
+                </div>
+            </div>
+        </div>
 
-                    <button
-                        onClick={() => setShowLightModal(true)}
-                        className="group relative px-10 py-5 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white rounded-full font-bold text-lg shadow-[0_0_30px_rgba(245,158,11,0.3)] hover:shadow-[0_0_50px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 overflow-hidden"
-                    >
-                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                        <span className="relative flex items-center gap-3">
-                            <Flame className="w-6 h-6 fill-current" />
-                            Light Your Candle
-                        </span>
-                    </button>
+        <div className="container mx-auto px-4 py-10">
+            {/* PREMIUM SECTION */}
+            <div className="mb-12">
+                <div className="flex items-center gap-3 mb-6">
+                    <Crown className="w-7 h-7 text-amber-400" />
+                    <h2 className="text-2xl font-bold text-white">Premium Candles</h2>
+                    <span className="px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full">
+                        MOST PRAYERS
+                    </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {premiumCandles.slice(0, 12).map(candle => (
+                        <CandleCard key={candle.id} candle={candle} onPray={handlePray} isPremium />
+                    ))}
                 </div>
             </div>
 
-            {/* Stats Bar */}
-            <div className="bg-slate-900/50 border-y border-white/5 backdrop-blur-md">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-3 divide-x divide-white/10 max-w-4xl mx-auto">
-                        {[
+            {/* STANDARD SECTION */}
+            <div className="mb-12">
+                <div className="flex items-center gap-3 mb-6">
+                    <Star className="w-6 h-6 text-sky-400" />
+                    <h2 className="text-xl font-bold text-white">Standard Candles</h2>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {standardCandles.slice(0, 12).map(candle => (
+                        <CandleCard key={candle.id} candle={candle} onPray={handlePray} />
+                    ))}
+                </div>
+            </div>
 
-                            { icon: Flame, label: 'Active Candles', value: (candles.length + 3241).toLocaleString(), color: 'text-amber-400' },
-                            { icon: Heart, label: 'Total Prayers', value: totalPrayers.toLocaleString(), color: 'text-rose-400' },
-                            { icon: Users, label: 'People Praying', value: peopleCount.toLocaleString(), color: 'text-sky-400' },
-                        ].map((stat, i) => (
-                            <div key={i} className="text-center">
-                                <stat.icon className={`w-6 h-6 mx-auto ${stat.color} mb-1`} />
-                                <p className="text-2xl font-bold text-white">{stat.value}</p>
-                                <p className="text-xs text-gray-400">{stat.label}</p>
+            {/* BASIC & FREE SECTION */}
+            <div>
+                <div className="flex items-center gap-3 mb-6">
+                    <Flame className="w-5 h-5 text-gray-400" />
+                    <h2 className="text-lg font-semibold text-gray-400">Community Candles</h2>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3 opacity-80">
+                    {[...basicCandles.slice(0, 8), ...freeCandles.slice(0, 8)].map(candle => (
+                        <CandleCardSmall key={candle.id} candle={candle} onPray={handlePray} />
+                    ))}
+                </div>
+            </div>
+
+            {/* CTA Banner */}
+            <div className="mt-12 bg-gradient-to-r from-amber-600/20 via-orange-500/20 to-rose-500/20 rounded-2xl p-8 border border-amber-500/30 text-center">
+                <h3 className="text-2xl font-bold text-white mb-2">Want More Prayers for Your Intention?</h3>
+                <p className="text-amber-200/80 mb-6">Featured candles stay lit for 30 days and receive the most prayers from our global community.</p>
+                <button
+                    onClick={() => { setSelectedDuration('ONE_DAY'); setShowLightModal(true); }}
+                    className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full hover:shadow-lg hover:shadow-orange-500/30 transition-all"
+                >
+                    Light a Candle - Start for Free
+                </button>
+            </div>
+        </div>
+
+        {/* What Happens Next Section */}
+        <div className="mt-16 border-t border-white/10 pt-12">
+            <h3 className="text-2xl font-serif font-bold text-white text-center mb-8">What Happens When You Light a Candle?</h3>
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div className="text-center p-6 bg-slate-800/50 rounded-2xl border border-white/5">
+                    <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-400">
+                        <Flame className="w-6 h-6" />
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">Lit Instantly</h4>
+                    <p className="text-slate-400 text-sm">Your candle appears on the global prayer wall immediately, shining your intention to the world.</p>
+                </div>
+                <div className="text-center p-6 bg-slate-800/50 rounded-2xl border border-white/5">
+                    <div className="w-12 h-12 bg-rose-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-400">
+                        <Users className="w-6 h-6" />
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">Community Prays</h4>
+                    <p className="text-slate-400 text-sm">Thousands of believers see your candle and click "Pray" to lift up your intention.</p>
+                </div>
+                <div className="text-center p-6 bg-slate-800/50 rounded-2xl border border-white/5">
+                    <div className="w-12 h-12 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-sky-400">
+                        <Clock className="w-6 h-6" />
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">Lasting Grace</h4>
+                    <p className="text-slate-400 text-sm">You'll receive updates on how many people prayed for you before your candle expires.</p>
+                </div>
+            </div>
+        </div>
+
+        {/* Light Candle Modal */}
+        {showLightModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                <div className="bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto border border-slate-700 shadow-2xl">
+                    <div className="p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Flame className="w-6 h-6 text-amber-400" />
+                                Light a Prayer Candle
+                            </h2>
+                            <button onClick={() => setShowLightModal(false)} className="p-2 hover:bg-slate-700 rounded-lg">
+                                <X className="w-5 h-5 text-gray-400" />
+                            </button>
+                        </div>
+
+                        {/* Duration Selection - Featured highlighted */}
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-300 mb-3">Choose Duration</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {[...DURATIONS].reverse().map((duration) => (
+                                    <button
+                                        key={duration.value}
+                                        onClick={() => setSelectedDuration(duration.value)}
+                                        className={`relative p-4 rounded-xl border-2 transition-all text-left ${selectedDuration === duration.value
+                                            ? duration.tier === 'premium'
+                                                ? 'border-amber-400 bg-amber-500/20 ring-2 ring-amber-400/50'
+                                                : 'border-sky-400 bg-sky-500/10'
+                                            : 'border-slate-600 hover:border-slate-500'
+                                            }`}
+                                    >
+                                        {duration.tier === 'premium' && (
+                                            <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-amber-400 to-orange-500 text-[10px] font-bold text-white rounded-full">
+                                                FEATURED
+                                            </div>
+                                        )}
+                                        <div className="flex justify-between items-start">
+                                            <span className="text-white font-semibold">{duration.label}</span>
+                                            <div className="text-right">
+                                                <span className={`block text-sm font-bold ${duration.price === 0 ? 'text-green-400' : 'text-amber-400'}`}>
+                                                    {duration.priceDisplay}
+                                                </span>
+
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            {duration.tier === 'premium' ? '30 Days • Burns Longest • Max Prayers' :
+                                                duration.tier === 'standard' ? 'High visibility • More prayers' :
+                                                    duration.tier === 'basic' ? 'Standard visibility' : 'Basic listing'}
+                                        </p>
+                                    </button>
+                                ))}
                             </div>
-                        ))}
+                        </div>
+
+                        {/* Name */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Your Name</label>
+                            <input
+                                type="text"
+                                value={userName}
+                                onChange={(e) => setUserName(e.target.value.slice(0, 30))}
+                                placeholder="Enter your name"
+                                disabled={isAnonymous}
+                                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 disabled:opacity-50"
+                            />
+                            <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={isAnonymous}
+                                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                                    className="rounded bg-slate-700 border-slate-500"
+                                />
+                                <span className="text-sm text-gray-400">Post anonymously</span>
+                            </label>
+                        </div>
+
+                        {/* Intention */}
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Your Prayer Intention</label>
+                            <input
+                                type="text"
+                                value={intention}
+                                onChange={(e) => setIntention(e.target.value.slice(0, 60))}
+                                placeholder="For healing, peace, guidance..."
+                                maxLength={60}
+                                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-amber-500"
+                            />
+                            <p className="text-xs text-gray-500 mt-1 text-right">{intention.length}/60</p>
+                        </div>
+
+                        <button
+                            onClick={handleLightCandle}
+                            disabled={isSubmitting || !intention.trim() || (!isAnonymous && !userName.trim())}
+                            className="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 disabled:from-slate-600 disabled:to-slate-600 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-orange-500/30"
+                        >
+                            {isSubmitting ? 'Lighting...' : isPaidOption ? (
+                                <>
+                                    <CreditCard className="w-5 h-5" />
+                                    Continue - {selectedDurationData?.priceDisplay}
+                                </>
+                            ) : (
+                                <>🕯️ Light Free Candle</>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>
+        )
+        }
 
-            <div className="container mx-auto px-4 py-10">
-                {/* PREMIUM SECTION */}
-                <div className="mb-12">
-                    <div className="flex items-center gap-3 mb-6">
-                        <Crown className="w-7 h-7 text-amber-400" />
-                        <h2 className="text-2xl font-bold text-white">Premium Candles</h2>
-                        <span className="px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full">
-                            MOST PRAYERS
-                        </span>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {premiumCandles.slice(0, 12).map(candle => (
-                            <CandleCard key={candle.id} candle={candle} onPray={handlePray} isPremium />
-                        ))}
-                    </div>
-                </div>
-
-                {/* STANDARD SECTION */}
-                <div className="mb-12">
-                    <div className="flex items-center gap-3 mb-6">
-                        <Star className="w-6 h-6 text-sky-400" />
-                        <h2 className="text-xl font-bold text-white">Standard Candles</h2>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {standardCandles.slice(0, 12).map(candle => (
-                            <CandleCard key={candle.id} candle={candle} onPray={handlePray} />
-                        ))}
-                    </div>
-                </div>
-
-                {/* BASIC & FREE SECTION */}
-                <div>
-                    <div className="flex items-center gap-3 mb-6">
-                        <Flame className="w-5 h-5 text-gray-400" />
-                        <h2 className="text-lg font-semibold text-gray-400">Community Candles</h2>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3 opacity-80">
-                        {[...basicCandles.slice(0, 8), ...freeCandles.slice(0, 8)].map(candle => (
-                            <CandleCardSmall key={candle.id} candle={candle} onPray={handlePray} />
-                        ))}
-                    </div>
-                </div>
-
-                {/* CTA Banner */}
-                <div className="mt-12 bg-gradient-to-r from-amber-600/20 via-orange-500/20 to-rose-500/20 rounded-2xl p-8 border border-amber-500/30 text-center">
-                    <h3 className="text-2xl font-bold text-white mb-2">Want More Prayers for Your Intention?</h3>
-                    <p className="text-amber-200/80 mb-6">Featured candles stay lit for 30 days and receive the most prayers from our global community.</p>
-                    <button
-                        onClick={() => { setSelectedDuration('ONE_DAY'); setShowLightModal(true); }}
-                        className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full hover:shadow-lg hover:shadow-orange-500/30 transition-all"
-                    >
-                        Light a Candle - Start for Free
-                    </button>
-                </div>
-            </div>
-
-            {/* What Happens Next Section */}
-            <div className="mt-16 border-t border-white/10 pt-12">
-                <h3 className="text-2xl font-serif font-bold text-white text-center mb-8">What Happens When You Light a Candle?</h3>
-                <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                    <div className="text-center p-6 bg-slate-800/50 rounded-2xl border border-white/5">
-                        <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-400">
-                            <Flame className="w-6 h-6" />
-                        </div>
-                        <h4 className="text-lg font-bold text-white mb-2">Lit Instantly</h4>
-                        <p className="text-slate-400 text-sm">Your candle appears on the global prayer wall immediately, shining your intention to the world.</p>
-                    </div>
-                    <div className="text-center p-6 bg-slate-800/50 rounded-2xl border border-white/5">
-                        <div className="w-12 h-12 bg-rose-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-400">
-                            <Users className="w-6 h-6" />
-                        </div>
-                        <h4 className="text-lg font-bold text-white mb-2">Community Prays</h4>
-                        <p className="text-slate-400 text-sm">Thousands of believers see your candle and click "Pray" to lift up your intention.</p>
-                    </div>
-                    <div className="text-center p-6 bg-slate-800/50 rounded-2xl border border-white/5">
-                        <div className="w-12 h-12 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-sky-400">
-                            <Clock className="w-6 h-6" />
-                        </div>
-                        <h4 className="text-lg font-bold text-white mb-2">Lasting Grace</h4>
-                        <p className="text-slate-400 text-sm">You'll receive updates on how many people prayed for you before your candle expires.</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Light Candle Modal */}
-            {showLightModal && (
+        {/* Payment Modal */}
+        {
+            showPaymentModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                    <div className="bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto border border-slate-700 shadow-2xl">
+                    <div className="bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md border border-slate-700 shadow-2xl">
                         <div className="p-6">
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                    <Flame className="w-6 h-6 text-amber-400" />
-                                    Light a Prayer Candle
+                                    <CreditCard className="w-6 h-6 text-amber-400" />
+                                    Complete Payment
                                 </h2>
-                                <button onClick={() => setShowLightModal(false)} className="p-2 hover:bg-slate-700 rounded-lg">
+                                <button onClick={() => setShowPaymentModal(false)} className="p-2 hover:bg-slate-700 rounded-lg">
                                     <X className="w-5 h-5 text-gray-400" />
                                 </button>
                             </div>
 
-                            {/* Duration Selection - Featured highlighted */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-300 mb-3">Choose Duration</label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {[...DURATIONS].reverse().map((duration) => (
-                                        <button
-                                            key={duration.value}
-                                            onClick={() => setSelectedDuration(duration.value)}
-                                            className={`relative p-4 rounded-xl border-2 transition-all text-left ${selectedDuration === duration.value
-                                                ? duration.tier === 'premium'
-                                                    ? 'border-amber-400 bg-amber-500/20 ring-2 ring-amber-400/50'
-                                                    : 'border-sky-400 bg-sky-500/10'
-                                                : 'border-slate-600 hover:border-slate-500'
-                                                }`}
-                                        >
-                                            {duration.tier === 'premium' && (
-                                                <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-amber-400 to-orange-500 text-[10px] font-bold text-white rounded-full">
-                                                    FEATURED
-                                                </div>
-                                            )}
-                                            <div className="flex justify-between items-start">
-                                                <span className="text-white font-semibold">{duration.label}</span>
-                                                <div className="text-right">
-                                                    <span className={`block text-sm font-bold ${duration.price === 0 ? 'text-green-400' : 'text-amber-400'}`}>
-                                                        {duration.priceDisplay}
-                                                    </span>
-
-                                                </div>
-                                            </div>
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                {duration.tier === 'premium' ? '30 Days • Burns Longest • Max Prayers' :
-                                                    duration.tier === 'standard' ? 'High visibility • More prayers' :
-                                                        duration.tier === 'basic' ? 'Standard visibility' : 'Basic listing'}
-                                            </p>
-                                        </button>
-                                    ))}
+                            <div className="bg-slate-700/50 rounded-xl p-4 mb-6">
+                                <h3 className="text-sm font-medium text-gray-400 mb-3">Order Summary</h3>
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-white">{selectedDurationData?.label} Prayer Candle</span>
+                                    <div className="text-right">
+                                        <span className="block text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-gray-500 truncate">{intention}</p>
+                                <hr className="border-slate-600 my-3" />
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-300 font-medium">Total</span>
+                                    <div className="text-right">
+                                        <span className="block text-2xl text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Name */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Your Name</label>
-                                <input
-                                    type="text"
-                                    value={userName}
-                                    onChange={(e) => setUserName(e.target.value.slice(0, 30))}
-                                    placeholder="Enter your name"
-                                    disabled={isAnonymous}
-                                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 disabled:opacity-50"
-                                />
-                                <label className="flex items-center gap-2 mt-2 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={isAnonymous}
-                                        onChange={(e) => setIsAnonymous(e.target.checked)}
-                                        className="rounded bg-slate-700 border-slate-500"
-                                    />
-                                    <span className="text-sm text-gray-400">Post anonymously</span>
-                                </label>
-                            </div>
+                            {paymentError && (
+                                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
+                                    {paymentError}
+                                </div>
+                            )}
 
-                            {/* Intention */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Your Prayer Intention</label>
-                                <input
-                                    type="text"
-                                    value={intention}
-                                    onChange={(e) => setIntention(e.target.value.slice(0, 60))}
-                                    placeholder="For healing, peace, guidance..."
-                                    maxLength={60}
-                                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-amber-500"
-                                />
-                                <p className="text-xs text-gray-500 mt-1 text-right">{intention.length}/60</p>
-                            </div>
+                            <PayPalCheckout
+                                amount={selectedDurationData?.price || 0}
+                                description={`${selectedDurationData?.label} Prayer Candle - ${intention.substring(0, 50)}`}
+                                onSuccess={handlePayPalSuccess}
+                                onError={handlePayPalError}
+                                onCancel={() => setPaymentError('')}
+                                disabled={isProcessingPayment}
+                                referenceId={paymentReferenceId}
+                                createOrderUrl="/api/candles/payment/create"
+                                captureOrderUrl="/api/candles/payment/capture"
+                                metadata={{
+                                    intention: intention.trim(),
+                                    isAnonymous,
+                                    name: isAnonymous ? 'Anonymous' : userName.trim(),
+                                    duration: selectedDuration,
+                                    email: '' // Add email capture if needed later
+                                }}
+                            />
 
                             <button
-                                onClick={handleLightCandle}
-                                disabled={isSubmitting || !intention.trim() || (!isAnonymous && !userName.trim())}
-                                className="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 disabled:from-slate-600 disabled:to-slate-600 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-orange-500/30"
+                                onClick={() => { setShowPaymentModal(false); setShowLightModal(true); }}
+                                className="w-full mt-3 py-3 text-gray-400 hover:text-white text-sm"
                             >
-                                {isSubmitting ? 'Lighting...' : isPaidOption ? (
-                                    <>
-                                        <CreditCard className="w-5 h-5" />
-                                        Continue - {selectedDurationData?.priceDisplay}
-                                    </>
-                                ) : (
-                                    <>🕯️ Light Free Candle</>
-                                )}
+                                ← Back to options
                             </button>
                         </div>
                     </div>
                 </div>
             )
-            }
-
-            {/* Payment Modal */}
-            {
-                showPaymentModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                        <div className="bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md border border-slate-700 shadow-2xl">
-                            <div className="p-6">
-                                <div className="flex items-center justify-between mb-6">
-                                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                        <CreditCard className="w-6 h-6 text-amber-400" />
-                                        Complete Payment
-                                    </h2>
-                                    <button onClick={() => setShowPaymentModal(false)} className="p-2 hover:bg-slate-700 rounded-lg">
-                                        <X className="w-5 h-5 text-gray-400" />
-                                    </button>
-                                </div>
-
-                                <div className="bg-slate-700/50 rounded-xl p-4 mb-6">
-                                    <h3 className="text-sm font-medium text-gray-400 mb-3">Order Summary</h3>
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-white">{selectedDurationData?.label} Prayer Candle</span>
-                                        <div className="text-right">
-                                            <span className="block text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-gray-500 truncate">{intention}</p>
-                                    <hr className="border-slate-600 my-3" />
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-300 font-medium">Total</span>
-                                        <div className="text-right">
-                                            <span className="block text-2xl text-amber-400 font-bold">{selectedDurationData?.priceDisplay}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {paymentError && (
-                                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
-                                        {paymentError}
-                                    </div>
-                                )}
-
-                                <PayPalCheckout
-                                    amount={selectedDurationData?.price || 0}
-                                    description={`${selectedDurationData?.label} Prayer Candle - ${intention.substring(0, 50)}`}
-                                    onSuccess={handlePayPalSuccess}
-                                    onError={handlePayPalError}
-                                    onCancel={() => setPaymentError('')}
-                                    disabled={isProcessingPayment}
-                                    referenceId={paymentReferenceId}
-                                />
-
-                                <button
-                                    onClick={() => { setShowPaymentModal(false); setShowLightModal(true); }}
-                                    className="w-full mt-3 py-3 text-gray-400 hover:text-white text-sm"
-                                >
-                                    ← Back to options
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-        </div >
-    );
+        }
+    </div >
+);
 }
 
 // ========================================

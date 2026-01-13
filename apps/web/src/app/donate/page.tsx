@@ -115,21 +115,28 @@ export default function DonatePage() {
         setSuccessMessage('🎉 Thank you for your generous donation! God bless you.');
 
         // Send notification
-        fetch('/api/donations/checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                amount: paymentType === 'oneTime' ? getTotal() : (selectedPlanData?.price || 0),
-                tier: paymentType === 'oneTime' ? (customAmount ? 'CUSTOM' : selectedTier) : selectedPlan,
-                email,
-                name,
-                message,
-                isAnonymous,
-                isSubscription: paymentType === 'subscription',
-                paypalOrderId: details.orderId,
-                paypalPayerEmail: details.payerEmail,
-            }),
-        }).catch(err => console.log('Notification sent'));
+        // If it was a subscription, we might still need to save it since we haven't refactored Subscription flow yet
+        // Check paymentType
+        if (paymentType === 'subscription') {
+            // Keep legacy fetch for subscription ONLY for now (as per plan to focus on One-Time first)
+            fetch('/api/donations/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: selectedPlanData?.price || 0,
+                    tier: selectedPlan,
+                    email,
+                    name,
+                    message,
+                    isAnonymous,
+                    isSubscription: true,
+                    paypalOrderId: details.orderId,
+                    paypalPayerEmail: details.payerEmail,
+                }),
+            }).catch(err => console.log('Subscription notification sent'));
+        } else {
+            console.log('One-time donation captured securely server-side.');
+        }
 
         setTimeout(() => setSuccessMessage(''), 5000);
     };
@@ -188,6 +195,15 @@ export default function DonatePage() {
                                 onError={handlePayPalError}
                                 onCancel={() => setShowPaymentModal(false)}
                                 referenceId={`DONATE_${paymentType}_${Date.now()}`}
+                                createOrderUrl={paymentType === 'oneTime' ? "/api/donations/payment/create" : undefined}
+                                captureOrderUrl={paymentType === 'oneTime' ? "/api/donations/payment/capture" : undefined}
+                                metadata={paymentType === 'oneTime' ? {
+                                    tier: customAmount ? 'CUSTOM' : selectedTier,
+                                    email,
+                                    name,
+                                    message,
+                                    isAnonymous
+                                } : undefined}
                             />
 
                             <button

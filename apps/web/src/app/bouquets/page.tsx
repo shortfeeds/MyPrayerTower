@@ -64,34 +64,12 @@ export default function BouquetsPage() {
     const processCheckout = async (paypalDetails?: PayPalSuccessDetails) => {
         setIsSubmitting(true);
         try {
-            const response = await fetch('/api/bouquets/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    items: selection,
-                    recipientName,
-                    recipientEmail,
-                    senderName,
-                    senderEmail,
-                    message,
-                    occasion,
-                    sendDate,
-                    isAnonymous: false,
-                    paypalOrderId: paypalDetails?.orderId,
-                    paypalPayerEmail: paypalDetails?.payerEmail,
-                }),
-            });
+            // Data already saved by server-side capture
+            alert('Payment successful and bouquet sent!');
+            setStep(1);
+            setSelection({ mass: 0, rosary: 0, prayer: 1, candle: 0 });
+            setShowPayPal(false);
 
-            const data = await response.json();
-
-            if (data.success) {
-                alert(totalPrice > 0 ? 'Payment successful and bouquet sent!' : 'Bouquet sent successfully!');
-                setStep(1);
-                setSelection({ mass: 0, rosary: 0, prayer: 1, candle: 0 });
-                setShowPayPal(false);
-            } else {
-                alert(data.message || 'Failed to send bouquet');
-            }
         } catch (error) {
             console.error('Bouquet error:', error);
             alert('Something went wrong. Please try again.');
@@ -239,6 +217,18 @@ export default function BouquetsPage() {
                                     onError={(err) => alert('Payment failed. Please try again.')}
                                     onCancel={() => setShowPayPal(false)}
                                     referenceId={`BOUQUET_${Date.now()}`}
+                                    createOrderUrl="/api/bouquets/payment/create"
+                                    captureOrderUrl="/api/bouquets/payment/capture"
+                                    metadata={{
+                                        items: selection,
+                                        recipientName,
+                                        recipientEmail,
+                                        senderName,
+                                        senderEmail,
+                                        message,
+                                        occasion,
+                                        sendDate
+                                    }}
                                 />
                             </div>
                         </div>
