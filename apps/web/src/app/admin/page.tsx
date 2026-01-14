@@ -266,7 +266,7 @@ async function RecentActivity() {
 async function SystemStatus() {
     const [pendingReports, pendingClaims] = await Promise.all([
         db.userReport.count({ where: { status: 'PENDING' } }),
-        0 // Placeholder for church claims
+        db.churchClaim.count({ where: { status: 'PENDING' } })
     ]);
 
     const statuses = [

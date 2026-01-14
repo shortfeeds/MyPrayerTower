@@ -35,7 +35,28 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    {
+        name: 'Financial Center',
+        href: '/admin/finance',
+        icon: BarChart3,
+        children: [
+            { name: 'Overview', href: '/admin/revenue' },
+            { name: 'Transactions', href: '/admin/finance/transactions' },
+            { name: 'Analytics', href: '/admin/finance/analytics' },
+        ]
+    },
     { name: 'Users', href: '/admin/users', icon: Users },
+    {
+        name: 'CMS',
+        href: '/admin/cms',
+        icon: BookOpen,
+        children: [
+            { name: 'Saints', href: '/admin/saints' },
+            { name: 'Prayers', href: '/admin/prayers' },
+            { name: 'Readings', href: '/admin/readings' },
+            { name: 'Articles', href: '/admin/articles' },
+        ]
+    },
     {
         name: 'Churches',
         href: '/admin/churches',
@@ -46,15 +67,11 @@ const menuItems: MenuItem[] = [
             { name: 'Verified', href: '/admin/churches/verified' },
         ]
     },
-    { name: 'Saints', href: '/admin/saints', icon: Crown },
     { name: 'Virtual Candles', href: '/admin/candles', icon: Flame },
-    { name: 'Prayer Wall', href: '/admin/prayers', icon: Heart },
-    { name: 'Daily Readings', href: '/admin/readings', icon: BookOpen },
-    { name: 'Advertisements', href: '/admin/ads', icon: Image },
     { name: 'Mass Offerings', href: '/admin/mass-offerings', icon: Heart },
-    { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-    { name: 'Reports', href: '/admin/reports', icon: Shield },
-    { name: 'Audit Log', href: '/admin/audit', icon: Bell },
+    { name: 'Advertisements', href: '/admin/ads', icon: Image },
+    { name: 'Moderation', href: '/admin/moderation', icon: Shield, badge: 3 }, // TODO: Fetch real badge count
+    { name: 'Reports', href: '/admin/reports', icon: Bell },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

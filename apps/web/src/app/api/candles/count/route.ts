@@ -11,7 +11,7 @@ export async function GET() {
         const now = new Date();
 
         // Count active (paid and not expired) candles
-        const count = await db.virtualCandle.count({
+        const count = await db.prayerCandle.count({
             where: {
                 isActive: true,
                 paymentStatus: 'PAID',
