@@ -167,8 +167,11 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                         {/* Step 2: Tier Selection */}
                         {step === 2 && (
                             <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-                                <h4 className="font-semibold text-gray-900 mb-1 text-base">Choose Your Candle</h4>
-                                <p className="text-xs text-gray-600 mb-3">Premium candles have greater visibility and prayers</p>
+                                <h4 className="font-semibold text-gray-900 mb-1 text-base">Select Your Offering</h4>
+                                <p className="text-xs text-gray-600 mb-4 italic">
+                                    "{SACRED_COPY.candles.meaning}"
+                                </p>
+
                                 <div className="space-y-2 mb-4">
                                     {DURATIONS.map((tier) => {
                                         const isSelected = formData.duration === tier.value;
@@ -176,68 +179,70 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                                             <button
                                                 key={tier.value}
                                                 onClick={() => setFormData({ ...formData, duration: tier.value })}
-                                                className={`relative w-full flex items-center justify-between p-2.5 rounded-lg border-2 transition-all ${isSelected
-                                                    ? 'border-amber-500 bg-amber-50 shadow-md ring-2 ring-amber-400'
-                                                    : tier.tier === 'premium'
-                                                        ? 'border-amber-200 hover:border-amber-400 bg-amber-50/30'
-                                                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                                                className={`relative w-full flex items-center justify-between p-3 rounded-xl border transition-all duration-200 ${isSelected
+                                                    ? 'border-amber-500 bg-amber-50 ring-1 ring-amber-400'
+                                                    : 'border-gray-100 hover:border-amber-200 bg-white hover:bg-amber-50/30'
                                                     }`}
                                             >
                                                 {/* Badge */}
                                                 {tier.tierBadge && (
-                                                    <div className="absolute -top-1.5 right-3 px-1.5 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[8px] font-bold rounded-full">
+                                                    <div className="absolute -top-2 right-4 px-2 py-0.5 bg-gradient-to-r from-amber-600 to-orange-600 text-white text-[9px] font-bold rounded-full shadow-sm uppercase tracking-wider">
                                                         {tier.tierBadge}
                                                     </div>
                                                 )}
-                                                {/* Selected check */}
-                                                {isSelected && (
-                                                    <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center shadow">
-                                                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                        </svg>
-                                                    </div>
-                                                )}
-                                                <div className="flex items-center gap-2 text-left">
-                                                    <div className="relative w-10 h-10 bg-gradient-to-br from-gray-900 to-black rounded-lg border border-gray-300 overflow-hidden shrink-0">
+
+                                                <div className="flex items-center gap-3 text-left">
+                                                    <div className={`relative w-12 h-12 rounded-lg border overflow-hidden shrink-0 ${isSelected ? 'border-amber-300' : 'border-gray-200'}`}>
                                                         <Image
                                                             src={tier.image}
                                                             alt={tier.label}
                                                             fill
-                                                            className="object-contain p-0.5"
+                                                            className="object-contain p-1"
                                                         />
                                                     </div>
                                                     <div>
-                                                        <div className="flex items-center gap-1.5">
-                                                            <span className={`font-bold text-sm ${isSelected ? 'text-amber-800' : 'text-gray-900'}`}>{tier.label}</span>
-                                                            <span className={`text-[10px] px-1 py-0.5 rounded font-medium ${isSelected ? 'bg-amber-200 text-amber-800' : 'bg-gray-100 text-gray-600'}`}>{tier.daysLabel}</span>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`font-serif font-bold ${isSelected ? 'text-amber-900' : 'text-gray-900'}`}>{tier.label}</span>
+                                                            <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">{tier.daysLabel}</span>
                                                         </div>
-                                                        <div className={`text-[11px] ${isSelected ? 'text-amber-700' : 'text-gray-500'}`}>{tier.spiritual}</div>
+                                                        <div className="text-xs text-amber-700/80 italic mt-0.5">{tier.spiritual}</div>
                                                     </div>
                                                 </div>
-                                                <div className="text-right shrink-0 ml-1">
-                                                    <div className={`font-bold text-base ${tier.price === 0 ? 'text-green-600' : 'text-amber-600'}`}>
-                                                        {tier.priceDisplay}
+
+                                                <div className="text-right shrink-0">
+                                                    <div className={`font-medium ${tier.price === 0 ? 'text-green-600' : 'text-gray-900'}`}>
+                                                        {tier.price === 0 ? 'Free' : tier.priceDisplay}
                                                     </div>
-                                                    {tier.price === 0 && (
-                                                        <div className="text-[9px] text-green-600 font-semibold">Start</div>
+                                                    {tier.price > 0 && (
+                                                        <div className="text-[10px] text-gray-400">offering</div>
                                                     )}
                                                 </div>
                                             </button>
                                         );
                                     })}
                                 </div>
+
+                                <div className="bg-blue-50 p-3 rounded-lg flex gap-3 items-start mb-4">
+                                    <div className="p-1 bg-blue-100 rounded-full text-blue-600 mt-0.5">
+                                        <CheckCircle className="w-3 h-3" />
+                                    </div>
+                                    <p className="text-xs text-blue-800 leading-relaxed">
+                                        {SACRED_COPY.offerings.transparency}
+                                    </p>
+                                </div>
+
                                 <div className="flex gap-3">
                                     <button
                                         onClick={() => setStep(1)}
-                                        className="px-6 py-3 border border-gray-300 rounded-xl font-medium text-gray-700 bg-white hover:bg-gray-50"
+                                        className="px-6 py-3 text-gray-500 hover:text-gray-800 font-medium transition-colors"
                                     >
                                         Back
                                     </button>
                                     <button
                                         onClick={handleSubmit}
-                                        className="flex-1 py-3 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600 shadow-lg shadow-amber-200 active:scale-95 transition-all"
+                                        className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-bold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 hover:-translate-y-0.5 transition-all"
                                     >
-                                        {selectedTier.price === 0 ? 'Light Candle' : 'Proceed to Offering'}
+                                        {selectedTier.price === 0 ? 'Light Candle' : 'Make Offering'}
                                     </button>
                                 </div>
                             </motion.div>
@@ -247,14 +252,16 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                         {step === 3 && (
                             <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
                                 <div className="text-center mb-6">
-                                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
                                         <Lock className="w-8 h-8 text-amber-600" />
                                     </div>
-                                    <h4 className="font-bold text-xl text-gray-900">Secure Offering</h4>
-                                    <p className="text-gray-500 text-sm">Amount: {selectedTier.priceDisplay}</p>
+                                    <h4 className="font-serif font-bold text-xl text-gray-900 mb-1">Secure Offering</h4>
+                                    <p className="text-gray-500 text-sm">
+                                        Your offering of <span className="font-semibold text-gray-900">{selectedTier.priceDisplay}</span> helps sustain this sanctuary.
+                                    </p>
                                 </div>
 
-                                <div className="min-h-[150px]">
+                                <div className="min-h-[150px] relative z-0">
                                     <PayPalCheckout
                                         amount={selectedTier.price}
                                         currency="USD"
@@ -265,19 +272,20 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
 
                                 <button
                                     onClick={() => setStep(2)}
-                                    className="mt-4 w-full py-2 text-sm text-gray-500 hover:text-gray-900"
+                                    className="mt-6 w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition-colors"
                                 >
-                                    Go Back
+                                    Change Selection
                                 </button>
                             </motion.div>
                         )}
 
                         {/* Loading Overlay */}
                         {loading && (
-                            <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-20">
+                            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-20">
                                 <div className="text-center">
-                                    <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                                    <p className="text-amber-600 font-medium">Lighting your candle...</p>
+                                    <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                                    <h5 className="text-lg font-serif font-bold text-gray-900 mb-1">Lighting your candle...</h5>
+                                    <p className="text-gray-500 text-sm">May your prayer rise like incense.</p>
                                 </div>
                             </div>
                         )}

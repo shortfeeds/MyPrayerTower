@@ -24,6 +24,7 @@ interface PayPalCheckoutProps {
     createOrderUrl?: string;
     captureOrderUrl?: string;
     metadata?: any;
+    buttonLabel?: 'paypal' | 'checkout' | 'buynow' | 'pay' | 'installment' | 'subscribe' | 'donate';
 }
 
 export interface PayPalSuccessDetails {
@@ -52,6 +53,7 @@ export function PayPalCheckout({
     createOrderUrl = '/api/paypal/create-order',
     captureOrderUrl = '/api/paypal/capture-order',
     metadata,
+    buttonLabel = 'paypal', // Default to just "PayPal" logo to be less transactional than "Pay with..."
 }: PayPalCheckoutProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -96,7 +98,7 @@ export function PayPalCheckout({
                         layout: 'vertical',
                         color: 'gold',
                         shape: 'rect',
-                        label: subscriptionPlanId ? 'subscribe' : 'pay',
+                        label: subscriptionPlanId ? 'subscribe' : buttonLabel,
                         height: 48,
                     }}
                     fundingSource={FUNDING.PAYPAL}
@@ -207,7 +209,7 @@ export function PayPalCheckout({
                                 layout: 'vertical',
                                 color: 'black',
                                 shape: 'rect',
-                                label: 'pay',
+                                label: 'pay', // Card button still needs a clear action
                                 height: 48,
                             }}
                             fundingSource={FUNDING.CARD}

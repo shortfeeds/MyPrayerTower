@@ -97,20 +97,12 @@ function LoggedOutHomePage() {
                         </Link>
                     </div>
 
-                    {/* NO stats, NO feature lists, NO secondary links */}
+                    {/* Reassurance Line */}
+                    <p className="text-sm md:text-base text-blue-200/60 font-medium tracking-wider animate-delay-300 animate-fade-in-up">
+                        A place of prayer, remembrance, and hope.
+                    </p>
                 </div>
             </section>
-
-            {/* Daily Focus Dashboard - Overlapping Hero */}
-            <div className="relative z-30 -mt-24">
-                <Suspense fallback={
-                    <div className="container mx-auto px-4">
-                        <div className="max-w-5xl mx-auto h-64 bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl animate-pulse" />
-                    </div>
-                }>
-                    <AsyncDailyFocus />
-                </Suspense>
-            </div>
 
             {/* ============================================
                 SECTION 2: CORE ACTIONS (3 Only)

@@ -3,6 +3,7 @@
 import { useState, Fragment } from 'react';
 import { X, Plus, Minus, Loader2, Check, Sparkles, Gift, Heart, Church } from 'lucide-react';
 import { PayPalCheckout } from '@/components/PayPalCheckout';
+import { SACRED_COPY } from '@/lib/sacred-copy';
 
 interface Memorial {
     id: string;
@@ -133,7 +134,7 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                     }, 2000);
                 }
             } else {
-                alert(data.message || 'Failed to process checkout');
+                alert(data.message || 'Failed to process offering');
             }
         } catch (error) {
             console.error('Checkout error:', error);
@@ -347,8 +348,8 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                                     </>
                                 )}
                             </button>
-                            <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-2 sm:mt-3">
-                                Your offering supports the maintenance of this sacred memorial space.
+                            <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-3 sm:mt-4 italic max-w-lg mx-auto leading-relaxed">
+                                {SACRED_COPY.offerings.transparency}
                             </p>
                         </div>
                     </>

@@ -132,7 +132,7 @@ export default function CreateMemorialPage() {
                             <ChevronLeft className="w-5 h-5" />
                             Back
                         </Link>
-                        <h1 className="text-xl font-serif font-bold text-gray-900">Create Memorial</h1>
+                        <h1 className="text-xl font-serif font-bold text-gray-900">Create Digital Chapel</h1>
                         <div className="w-16" /> {/* Spacer */}
                     </div>
                 </div>
@@ -300,7 +300,7 @@ export default function CreateMemorialPage() {
 
                         {step === 'plan' && (
                             <div className="space-y-6">
-                                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-2">Select a Plan</h2>
+                                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-2">Select Chapel Type</h2>
                                 <p className="text-gray-500 mb-6">Choose how you want to honor their memory.</p>
 
                                 <div className="grid md:grid-cols-2 gap-4">
@@ -314,7 +314,7 @@ export default function CreateMemorialPage() {
                                     >
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <h3 className="font-bold text-lg text-gray-900">Basic Memorial</h3>
+                                                <h3 className="font-bold text-lg text-gray-900">Standard Chapel</h3>
                                                 <div className="text-2xl font-bold text-green-600 mt-1">FREE</div>
                                             </div>
                                             <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${formData.tier === 'BASIC' ? 'border-amber-500 bg-amber-500 text-white' : 'border-gray-300'
@@ -344,7 +344,7 @@ export default function CreateMemorialPage() {
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
                                                 <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
-                                                    Premium
+                                                    Featured Chapel
                                                     <Sparkles className="w-4 h-4 text-amber-500" />
                                                 </h3>
                                                 <div className="text-2xl font-bold text-amber-600 mt-1">$49.99</div>
@@ -367,22 +367,22 @@ export default function CreateMemorialPage() {
 
                         {step === 'payment' && (
                             <div className="space-y-6">
-                                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-2">Payment</h2>
-                                <p className="text-gray-500 mb-6">Securely complete your memorial.</p>
+                                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-2">Confirm Digital Chapel</h2>
+                                <p className="text-gray-500 mb-6">Securely complete your memorial space.</p>
 
                                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-6">
                                     <div className="flex justify-between items-center mb-2">
                                         <span className="font-medium text-gray-900">
-                                            {formData.tier === 'BASIC' ? 'Basic Memorial' : 'Premium Memorial'}
+                                            {formData.tier === 'BASIC' ? 'Standard Chapel' : 'Featured Chapel'}
                                         </span>
                                         <span className="font-bold text-gray-900">
-                                            ${formData.tier === 'BASIC' ? '20.00' : '49.00'}
+                                            {formData.tier === 'BASIC' ? 'FREE' : '$49.99'}
                                         </span>
                                     </div>
-                                    <div className="text-sm text-gray-500">One-time payment</div>
+                                    <div className="text-sm text-gray-500">One-time setup</div>
                                 </div>
 
-                                {showPayPal && pendingOrder ? (
+                                {showPayPal && pendingOrder && formData.tier === 'PREMIUM' ? (
                                     <div className="space-y-4">
                                         <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
                                             <p className="text-sm text-amber-800 font-medium mb-1">Order Details</p>
@@ -397,7 +397,11 @@ export default function CreateMemorialPage() {
                                 ) : (
                                     <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center">
                                         <Sparkles className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-                                        <p className="text-gray-600 mb-6">Click "Complete Payment" to proceed to secure checkout.</p>
+                                        <p className="text-gray-600 mb-6">
+                                            {formData.tier === 'BASIC'
+                                                ? 'Click "Create Chapel" to establish this sacred space.'
+                                                : 'Click "Proceed to Offering" to secure this featured chapel.'}
+                                        </p>
                                     </div>
                                 )}
                             </div>
@@ -422,7 +426,9 @@ export default function CreateMemorialPage() {
                                     disabled={loading}
                                     className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-lg hover:shadow-amber-500/25 transition-all flex items-center gap-2"
                                 >
-                                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Complete Payment'}
+                                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                                        formData.tier === 'BASIC' ? 'Create Chapel' : 'Proceed to Offering'
+                                    )}
                                 </button>
                             ) : (
                                 <button

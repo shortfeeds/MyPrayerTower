@@ -92,8 +92,8 @@ export function Footer() {
 
     const mobileNavItems = [
         { href: '/', label: 'Home', icon: Home },
-        { href: '/memorials', label: 'Memorials', icon: Heart },
-        { href: '/churches', label: 'Churches', icon: Church },
+        { href: '/memorials', label: 'Chapels', icon: Heart },
+        { href: '/churches', label: 'Sacred Spaces', icon: Church },
         { href: '/prayers', label: 'Prayers', icon: Star },
         { href: '#offerings', label: 'Offerings', icon: Gift, isAction: true },
     ];
@@ -155,20 +155,20 @@ export function Footer() {
                             <ul className="space-y-3 text-sm">
                                 <li><Link href="/candles" className="hover:text-gold-400 transition-colors">Light a Candle</Link></li>
                                 <li><Link href="/mass-offerings" className="hover:text-gold-400 transition-colors">Request Mass</Link></li>
-                                <li><Link href="/memorials" className="hover:text-gold-400 transition-colors">Memorials</Link></li>
+                                <li><Link href="/memorials" className="hover:text-gold-400 transition-colors">Digital Chapels</Link></li>
                                 <li><Link href="/bouquets" className="hover:text-gold-400 transition-colors">Spiritual Bouquets</Link></li>
                                 <li><Link href="/donate" className="hover:text-gold-400 transition-colors">Donate</Link></li>
                             </ul>
                         </div>
 
-                        {/* 4. LEARN & LOCATE (Merged to save space) */}
+                        {/* 4. DISCOVER (Learn & Locate Combined) */}
                         <div className="col-span-1">
                             <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider border-b border-gray-800/50 pb-2 inline-block">Discover</h4>
                             <ul className="space-y-3 text-sm">
                                 <li><Link href="/bible" className="hover:text-gold-400 transition-colors">Bible (DuoBiblia)</Link></li>
                                 <li><Link href="/saints" className="hover:text-gold-400 transition-colors">Saints</Link></li>
                                 <li><Link href="/catechism" className="hover:text-gold-400 transition-colors">Catechism</Link></li>
-                                <li className="pt-2"><Link href="/churches" className="hover:text-gold-400 transition-colors flex items-center gap-1"><Church className="w-3 h-3" /> Find Churches</Link></li>
+                                <li className="pt-2"><Link href="/churches" className="hover:text-gold-400 transition-colors flex items-center gap-1"><Church className="w-3 h-3" /> Sacred Spaces</Link></li>
                                 <li><Link href="/confession" className="hover:text-gold-400 transition-colors">Confession Finder</Link></li>
                             </ul>
                         </div>

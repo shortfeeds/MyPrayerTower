@@ -62,169 +62,10 @@ export interface Church {
     ChurchEvent?: ChurchEvent[];
 }
 
-// Inline Claim Form Component
-function ClaimForm({ churchId, churchName }: { churchId: string; churchName: string }) {
-    const [step, setStep] = useState<'form' | 'verify' | 'success'>('form');
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        role: '',
-    });
-    const [verificationCode, setVerificationCode] = useState('');
-    const [loading, setLoading] = useState(false);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setLoading(false);
-        setStep('verify');
-    };
-
-    const handleVerify = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        // Simulate verification
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setLoading(false);
-        setStep('success');
-    };
-
-    if (step === 'success') {
-        return (
-            <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-8 text-center border border-emerald-200">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle2 className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-emerald-800 mb-2">Claim Submitted!</h3>
-                <p className="text-emerald-700 mb-4">
-                    Your claim for {churchName} has been submitted. Our team will review and verify your claim within 2-3 business days.
-                </p>
-                <p className="text-sm text-emerald-600">You'll receive an email notification once approved.</p>
-            </div>
-        );
-    }
-
-    if (step === 'verify') {
-        return (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                        <Shield className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                        <h3 className="font-bold text-gray-900">Verify Your Email</h3>
-                        <p className="text-sm text-gray-500">We sent a code to {formData.email}</p>
-                    </div>
-                </div>
-                <form onSubmit={handleVerify} className="space-y-4">
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="Enter 6-digit code"
-                            value={verificationCode}
-                            onChange={(e) => setVerificationCode(e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl tracking-widest font-mono"
-                            maxLength={6}
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={loading || verificationCode.length < 6}
-                        className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verify & Submit Claim'}
-                    </button>
-                    <button type="button" onClick={() => setStep('form')} className="w-full text-sm text-gray-500 hover:text-gray-700">
-                        ← Go back
-                    </button>
-                </form>
-            </div>
-        );
-    }
-
-    return (
-        <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-6 border border-amber-200">
-            <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
-                    <Building2 className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                    <h3 className="font-bold text-gray-900">Claim This Church</h3>
-                    <p className="text-sm text-gray-500">Verify your affiliation to manage this listing</p>
-                </div>
-            </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                    <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                        placeholder="Fr. John Smith"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                    <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                        placeholder="pastor@church.org"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                    <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                        placeholder="+1 (555) 123-4567"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Your Role</label>
-                    <select
-                        value={formData.role}
-                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                        required
-                    >
-                        <option value="">Select your role</option>
-                        <option value="pastor">Pastor/Priest</option>
-                        <option value="deacon">Deacon</option>
-                        <option value="secretary">Parish Secretary</option>
-                        <option value="administrator">Administrator</option>
-                        <option value="other">Other Staff</option>
-                    </select>
-                </div>
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Send className="w-4 h-4" /> Submit Claim</>}
-                </button>
-            </form>
-        </div>
-    );
-}
+// ClaimForm removed
 
 export function ChurchProfile({ church }: { church: Church }) {
-    const searchParams = useSearchParams();
-    const showClaim = searchParams.get('claim') === 'true';
-
     const [isFavorite, setIsFavorite] = useState(false);
-    const [showClaimForm, setShowClaimForm] = useState(showClaim);
 
     const getLocationString = () => {
         const parts = [church.city, church.state, church.country, church.postalCode].filter(Boolean);
@@ -490,10 +331,7 @@ export function ChurchProfile({ church }: { church: Church }) {
                             </div>
                         )}
 
-                        {/* Inline Claim Form - Only for unverified churches */}
-                        {!church.isVerified && showClaimForm && (
-                            <ClaimForm churchId={church.id} churchName={church.name} />
-                        )}
+                        {/* Inline Claim Form Removed */}
 
                         {/* Inline Ad */}
                         <div className="py-4">
@@ -576,21 +414,7 @@ export function ChurchProfile({ church }: { church: Church }) {
                             </div>
                         )}
 
-                        {/* Claim Trigger - Only for unverified */}
-                        {!church.isVerified && !showClaimForm && (
-                            <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl p-6">
-                                <h3 className="font-bold text-amber-900 mb-2">Claim This Church</h3>
-                                <p className="text-amber-700 text-sm mb-4">
-                                    Are you affiliated with this church? Claim it to manage the listing.
-                                </p>
-                                <button
-                                    onClick={() => setShowClaimForm(true)}
-                                    className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all"
-                                >
-                                    Start Claim Process
-                                </button>
-                            </div>
-                        )}
+                        {/* Claim Trigger Removed */}
 
                         {/* Sidebar Ad */}
                         <SmartAdSlot page="churches" position="sidebar" />

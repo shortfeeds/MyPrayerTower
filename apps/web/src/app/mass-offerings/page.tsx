@@ -603,7 +603,7 @@ export default function MassOfferingsPage() {
                     </div>
                 )}
 
-                {/* Step 4: Your Information & Checkout */}
+                {/* Step 4: Your Information & Offering */}
                 {step === 4 && (
                     <div className="animate-in fade-in slide-in-from-right-4">
                         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Complete Your Request</h2>

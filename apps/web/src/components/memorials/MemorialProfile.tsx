@@ -204,12 +204,12 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                 <div className="relative z-10 container mx-auto px-4 pt-20 pb-32">
                     <Link href="/memorials" className="inline-flex items-center gap-2 text-slate-300 hover:text-white mb-8 transition-colors">
                         <ChevronLeft className="w-5 h-5" />
-                        Back to Memorials
+                        Return to Chapels
                     </Link>
 
                     <div className="flex flex-col lg:flex-row gap-8 items-start">
                         {/* Photo - Premium gets golden ring with glow */}
-                        <div className={`w-48 h-48 lg:w-56 lg:h-56 rounded-2xl overflow-hidden bg-slate-700 flex-shrink-0 shadow-2xl ${memorial.tier === 'PREMIUM'
+                        <div className={`w-48 h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden bg-slate-700 flex-shrink-0 shadow-2xl ${memorial.tier === 'PREMIUM'
                             ? 'ring-4 ring-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.4)]'
                             : 'border-4 border-white/20'
                             }`}>
@@ -224,6 +224,10 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
 
                         {/* Info */}
                         <div className="flex-1">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-amber-200 text-xs font-bold uppercase tracking-widest mb-4">
+                                <Sparkles className="w-3 h-3" />
+                                Digital Chapel
+                            </div>
                             <h1 className="text-3xl lg:text-4xl font-serif font-bold mb-2 text-white/80">
                                 In Loving Memory of
                             </h1>
@@ -320,25 +324,21 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
             {/* Stats Bar */}
             <div className="bg-slate-50 border-b border-gray-200 shadow-inner relative z-10">
                 <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-center gap-8 text-center">
-                        <div>
-                            <div className="text-3xl font-bold text-amber-500">{memorial.totalCandles}</div>
-                            <div className="text-sm text-gray-500">🕯️ Candles</div>
+                    <div className="flex items-center justify-center gap-8 text-center text-sm">
+                        <div className="flex items-center gap-2 text-amber-600/80">
+                            <span className="font-bold">{memorial.totalCandles}</span> Candles
                         </div>
-                        <div className="w-px h-10 bg-gray-200" />
-                        <div>
-                            <div className="text-3xl font-bold text-blue-500">{memorial.totalMasses}</div>
-                            <div className="text-sm text-gray-500">✝️ Masses</div>
+                        <div className="w-1 h-1 bg-gray-300 rounded-full" />
+                        <div className="flex items-center gap-2 text-blue-600/80">
+                            <span className="font-bold">{memorial.totalMasses}</span> Masses
                         </div>
-                        <div className="w-px h-10 bg-gray-200" />
-                        <div>
-                            <div className="text-3xl font-bold text-rose-500">{memorial.totalFlowers}</div>
-                            <div className="text-sm text-gray-500">🌹 Flowers</div>
+                        <div className="w-1 h-1 bg-gray-300 rounded-full" />
+                        <div className="flex items-center gap-2 text-rose-600/80">
+                            <span className="font-bold">{memorial.totalFlowers}</span> Flowers
                         </div>
-                        <div className="w-px h-10 bg-gray-200" />
-                        <div>
-                            <div className="text-3xl font-bold text-purple-500">{memorial.totalPrayers}</div>
-                            <div className="text-sm text-gray-500">🙏 Prayers</div>
+                        <div className="w-1 h-1 bg-gray-300 rounded-full" />
+                        <div className="flex items-center gap-2 text-purple-600/80">
+                            <span className="font-bold">{memorial.totalPrayers}</span> Prayers
                         </div>
                     </div>
                 </div>
@@ -351,69 +351,69 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                     <div className="lg:col-span-2 space-y-8">
                         {/* Quick Offerings Section 1 */}
                         <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Light a Candle or Offer a Prayer</h3>
-                            <p className="text-gray-500 mb-6">Your presence and prayers are the greatest gift. These offerings are optional — your remembrance is enough.</p>
+                            <h3 className="text-xl font-serif font-bold text-gray-900 mb-2">Leave a Tribute</h3>
+                            <p className="text-gray-500 mb-6 italic">"To live in hearts we leave behind is not to die."</p>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
-                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-100 hover:border-amber-300 transition-all group"
+                                    className="flex flex-col items-center p-4 bg-amber-50 rounded-2xl border border-amber-100 hover:border-amber-300 hover:bg-amber-100/50 transition-all group"
                                 >
-                                    <span className="text-3xl mb-2">🕯️</span>
-                                    <span className="font-semibold text-gray-900">Light a Candle</span>
-                                    <span className="text-xs text-amber-600/70">Suggested offering</span>
+                                    <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">🕯️</span>
+                                    <span className="font-semibold text-gray-900">Light Candle</span>
+                                    <span className="text-xs text-amber-600/70">Vigil Light</span>
                                 </button>
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
-                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl border border-rose-100 hover:border-rose-300 transition-all group"
+                                    className="flex flex-col items-center p-4 bg-rose-50 rounded-2xl border border-rose-100 hover:border-rose-300 hover:bg-rose-100/50 transition-all group"
                                 >
-                                    <span className="text-3xl mb-2">🌹</span>
-                                    <span className="font-semibold text-gray-900">Send Flowers</span>
-                                    <span className="text-xs text-rose-600/70">In remembrance</span>
+                                    <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">🌹</span>
+                                    <span className="font-semibold text-gray-900">Flowers</span>
+                                    <span className="text-xs text-rose-600/70">Remembrance</span>
                                 </button>
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
-                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all group"
+                                    className="flex flex-col items-center p-4 bg-blue-50 rounded-2xl border border-blue-100 hover:border-blue-300 hover:bg-blue-100/50 transition-all group"
                                 >
-                                    <span className="text-3xl mb-2">🙏</span>
-                                    <span className="font-semibold text-gray-900">Offer a Prayer</span>
-                                    <span className="text-xs text-blue-600/70">Join in prayer</span>
+                                    <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">🙏</span>
+                                    <span className="font-semibold text-gray-900">Prayer</span>
+                                    <span className="text-xs text-blue-600/70">Intention</span>
                                 </button>
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
-                                    className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl border border-purple-100 hover:border-purple-300 transition-all group"
+                                    className="flex flex-col items-center p-4 bg-purple-50 rounded-2xl border border-purple-100 hover:border-purple-300 hover:bg-purple-100/50 transition-all group"
                                 >
-                                    <span className="text-3xl mb-2">💐</span>
-                                    <span className="font-semibold text-gray-900">Floral Tribute</span>
-                                    <span className="text-xs text-purple-600/70">A loving gesture</span>
+                                    <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">💐</span>
+                                    <span className="font-semibold text-gray-900">Bouquet</span>
+                                    <span className="text-xs text-purple-600/70">Tribute</span>
                                 </button>
                             </div>
                         </div>
 
                         {/* Sacred Offerings Section 2 */}
                         <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Sacred Offerings</h3>
-                            <p className="text-gray-500 mb-6">The greatest gift — a prayer from the Church</p>
+                            <h3 className="text-xl font-serif font-bold text-gray-900 mb-2">Sacred Liturgy</h3>
+                            <p className="text-gray-500 mb-6">Request the highest form of prayer for your loved one.</p>
                             <div className="grid md:grid-cols-2 gap-4">
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
-                                    className="flex items-center gap-4 p-5 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100 hover:border-indigo-300 transition-all text-left"
+                                    className="flex items-center gap-4 p-5 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100 hover:border-indigo-300 transition-all text-left group"
                                 >
-                                    <span className="text-4xl">💿</span>
+                                    <span className="text-4xl group-hover:scale-110 transition-transform">📿</span>
                                     <div>
-                                        <div className="font-semibold text-gray-900">Rosary</div>
-                                        <div className="text-sm text-indigo-600">$5 - $15</div>
+                                        <div className="font-semibold text-gray-900">Holy Rosary</div>
+                                        <div className="text-sm text-indigo-600">Prayer for Intercession</div>
                                     </div>
                                 </button>
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
-                                    className="flex items-center gap-4 p-5 bg-gradient-to-br from-blue-50 to-sky-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all text-left"
+                                    className="flex items-center gap-4 p-5 bg-gradient-to-br from-blue-50 to-sky-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all text-left group"
                                 >
-                                    <span className="text-4xl">✝️</span>
+                                    <span className="text-4xl group-hover:scale-110 transition-transform">✝️</span>
                                     <div>
-                                        <div className="font-semibold text-gray-900">Holy Mass</div>
-                                        <div className="text-sm text-blue-600">$25</div>
+                                        <div className="font-semibold text-gray-900">Holy Mass Intention</div>
+                                        <div className="text-sm text-blue-600">The Ultimate Prayer</div>
                                     </div>
-                                    <ExternalLink className="w-4 h-4 ml-auto text-gray-400" />
+                                    <ExternalLink className="w-4 h-4 ml-auto text-gray-400 group-hover:text-blue-500" />
                                 </button>
                             </div>
                         </div>

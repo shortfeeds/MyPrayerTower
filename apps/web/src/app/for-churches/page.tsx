@@ -132,7 +132,7 @@ export default function ChurchPricingPage() {
             }
         } catch (err) {
             console.error('Checkout error:', err);
-            setError('Failed to start checkout. Please try again.');
+            setError('Failed to start process. Please try again.');
         } finally {
             setLoading(null);
         }
