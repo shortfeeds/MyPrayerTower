@@ -28,20 +28,20 @@ interface OfferingOption {
 
 const ALL_OFFERINGS: OfferingOption[] = [
     // Quick Acts
-    { id: 'CANDLE_SMALL', name: '3-Day Candle', icon: '🕯️', price: 2.49, category: 'quick' },
-    { id: 'CANDLE_MEDIUM', name: '7-Day Candle', icon: '🕯️', price: 4.99, category: 'quick' },
-    { id: 'CANDLE_LARGE', name: '14-Day Candle', icon: '🕯️', price: 9.99, category: 'quick' },
+    { id: 'CANDLE_SMALL', name: '3-Day Candle', icon: '🕯️', price: 3, category: 'quick' },
+    { id: 'CANDLE_MEDIUM', name: '7-Day Candle', icon: '🕯️', price: 5, category: 'quick' },
+    { id: 'CANDLE_LARGE', name: '14-Day Candle', icon: '🕯️', price: 10, category: 'quick' },
     { id: 'FLOWERS', name: 'Flowers', icon: '🌹', price: 3, category: 'quick' },
     { id: 'PRAYER_CARD', name: 'Prayer Card', icon: '🙏', price: 2, category: 'quick' },
-    { id: 'FLORAL_BOUQUET', name: 'Floral Bouquet', icon: '💐', price: 7, category: 'quick' },
+    { id: 'FLORAL_BOUQUET', name: 'Floral Bouquet', icon: '💐', price: 8, category: 'quick' },
     // Sacred
     { id: 'ROSARY_DECADE', name: 'Rosary Decade', icon: '📿', price: 5, category: 'sacred' },
     { id: 'ROSARY_FULL', name: 'Full Rosary', icon: '📿', price: 15, category: 'sacred' },
     { id: 'MASS', name: 'Holy Mass', icon: '✝️', price: 25, description: 'For the repose of the soul', category: 'sacred' },
     // Bundles
-    { id: 'BOUQUET_GARDEN', name: 'Garden of Grace', icon: '💝', price: 19, description: '3 candles + rosary + card', category: 'bouquet' },
-    { id: 'BOUQUET_HEAVENLY', name: 'Heavenly Tribute', icon: '💝', price: 49, description: '7 candles + Mass + rosary', category: 'bouquet' },
-    { id: 'BOUQUET_ETERNAL', name: 'Eternal Peace', icon: '💝', price: 99, description: '30 candles + 3 Masses', category: 'bouquet' },
+    { id: 'BOUQUET_GARDEN', name: 'Garden of Grace', icon: '💝', price: 20, description: '3 candles + rosary + card', category: 'bouquet' },
+    { id: 'BOUQUET_HEAVENLY', name: 'Heavenly Tribute', icon: '💝', price: 50, description: '7 candles + Mass + rosary', category: 'bouquet' },
+    { id: 'BOUQUET_ETERNAL', name: 'Eternal Peace', icon: '💝', price: 100, description: '30 candles + 3 Masses', category: 'bouquet' },
 ];
 
 interface CartItem {
@@ -305,7 +305,7 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                                 {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                     <>
                                         <ShoppingCart className="w-5 h-5" />
-                                        Checkout — {totalItems} item{totalItems !== 1 ? 's' : ''} — ${totalPrice}
+                                        Offer Now — {totalItems} item{totalItems !== 1 ? 's' : ''} — ${Number.isInteger(totalPrice) ? totalPrice : totalPrice.toFixed(2)}
                                     </>
                                 )}
                             </button>
