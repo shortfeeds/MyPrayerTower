@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { capturePayPalOrder } from '@/lib/paypal';
-import { PrismaClient } from '@mpt/database';
+import { db } from '@/lib/db';
+import { notifyCandle } from '@/lib/email';
 
-const prisma = new PrismaClient();
+const prisma = db; // Alias for minimal refactor impact if used elsewhere
 
 // Duration in hours
 const DURATION_HOURS = {
@@ -36,13 +37,13 @@ export async function POST(req: NextRequest) {
                 console.log(`Lighting Candle: ${dbRecordId}`);
 
                 // Fetch to get duration for expiry calculation
-                const candle = await prisma.virtualCandle.findUnique({ where: { id: dbRecordId } });
+                const candle = await db.virtualCandle.findUnique({ where: { id: dbRecordId } });
 
                 if (candle) {
                     const hours = DURATION_HOURS[candle.duration as keyof typeof DURATION_HOURS] || 24;
                     const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
 
-                    await prisma.virtualCandle.update({
+                    const updatedCandle = await db.virtualCandle.update({
                         where: { id: dbRecordId },
                         data: {
                             paymentStatus: 'PAID',
@@ -51,6 +52,15 @@ export async function POST(req: NextRequest) {
                             litAt: new Date(),
                             expiresAt: expiresAt
                         }
+                    });
+
+                    // Send email notification
+                    await notifyCandle({
+                        candleType: updatedCandle.duration,
+                        intention: updatedCandle.intention,
+                        amount: updatedCandle.amount || 0,
+                        name: updatedCandle.isAnonymous ? 'Anonymous' : (updatedCandle.name || 'Prayer Warrior'),
+                        email: captureResult.payer?.email_address
                     });
                 }
             } else {

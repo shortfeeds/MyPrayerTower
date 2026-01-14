@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { getUserFromCookie } from '@/lib/auth';
 import type { Metadata } from 'next';
+import { getUserPrayerStats } from '@/app/actions/journey';
 import JourneyContent from './JourneyContent';
 
 export const metadata: Metadata = {
@@ -9,10 +10,6 @@ export const metadata: Metadata = {
     description: 'Track your prayer life, view your spiritual growth analytics, complete daily challenges, and earn achievements.',
 };
 
-/**
- * Journey page with server-side auth check
- * Redirects to login if not authenticated
- */
 export default async function JourneyPage() {
     const user = await getUserFromCookie();
 
@@ -21,11 +18,13 @@ export default async function JourneyPage() {
         redirect('/login?redirect=/journey&message=Sign in to access your spiritual journey');
     }
 
-    return (
-        <Suspense fallback={<JourneyPageSkeleton />}>
-            <JourneyContent />
-        </Suspense>
-    );
+    /**
+     * Journey page with server-side auth check
+     * Redirects to login if not authenticated
+     */
+    const stats = await getUserPrayerStats();
+
+    return <JourneyContent initialStats={stats} />;
 }
 
 function JourneyPageSkeleton() {

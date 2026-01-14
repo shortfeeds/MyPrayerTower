@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPayPalOrder } from '@/lib/paypal';
-import { PrismaClient } from '@mpt/database';
+import { db } from '@/lib/db';
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 export async function POST(req: NextRequest) {
     try {

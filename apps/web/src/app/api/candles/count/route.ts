@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@mpt/database';
-
-const prisma = new PrismaClient();
+import { db } from '@/lib/db';
 
 /**
  * GET /api/candles/count
@@ -13,7 +11,7 @@ export async function GET() {
         const now = new Date();
 
         // Count active (paid and not expired) candles
-        const count = await prisma.virtualCandle.count({
+        const count = await db.virtualCandle.count({
             where: {
                 isActive: true,
                 paymentStatus: 'PAID',

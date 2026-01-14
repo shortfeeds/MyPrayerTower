@@ -1,9 +1,10 @@
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@mpt/database';
+import { db } from '@/lib/db';
+import { sendAdminNotification } from '@/lib/email';
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 export async function POST(request: NextRequest) {
     try {
@@ -82,6 +83,19 @@ export async function POST(request: NextRequest) {
                 timestamp: new Date().toISOString(),
             });
         }
+
+        // Send email notification to admin
+        await sendAdminNotification({
+            type: 'report',
+            subject: `New Report: ${reason} (Type: ${contentType})`,
+            data: {
+                Reason: reason,
+                'Content Type': contentType,
+                'Content ID': contentId,
+                Details: details || 'None',
+                'Reporter ID': reporterId || 'Anonymous'
+            }
+        });
 
         return NextResponse.json({
             success: true,

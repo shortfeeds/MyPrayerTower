@@ -1,8 +1,6 @@
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
-import { PrismaClient } from '@mpt/database';
-
-const prisma = new PrismaClient();
+import { db } from '@/lib/db';
 
 const JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || 'default-secret-key-change-this-in-prod'
@@ -35,7 +33,7 @@ export async function getUserFromCookie(): Promise<UserSession | null> {
         }
 
         // Fetch fresh user data from database
-        const user = await prisma.user.findUnique({
+        const user = await db.user.findUnique({
             where: { id: payload.id },
             select: {
                 id: true,

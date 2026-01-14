@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@mpt/database';
+import { db } from '@/lib/db';
+import { notifyMemorialCreation } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 // GET /api/memorials/verify-payment - Verify memorial payment and activate
 export async function GET(request: NextRequest) {
@@ -21,12 +22,23 @@ export async function GET(request: NextRequest) {
         // in this specific simplified flow, but ideally we verify via PayPal API.
         if (orderId || paypalOrderId) {
             // Activate memorial
-            await prisma.memorial.update({
+            const memorial = await db.memorial.update({
                 where: { id: memorialId },
                 data: {
                     isPublic: true,
                     paidAt: new Date(),
                 },
+                include: {
+                    owner: true
+                }
+            });
+
+            // Send email notification
+            await notifyMemorialCreation({
+                memorialName: `${memorial.firstName} ${memorial.lastName}`,
+                tier: memorial.tier,
+                createdBy: memorial.owner.displayName || memorial.owner.firstName || 'User',
+                email: memorial.owner.email
             });
 
             return NextResponse.json({

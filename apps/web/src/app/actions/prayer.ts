@@ -1,11 +1,13 @@
 'use server';
 
-import { PrismaClient } from '@mpt/database';
+import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
+import { getUserFromCookie } from '@/lib/auth';
 
-const prisma = new PrismaClient();
+// Alias db to prisma for compatibility
+const prisma = db;
 
 // Schemas
 const createPrayerSchema = z.object({
@@ -88,7 +90,11 @@ export async function submitPrayerRequest(prevState: any, formData: FormData) {
             return { success: false, message: moderation.reason || 'Content rejected.' };
         }
 
-        const userId = 'user_abc123'; // TODO: Replace with real auth user ID
+        const user = await getUserFromCookie();
+        if (!user) {
+            return { success: false, message: 'You must be logged in to post a prayer request.' };
+        }
+        const userId = user.id;
 
         // Convert category to uppercase enum
         const categoryEnum = category.toUpperCase();
@@ -118,7 +124,11 @@ export async function submitPrayerRequest(prevState: any, formData: FormData) {
 
 export async function prayForRequest(prayerId: string) {
     try {
-        const userId = 'user_abc123'; // TODO: Real auth
+        const user = await getUserFromCookie();
+        if (!user) {
+            return { success: false, message: 'Please login to pray.' };
+        }
+        const userId = user.id;
 
         // Check if already prayed (uniqueness constraint)
         const existing = await prisma.prayerAction.findUnique({
@@ -163,7 +173,11 @@ export async function prayForRequest(prayerId: string) {
 
 export async function markPrayerAnswered(prayerId: string) {
     try {
-        const userId = 'user_abc123'; // TODO: Real auth
+        const user = await getUserFromCookie();
+        if (!user) {
+            return { success: false, message: 'Unauthorized' };
+        }
+        const userId = user.id;
 
         // Check if user owns the prayer
         const prayer = await prisma.prayerRequest.findUnique({
@@ -193,7 +207,13 @@ export async function markPrayerAnswered(prayerId: string) {
 
 export async function reportPrayer(prayerId: string, reason: string) {
     try {
-        const userId = 'user_abc123'; // Mock user
+        const user = await getUserFromCookie();
+        // Allow anonymous reports but tag them? Or require login? 
+        // Safer to require login for now to prevent spam.
+        if (!user) {
+            return { success: false, message: 'Please login to report.' };
+        }
+        const userId = user.id;
 
         // Map reason string to Enum if needed, or assume frontend sends valid enum string
         // Default to OTHER if invalid

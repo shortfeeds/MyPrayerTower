@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@mpt/database';
+import { sendAdminNotification } from '@/lib/email';
 
 const prisma = new PrismaClient();
 
@@ -43,60 +44,18 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const adminEmail = 'myprayertower2@gmail.com';
         const subject = data.subject || `Contact Form: ${data.firstName} ${data.lastName}`;
 
-        // Format the email body
-        const emailBody = `
-New Contact Form Submission
-===========================
-
-Name: ${data.firstName} ${data.lastName}
-Email: ${data.email}
-Date: ${new Date().toLocaleString()}
-
-Message:
-${data.message}
-
----
-Sent from MyPrayerTower Contact Form
-        `.trim();
-
-        // Log for development
-        console.log('=== NEW CONTACT FORM SUBMISSION ===');
-        console.log(`To: ${adminEmail}`);
-        console.log(`Subject: ${subject}`);
-        console.log(emailBody);
-        console.log('===================================');
-
-        // In production, send actual email using your preferred service:
-
-        // Option 1: Using NodeMailer with Gmail
-        // const transporter = nodemailer.createTransporter({
-        //     service: 'gmail',
-        //     auth: {
-        //         user: process.env.GMAIL_USER,
-        //         pass: process.env.GMAIL_APP_PASSWORD,
-        //     },
-        // });
-        // await transporter.sendMail({
-        //     from: process.env.GMAIL_USER,
-        //     to: adminEmail,
-        //     replyTo: data.email,
-        //     subject,
-        //     text: emailBody,
-        // });
-
-        // Option 2: Using SendGrid
-        // const sgMail = require('@sendgrid/mail');
-        // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        // await sgMail.send({
-        //     to: adminEmail,
-        //     from: 'noreply@myprayertower.com',
-        //     replyTo: data.email,
-        //     subject,
-        //     text: emailBody,
-        // });
+        // Send email notification
+        await sendAdminNotification({
+            type: 'contact',
+            subject,
+            data: {
+                Name: `${data.firstName} ${data.lastName}`,
+                Email: data.email,
+                Message: data.message
+            }
+        });
 
         // Option 3: Store in database for admin dashboard
         await prisma.contactSubmission.create({

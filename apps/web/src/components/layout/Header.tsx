@@ -10,7 +10,6 @@ import {
     Flame, Gift, CreditCard
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useTheme } from '@/components/ThemeProvider';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
@@ -40,7 +39,6 @@ export function Header() {
     const learnRef = useRef<HTMLDivElement>(null);
     const locateRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
-    const { actualTheme, setTheme } = useTheme();
     const { isAuthenticated, user } = useAuth();
 
     useEffect(() => {
@@ -323,7 +321,7 @@ export function Header() {
                                     }`}
                             >
                                 <Compass className={`w-4 h-4 ${isActive('/journey') ? 'text-gold-600' : ''}`} />
-                                My Journey
+                                My Prayer Corner
                             </Link>
                         )}
 
@@ -342,14 +340,7 @@ export function Header() {
                             {/* Language Switcher */}
                             <LanguageSwitcher id="google_translate_desktop" />
 
-                            {/* Theme Toggle */}
-                            <button
-                                onClick={() => setTheme(actualTheme === 'dark' ? 'light' : 'dark')}
-                                className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
-                                aria-label="Toggle theme"
-                            >
-                                {mounted && (actualTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
-                            </button>
+                            {/* Theme Toggle Removed - Unified Mode */}
 
                             {isAuthenticated ? (
                                 /* Authenticated User Menu */
@@ -442,7 +433,7 @@ export function Header() {
                                 <div className="p-2 rounded-lg bg-sacred-100 dark:bg-sacred-800 text-sacred-600">
                                     <Home className="w-5 h-5" />
                                 </div>
-                                My Dashboard
+                                My Prayer Corner
                             </Link>
                         )}
 

@@ -119,6 +119,22 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // User & Parish Dashboard Authentication
+    // Protects /dashboard (Parish) and /journey (User)
+    if (pathname.startsWith('/dashboard') || pathname.startsWith('/journey')) {
+        const userToken = request.cookies.get('user_session')?.value;
+        // In local dev/mock auth, we might just look for existence, or verify a JWT.
+        // Assuming simple cookie check for now as per admin logic or existing auth lib.
+
+        if (!userToken) {
+            const url = request.nextUrl.clone();
+            url.pathname = '/login';
+            url.searchParams.set('redirect', pathname);
+            url.searchParams.set('message', 'Please sign in to access this page');
+            return NextResponse.redirect(url);
+        }
+    }
+
     return response;
 }
 

@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { db } from '@/lib/db';
 
 // Revalidate every 30 seconds
 export const revalidate = 30;
@@ -18,7 +16,7 @@ export async function GET() {
             activeSessionsCount // Heuristic for "praying now"
         ] = await Promise.all([
             // Count prayers today
-            prisma.prayerAction.count({
+            db.prayerAction.count({
                 where: {
                     prayedAt: {
                         gte: today
@@ -26,7 +24,7 @@ export async function GET() {
                 }
             }),
             // Count candles lit today
-            prisma.virtualCandle.count({
+            db.virtualCandle.count({
                 where: {
                     litAt: {
                         gte: today
@@ -34,18 +32,13 @@ export async function GET() {
                 }
             }),
             // Estimate "Praying Now" (Sessions in last 15 mins)
-            prisma.session.count({
+            db.session.count({
                 where: {
-                    updatedAt: { // changing to createdAt or expiresAt depending on schema, likely createdAt for active sessions implies somewhat recent. 
-                        // Actually session table has expiresAt. Let's use active sessions. 
-                        // Better heuristic: Users who logged in recently or just random base + sessions.
-                        // Let's stick to the base + random for "praying now" as its hard to get exact "live" without websocket.
-                        // But user wants "saved in supabase". 
-                        // Let's use Session count as a proxy for engagement if possible.
-                        gte: new Date(Date.now() - 15 * 60 * 1000) // Last 15 mins
+                    expiresAt: { // Using expiresAt as proxy for active sessions if available, or createdAt
+                        gte: new Date()
                     }
                 }
-            }).catch(() => 0) // Fallback if session table logic fails
+            }).catch(() => 0)
         ]);
 
         // 2. Apply Requested Base Offsets
@@ -79,7 +72,5 @@ export async function GET() {
             prayingNow: 12450 + Math.floor(Math.random() * 200),
             source: 'fallback'
         }, { status: 200 });
-    } finally {
-        await prisma.$disconnect();
     }
 }

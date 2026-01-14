@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { capturePayPalOrder } from '@/lib/paypal';
-import { PrismaClient } from '@mpt/database';
+import { db } from '@/lib/db';
+import { notifyBouquet } from '@/lib/email';
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 export async function POST(req: NextRequest) {
     try {
@@ -25,13 +26,22 @@ export async function POST(req: NextRequest) {
             if (dbRecordId) {
                 console.log(`Fulfilling Bouquet: ${dbRecordId}`);
 
-                await prisma.spiritualBouquet.update({
+                const bouquet = await db.spiritualBouquet.update({
                     where: { id: dbRecordId },
                     data: {
                         paymentStatus: 'PAID',
                         paymentId: capture?.id,
                         sentAt: new Date(), // Used for immediate tracking, schedule delivery handled elsewhere
                     }
+                });
+
+                // Send email notification
+                await notifyBouquet({
+                    recipient: bouquet.recipientName,
+                    sender: bouquet.senderName,
+                    prayerTypes: bouquet.prayerTypes,
+                    amount: bouquet.amount || 0,
+                    email: bouquet.senderEmail
                 });
             } else {
                 console.warn('No reference ID found in PayPal bouquet order.', orderId);

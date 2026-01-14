@@ -1,65 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Eye, Users, Megaphone, Calendar, TrendingUp, ArrowUpRight, Plus, Settings, Sparkles, Clock, MessageSquare, Bell } from 'lucide-react';
 import Link from 'next/link';
+import { ParishDashboardData } from '@/app/actions/dashboard'; // Import type
 
-interface DashboardStats {
-    totalViews: number;
-    totalFollowers: number;
-    totalAnnouncements: number;
-    upcomingEvents: number;
-}
+export function ParishDashboard({ initialData }: { initialData: ParishDashboardData }) {
+    // State could be used for client-side refreshes, but initializing with server data
+    const [stats] = useState(initialData.stats);
+    const [church] = useState(initialData.church);
 
-interface ChurchInfo {
-    name: string;
-    isVerified: boolean;
-    slug: string;
-}
-
-interface ActivityItem {
-    id: string;
-    type: 'review' | 'follower' | 'event_rsvp';
-    content: string;
-    time: string;
-    isNew: boolean;
-}
-
-export function ParishDashboard() {
-    const [stats, setStats] = useState<DashboardStats | null>(null);
-    const [church, setChurch] = useState<ChurchInfo | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        // Mock data fetch
-        const timer = setTimeout(() => {
-            setStats({ totalViews: 12450, totalFollowers: 856, totalAnnouncements: 14, upcomingEvents: 3 });
-            setChurch({ name: "St. Mary's Parish", isVerified: true, slug: 'st-marys' });
-            setLoading(false);
-        }, 800);
-        return () => clearTimeout(timer);
-    }, []);
-
-    const statCards = [
-        { label: 'Total Views', value: stats?.totalViews || 0, icon: Eye, color: 'bg-blue-500', trend: '+12%' },
-        { label: 'Followers', value: stats?.totalFollowers || 0, icon: Users, color: 'bg-green-500', trend: '+8%' },
-        { label: 'Announcements', value: stats?.totalAnnouncements || 0, icon: Megaphone, color: 'bg-purple-500', trend: '' },
-        { label: 'Upcoming Events', value: stats?.upcomingEvents || 0, icon: Calendar, color: 'bg-orange-500', trend: '' },
-    ];
-
-    const activities: ActivityItem[] = [
-        { id: '1', type: 'follower', content: 'Sarah J. started following your parish', time: '2 hours ago', isNew: true },
-        { id: '2', type: 'event_rsvp', content: '5 new RSVPs for "Sunday Bible Study"', time: '5 hours ago', isNew: true },
-        { id: '3', type: 'review', content: 'New 5-star review from John D.', time: '1 day ago', isNew: false },
-    ];
-
-    if (loading) {
-        return (
-            <div className="p-8 flex items-center justify-center min-h-[50vh]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
-            </div>
-        );
-    }
+    // Derived from simplified action for now
+    const activities = initialData.recentActivity;
 
     return (
         <div className="p-6 max-w-7xl mx-auto">

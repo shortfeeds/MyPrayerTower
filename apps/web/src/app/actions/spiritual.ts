@@ -1,10 +1,12 @@
 'use server';
 
-import { PrismaClient } from '@mpt/database';
+import { db } from '@/lib/db';
 import { getUserFromCookie } from '@/lib/auth';
 import { moderateContent } from '@/lib/moderation';
+import { unstable_cache } from 'next/cache';
 
-const prisma = new PrismaClient();
+// Alias db to prisma for compatibility with existing code in this file
+const prisma = db;
 
 export type VirtualCandle = {
     id: string;
@@ -15,24 +17,46 @@ export type VirtualCandle = {
     litAt: Date;
     expiresAt: Date;
     isActive: boolean;
+    prayerCount: number;
+    amount: number;
 };
 
-// Get active candles for display
-export async function getActiveCandles(): Promise<VirtualCandle[]> {
-    const now = new Date();
+// Get active candles for display - Optimized & Cached
+export const getActiveCandles = unstable_cache(
+    async (): Promise<VirtualCandle[]> => {
+        const now = new Date();
 
-    const candles = await prisma.prayerCandle.findMany({
-        where: {
-            isActive: true,
-            expiresAt: { gt: now },
-            paymentStatus: 'PAID'
-        },
-        orderBy: { litAt: 'desc' },
-        take: 50
-    });
+        const candles = await db.prayerCandle.findMany({
+            where: {
+                isActive: true,
+                expiresAt: { gt: now },
+                paymentStatus: 'PAID'
+            },
+            orderBy: { litAt: 'desc' },
+            take: 50,
+            select: {
+                id: true,
+                intention: true,
+                isAnonymous: true,
+                name: true,
+                duration: true,
+                litAt: true,
+                expiresAt: true,
+                isActive: true,
+                prayerCount: true,
+                amount: true
+            }
+        });
 
-    return candles;
-}
+        // Cast duration string to string (it's an enum in Prisma but string in TS type here usually works or needs casting)
+        return candles.map(c => ({
+            ...c,
+            duration: c.duration as string
+        }));
+    },
+    ['active-candles'],
+    { revalidate: 60, tags: ['candles'] }
+);
 
 // Light a virtual candle (free 1-day candles, or creates pending for paid)
 // Update durationDays map

@@ -27,10 +27,12 @@ const TABS: { id: TabId; label: string; icon: any }[] = [
     { id: 'reminders', label: 'Reminders', icon: Bell },
 ];
 
+import { UserPrayerStats } from '@/app/actions/journey';
+
 /**
  * Journey page content - client component for interactivity
  */
-export default function JourneyContent() {
+export default function JourneyContent({ initialStats }: { initialStats: UserPrayerStats | null }) {
     const [activeTab, setActiveTab] = useState<TabId>('overview');
 
     return (
@@ -39,8 +41,8 @@ export default function JourneyContent() {
             <div className="bg-gradient-to-r from-sacred-600 to-sacred-700 text-white py-8">
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto">
-                        <h1 className="text-3xl font-bold mb-2">My Spiritual Journey</h1>
-                        <p className="text-sacred-100">Track your prayer life and grow in faith</p>
+                        <h1 className="text-3xl font-bold mb-2">My Prayer Corner</h1>
+                        <p className="text-sacred-100">Your personal spiritual space to track prayer life and grow in faith</p>
                     </div>
                 </div>
             </div>
@@ -77,11 +79,16 @@ export default function JourneyContent() {
                     {activeTab === 'overview' && (
                         <div className="space-y-8">
                             {/* Prayer Stats */}
-                            <PrayerAnalyticsDashboard />
+                            <PrayerAnalyticsDashboard stats={initialStats} />
 
                             {/* Streaks */}
                             <div className="grid lg:grid-cols-2 gap-6">
-                                <PrayerStreaks />
+                                <PrayerStreaks
+                                    streak={initialStats?.currentStreak || 0}
+                                    longestStreak={initialStats?.longestStreak || 0}
+                                    totalPrayers={initialStats?.totalPrayers || 0}
+                                    prayedToday={(initialStats?.todayPrayers || 0) > 0}
+                                />
                                 <ConfessionReminder />
                             </div>
                         </div>

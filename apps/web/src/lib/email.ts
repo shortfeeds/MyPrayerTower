@@ -12,7 +12,7 @@
 const ADMIN_EMAIL = 'myprayertower2@gmail.com';
 
 interface EmailOptions {
-    type: 'contact' | 'donation' | 'mass_offering' | 'candle' | 'bouquet';
+    type: 'contact' | 'donation' | 'mass_offering' | 'candle' | 'bouquet' | 'memorial' | 'memorial_offering' | 'report';
     subject: string;
     data: Record<string, any>;
 }
@@ -49,31 +49,39 @@ Sent from MyPrayerTower Admin Notifications
     console.log('=== ADMIN EMAIL NOTIFICATION ===');
     console.log(`To: ${ADMIN_EMAIL}`);
     console.log(`Subject: ${subject}`);
-    console.log(body);
+    // console.log(body); // Keep logs clean
     console.log('================================');
 
-    // In production, send actual email using:
-    // - SendGrid
-    // - Resend
-    // - Nodemailer with Gmail SMTP
-    // - AWS SES
+    try {
+        const nodemailer = require('nodemailer');
 
-    // Example with Nodemailer:
-    // const transporter = nodemailer.createTransporter({
-    //     service: 'gmail',
-    //     auth: {
-    //         user: process.env.GMAIL_USER,
-    //         pass: process.env.GMAIL_APP_PASSWORD,
-    //     },
-    // });
-    // await transporter.sendMail({
-    //     from: process.env.GMAIL_USER,
-    //     to: ADMIN_EMAIL,
-    //     subject,
-    //     text: body,
-    // });
+        if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+            console.warn('⚠️  Email credentials not found (GMAIL_USER, GMAIL_APP_PASSWORD). Skipping actual email send.');
+            return false;
+        }
 
-    return true;
+        const transporter = nodemailer.createTransporter({
+            service: 'gmail',
+            auth: {
+                user: process.env.GMAIL_USER,
+                pass: process.env.GMAIL_APP_PASSWORD,
+            },
+        });
+
+        await transporter.sendMail({
+            from: `"MyPrayerTower" <${process.env.GMAIL_USER}>`,
+            to: ADMIN_EMAIL,
+            replyTo: data.Email !== 'Not provided' ? data.Email : undefined,
+            subject,
+            text: body,
+        });
+
+        console.log('✅ Email sent successfully via details provided');
+        return true;
+    } catch (error) {
+        console.error('❌ Failed to send email:', error);
+        return false;
+    }
 }
 
 /**

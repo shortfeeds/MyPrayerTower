@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { capturePayPalOrder } from '@/lib/paypal';
-import { PrismaClient } from '@mpt/database';
+import { db } from '@/lib/db';
+import { notifyMassOffering } from '@/lib/email';
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 export async function POST(req: NextRequest) {
     try {
@@ -42,17 +43,21 @@ export async function POST(req: NextRequest) {
             if (targetId) {
                 console.log(`Fulfilling Mass Offering: ${targetId}`);
 
-                await prisma.massOffering.update({
+                const offering = await prisma.massOffering.update({
                     where: { id: targetId },
                     data: {
                         status: 'PAID',
-                        // Store capture details
-                        // We don't have dedicated paypal columns in schema yet (only stripe/cashfree).
-                        // We can reuse 'stripePaymentId' temporarily or leave blank?
-                        // Schema has: stripePaymentId, cashfreePaymentId.
-                        // Let's NOT hack it. We just update status.
                         paidAt: new Date(),
                     }
+                });
+
+                // Send email notification
+                await notifyMassOffering({
+                    offeringType: offering.offeringType,
+                    intention: offering.intentionFor,
+                    amount: offering.amount,
+                    name: offering.name,
+                    email: offering.email
                 });
             } else {
                 console.warn('No reference ID found in PayPal order. Manual reconciliation needed.', orderId);

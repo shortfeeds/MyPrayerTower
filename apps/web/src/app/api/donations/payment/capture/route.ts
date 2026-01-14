@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { capturePayPalOrder } from '@/lib/paypal';
-import { PrismaClient } from '@mpt/database';
+import { db } from '@/lib/db';
+import { notifyDonation } from '@/lib/email';
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 export async function POST(req: NextRequest) {
     try {
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
             const dbRecordId = captureResult.purchase_units?.[0]?.reference_id || captureResult.purchase_units?.[0]?.custom_id;
 
             if (dbRecordId) {
-                await prisma.platformDonation.update({
+                const donation = await db.platformDonation.update({
                     where: { id: dbRecordId },
                     data: {
                         status: 'PAID',
@@ -31,6 +32,14 @@ export async function POST(req: NextRequest) {
                         // We can misuse one or just rely on logs/reconciliation
                         paidAt: new Date(),
                     }
+                });
+
+                // Send email notification
+                await notifyDonation({
+                    amount: donation.amount,
+                    name: donation.donorName || captureResult.payer?.name?.given_name || 'Donor',
+                    email: donation.donorEmail || captureResult.payer?.email_address,
+                    message: donation.message || undefined
                 });
             }
 

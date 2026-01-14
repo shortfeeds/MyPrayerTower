@@ -78,50 +78,6 @@ const TIER_CONFIG: Record<string, { label: string; days: number; color: string; 
     },
 };
 
-// Generate mock candles
-function generateMockCandles(): Candle[] {
-    const intentions = [
-        "For complete healing and strength",
-        "Thanksgiving for many blessings received",
-        "For my family's protection and guidance",
-        "In loving memory of a dear friend",
-        "For peace in my heart and home",
-        "Guidance in my vocation and career",
-        "For the conversion of loved ones",
-        "Prayers for the sick and suffering",
-        "For a special intention known to God",
-        "Thanksgiving for a safe journey"
-    ];
-
-    const names = ["Maria", "John", "Sarah", "Michael", "Anonymous", "David", "Lisa", "James", "Anna", "Peter"];
-    const candles: Candle[] = [];
-    let id = 1;
-
-    const createCandles = (count: number, duration: string) => {
-        for (let i = 0; i < count; i++) {
-            candles.push({
-                id: `candle-${id++}`,
-                userName: names[i % names.length],
-                intention: intentions[i % intentions.length],
-                remainingHours: Math.floor(Math.random() * 24) + 1,
-                prayerCount: Math.floor(Math.random() * 1000) + 10,
-                tier: 'premium',
-                duration: duration,
-                litAt: new Date().toISOString()
-            });
-        }
-    };
-
-    // Generate 2000+ candles to always show active community
-    createCandles(500, 'THIRTY_DAYS');
-    createCandles(450, 'FOURTEEN_DAYS');
-    createCandles(400, 'SEVEN_DAYS');
-    createCandles(350, 'THREE_DAYS');
-    createCandles(500, 'ONE_DAY');
-
-    return candles;
-}
-
 // Candle Card Component
 function CandleCard({ candle, onPray }: { candle: Candle; onPray: (id: string) => void }) {
     const [justPrayed, setJustPrayed] = useState(false);
@@ -231,11 +187,38 @@ function CandleCard({ candle, onPray }: { candle: Candle; onPray: (id: string) =
 // Main Page
 export default function CandlesPage() {
     const [candles, setCandles] = useState<Candle[]>([]);
+    const [loading, setLoading] = useState(true);
     const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
 
     useEffect(() => {
-        // Mock data fetch
-        setCandles(generateMockCandles());
+        const fetchCandles = async () => {
+            try {
+                const data = await getActiveCandles();
+                const mapped: Candle[] = data.map(c => {
+                    const expiresAt = new Date(c.expiresAt);
+                    const now = new Date();
+                    const hours = Math.max(0, Math.floor((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60)));
+
+                    return {
+                        id: c.id,
+                        userName: c.isAnonymous ? 'Anonymous' : (c.name || 'Prayer Warrior'),
+                        intention: c.intention,
+                        remainingHours: hours,
+                        prayerCount: c.prayerCount || 0,
+                        tier: 'basic',
+                        litAt: new Date(c.litAt).toISOString(),
+                        duration: c.duration
+                    };
+                });
+                setCandles(mapped);
+            } catch (err) {
+                console.error('Failed to load candles', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCandles();
     }, []);
 
     // Grouping

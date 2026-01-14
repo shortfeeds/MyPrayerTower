@@ -4,50 +4,27 @@ import { useState, useEffect } from 'react';
 import { TrendingUp, Calendar, Clock, Heart, Flame, Star, BookOpen, ChevronRight, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 
-interface PrayerStats {
-    totalPrayers: number;
-    todayPrayers: number;
-    weeklyPrayers: number;
-    monthlyPrayers: number;
-    currentStreak: number;
-    longestStreak: number;
-    favoriteTime: string;
-    topCategory: string;
-    averageDaily: number;
-    weeklyGoalProgress: number;
-}
+import { UserPrayerStats } from '@/app/actions/journey';
 
-const MOCK_STATS: PrayerStats = {
-    totalPrayers: 1247,
-    todayPrayers: 5,
-    weeklyPrayers: 32,
-    monthlyPrayers: 128,
-    currentStreak: 12,
-    longestStreak: 45,
-    favoriteTime: 'Morning (7-9am)',
-    topCategory: 'Rosary',
-    averageDaily: 4.2,
-    weeklyGoalProgress: 75,
+const EMPTY_STATS: UserPrayerStats = {
+    totalPrayers: 0,
+    todayPrayers: 0,
+    weeklyPrayers: 0,
+    monthlyPrayers: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    favoriteTime: '-',
+    topCategory: '-',
+    averageDaily: 0,
+    weeklyGoalProgress: 0,
 };
 
 /**
  * Prayer analytics dashboard
  */
-export function PrayerAnalyticsDashboard() {
-    const [stats, setStats] = useState<PrayerStats>(MOCK_STATS);
+export function PrayerAnalyticsDashboard({ stats = EMPTY_STATS }: { stats: UserPrayerStats | null }) {
+    const finalStats = stats || EMPTY_STATS;
     const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('week');
-
-    // In production, fetch from API
-    useEffect(() => {
-        const stored = localStorage.getItem('mpt-prayer-stats');
-        if (stored) {
-            try {
-                setStats({ ...MOCK_STATS, ...JSON.parse(stored) });
-            } catch (e) {
-                console.error('Failed to parse stats:', e);
-            }
-        }
-    }, []);
 
     return (
         <div className="space-y-6">
@@ -83,28 +60,28 @@ export function PrayerAnalyticsDashboard() {
                 <StatCard
                     icon={Heart}
                     label="Today"
-                    value={stats.todayPrayers}
+                    value={finalStats.todayPrayers}
                     sublabel="prayers"
                     color="rose"
                 />
                 <StatCard
                     icon={Flame}
                     label="Current Streak"
-                    value={stats.currentStreak}
+                    value={finalStats.currentStreak}
                     sublabel="days"
                     color="orange"
                 />
                 <StatCard
                     icon={Star}
                     label="Best Streak"
-                    value={stats.longestStreak}
+                    value={finalStats.longestStreak}
                     sublabel="days"
                     color="amber"
                 />
                 <StatCard
                     icon={TrendingUp}
                     label="Average"
-                    value={stats.averageDaily}
+                    value={finalStats.averageDaily}
                     sublabel="/day"
                     color="emerald"
                 />
@@ -115,21 +92,21 @@ export function PrayerAnalyticsDashboard() {
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="font-bold text-gray-900 dark:text-white">Weekly Goal Progress</h3>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {stats.weeklyPrayers} / 40 prayers
+                        {finalStats.weeklyPrayers} / 40 prayers
                     </span>
                 </div>
 
                 <div className="relative h-4 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                     <div
                         className="absolute inset-y-0 left-0 bg-gradient-to-r from-sacred-500 to-sacred-600 rounded-full transition-all duration-500"
-                        style={{ width: `${Math.min(100, stats.weeklyGoalProgress)}%` }}
+                        style={{ width: `${Math.min(100, finalStats.weeklyGoalProgress)}%` }}
                     />
                 </div>
 
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    {stats.weeklyGoalProgress >= 100
+                    {finalStats.weeklyGoalProgress >= 100
                         ? '🎉 Goal achieved! Keep going!'
-                        : `${100 - stats.weeklyGoalProgress}% more to reach your weekly goal`
+                        : `${100 - finalStats.weeklyGoalProgress}% more to reach your weekly goal`
                     }
                 </p>
             </div>
@@ -181,7 +158,7 @@ export function PrayerAnalyticsDashboard() {
                         <h4 className="font-bold text-gray-900 dark:text-white">Best Time</h4>
                     </div>
                     <p className="text-2xl font-bold text-sacred-600 dark:text-sacred-400 mb-1">
-                        {stats.favoriteTime}
+                        {finalStats.favoriteTime}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                         When you pray most consistently
@@ -194,7 +171,7 @@ export function PrayerAnalyticsDashboard() {
                         <h4 className="font-bold text-gray-900 dark:text-white">Favorite Prayer</h4>
                     </div>
                     <p className="text-2xl font-bold text-gold-600 dark:text-gold-400 mb-1">
-                        {stats.topCategory}
+                        {finalStats.topCategory}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                         Your most prayed devotion
