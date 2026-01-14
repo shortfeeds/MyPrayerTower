@@ -3,7 +3,8 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, Search, Filter, Play, Clock, ChevronRight, Sparkles, Flame, Heart, Scroll, AlertCircle } from 'lucide-react';
+import { Link as UserLink } from 'lucide-react'; // Renaming to avoid conflict if needed, or just use Lucide icon names
+import { BookOpen, Search, Filter, Play, Clock, ChevronRight, Sparkles, Flame, Heart, Scroll, AlertCircle, Users, Star } from 'lucide-react';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { PrayerSearch } from '@/components/features/PrayerSearch';
 import { PrayerCategorySidebar } from '@/components/prayers/PrayerCategorySidebar';
@@ -166,7 +167,7 @@ function PrayerList() {
                             <div className="flex items-center justify-between pt-4 border-t border-gray-50 text-xs text-gray-400">
                                 <span className="flex items-center gap-1.5 font-medium">
                                     <Clock className="w-3.5 h-3.5" />
-                                    {prayer.readingTime || '1 min read'}
+                                    ~{prayer.readingTime?.replace('read', '').trim() || '2 min'}
                                 </span>
                                 <span className="flex items-center gap-1 text-amber-600 font-semibold opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
                                     Read Prayer <ChevronRight className="w-3.5 h-3.5" />
@@ -218,31 +219,78 @@ export default function PrayersPage() {
             </div>
 
             <div className="container mx-auto px-4 py-8">
-                <SmartAdSlot page="prayers" position="top" />
-
-                <div className="flex flex-col lg:flex-row gap-8 mt-8">
-                    {/* Sidebar Filters */}
-                    <aside className="lg:w-72 shrink-0 space-y-8">
-                        <PrayerCategorySidebar />
-                        <div className="hidden lg:block sticky top-24">
-                            <SmartAdSlot page="prayers" position="sidebar" />
-                        </div>
-                    </aside>
-
-                    {/* Main Content */}
-                    <main className="flex-1 min-w-0">
-                        <Suspense fallback={
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {[...Array(6)].map((_, i) => (
-                                    <div key={i} className="h-48 bg-gray-100 rounded-xl animate-pulse" />
-                                ))}
+                <div className="container mx-auto px-4 py-8">
+                    {/* Suggested For Today */}
+                    <div className="mb-12">
+                        <h2 className="text-xl font-serif font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <Play className="w-5 h-5 text-amber-500 fill-amber-500" />
+                            Suggested for Today
+                        </h2>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-gradient-to-br from-amber-50 to-white p-6 rounded-2xl border border-amber-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all cursor-pointer">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                                <span className="text-[10px] font-bold tracking-wider text-amber-600 uppercase mb-2 block">Morning Offering</span>
+                                <h3 className="font-serif text-2xl text-gray-900 mb-2">Act of Consecration</h3>
+                                <p className="text-sm text-gray-600 mb-4 line-clamp-2">O my Queen, O my Mother, I love thee somewhat...</p>
+                                <span className="flex items-center gap-1.5 text-xs font-medium text-amber-700">
+                                    <Clock className="w-3.5 h-3.5" /> ~1 min
+                                </span>
                             </div>
-                        }>
-                            <PrayerList />
-                        </Suspense>
-                    </main>
+                            <div className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl border border-blue-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all cursor-pointer">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                                <span className="text-[10px] font-bold tracking-wider text-blue-600 uppercase mb-2 block">Evening Peace</span>
+                                <h3 className="font-serif text-2xl text-gray-900 mb-2">Psalm 91</h3>
+                                <p className="text-sm text-gray-600 mb-4 line-clamp-2">He who dwells in the shelter of the Most High will abide in the shadow of the Almighty.</p>
+                                <span className="flex items-center gap-1.5 text-xs font-medium text-blue-700">
+                                    <Clock className="w-3.5 h-3.5" /> ~3 min
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Prayer Paths */}
+                    <div className="mb-10">
+                        <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Prayer Paths</h2>
+                        <div className="flex flex-wrap gap-3">
+                            {[
+                                { name: 'Healing & Comfort', icon: <Heart className="w-4 h-4" />, color: 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' },
+                                { name: 'Grief & Loss', icon: <Scroll className="w-4 h-4" />, color: 'bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-100' },
+                                { name: 'Family Life', icon: <Users className="w-4 h-4" />, color: 'bg-amber-50 text-amber-900 border-amber-100 hover:bg-amber-100' },
+                                { name: 'Marian Devotion', icon: <Star className="w-4 h-4" />, color: 'bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100' },
+                            ].map(path => (
+                                <button key={path.name} className={`flex items-center gap-3 px-5 py-3 rounded-xl border transition-all ${path.color}`}>
+                                    {path.icon}
+                                    <span className="font-medium">{path.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <SmartAdSlot page="prayers" position="top" />
+
+                    <div className="flex flex-col lg:flex-row gap-8 mt-8">
+                        {/* Sidebar Filters */}
+                        <aside className="lg:w-72 shrink-0 space-y-8">
+                            <PrayerCategorySidebar />
+                            <div className="hidden lg:block sticky top-24">
+                                <SmartAdSlot page="prayers" position="sidebar" />
+                            </div>
+                        </aside>
+
+                        {/* Main Content */}
+                        <main className="flex-1 min-w-0">
+                            <Suspense fallback={
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {[...Array(6)].map((_, i) => (
+                                        <div key={i} className="h-48 bg-gray-100 rounded-xl animate-pulse" />
+                                    ))}
+                                </div>
+                            }>
+                                <PrayerList />
+                            </Suspense>
+                        </main>
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+            );
 }

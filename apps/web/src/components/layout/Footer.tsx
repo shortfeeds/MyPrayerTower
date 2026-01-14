@@ -197,7 +197,10 @@ export function Footer() {
                 {/* Bottom Bar */}
                 <div className="border-t border-gray-900 bg-black">
                     <div className="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-600">
-                        <p>© {currentYear} MyPrayerTower. All rights reserved.</p>
+                        <div className="flex flex-col items-center md:items-start gap-1">
+                            <p className="text-gold-500/70 italic text-[11px]">May peace remain with you.</p>
+                            <p>© {currentYear} MyPrayerTower. All rights reserved.</p>
+                        </div>
                         <div className="flex gap-6 mt-4 md:mt-0">
                             <Link href="/privacy" className="hover:text-gray-400 transition-colors">Privacy</Link>
                             <Link href="/terms" className="hover:text-gray-400 transition-colors">Terms</Link>

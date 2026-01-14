@@ -84,7 +84,7 @@ export function PrayerJournal() {
 
             {/* Active Intentions */}
             <div className="mb-8">
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 px-2">My Intentions</h3>
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 px-2">Prayers You Hold</h3>
                 <div className="space-y-3">
                     {intentions.filter(i => !i.isAnswered).length === 0 && (
                         <p className="text-center text-slate-400 py-8 italic">No active intentions. Add one to begin.</p>
@@ -118,7 +118,7 @@ export function PrayerJournal() {
             <div>
                 <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 px-2 flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-gold-500" />
-                    Answered Prayers
+                    Answered in Prayer
                 </h3>
                 <div className="space-y-3">
                     {intentions.filter(i => i.isAnswered).length === 0 && (

@@ -14,11 +14,14 @@ import {
     LogOut,
     ChevronRight,
     BookHeart,
+    History,
 } from 'lucide-react';
+import { SACRED_COPY } from '@/lib/sacred-copy';
 
 const sidebarItems = [
-    { href: '/dashboard', icon: LayoutDashboard, label: 'My Sanctuary' },
+    { href: '/dashboard', icon: LayoutDashboard, label: SACRED_COPY.dashboard.corner },
     { href: '/dashboard/prayer-corner', icon: BookHeart, label: 'Prayer Journal' }, // New Personal Sanctuary
+    { href: '/dashboard/orders', icon: History, label: SACRED_COPY.dashboard.history },
     { href: '/dashboard/profile', icon: Church, label: 'Church Profile' },
     { href: '/dashboard/announcements', icon: Megaphone, label: 'Announcements' },
     { href: '/dashboard/events', icon: Calendar, label: 'Events' },

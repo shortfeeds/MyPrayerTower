@@ -27,7 +27,8 @@ body {
 }
 
 .goog-te-gadget-simple .goog-te-menu-value {
-  color: #d1d5db !important; /* text-gray-300 */
+  color: #d1d5db !important;
+  /* text-gray-300 */
 }
 
 .goog-te-gadget-simple:hover .goog-te-menu-value {
@@ -40,7 +41,8 @@ body {
 }
 
 .goog-te-gadget-simple .goog-te-menu-value span:last-child {
-  display: none !important; /* Hide the arrow if possible, or style it */
+  display: none !important;
+  /* Hide the arrow if possible, or style it */
 }
 
 /* Hide "Powered by Google" */
@@ -82,10 +84,19 @@ body {
   --input: 214.3 31.8% 91.4%;
   --ring: 222.2 84% 4.9%;
   --radius: 0.5rem;
-  
+
   /* Sacred Animation Tokens */
-  --duration-sacred: 700ms;
+  --duration-sacred: 400ms;
+  /* Slightly slower for contemplative feel */
+  --duration-prayer: 600ms;
+  /* Even slower for prayer moments */
   --ease-sacred: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-prayer: cubic-bezier(0.25, 0.1, 0.25, 1);
+  /* Extra smooth for prayer */
+
+  /* Prayer Mode Spacing */
+  --space-prayer: 1.15;
+  /* 15% increase for breathing room */
 }
 
 .dark {
@@ -342,8 +353,13 @@ h6 {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* ==================== RESPONSIVE LAYOUT UTILITIES ==================== */
@@ -968,4 +984,85 @@ body {
 .liturgical-ordinary {
   --primary: 120 40% 35%;
   --primary-foreground: 120 10% 98%;
+}
+
+/* ==================== PRAYER MODE (UI RECESSION) ==================== */
+
+/* Apply to body or container during prayer moments */
+.prayer-mode {
+  pointer-events: none;
+  user-select: none;
+}
+
+.prayer-mode * {
+  transition: opacity var(--duration-prayer) var(--ease-prayer),
+    filter var(--duration-prayer) var(--ease-prayer);
+}
+
+/* Fade non-essential elements during prayer */
+.prayer-mode .prayer-recede {
+  opacity: 0.3;
+  filter: blur(2px);
+}
+
+/* Keep prayer content visible */
+.prayer-mode .prayer-focus {
+  opacity: 1;
+  filter: none;
+}
+
+/* Prayer card styling with increased spacing */
+.prayer-card {
+  padding: calc(1.5rem * var(--space-prayer));
+  margin-bottom: calc(1rem * var(--space-prayer));
+}
+
+/* Subtle transitions for sacred UI */
+.sacred-transition {
+  transition: all var(--duration-sacred) var(--ease-sacred);
+}
+
+.prayer-transition {
+  transition: all var(--duration-prayer) var(--ease-prayer);
+}
+
+/* Reduced visual weight for tertiary elements */
+.tertiary-emphasis {
+  opacity: 0.7;
+}
+
+.tertiary-emphasis:hover {
+  opacity: 1;
+}
+
+/* Soft borders for prayer contexts */
+.border-soft {
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .border-soft {
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Reduced shadow for contemplative UI */
+.shadow-soft {
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.04),
+    0 4px 12px -4px rgba(0, 0, 0, 0.03);
+}
+
+/* Fade in animation for prayer closure */
+@keyframes prayerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-prayer-fade-in {
+  animation: prayerFadeIn var(--duration-prayer) var(--ease-prayer) forwards;
 }

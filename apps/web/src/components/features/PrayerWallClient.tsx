@@ -399,7 +399,7 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
                                 {filteredPrayers.map((prayer, index) => (
                                     <div
                                         key={prayer.id}
-                                        className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all hover:shadow-lg hover:-translate-y-0.5 flex flex-col ${prayer.isAnswered ? 'border-2 border-green-200 bg-green-50/30' :
+                                        className={`bg-white rounded-2xl shadow-soft border border-soft p-8 transition-all hover:shadow-lg hover:-translate-y-0.5 flex flex-col prayer-card ${prayer.isAnswered ? 'border-2 border-green-200 bg-green-50/30' :
                                             prayer.status === 'ARCHIVED' ? 'opacity-75 bg-gray-50 border-gray-200' : ''
                                             }`}
                                     >
@@ -437,8 +437,8 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
                                                 <span className="px-2 py-0.5 bg-sacred-100 text-sacred-700 rounded-full text-xs font-medium">
                                                     {prayer.category}
                                                 </span>
-                                                <span className="ml-auto flex items-center gap-1 text-gray-400">
-                                                    <Clock className="w-3 h-3" />
+                                                <span className="ml-auto flex items-center gap-1 text-gray-300 text-[10px]">
+                                                    <Clock className="w-2.5 h-2.5" />
                                                     {getTimeAgo(prayer.createdAt)}
                                                 </span>
                                             </div>
@@ -467,7 +467,7 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
                                                             🙏 <span>Pray</span>
                                                         </>
                                                     )}
-                                                    <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs ${prayedIds.has(prayer.id) ? 'bg-green-200' : 'bg-white/20'
+                                                    <span className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] ${prayedIds.has(prayer.id) ? 'bg-green-200' : 'bg-white/20 text-white/70'
                                                         }`}>
                                                         {prayer.prayerCount}
                                                     </span>

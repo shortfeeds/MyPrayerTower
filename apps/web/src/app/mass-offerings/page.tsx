@@ -9,6 +9,8 @@ import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
 // Dynamic import to avoid SSR issues
 const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
 
+import { SACRED_COPY } from '@/lib/sacred-copy';
+
 // Offering types with pricing
 const OFFERING_TYPES = [
     {
@@ -328,9 +330,37 @@ export default function MassOfferingsPage() {
                             ))}
                         </div>
 
+                        {/* About Mass Intentions Explainer */}
+                        <div className="mt-8 bg-slate-50 border border-slate-200 rounded-2xl p-6">
+                            <h3 className="font-serif font-bold text-lg text-slate-900 mb-3">
+                                {SACRED_COPY.massOfferings.aboutTitle}
+                            </h3>
+                            <p className="text-sm text-slate-600 mb-4 leading-relaxed">
+                                {SACRED_COPY.massOfferings.aboutDescription}
+                            </p>
+
+                            {/* 4-Step Process */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                {SACRED_COPY.massOfferings.process.map((step: any) => (
+                                    <div key={step.step} className="text-center p-3 bg-white rounded-xl border border-slate-100">
+                                        <div className="w-8 h-8 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto mb-2 font-bold text-sm">
+                                            {step.step}
+                                        </div>
+                                        <p className="font-medium text-xs text-slate-900">{step.label}</p>
+                                        <p className="text-[10px] text-slate-500 mt-0.5">{step.description}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Reassurance near CTA */}
+                        <p className="text-center text-sm text-slate-500 mt-4 italic">
+                            {SACRED_COPY.massOfferings.reassurance}
+                        </p>
+
                         <button
                             onClick={() => setStep(2)}
-                            className="w-full mt-8 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-semibold text-lg transition-colors"
+                            className="w-full mt-4 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-semibold text-lg transition-colors"
                         >
                             Continue
                         </button>

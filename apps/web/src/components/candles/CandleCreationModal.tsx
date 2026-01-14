@@ -10,6 +10,8 @@ import { lightVirtualCandle } from '@/app/actions/spiritual';
 // Dynamic import for PayPal
 const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
 
+import { SACRED_COPY } from '@/lib/sacred-copy';
+
 interface CreateCandleModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -167,9 +169,16 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                         {/* Step 2: Tier Selection */}
                         {step === 2 && (
                             <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+                                {/* Meaning First - Above Everything */}
+                                <div className="bg-amber-50/80 border border-amber-200/50 rounded-xl p-4 mb-4">
+                                    <p className="text-sm text-amber-800 text-center italic font-medium">
+                                        {SACRED_COPY.candleFlow.meaningFirst}
+                                    </p>
+                                </div>
+
                                 <h4 className="font-semibold text-gray-900 mb-1 text-base">Select Your Offering</h4>
-                                <p className="text-xs text-gray-600 mb-4 italic">
-                                    "{SACRED_COPY.candles.meaning}"
+                                <p className="text-xs text-gray-500 mb-4">
+                                    {SACRED_COPY.candleFlow.noObligation}
                                 </p>
 
                                 <div className="space-y-2 mb-4">
@@ -245,6 +254,11 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                                         {selectedTier.price === 0 ? 'Light Candle' : 'Make Offering'}
                                     </button>
                                 </div>
+
+                                {/* Reassurance After Selection */}
+                                <p className="text-center text-xs text-gray-400 mt-4 italic">
+                                    {SACRED_COPY.candleFlow.afterSelection}
+                                </p>
                             </motion.div>
                         )}
 

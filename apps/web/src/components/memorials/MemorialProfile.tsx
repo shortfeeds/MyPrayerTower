@@ -12,6 +12,7 @@ import { QRCodeGenerator } from '@/components/memorials/QRCodeGenerator';
 import { OfferingDialog } from '@/components/memorials/OfferingDialog';
 import { MemorialTimeline } from '@/components/memorials/MemorialTimeline';
 import { Bell, BellOff } from 'lucide-react'; // Added icons
+import { SACRED_COPY } from '@/lib/sacred-copy';
 
 export interface Offering {
     id: string;
@@ -207,10 +208,10 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                         Return to Chapels
                     </Link>
 
-                    <div className="flex flex-col lg:flex-row gap-8 items-start">
-                        {/* Photo - Premium gets golden ring with glow */}
-                        <div className={`w-48 h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden bg-slate-700 flex-shrink-0 shadow-2xl ${memorial.tier === 'PREMIUM'
-                            ? 'ring-4 ring-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.4)]'
+                    <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+                        {/* Photo - Centered with Glow */}
+                        <div className={`mb-8 w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden bg-slate-700 flex-shrink-0 shadow-2xl ${memorial.tier === 'PREMIUM'
+                            ? 'ring-4 ring-amber-400 shadow-[0_0_50px_rgba(251,191,36,0.5)]'
                             : 'border-4 border-white/20'
                             }`}>
                             {memorial.photoUrl ? (
@@ -222,42 +223,61 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                             )}
                         </div>
 
-                        {/* Info */}
-                        <div className="flex-1">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-amber-200 text-xs font-bold uppercase tracking-widest mb-4">
-                                <Sparkles className="w-3 h-3" />
-                                Digital Chapel
-                            </div>
-                            <h1 className="text-3xl lg:text-4xl font-serif font-bold mb-2 text-white/80">
+                        {/* Info - Centered */}
+                        <div className="w-full">
+                            <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-amber-200 text-xs font-bold uppercase tracking-widest mb-6">
+                                {SACRED_COPY.prayerClosure.memorial.primary}
+                            </span>
+
+                            <h1 className="text-3xl lg:text-5xl font-serif font-bold mb-3 text-white/90">
                                 In Loving Memory of
                             </h1>
-                            <h2 className={`text-5xl lg:text-6xl font-serif font-bold mb-4 ${memorial.tier === 'PREMIUM'
-                                ? 'text-amber-400 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]'
+                            <h2 className={`text-5xl lg:text-7xl font-serif font-bold mb-6 ${memorial.tier === 'PREMIUM'
+                                ? 'text-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.6)]'
                                 : 'text-white'
                                 }`}>
                                 {fullName}
                             </h2>
+
                             {lifeSpan && (
-                                <div className={`flex items-center gap-2 text-lg mb-4 ${memorial.tier === 'PREMIUM' ? 'text-amber-200' : 'text-slate-300'
+                                <div className={`flex items-center justify-center gap-3 text-xl mb-8 font-light ${memorial.tier === 'PREMIUM' ? 'text-amber-100' : 'text-slate-300'
                                     }`}>
-                                    <Calendar className="w-5 h-5" />
+                                    <Calendar className="w-5 h-5 opacity-70" />
                                     <span>{lifeSpan}</span>
                                 </div>
                             )}
+
                             {memorial.shortBio && (
-                                <p className="text-slate-300 text-lg italic max-w-2xl">
+                                <p className="text-slate-200 text-xl italic max-w-2xl mx-auto leading-relaxed font-serif opacity-90 mb-10">
                                     "{memorial.shortBio}"
                                 </p>
                             )}
 
-                            {/* Share */}
-                            <div className="mt-6">
+                            {/* Actions Row */}
+                            <div className="flex flex-wrap items-center justify-center gap-4">
                                 <ShareButtons
                                     url={typeof window !== 'undefined' ? window.location.href : ''}
                                     title={`In Loving Memory of ${fullName}`}
                                     description={memorial.shortBio || `Remember ${fullName} with prayers and tributes.`}
                                     variant="compact"
                                 />
+
+                                {/* Anniversary Toggle */}
+                                <button
+                                    onClick={() => {
+                                        setRemindersEnabled(!remindersEnabled);
+                                        // Ideally call API here
+                                    }}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${remindersEnabled
+                                            ? 'bg-amber-500/20 border-amber-400 text-amber-200'
+                                            : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
+                                        }`}
+                                >
+                                    {remindersEnabled ? <Bell className="w-4 h-4 fill-current" /> : <BellOff className="w-4 h-4" />}
+                                    <span className="text-sm font-medium">
+                                        {remindersEnabled ? 'Remembrance On' : 'Remind me on Anniversary'}
+                                    </span>
+                                </button>
                             </div>
                         </div>
                     </div>

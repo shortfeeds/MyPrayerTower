@@ -119,6 +119,74 @@ export const SACRED_COPY = {
         streak: "Your faithfulness is a blessing. Keep walking this path.", // Internal use, not shown as "streak"
     },
 
+    // === PRAYER CLOSURE (Post-prayer stillness) ===
+    prayerClosure: {
+        primary: "Your prayer has been offered.",
+        secondary: "You are not alone.",
+        candle: {
+            primary: "Your light now burns for this intention.",
+            secondary: "This intention will be remembered with reverence.",
+        },
+        mass: {
+            primary: "Your Mass intention has been received.",
+            secondary: "Each intention is handled prayerfully and respectfully.",
+        },
+        memorial: {
+            primary: "This intention is remembered.",
+            secondary: "Their memory lives on in prayer.",
+        },
+        stillnessDuration: 3000, // 3 seconds
+    },
+
+    // === SYSTEM MESSAGES (Replace transactional language) ===
+    system: {
+        success: "Received with care",
+        submitted: "Entrusted",
+        completed: "Offered in prayer",
+        saved: "Held in prayer",
+        loading: "Preparing your sacred space...",
+        error: "Something went awry. Please try again.",
+        empty: "This space awaits your prayer.",
+    },
+
+    // === DASHBOARD LABELS (My Prayer Corner) ===
+    dashboard: {
+        history: "Remembered Intentions",
+        saved: "Prayers You Hold",
+        completed: "Answered in Prayer",
+        favorites: "Treasured Prayers",
+        recent: "Recent Moments",
+        welcome: "Welcome to your prayer corner.",
+    },
+
+    // === CHURCH DIRECTORY ===
+    churches: {
+        heroTitle: "Places of Prayer Near You",
+        heroSubtitle: "Find a sanctuary for Mass, Confession, and quiet reflection.",
+        prayForParish: "Pray for this parish",
+        offerMass: "Offer a Mass here",
+    },
+
+    // === CANDLE ETHICAL COPY ===
+    candleFlow: {
+        meaningFirst: "Lighting a candle keeps your intention present in prayer.",
+        afterSelection: "This intention will be remembered with reverence.",
+        noObligation: "There is no obligation. Your prayer alone is cherished.",
+    },
+
+    // === MASS OFFERINGS ===
+    massOfferings: {
+        aboutTitle: "About Mass Intentions",
+        aboutDescription: "A Mass intention is a centuries-old Catholic tradition of having a Mass offered for a specific person or purpose. Your intention will be received with reverence and offered by a priest in our network.",
+        process: [
+            { step: 1, label: "Intention Received", description: "Your request is received with care" },
+            { step: 2, label: "Prayerfully Assigned", description: "Matched with a celebrant" },
+            { step: 3, label: "Mass Offered", description: "The Holy Sacrifice offered" },
+            { step: 4, label: "Confirmation Sent", description: "You receive a confirmation" },
+        ],
+        reassurance: "Each intention is handled prayerfully and respectfully.",
+    },
+
     // Forbidden Transactional Words - purely for documentation/linter future use
     forbidden: [
         "Buy Now", "Checkout", "Cart", "Product", "Price", "Deal", "Discount", "Sale", "Premium Subscription"

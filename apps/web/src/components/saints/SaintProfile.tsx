@@ -92,9 +92,9 @@ export function SaintProfile({ saint }: { saint: Saint }) {
                                 )}
                                 <div className="flex flex-wrap items-center gap-6 text-amber-100">
                                     {feastDate && (
-                                        <div className="flex items-center gap-2">
-                                            <Calendar className="w-5 h-5" />
-                                            <span>Feast Day: {feastDate}</span>
+                                        <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 shadow-sm">
+                                            <Calendar className="w-4 h-4 text-amber-100" />
+                                            <span className="font-semibold text-white">Feast: {feastDate}</span>
                                         </div>
                                     )}
                                     {(saint.bornDate || saint.diedDate) && (
@@ -110,11 +110,17 @@ export function SaintProfile({ saint }: { saint: Saint }) {
                             <div className="flex gap-3 flex-shrink-0">
                                 <button
                                     onClick={() => setShowMassModal(true)}
-                                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+                                    className="px-6 py-3 bg-white text-amber-600 font-bold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+                                >
+                                    <Heart className="w-5 h-5 fill-current" />
+                                    <span>Pray with {saint.name?.split(' ')[0]}</span>
+                                </button>
+                                <button
+                                    onClick={() => setShowMassModal(true)}
+                                    className="px-4 py-3 bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold rounded-2xl hover:bg-white/20 transition-all flex items-center gap-2"
                                 >
                                     <Gift className="w-5 h-5" />
                                     <span className="hidden sm:inline">Offer Mass</span>
-                                    <span className="sm:hidden">Mass</span>
                                 </button>
                                 <button
                                     onClick={() => setIsFavorite(!isFavorite)}

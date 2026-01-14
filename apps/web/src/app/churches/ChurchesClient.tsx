@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { SmartAdSlot } from '@/components/ads';
 import { Pagination } from '@/components/ui/Pagination';
+import { SACRED_COPY } from '@/lib/sacred-copy';
 
 interface ChurchData {
     id: string;
@@ -238,10 +239,10 @@ export default function ChurchesClient() {
                                 Catholic Directory
                             </span>
                             <h1 className="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
-                                Find a Sacred Space
+                                {SACRED_COPY.churches.heroTitle}
                             </h1>
                             <p className="text-xl text-gray-600 font-light leading-relaxed">
-                                A sanctuary for Mass, Confession, and Adoration. Connect with a community of faith wherever you are.
+                                {SACRED_COPY.churches.heroSubtitle}
                             </p>
                         </div>          {/* Search */}
                         <div className="relative max-w-2xl mx-auto">
