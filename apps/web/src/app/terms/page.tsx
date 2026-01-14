@@ -73,14 +73,14 @@ export default function TermsOfServicePage() {
                     {/* User Content */}
                     {/* Virtual Offerings */}
                     <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">4. Virtual Offerings and Memorials</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">4. Virtual Offerings and Digital Chapels</h2>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                            MyPrayerTower offers various virtual spiritual services including candles, Mass offerings, spiritual bouquets, and digital memorials ("Offerings").
+                            MyPrayerTower offers various virtual spiritual services including candles, Mass offerings, spiritual bouquets, and digital chapels ("Offerings").
                         </p>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
                             <li><strong>Candles:</strong> Virtual candles burn for a specified collection period. We do not guarantee physical candle lighting.</li>
                             <li><strong>Mass Offerings:</strong> Use requested funds for stipends to priests. While we facilitate the request, the scheduling depends on priest availability.</li>
-                            <li><strong>Memorials:</strong> Digital memorials are hosted services. We reserve the right to remove content that violates Catholic values or these Terms.</li>
+                            <li><strong>Digital Chapels:</strong> Digital chapels are hosted services. We reserve the right to remove content that violates Catholic values or these Terms.</li>
                             <li><strong>Payments:</strong> All prices are in USD. Payments are processed securely via third-party providers.</li>
                         </ul>
                     </section>

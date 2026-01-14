@@ -201,7 +201,7 @@ export default function MassOfferingsPage() {
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-amber-900 font-medium">{selectedOffering?.name}</span>
                                     <span className="text-xl text-amber-600 font-bold">
-                                        ${(calculateTotal() / 100).toFixed(2)}
+                                        ${Math.round(calculateTotal() / 100)}
                                     </span>
                                 </div>
                                 <p className="text-xs text-amber-700 truncate">For: {intentionFor}</p>
@@ -321,7 +321,7 @@ export default function MassOfferingsPage() {
                                                 )}
                                             </div>
                                             <p className="text-gray-600 text-sm mt-1">{type.description}</p>
-                                            <p className="text-amber-600 font-bold">${(type.price / 100).toFixed(2)}</p>
+                                            <p className="text-amber-600 font-bold">${Math.round(type.price / 100)}</p>
                                         </div>
                                     </div>
                                 </button>
@@ -518,7 +518,7 @@ export default function MassOfferingsPage() {
                                         <p className="text-sm text-gray-500">{addon.description}</p>
                                     </div>
                                     <div className="text-right">
-                                        <span className="block font-bold text-amber-600">+${(addon.price / 100).toFixed(2)}</span>
+                                        <span className="block font-bold text-amber-600">+${Math.round(addon.price / 100)}</span>
                                     </div>
                                 </label>
                             ))}
@@ -653,7 +653,7 @@ export default function MassOfferingsPage() {
                             <div className="space-y-2">
                                 <div className="flex justify-between text-amber-800">
                                     <span>{selectedOffering?.icon} {selectedOffering?.name}</span>
-                                    <span>${((selectedOffering?.price || 0) / 100).toFixed(2)}</span>
+                                    <span>${Math.round((selectedOffering?.price || 0) / 100)}</span>
                                 </div>
                                 {addons.candle && (
                                     <div className="flex justify-between text-amber-800">
@@ -677,7 +677,7 @@ export default function MassOfferingsPage() {
                                 <div className="flex justify-between text-amber-900 font-bold text-lg">
                                     <span>Total</span>
                                     <div className="text-right">
-                                        <span>${(calculateTotal() / 100).toFixed(2)}</span>
+                                        <span>${Math.round(calculateTotal() / 100)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -707,7 +707,7 @@ export default function MassOfferingsPage() {
                                 ) : (
                                     <>
                                         <Heart className="w-5 h-5" />
-                                        Request Mass - ${(calculateTotal() / 100).toFixed(2)}
+                                        Request Mass - ${Math.round(calculateTotal() / 100)}
                                     </>
                                 )}
                             </button>

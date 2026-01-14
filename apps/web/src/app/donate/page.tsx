@@ -178,7 +178,7 @@ export default function DonatePage() {
                                         {paymentType === 'oneTime' ? 'One-Time Donation' : selectedPlanData?.name}
                                     </span>
                                     <span className="text-2xl text-rose-600 font-bold">
-                                        ${((paymentType === 'oneTime' ? getTotal() : (selectedPlanData?.price || 0)) / 100).toFixed(2)}
+                                        ${Math.round((paymentType === 'oneTime' ? getTotal() : (selectedPlanData?.price || 0)) / 100)}
                                         {paymentType === 'subscription' && <span className="text-sm">/mo</span>}
                                     </span>
                                 </div>
@@ -359,7 +359,7 @@ export default function DonatePage() {
                                 <div className="flex justify-between text-rose-900 font-bold text-xl">
                                     <span>Total</span>
                                     <div className="text-right">
-                                        <span>${(getTotal() / 100).toFixed(2)}</span>
+                                        <span>${Math.round(getTotal() / 100)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -375,7 +375,7 @@ export default function DonatePage() {
                             ) : (
                                 <>
                                     <Heart className="w-5 h-5" />
-                                    Donate ${(getTotal() / 100).toFixed(2)}
+                                    Donate ${Math.round(getTotal() / 100)}
                                 </>
                             )}
                         </button>
@@ -419,7 +419,7 @@ export default function DonatePage() {
                                                 )}
                                             </div>
                                             <p className="text-rose-600 font-bold text-lg mt-1">
-                                                ${(plan.price / 100).toFixed(2)}/month
+                                                ${Math.round(plan.price / 100)}/month
                                             </p>
                                             <ul className="mt-3 space-y-2">
                                                 {plan.perks.map((perk, i) => (
@@ -474,7 +474,7 @@ export default function DonatePage() {
                             ) : (
                                 <>
                                     <Sparkles className="w-5 h-5" />
-                                    Become a {selectedPlanData?.name} - ${((selectedPlanData?.price || 0) / 100).toFixed(2)}/mo
+                                    Become a {selectedPlanData?.name} - ${Math.round((selectedPlanData?.price || 0) / 100)}/mo
                                 </>
                             )}
                         </button>

@@ -11,15 +11,13 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 ---
 
 ## ✨ What's New (January 2026)
-- 🕊️ **Emotional Pricing** - Contribution-based approach for offerings
-- 🕯️ **Virtual Candles** - Light digital prayer candles for intentions
-- 🛒 **Abandoned Cart Recovery** - Automated email reminders for incomplete offerings
-- 🖤 **Eternal Memorials** - Create lasting digital tributes with multi-tier options
-- 🏆 **Challenges & Leaderboards** - Join spiritual challenges and track progress
-- 💳 **Google Play Billing** - In-app subscriptions on Android
-- 🌸 **Spiritual Bouquets** - Send digital prayer bouquets as gifts
-- 📿 **Daily Examen** - Guided examination of conscience
-- 🔔 **Prayer Reminders** - Custom notifications for prayer times
+- 🕊️ **Sanctuary Redesign** - A complete visual transformation for a more sacred, contemplative experience.
+- ⏳ **Stillness Moment** - A mindful pause after every prayer action to foster spiritual reflection.
+- 💐 **Spiritual Bouquets** - Send curated bundles of prayers and masses to loved ones.
+- ⛪ **Digital Chapels** - Create beautiful, lasting tributes in our renamed Memorials section.
+- 💎 **Sacred Offerings** - Simplified, whole-number pricing for all contributions ($10, $50).
+- 🕯️ **Refined Offering Dialog** - Beautiful tabbed interface for candles, masses, and bouquets.
+- 📱 **Prayer Corner** - A renamed and refocused dashboard for your spiritual journey.
 
 ---
 
@@ -73,12 +71,12 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 ### 🕯️ Spiritual Gifts & Memorials
 | Feature | Description | Status |
 |---------|-------------|--------|
-| **Virtual Candles** | 1-30 day digital prayer candles ($0-$15) | ✅ NEW |
+| **Virtual Candles** | 1-30 day digital prayer candles (Whole number offerings) | ✅ NEW |
 | **Spiritual Bouquets** | Gift prayer collections to loved ones | ✅ NEW |
-| **Mass Offerings** | Request Masses for intentions | ✅ |
-| **Memorial Pages** | Basic ($20) & Premium ($49) tributes | ✅ NEW |
+| **Mass Offerings** | Request Masses with simplified donation tiers | ✅ |
+| **Digital Chapels** | Permanent memorial tributes (formerly Memorial Pages) | ✅ NEW |
 | **Prayer Certificates** | Digital Mass cards for gifts | ✅ |
-| **Admin Panel** | Manage offerings, memorials, and abandoned carts | ✅ NEW |
+| **Admin Panel** | Manage offerings, tributes, and abandoned carts | ✅ NEW |
 
 ### 💳 Payments & Subscriptions
 | Feature | Description | Status |

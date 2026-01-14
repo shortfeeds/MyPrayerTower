@@ -55,7 +55,7 @@ const tiers: {
                 'Advanced analytics',
                 'Priority support',
             ],
-            cta: 'Upgrade to Pro',
+            cta: 'Continue with Pro',
             popular: true,
         },
         {

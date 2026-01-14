@@ -95,6 +95,9 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
     const [reportingPrayerId, setReportingPrayerId] = useState<string | null>(null);
     const [answeringPrayerId, setAnsweringPrayerId] = useState<string | null>(null);
 
+    // Stillness State
+    const [isPrayingId, setIsPrayingId] = useState<string | null>(null);
+
     // Load saved prayers from local storage on mount
     useEffect(() => {
         const saved = localStorage.getItem('mpt-saved-prayers');
@@ -151,9 +154,14 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
 
         // Find the prayer for the modal
         const prayer = prayers.find(p => p.id === prayerId);
+
+        // Stillness Moment (3 seconds)
+        setIsPrayingId(prayerId);
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        setIsPrayingId(null);
+
         if (prayer) {
             triggerSacredMoment('prayer');
-            // setClosingPrayerFor(prayer); // Replaced by global modal
         }
 
         setPrayedIds(prev => new Set(Array.from(prev).concat([prayerId])));
@@ -742,6 +750,19 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
                 onClose={() => setAnsweringPrayerId(null)}
                 onSubmit={submitAnswered}
             />
+
+            {/* Stillness Overlay */}
+            {isPrayingId && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-sacred-900/40 backdrop-blur-sm animate-sacred-fade-in">
+                    <div className="bg-white/95 backdrop-blur-md px-8 py-6 rounded-2xl shadow-2xl flex flex-col items-center justify-center text-center transform scale-100 animate-pulse-slow">
+                        <div className="w-12 h-12 bg-gold-100 rounded-full flex items-center justify-center mb-4">
+                            <Sparkles className="w-6 h-6 text-gold-600 animate-spin-slow" />
+                        </div>
+                        <h3 className="text-xl font-serif font-bold text-gray-900 mb-2">Lifting your prayer...</h3>
+                        <p className="text-gray-600 font-medium animate-fade-in delay-1000">You are not alone.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

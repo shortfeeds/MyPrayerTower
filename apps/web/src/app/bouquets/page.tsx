@@ -149,7 +149,7 @@ export default function BouquetsPage() {
                                                     <p className="text-sm font-medium text-green-600">{(item as any).subLabel}</p>
                                                 )}
                                                 {item.price > 0 && (
-                                                    <p className="text-sm font-medium text-rose-600">${(item.price / 100).toFixed(2)}</p>
+                                                    <p className="text-sm font-medium text-rose-600">${Math.round(item.price / 100)}</p>
                                                 )}
                                             </div>
                                             {item.id === 'prayer' ? (
@@ -187,7 +187,7 @@ export default function BouquetsPage() {
                                 {totalPrice > 0 && (
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Total Price</span>
-                                        <span className="font-bold text-rose-600">${(totalPrice / 100).toFixed(2)}</span>
+                                        <span className="font-bold text-rose-600">${Math.round(totalPrice / 100)}</span>
                                     </div>
                                 )}
                             </div>
@@ -349,7 +349,7 @@ export default function BouquetsPage() {
                                                 </span>
                                                 <span className="font-medium text-gray-900">
                                                     {item.price > 0
-                                                        ? `$${((item.price * selection[item.id]) / 100).toFixed(2)}`
+                                                        ? `$${Math.round((item.price * selection[item.id]) / 100)}`
                                                         : 'Free'
                                                     }
                                                 </span>
@@ -358,7 +358,7 @@ export default function BouquetsPage() {
                                         {totalPrice > 0 && (
                                             <div className="flex justify-between items-center pt-2 mt-2 border-t border-rose-100 font-bold">
                                                 <span className="text-gray-900">Total</span>
-                                                <span className="text-rose-600">${(totalPrice / 100).toFixed(2)}</span>
+                                                <span className="text-rose-600">${Math.round(totalPrice / 100)}</span>
                                             </div>
                                         )}
                                     </div>
@@ -386,7 +386,7 @@ export default function BouquetsPage() {
                                     ) : (
                                         <>
                                             <Send className="w-5 h-5" />
-                                            Send Bouquet {totalPrice > 0 && `- $${(totalPrice / 100).toFixed(2)}`}
+                                            Send Bouquet {totalPrice > 0 && `- $${Math.round(totalPrice / 100)}`}
                                         </>
                                     )}
                                 </button>

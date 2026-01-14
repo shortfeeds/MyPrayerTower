@@ -52,10 +52,10 @@ export default function RefundsPage() {
                                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">Virtual Prayer Candles</h3>
                                 <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
                                     <li>• <strong>1 Day Candle:</strong> Free - No refund applicable</li>
-                                    <li>• <strong>3 Day Candle:</strong> $2.99 - Non-refundable once lit</li>
-                                    <li>• <strong>7 Day Candle:</strong> $5.99 - Non-refundable once lit</li>
-                                    <li>• <strong>30 Day Featured Candle:</strong> $14.99 - Refund within 24 hours if not displayed</li>
-                                    <li>• <strong>Memorial Setup:</strong> Basic (Free) / Featured ($49.99) - Refundable within 48h if unsatisfied</li>
+                                    <li>• <strong>3 Day Candle:</strong> $3 - Non-refundable once lit</li>
+                                    <li>• <strong>7 Day Candle:</strong> $6 - Non-refundable once lit</li>
+                                    <li>• <strong>30 Day Featured Candle:</strong> $15 - Refund within 24 hours if not displayed</li>
+                                    <li>• <strong>Digital Chapel Setup:</strong> Basic (Free) / Featured ($50) - Refundable within 48h if unsatisfied</li>
                                 </ul>
                             </div>
 
@@ -63,10 +63,10 @@ export default function RefundsPage() {
                             <div className="border-l-4 border-blue-500 pl-4">
                                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">Mass Offerings</h3>
                                 <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
-                                    <li>• <strong>Single Mass:</strong> $10.00</li>
-                                    <li>• <strong>Novena of Masses:</strong> $75.00</li>
-                                    <li>• <strong>Gregorian Masses:</strong> $200.00</li>
-                                    <li>• <strong>Perpetual Enrollment:</strong> $100.00</li>
+                                    <li>• <strong>Single Mass:</strong> $10</li>
+                                    <li>• <strong>Novena of Masses:</strong> $75</li>
+                                    <li>• <strong>Gregorian Masses:</strong> $200</li>
+                                    <li>• <strong>Perpetual Enrollment:</strong> $100</li>
                                 </ul>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
                                     Mass offerings can be refunded before the Mass is offered. Once scheduled, refunds are not possible.

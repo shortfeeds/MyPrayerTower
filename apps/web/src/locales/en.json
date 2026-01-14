@@ -156,9 +156,9 @@
             "settings": "Settings"
         },
         "upgrade": {
-            "title": "Upgrade to Premium",
-            "description": "Remove ads, unlock offline mode, audio prayers & more",
-            "button": "Upgrade Now"
+            "title": "Unlock More Features",
+            "description": "Support the mission and enjoy offline mode, audio prayers & more",
+            "button": "Continue Your Journey"
         }
     },
     "footer": {

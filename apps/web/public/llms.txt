@@ -1,23 +1,36 @@
-# MyPrayerTower - Catholic Prayer & Church Finder
+# MyPrayerTower
 
-## About
-MyPrayerTower is the #1 Catholic services platform connecting the faithful with spiritual resources and community.
-- **Mission**: Connect. Pray. Grow.
-- **Database**: 50,000+ Churches, 3,900+ Prayers, 10,000+ Saints.
+> **Summary:** MyPrayerTower is a comprehensive "Digital Sanctuary" designed to help believers deepen their faith through contemplative prayer, community intercession, and sacred traditions. It creates a space for stillness and connection with God.
 
-## Key Features for Users
-- **Find Mass Times**: Locate Catholic churches worldwide with confession and adoration schedules.
-- **Prayer Library**: Extensive collection including specific prayers (e.g., "Act of Consecration").
-- **Virtual Candles**: Light a candle for intentions (1-day to 30-day options).
-- **Daily Spiritual Growth**: Daily readings, Rosary audio, and Saint of the Day.
+## Core Mission
+To provide a sacred digital space where Catholics worldwide can pause, pray, and unite in faith, supported by features that encourage stillness and reflection.
 
-## Navigation
-- **Home**: https://myprayertower.com
-- **Prayers**: https://myprayertower.com/prayers
-- **Saints**: https://myprayertower.com/saints
-- **Churches**: https://myprayertower.com/churches
-- **Light a Candle**: https://myprayertower.com/candles
+## Key Features & Tools
 
-## Contact
-- **Email**: support@myprayertower.com
-- **Social**: @MyPrayerTower on all platforms
+### Daily Spiritual Journey
+- **Daily Readings:** Gospel readings and reflections (Matthew, Mark, Luke, John).
+- **Saint of the Day:** Biographies and inspiration from the lives of Saints.
+- **Daily Examen:** Guided evening reflections and night prayers.
+
+### Prayer & Community
+- **Prayer Wall:** A global community feature to share intentions and pray for others.
+- **Virtual Candles:** Light virtual candles for intentions (3, 7, or 30-day options).
+- **Live Prayer Sessions:** Real-time participation in the Rosary, Divine Mercy Chaplet, and Novenas.
+- **Mass Offerings:** Request Holy Masses for special intentions or the repose of souls.
+
+### Utilities & Services
+- **Church Finder:** A directory to locate Catholic churches and Mass times globally.
+- **Digital Chapels:** Permanent tribute pages for loved ones, serving as virtual sanctuaries for remembrance.
+- **QR Code Integration:** Scannable codes for gravestones linking to digital memorials.
+
+## Platform Details
+- **Target Audience:** Catholics, Christian Believers, Prayer Groups, Parishes.
+- **Platform Type:** Web Application, Mobile App (iOS & Android).
+- **Membership:** Free and Premium tiers available.
+
+## Important Links
+- **Home:** https://myprayertower.com/
+- **Prayer Wall:** https://myprayertower.com/prayers/
+- **Church Finder:** https://myprayertower.com/churches/
+- **Memorials:** https://myprayertower.com/memorials/
+- **Contact:** https://myprayertower.com/contact-us/

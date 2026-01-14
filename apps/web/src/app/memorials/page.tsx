@@ -247,165 +247,171 @@ export default function MemorialsPage() {
                             "Eternal rest grant unto them, O Lord, and let perpetual light shine upon them."
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link
-                                href="/memorials/create"
-                                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all"
-                            >
-                                <Plus className="w-5 h-5" />
-                                Create a Chapel
-                            </Link>
+                        <section className="relative z-10 container mx-auto px-4 py-16">
+                            <div className="text-center max-w-2xl mx-auto mb-16">
+                                <span className="inline-flex items-center gap-2 px-3 py-1 bg-sacred-50 text-sacred-600 rounded-full text-sm font-medium mb-4">
+                                    <Sparkles className="w-4 h-4" />
+                                    Digital Chapels
+                                </span>
+                                <h1 className="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+                                    Sacred Remembrance
+                                </h1>
+                                <p className="text-xl text-gray-600 font-light leading-relaxed">
+                                    Create a lasting tribute for your loved ones. A quiet place for family and friends to light candles, share memories, and pray together.
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col md:flex-row gap-6 mb-12">
+                                <div className="relative flex-1">
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        placeholder="Find a memorial chapel..."
+                                        className="w-full pl-12 pr-4 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent bg-white shadow-sm"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                </div>
+                                <Link
+                                    href="/memorials/create"
+                                    className="flex-shrink-0 px-8 py-4 bg-sacred-600 text-white font-bold rounded-xl hover:bg-sacred-700 transition-all shadow-lg shadow-sacred-600/20 flex items-center justify-center gap-2 hover:-translate-y-0.5"
+                                >
+                                    <Plus className="w-5 h-5" />
+                                    Create Chapel
+                                </Link>
+                            </div>
+                        </section>
+
+                        {/* Top Ad */}
+                        <div className="container mx-auto px-4 py-6">
+                            <SmartAdSlot page="memorials" position="top" />
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* Search Bar */}
-            <div className="container mx-auto px-4 -mt-6 relative z-20">
-                <div className="max-w-2xl mx-auto">
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="Search memorials by name..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 bg-white rounded-2xl shadow-xl border border-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-gray-900"
-                        />
-                    </div>
-                </div>
-            </div>
+                        {/* Memorials Content */}
+                        <div className="container mx-auto px-4 py-8">
+                            {loading && memorials.length === 0 ? (
+                                <div className="flex justify-center py-20">
+                                    <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+                                </div>
+                            ) : memorials.length === 0 ? (
+                                <div className="text-center py-20">
+                                    <Cross className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No Memorials Found</h3>
+                                    <p className="text-gray-500 mb-6">Be the first to create a memorial for your loved one.</p>
+                                    <Link
+                                        href="/memorials/create"
+                                        className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white font-semibold rounded-xl"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        Create Memorial
+                                    </Link>
+                                </div>
+                            ) : (
+                                <>
+                                    {/* Featured Memorials Section */}
+                                    {premiumMemorials.length > 0 && (
+                                        <section className="mb-12">
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <div className="p-2 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl">
+                                                    <Sparkles className="w-5 h-5 text-white" />
+                                                </div>
+                                                <div>
+                                                    <h2 className="text-2xl font-serif font-bold text-gray-900">Featured Memorials</h2>
+                                                    <p className="text-sm text-gray-500">Premium tributes with enhanced visibility</p>
+                                                </div>
+                                            </div>
+                                            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                                {premiumMemorials.map((memorial) => (
+                                                    <MemorialCard key={memorial.id} memorial={memorial} isPremium />
+                                                ))}
+                                            </div>
+                                        </section>
+                                    )}
 
-            {/* Top Ad */}
-            <div className="container mx-auto px-4 py-6">
-                <SmartAdSlot page="memorials" position="top" />
-            </div>
+                                    {/* Basic Memorials Section */}
+                                    {basicMemorials.length > 0 && (
+                                        <section>
+                                            {premiumMemorials.length > 0 && (
+                                                <h2 className="text-xl font-semibold text-gray-700 mb-6">All Memorials</h2>
+                                            )}
+                                            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                                {basicMemorials.map((memorial) => (
+                                                    <MemorialCard key={memorial.id} memorial={memorial} />
+                                                ))}
+                                            </div>
+                                        </section>
+                                    )}
+                                </>
+                            )}
 
-            {/* Memorials Content */}
-            <div className="container mx-auto px-4 py-8">
-                {loading && memorials.length === 0 ? (
-                    <div className="flex justify-center py-20">
-                        <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
-                    </div>
-                ) : memorials.length === 0 ? (
-                    <div className="text-center py-20">
-                        <Cross className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">No Memorials Found</h3>
-                        <p className="text-gray-500 mb-6">Be the first to create a memorial for your loved one.</p>
-                        <Link
-                            href="/memorials/create"
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white font-semibold rounded-xl"
-                        >
-                            <Plus className="w-4 h-4" />
-                            Create Memorial
-                        </Link>
-                    </div>
-                ) : (
-                    <>
-                        {/* Featured Memorials Section */}
-                        {premiumMemorials.length > 0 && (
-                            <section className="mb-12">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="p-2 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl">
-                                        <Sparkles className="w-5 h-5 text-white" />
+                            {/* Load More */}
+                            {hasMore && memorials.length > 0 && (
+                                <div className="text-center mt-10">
+                                    <button
+                                        onClick={loadMore}
+                                        disabled={loading}
+                                        className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50"
+                                    >
+                                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                                        Load More
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Bottom Ad */}
+                        <div className="container mx-auto px-4 py-6">
+                            <SmartAdSlot page="memorials" position="inline" />
+                        </div>
+
+                        {/* CTA Section */}
+                        <section className="container mx-auto px-4 py-16">
+                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-10 text-center text-white relative overflow-hidden">
+                                <div className="absolute inset-0 opacity-10">
+                                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500 rounded-full blur-[100px]" />
+                                </div>
+                                <div className="relative z-10">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 rounded-full mb-4">
+                                        <Sparkles className="w-4 h-4 text-amber-400" />
+                                        <span className="text-sm font-medium text-amber-300">Premium Features</span>
                                     </div>
-                                    <div>
-                                        <h2 className="text-2xl font-serif font-bold text-gray-900">Featured Memorials</h2>
-                                        <p className="text-sm text-gray-500">Premium tributes with enhanced visibility</p>
+                                    <h2 className="text-3xl font-serif font-bold mb-4">
+                                        Create a Chapel for Your Loved One
+                                    </h2>
+                                    <p className="text-slate-300 mb-4 max-w-xl mx-auto">
+                                        A permanent memorial where family and friends can gather, light candles, and share cherished memories.
+                                    </p>
+                                    <p className="text-slate-400 text-sm italic mb-8">
+                                        There is no obligation. Your remembrance alone is prayer.
+                                    </p>
+                                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                        <Link
+                                            href="/memorials/create"
+                                            className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 backdrop-blur border border-white/20 text-white font-bold rounded-full hover:bg-white/20 transition-colors"
+                                        >
+                                            <Plus className="w-5 h-5" />
+                                            Create Free Memorial
+                                        </Link>
+                                        <Link
+                                            href="/memorials/create?tier=premium"
+                                            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full shadow-lg"
+                                        >
+                                            <Sparkles className="w-5 h-5 text-white" />
+                                            Create Featured — $49.99
+                                        </Link>
                                     </div>
                                 </div>
-                                <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                    {premiumMemorials.map((memorial) => (
-                                        <MemorialCard key={memorial.id} memorial={memorial} isPremium />
-                                    ))}
-                                </div>
-                            </section>
+                            </div>
+                        </section>
+
+                        {/* Offering Dialog */}
+                        {selectedMemorial && (
+                            <OfferingDialog
+                                memorial={selectedMemorial}
+                                isOpen={!!selectedMemorial}
+                                onClose={() => setSelectedMemorial(null)}
+                            />
                         )}
-
-                        {/* Basic Memorials Section */}
-                        {basicMemorials.length > 0 && (
-                            <section>
-                                {premiumMemorials.length > 0 && (
-                                    <h2 className="text-xl font-semibold text-gray-700 mb-6">All Memorials</h2>
-                                )}
-                                <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                    {basicMemorials.map((memorial) => (
-                                        <MemorialCard key={memorial.id} memorial={memorial} />
-                                    ))}
-                                </div>
-                            </section>
-                        )}
-                    </>
-                )}
-
-                {/* Load More */}
-                {hasMore && memorials.length > 0 && (
-                    <div className="text-center mt-10">
-                        <button
-                            onClick={loadMore}
-                            disabled={loading}
-                            className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50"
-                        >
-                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                            Load More
-                        </button>
                     </div>
-                )}
-            </div>
-
-            {/* Bottom Ad */}
-            <div className="container mx-auto px-4 py-6">
-                <SmartAdSlot page="memorials" position="inline" />
-            </div>
-
-            {/* CTA Section */}
-            <section className="container mx-auto px-4 py-16">
-                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-10 text-center text-white relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500 rounded-full blur-[100px]" />
-                    </div>
-                    <div className="relative z-10">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 rounded-full mb-4">
-                            <Sparkles className="w-4 h-4 text-amber-400" />
-                            <span className="text-sm font-medium text-amber-300">Premium Features</span>
-                        </div>
-                        <h2 className="text-3xl font-serif font-bold mb-4">
-                            Create a Chapel for Your Loved One
-                        </h2>
-                        <p className="text-slate-300 mb-4 max-w-xl mx-auto">
-                            A permanent memorial where family and friends can gather, light candles, and share cherished memories.
-                        </p>
-                        <p className="text-slate-400 text-sm italic mb-8">
-                            There is no obligation. Your remembrance alone is prayer.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link
-                                href="/memorials/create"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 backdrop-blur border border-white/20 text-white font-bold rounded-full hover:bg-white/20 transition-colors"
-                            >
-                                <Plus className="w-5 h-5" />
-                                Create Free Memorial
-                            </Link>
-                            <Link
-                                href="/memorials/create?tier=premium"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full shadow-lg"
-                            >
-                                <Sparkles className="w-5 h-5 text-white" />
-                                Create Featured — $49.99
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Offering Dialog */}
-            {selectedMemorial && (
-                <OfferingDialog
-                    memorial={selectedMemorial}
-                    isOpen={!!selectedMemorial}
-                    onClose={() => setSelectedMemorial(null)}
-                />
-            )}
-        </div>
-    );
+                    );
 }

@@ -147,7 +147,7 @@ export default function UserOrdersPage() {
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className="font-bold">${(subscription.price / 100).toFixed(2)}/mo</p>
+                                <p className="font-bold">${Math.round(subscription.price / 100)}/mo</p>
                                 <p className="text-sm text-white/80">{subscription.massesRemaining} Masses remaining</p>
                             </div>
                         </div>
@@ -159,8 +159,8 @@ export default function UserOrdersPage() {
                     <button
                         onClick={() => setActiveTab('offerings')}
                         className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${activeTab === 'offerings'
-                                ? 'bg-amber-500 text-white'
-                                : 'text-gray-600 hover:bg-gray-100'
+                            ? 'bg-amber-500 text-white'
+                            : 'text-gray-600 hover:bg-gray-100'
                             }`}
                     >
                         ⛪ Mass Offerings
@@ -168,8 +168,8 @@ export default function UserOrdersPage() {
                     <button
                         onClick={() => setActiveTab('donations')}
                         className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${activeTab === 'donations'
-                                ? 'bg-rose-500 text-white'
-                                : 'text-gray-600 hover:bg-gray-100'
+                            ? 'bg-rose-500 text-white'
+                            : 'text-gray-600 hover:bg-gray-100'
                             }`}
                     >
                         ❤️ Donations
@@ -177,8 +177,8 @@ export default function UserOrdersPage() {
                     <button
                         onClick={() => setActiveTab('subscription')}
                         className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${activeTab === 'subscription'
-                                ? 'bg-purple-500 text-white'
-                                : 'text-gray-600 hover:bg-gray-100'
+                            ? 'bg-purple-500 text-white'
+                            : 'text-gray-600 hover:bg-gray-100'
                             }`}
                     >
                         ✨ Subscription
@@ -226,7 +226,7 @@ export default function UserOrdersPage() {
                                                     </p>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="font-bold text-amber-600">${(offering.amount / 100).toFixed(2)}</p>
+                                                    <p className="font-bold text-amber-600">${Math.round(offering.amount / 100)}</p>
                                                     {offering.certificateUrl && (
                                                         <a
                                                             href={offering.certificateUrl}
@@ -280,7 +280,7 @@ export default function UserOrdersPage() {
                                                     <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
                                                         ✓ {donation.status}
                                                     </span>
-                                                    <p className="font-bold text-rose-600">${(donation.amount / 100).toFixed(2)}</p>
+                                                    <p className="font-bold text-rose-600">${Math.round(donation.amount / 100)}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -299,7 +299,7 @@ export default function UserOrdersPage() {
                                                 <span className="text-4xl">{PLAN_LABELS[subscription.plan]?.icon || '✨'}</span>
                                                 <div>
                                                     <h2 className="text-xl font-bold">{PLAN_LABELS[subscription.plan]?.name || subscription.plan}</h2>
-                                                    <p className="text-gray-500">${(subscription.price / 100).toFixed(2)}/month</p>
+                                                    <p className="text-gray-500">${Math.round(subscription.price / 100)}/month</p>
                                                 </div>
                                             </div>
 

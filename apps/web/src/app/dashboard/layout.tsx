@@ -17,8 +17,8 @@ import {
 } from 'lucide-react';
 
 const sidebarItems = [
-    { href: '/dashboard', icon: LayoutDashboard, label: 'Overview' },
-    { href: '/dashboard/prayer-corner', icon: BookHeart, label: 'My Prayer Corner' }, // New Personal Sanctuary
+    { href: '/dashboard', icon: LayoutDashboard, label: 'My Sanctuary' },
+    { href: '/dashboard/prayer-corner', icon: BookHeart, label: 'Prayer Journal' }, // New Personal Sanctuary
     { href: '/dashboard/profile', icon: Church, label: 'Church Profile' },
     { href: '/dashboard/announcements', icon: Megaphone, label: 'Announcements' },
     { href: '/dashboard/events', icon: Calendar, label: 'Events' },
@@ -44,8 +44,8 @@ export default function DashboardLayout({
                     <Link href="/" className="flex items-center gap-2">
                         <Church className="w-8 h-8 text-primary-600" />
                         <div>
-                            <span className="font-bold text-gray-900 block">Church Portal</span>
-                            <span className="text-xs text-gray-500">MyPrayerTower</span>
+                            <span className="font-bold text-gray-900 block">My Sanctuary</span>
+                            <span className="text-xs text-gray-500">Personal Prayer Space</span>
                         </div>
                     </Link>
                 </div>

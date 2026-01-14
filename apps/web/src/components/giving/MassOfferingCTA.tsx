@@ -29,7 +29,7 @@ const contextMessages = {
     reading: {
         title: 'Let the Word Inspire',
         description: "Jesus said, 'It is more blessed to give than to receive.' Support our mission.",
-        cta: 'Give Today',
+        cta: 'Support Our Mission',
     },
     confession: {
         title: 'Begin Your Renewal',
@@ -135,7 +135,7 @@ export function MassOfferingCTA({
                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 font-medium rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
                         >
                             <Gift className="w-4 h-4" />
-                            Donate
+                            Make an Offering
                         </Link>
                     </div>
                 </div>
@@ -161,7 +161,7 @@ export function DonationPrompt({ className = '' }: { className?: string }) {
                 href="/donate"
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors"
             >
-                Donate Now
+                Make an Offering
                 <ArrowRight className="w-3 h-3" />
             </Link>
         </div>

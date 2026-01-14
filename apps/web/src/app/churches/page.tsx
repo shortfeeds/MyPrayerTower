@@ -238,15 +238,18 @@ export default function ChurchesPage() {
                                 <p className="text-white text-sm">Search for your church below to claim it. If you can't find it, use the "Submit a Church" button.</p>
                             </div>
                         )}
-
-                        <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-3">
-                            Church Directory
-                        </h1>
-                        <p className="text-slate-400 mb-6 max-w-xl mx-auto">
-                            Find Mass times, confession schedules, and connect with parishes worldwide.
-                        </p>
-
-                        {/* Search */}
+                        <div className="text-center max-w-3xl mx-auto mb-16">
+                            <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium mb-4">
+                                <Church className="w-4 h-4" />
+                                Catholic Directory
+                            </span>
+                            <h1 className="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+                                Places of prayer near you
+                            </h1>
+                            <p className="text-xl text-gray-600 font-light leading-relaxed">
+                                Find a sanctuary for Mass, Confession, and Adoration. Connect with a community of faith wherever you are.
+                            </p>
+                        </div>          {/* Search */}
                         <div className="relative max-w-2xl mx-auto">
                             <div className="relative bg-white rounded-xl shadow-2xl flex items-center">
                                 <Search className="absolute left-5 w-5 h-5 text-slate-400" />

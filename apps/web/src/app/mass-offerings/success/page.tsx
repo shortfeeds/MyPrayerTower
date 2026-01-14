@@ -105,7 +105,7 @@ function SuccessContent() {
                             )}
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Amount</span>
-                                <span className="font-bold text-lg">${(offering.amount / 100).toFixed(2)}</span>
+                                <span className="font-bold text-lg">${Math.round(offering.amount / 100)}</span>
                             </div>
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, Fragment } from 'react';
-import { X, Plus, Minus, ShoppingCart, Loader2, Check } from 'lucide-react';
+import { X, Plus, Minus, Loader2, Check, Sparkles, Gift, Heart, Church } from 'lucide-react';
 import { PayPalCheckout } from '@/components/PayPalCheckout';
 
 interface Memorial {
@@ -23,25 +23,26 @@ interface OfferingOption {
     icon: string;
     price: number;
     description?: string;
-    category: 'quick' | 'sacred' | 'bouquet';
+    category: 'candles' | 'sacred' | 'bouquet';
 }
 
 const ALL_OFFERINGS: OfferingOption[] = [
-    // Quick Acts
-    { id: 'CANDLE_SMALL', name: '3-Day Candle', icon: '🕯️', price: 3, category: 'quick' },
-    { id: 'CANDLE_MEDIUM', name: '7-Day Candle', icon: '🕯️', price: 5, category: 'quick' },
-    { id: 'CANDLE_LARGE', name: '14-Day Candle', icon: '🕯️', price: 10, category: 'quick' },
-    { id: 'FLOWERS', name: 'Flowers', icon: '🌹', price: 3, category: 'quick' },
-    { id: 'PRAYER_CARD', name: 'Prayer Card', icon: '🙏', price: 2, category: 'quick' },
-    { id: 'FLORAL_BOUQUET', name: 'Floral Bouquet', icon: '💐', price: 8, category: 'quick' },
-    // Sacred
+    // Candles
+    { id: 'CANDLE_SMALL', name: '3-Day Candle', icon: '🕯️', price: 3, category: 'candles' },
+    { id: 'CANDLE_MEDIUM', name: '7-Day Candle', icon: '🕯️', price: 5, category: 'candles' },
+    { id: 'CANDLE_LARGE', name: '14-Day Candle', icon: '🕯️', price: 10, category: 'candles' },
+    { id: 'CANDLE_FEATURED', name: '30-Day Featured', icon: '✨', price: 25, category: 'candles' },
+    // Sacred Offerings
+    { id: 'FLOWERS', name: 'Flowers', icon: '🌹', price: 3, category: 'sacred' },
+    { id: 'FLORAL_BOUQUET', name: 'Floral Bouquet', icon: '💐', price: 8, category: 'sacred' },
+    { id: 'PRAYER_CARD', name: 'Prayer Card', icon: '🙏', price: 2, category: 'sacred' },
     { id: 'ROSARY_DECADE', name: 'Rosary Decade', icon: '📿', price: 5, category: 'sacred' },
     { id: 'ROSARY_FULL', name: 'Full Rosary', icon: '📿', price: 15, category: 'sacred' },
     { id: 'MASS', name: 'Holy Mass', icon: '✝️', price: 25, description: 'For the repose of the soul', category: 'sacred' },
-    // Bundles
+    // Spiritual Bouquets
     { id: 'BOUQUET_GARDEN', name: 'Garden of Grace', icon: '💝', price: 20, description: '3 candles + rosary + card', category: 'bouquet' },
-    { id: 'BOUQUET_HEAVENLY', name: 'Heavenly Tribute', icon: '💝', price: 50, description: '7 candles + Mass + rosary', category: 'bouquet' },
-    { id: 'BOUQUET_ETERNAL', name: 'Eternal Peace', icon: '💝', price: 100, description: '30 candles + 3 Masses', category: 'bouquet' },
+    { id: 'BOUQUET_HEAVENLY', name: 'Heavenly Tribute', icon: '💖', price: 50, description: '7 candles + Mass + rosary', category: 'bouquet' },
+    { id: 'BOUQUET_ETERNAL', name: 'Eternal Peace', icon: '👑', price: 100, description: '30 candles + 3 Masses', category: 'bouquet' },
 ];
 
 interface CartItem {
@@ -57,8 +58,7 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
     const [success, setSuccess] = useState(false);
     const [showPayPal, setShowPayPal] = useState(false);
     const [pendingOrder, setPendingOrder] = useState<{ orderId: string; amount: number } | null>(null);
-
-    // Filter logic... (keep existing helper functions or inline them)
+    const [activeTab, setActiveTab] = useState<'candles' | 'sacred' | 'bouquet'>('candles');
 
     if (!isOpen) return null;
 
@@ -88,21 +88,13 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
         });
     };
 
-    const clearItem = (offeringId: string) => {
-        setCart(prev => {
-            const newCart = new Map(prev);
-            newCart.delete(offeringId);
-            return newCart;
-        });
-    };
-
     const getQuantity = (offeringId: string) => {
         return cart.get(offeringId)?.quantity || 0;
     };
 
     const cartItems = Array.from(cart.values());
     const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = cartItems.reduce((sum, item) => sum + (item.offering.price * item.quantity), 0);
+    const totalPrice = Math.round(cartItems.reduce((sum, item) => sum + (item.offering.price * item.quantity), 0));
 
     const handleSubmit = async () => {
         if (cartItems.length === 0) return;
@@ -116,7 +108,7 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                     items: cartItems.map(item => ({
                         type: item.offering.id,
                         quantity: item.quantity,
-                        price: item.offering.price,
+                        price: Math.round(item.offering.price),
                     })),
                     totalAmount: totalPrice * 100,
                     message,
@@ -150,7 +142,7 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
         }
     };
 
-    const handlePayPalSuccess = async (details: any) => {
+    const handlePayPalSuccess = async () => {
         setSuccess(true);
         setTimeout(() => {
             setSuccess(false);
@@ -165,37 +157,54 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
 
     const renderOfferingCard = (offering: OfferingOption) => {
         const qty = getQuantity(offering.id);
+        const isSelected = qty > 0;
+
         return (
             <div
                 key={offering.id}
-                className={`relative p-3 rounded-xl border-2 transition-all ${qty > 0
-                    ? 'border-amber-500 bg-amber-50 shadow-lg'
-                    : 'border-gray-200 hover:border-amber-300 bg-white'
+                className={`relative p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer group ${isSelected
+                    ? 'border-amber-400 bg-gradient-to-br from-amber-50 to-orange-50 shadow-lg shadow-amber-100'
+                    : 'border-gray-100 bg-white hover:border-amber-200 hover:shadow-md'
                     }`}
+                onClick={() => !isSelected && addToCart(offering)}
             >
-                {qty > 0 && (
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-amber-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                {isSelected && (
+                    <div className="absolute -top-2 -right-2 w-7 h-7 bg-gradient-to-br from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md">
                         {qty}
                     </div>
                 )}
+
                 <div className="text-center">
-                    <span className="text-2xl">{offering.icon}</span>
-                    <div className="font-semibold text-gray-900 text-sm mt-1">{offering.name}</div>
-                    <div className="text-amber-600 font-bold text-sm">${offering.price}</div>
+                    <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">{offering.icon}</div>
+                    <div className="font-semibold text-gray-900 text-sm leading-tight">{offering.name}</div>
+                    {offering.description && (
+                        <div className="text-[10px] text-gray-500 mt-1 leading-tight">{offering.description}</div>
+                    )}
+                    <div className="text-amber-600 font-bold text-base mt-2">${Math.round(offering.price)}</div>
                 </div>
-                <div className="flex items-center justify-center gap-1 mt-2">
-                    {qty > 0 ? (
+
+                <div className="flex items-center justify-center gap-2 mt-3">
+                    {isSelected ? (
                         <>
-                            <button onClick={() => removeFromCart(offering.id)} className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center">
-                                <Minus className="w-3 h-3" />
+                            <button
+                                onClick={(e) => { e.stopPropagation(); removeFromCart(offering.id); }}
+                                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                            >
+                                <Minus className="w-4 h-4 text-gray-600" />
                             </button>
-                            <span className="w-6 text-center font-bold text-sm">{qty}</span>
-                            <button onClick={() => addToCart(offering)} className="w-7 h-7 rounded-full bg-amber-500 text-white flex items-center justify-center">
-                                <Plus className="w-3 h-3" />
+                            <span className="w-8 text-center font-bold text-gray-900">{qty}</span>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); addToCart(offering); }}
+                                className="w-8 h-8 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center transition-colors"
+                            >
+                                <Plus className="w-4 h-4" />
                             </button>
                         </>
                     ) : (
-                        <button onClick={() => addToCart(offering)} className="px-3 py-1 text-xs font-semibold bg-amber-500 text-white rounded-full">
+                        <button
+                            onClick={(e) => { e.stopPropagation(); addToCart(offering); }}
+                            className="px-4 py-1.5 text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full hover:from-amber-600 hover:to-orange-600 transition-all shadow-sm"
+                        >
                             Add
                         </button>
                     )}
@@ -204,111 +213,142 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
         );
     };
 
+    const tabs = [
+        { id: 'candles' as const, label: 'Candles', icon: '🕯️' },
+        { id: 'sacred' as const, label: 'Sacred', icon: '✝️' },
+        { id: 'bouquet' as const, label: 'Bouquets', icon: '💝' },
+    ];
+
+    const filteredOfferings = ALL_OFFERINGS.filter(o => o.category === activeTab);
+
     return (
         <Fragment>
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={onClose} />
-            <div className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-2xl md:max-h-[90vh] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden">
-                <div className="relative bg-gradient-to-r from-amber-600 to-orange-600 text-white p-4">
-                    <button onClick={onClose} className="absolute top-3 right-3 p-2 hover:bg-white/10 rounded-full">
+            <div className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-3xl md:max-h-[85vh] bg-white rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden">
+
+                {/* Header */}
+                <div className="relative bg-gradient-to-r from-amber-600 via-orange-500 to-rose-500 text-white p-5">
+                    <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors">
                         <X className="w-5 h-5" />
                     </button>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                         {memorial.photoUrl ? (
-                            <img src={memorial.photoUrl} alt={fullName} className="w-12 h-12 rounded-full object-cover border-2 border-white/30" />
+                            <img src={memorial.photoUrl} alt={fullName} className="w-14 h-14 rounded-full object-cover border-3 border-white/40 shadow-lg" />
                         ) : (
-                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-xl">✝️</div>
+                            <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-2xl shadow-lg">✝️</div>
                         )}
                         <div>
-                            <div className="text-xs text-white/80">Send tribute to</div>
-                            <div className="text-lg font-bold">{fullName}</div>
+                            <div className="text-xs text-white/80 uppercase tracking-wide font-medium">Send a tribute to</div>
+                            <div className="text-xl font-bold">{fullName}</div>
                         </div>
                     </div>
                 </div>
 
                 {success ? (
                     <div className="flex-1 flex flex-col items-center justify-center p-8">
-                        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4 animate-pulse">
-                            <Check className="w-10 h-10 text-green-600" />
+                        <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
+                            <Check className="w-12 h-12 text-green-600" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Tributes Sent!</h3>
-                        <p className="text-gray-500 text-center">Your offerings have been sent in memory of {fullName}.</p>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Tribute Sent!</h3>
+                        <p className="text-gray-500 text-center">Your offerings have been lovingly sent in memory of {fullName}.</p>
                     </div>
                 ) : showPayPal ? (
                     <div className="flex-1 p-8 overflow-y-auto">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Complete Your Offering</h3>
-                        <div className="bg-gray-50 rounded-xl p-4 mb-6">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-gray-600">Total Tribute Amount</span>
-                                <span className="text-xl font-bold text-gray-900">${totalPrice}</span>
+                        <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">Complete Your Offering</h3>
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 mb-6 border border-amber-100">
+                            <div className="flex justify-between items-center mb-3">
+                                <span className="text-gray-600 font-medium">Total Offering</span>
+                                <span className="text-3xl font-bold text-gray-900">${totalPrice}</span>
                             </div>
+                            <p className="text-sm text-gray-500 italic text-center">
+                                "God loves a cheerful giver." — 2 Corinthians 9:7
+                            </p>
                         </div>
                         <PayPalCheckout
                             amount={totalPrice}
+                            referenceId={pendingOrder?.orderId}
+                            description={`Offering for ${fullName}`}
                             onSuccess={handlePayPalSuccess}
                             onError={() => alert('Payment failed. Please try again.')}
                         />
                         <button
                             onClick={() => setShowPayPal(false)}
-                            className="w-full mt-4 text-sm text-gray-500 hover:text-gray-700"
+                            className="w-full mt-4 py-3 text-gray-500 hover:text-gray-700 font-medium transition-colors"
                         >
-                            Go Back
+                            ← Go Back
                         </button>
                     </div>
                 ) : (
                     <>
+                        {/* Tab Navigation */}
+                        <div className="flex border-b border-gray-100 px-4 pt-4">
+                            {tabs.map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex-1 py-3 px-4 text-sm font-semibold rounded-t-xl transition-all ${activeTab === tab.id
+                                        ? 'bg-amber-50 text-amber-700 border-b-2 border-amber-500'
+                                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    <span className="mr-2">{tab.icon}</span>
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Offerings Grid */}
                         <div className="flex-1 overflow-y-auto p-4">
-                            <div className="mb-4">
-                                <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">🕯️ Quick Acts</h4>
-                                <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                                    {ALL_OFFERINGS.filter(o => o.category === 'quick').map(renderOfferingCard)}
-                                </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                {filteredOfferings.map(renderOfferingCard)}
                             </div>
-                            <div className="mb-4">
-                                <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">✝️ Sacred Offerings</h4>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {ALL_OFFERINGS.filter(o => o.category === 'sacred').map(renderOfferingCard)}
-                                </div>
-                            </div>
-                            <div className="mb-4">
-                                <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">💝 Bundles</h4>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {ALL_OFFERINGS.filter(o => o.category === 'bouquet').map(renderOfferingCard)}
-                                </div>
-                            </div>
+
+                            {/* Message & Anonymous Option */}
                             {totalItems > 0 && (
-                                <div className="mt-4 space-y-3 bg-gray-50 rounded-xl p-4">
+                                <div className="mt-6 space-y-4 bg-gray-50 rounded-2xl p-4 border border-gray-100">
                                     <textarea
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                         placeholder="Add a personal message (optional)..."
-                                        className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none bg-white"
+                                        className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none bg-white text-gray-800 placeholder-gray-400"
                                         rows={2}
                                     />
-                                    <label className="flex items-center gap-2 text-sm text-gray-600">
+                                    <label className="flex items-center gap-3 text-sm text-gray-600 cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={isAnonymous}
                                             onChange={(e) => setIsAnonymous(e.target.checked)}
-                                            className="rounded border-gray-300 text-amber-500 focus:ring-amber-500"
+                                            className="w-5 h-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500"
                                         />
                                         Send anonymously
                                     </label>
                                 </div>
                             )}
                         </div>
-                        <div className="border-t border-gray-200 bg-gray-50 p-4">
+
+                        {/* Footer with Submit Button */}
+                        <div className="border-t border-gray-100 bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
                             <button
                                 onClick={handleSubmit}
                                 disabled={cartItems.length === 0 || submitting}
-                                className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-lg disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                                className="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:via-orange-600 hover:to-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 text-lg"
                             >
-                                {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                                {submitting ? (
+                                    <Loader2 className="w-6 h-6 animate-spin" />
+                                ) : (
                                     <>
-                                        <ShoppingCart className="w-5 h-5" />
-                                        Offer Now — {totalItems} item{totalItems !== 1 ? 's' : ''} — ${Number.isInteger(totalPrice) ? totalPrice : totalPrice.toFixed(2)}
+                                        <Heart className="w-5 h-5" />
+                                        {totalItems > 0 ? (
+                                            <span>Make Offering — ${totalPrice}</span>
+                                        ) : (
+                                            <span>Select Offerings Above</span>
+                                        )}
                                     </>
                                 )}
                             </button>
+                            <p className="text-center text-xs text-gray-400 mt-3">
+                                Your offering supports the maintenance of this sacred memorial space.
+                            </p>
                         </div>
                     </>
                 )}

@@ -82,6 +82,10 @@ body {
   --input: 214.3 31.8% 91.4%;
   --ring: 222.2 84% 4.9%;
   --radius: 0.5rem;
+  
+  /* Sacred Animation Tokens */
+  --duration-sacred: 700ms;
+  --ease-sacred: cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .dark {
@@ -324,6 +328,22 @@ h6 {
 /* Display font for headings */
 .font-display {
   font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Sacred Typography */
+.text-prayer {
+  font-family: var(--font-merriweather), serif;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+.animate-sacred-fade-in {
+  animation: fadeIn var(--duration-sacred) var(--ease-sacred) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ==================== RESPONSIVE LAYOUT UTILITIES ==================== */

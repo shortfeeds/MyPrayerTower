@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, CheckCircle2, X } from 'lucide-react';
+import { Plus, CheckCircle2, X, Sparkles } from 'lucide-react';
 import { SACRED_COPY } from '@/lib/sacred-copy';
 
 interface Intention {
@@ -82,34 +82,76 @@ export function PrayerJournal() {
                 )}
             </AnimatePresence>
 
-            <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                {intentions.map((intention) => (
-                    <div
-                        key={intention.id}
-                        className={`p-4 rounded-2xl border transition-all ${intention.isAnswered
-                                ? 'bg-green-50 border-green-100 opacity-75'
-                                : 'bg-white border-slate-100 hover:border-indigo-100 hover:shadow-sm'
-                            }`}
-                    >
-                        <div className="flex items-start gap-3">
-                            <button
-                                onClick={() => toggleAnswered(intention.id)}
-                                className={`flex-shrink-0 mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${intention.isAnswered
-                                        ? 'bg-green-500 border-green-500'
-                                        : 'border-slate-300 hover:border-indigo-400'
-                                    }`}
-                            >
-                                {intention.isAnswered && <CheckCircle2 className="w-3 h-3 text-white" />}
-                            </button>
-                            <div className="flex-1">
-                                <p className={`text-sm ${intention.isAnswered ? 'text-slate-500 line-through' : 'text-slate-800'}`}>
-                                    {intention.text}
-                                </p>
-                                <p className="text-xs text-slate-400 mt-2">{intention.date}</p>
+            {/* Active Intentions */}
+            <div className="mb-8">
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 px-2">My Intentions</h3>
+                <div className="space-y-3">
+                    {intentions.filter(i => !i.isAnswered).length === 0 && (
+                        <p className="text-center text-slate-400 py-8 italic">No active intentions. Add one to begin.</p>
+                    )}
+                    {intentions.filter(i => !i.isAnswered).map((intention) => (
+                        <div
+                            key={intention.id}
+                            className="p-4 rounded-2xl border border-slate-100 bg-white hover:border-indigo-100 hover:shadow-sm transition-all"
+                        >
+                            <div className="flex items-start gap-4">
+                                <button
+                                    onClick={() => toggleAnswered(intention.id)}
+                                    className="flex-shrink-0 mt-1 w-6 h-6 rounded-full border-2 border-slate-300 hover:border-indigo-400 flex items-center justify-center transition-colors group"
+                                    title="Mark as answered"
+                                >
+                                    <CheckCircle2 className="w-3 h-3 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </button>
+                                <div className="flex-1">
+                                    <p className="text-slate-800 font-serif leading-relaxed text-lg">
+                                        {intention.text}
+                                    </p>
+                                    <p className="text-xs text-slate-400 mt-2 font-medium">{intention.date}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
+            </div>
+
+            {/* Answered Prayers */}
+            <div>
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 px-2 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-gold-500" />
+                    Answered Prayers
+                </h3>
+                <div className="space-y-3">
+                    {intentions.filter(i => i.isAnswered).length === 0 && (
+                        <div className="text-center py-8 border-2 border-dashed border-slate-100 rounded-2xl">
+                            <p className="text-slate-400 italic text-sm">When prayers are answered,<br />they will appear here as a testimony.</p>
+                        </div>
+                    )}
+                    {intentions.filter(i => i.isAnswered).map((intention) => (
+                        <div
+                            key={intention.id}
+                            className="p-4 rounded-2xl bg-green-50/50 border border-green-100/50 transition-all opacity-80 hover:opacity-100"
+                        >
+                            <div className="flex items-start gap-4">
+                                <button
+                                    onClick={() => toggleAnswered(intention.id)}
+                                    className="flex-shrink-0 mt-1 w-6 h-6 rounded-full bg-green-500 border-2 border-green-500 flex items-center justify-center transition-colors shadow-sm"
+                                    title="Mark as active"
+                                >
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                                </button>
+                                <div className="flex-1">
+                                    <p className="text-slate-600 line-through decoration-slate-300 leading-relaxed">
+                                        {intention.text}
+                                    </p>
+                                    <p className="text-xs text-green-700 mt-2 font-medium flex items-center gap-1">
+                                        <Sparkles className="w-3 h-3" />
+                                        Answered with Grace
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

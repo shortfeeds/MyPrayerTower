@@ -90,7 +90,7 @@ function SuccessContent() {
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Amount</span>
-                                <span className="font-bold text-xl text-rose-600">${(donation.amount / 100).toFixed(2)}</span>
+                                <span className="font-bold text-xl text-rose-600">${Math.round(donation.amount / 100)}</span>
                             </div>
                         </div>
                     </div>
