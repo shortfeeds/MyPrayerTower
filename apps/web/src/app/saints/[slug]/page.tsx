@@ -1,25 +1,33 @@
-import { PrismaClient } from '@mpt/database';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { SaintProfile } from '@/components/saints/SaintProfile';
 import { generateSaintSchema, generateBreadcrumbSchema } from '@/lib/seo/structuredData';
 import { toSafeJSON } from '@/lib/dto';
-
-const prisma = new PrismaClient();
+import { db } from '@/lib/db';
 
 interface Props {
     params: { slug: string };
 }
 
+// ISR - revalidate every hour
+export const revalidate = 3600;
+
+// Pre-generate static pages for all saints
+export async function generateStaticParams() {
+    const saints = await db.saint.findMany({
+        select: { slug: true },
+    });
+    return saints.map(s => ({ slug: s.slug }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const saint = await prisma.saint.findUnique({
+    const saint = await db.saint.findUnique({
         where: { slug: params.slug },
+        select: { name: true, title: true, shortBio: true, biography: true, patronOf: true, imageUrl: true }
     });
 
     if (!saint) {
-        return {
-            title: 'Saint Not Found',
-        };
+        return { title: 'Saint Not Found' };
     }
 
     return {
@@ -37,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SaintDetailPage({ params }: Props) {
-    const saint = await prisma.saint.findUnique({
+    const saint = await db.saint.findUnique({
         where: { slug: params.slug },
     });
 

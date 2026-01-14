@@ -1,18 +1,29 @@
-import { PrismaClient } from '@mpt/database';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MemorialProfile } from '@/components/memorials/MemorialProfile';
 import { generateBreadcrumbSchema } from '@/lib/seo/structuredData';
+import { db } from '@/lib/db';
 
-const prisma = new PrismaClient();
+// ISR - revalidate every 30 minutes (memorials are personalized content)
+export const revalidate = 1800;
+
+// Pre-generate static pages for all public memorials
+export async function generateStaticParams() {
+    const memorials = await db.memorial.findMany({
+        where: { isPublic: true },
+        select: { slug: true },
+    });
+    return memorials.map(m => ({ slug: m.slug }));
+}
 
 interface Props {
     params: { slug: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const memorial = await prisma.memorial.findUnique({
+    const memorial = await db.memorial.findUnique({
         where: { slug: params.slug },
+        select: { firstName: true, lastName: true, shortBio: true, photoUrl: true }
     });
 
     if (!memorial) {
@@ -40,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function MemorialDetailPage({ params }: Props) {
-    const memorial = await prisma.memorial.findUnique({
+    const memorial = await db.memorial.findUnique({
         where: { slug: params.slug },
         include: {
             photos: true,

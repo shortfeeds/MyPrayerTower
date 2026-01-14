@@ -16,6 +16,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const prayer = toSafeJSON(await db.prayer.findFirst({
         where: { slug: params.slug },
+        select: { title: true, content: true, created_at: true }
     }));
 
     if (!prayer) return { title: 'Prayer Not Found' };
@@ -33,12 +34,36 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
+// Enable ISR - revalidate every hour
+export const revalidate = 3600;
+
+// Pre-generate static pages for all active prayers
+export async function generateStaticParams() {
+    const prayers = await db.prayer.findMany({
+        where: { is_active: true },
+        select: { slug: true },
+    });
+    return prayers
+        .filter(p => p.slug)
+        .map(p => ({ slug: p.slug! }));
+}
+
 import { PrayerCategorySidebar } from '@/components/prayers/PrayerCategorySidebar';
 import { PrayerContextBox } from '@/components/prayers/PrayerContextBox';
 
 export default async function PrayerDetailPage({ params }: Props) {
     const prayer = toSafeJSON(await db.prayer.findFirst({
         where: { slug: params.slug },
+        select: {
+            id: true,
+            title: true,
+            slug: true,
+            content: true,
+            category: true,
+            category_label: true,
+            tags: true,
+            created_at: true,
+        }
     }));
 
     // Check if prayer exists (is_active field is optional, default to showing)

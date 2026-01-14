@@ -925,6 +925,7 @@ model Prayer {
   created_at     DateTime? @default(now())
   
   @@map("Prayer")
+  @@index([slug])
   @@index([is_active])
   @@index([category])
 }
