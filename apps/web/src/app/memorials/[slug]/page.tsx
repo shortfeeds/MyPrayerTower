@@ -2,6 +2,7 @@ import { PrismaClient } from '@mpt/database';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MemorialProfile } from '@/components/memorials/MemorialProfile';
+import { generateBreadcrumbSchema } from '@/lib/seo/structuredData';
 
 const prisma = new PrismaClient();
 
@@ -31,6 +32,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title,
             description,
             images: memorial.photoUrl ? [memorial.photoUrl] : [],
+        },
+        alternates: {
+            canonical: `https://myprayertower.com/memorials/${params.slug}`,
         },
     };
 }

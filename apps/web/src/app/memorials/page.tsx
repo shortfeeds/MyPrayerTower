@@ -51,11 +51,13 @@ const formatDate = (dateString: string | null) => {
 const MemorialCard = ({
     memorial,
     isPremium = false,
-    onSelect
+    onSelect,
+    priority = false
 }: {
     memorial: Memorial;
     isPremium?: boolean;
     onSelect: (m: Memorial) => void;
+    priority?: boolean;
 }) => {
     const placeholderGradient = getPlaceholderGradient(memorial.id);
 
@@ -78,6 +80,7 @@ const MemorialCard = ({
                             alt={`${memorial.firstName} ${memorial.lastName}`}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                            priority={priority}
                         />
                     ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 group-hover:text-slate-500 transition-colors">
@@ -322,12 +325,13 @@ export default function MemorialsPage() {
                                     </div>
                                 </div>
                                 <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                    {premiumMemorials.map((memorial) => (
+                                    {premiumMemorials.map((memorial, index) => (
                                         <MemorialCard
                                             key={memorial.id}
                                             memorial={memorial}
                                             isPremium
                                             onSelect={setSelectedMemorial}
+                                            priority={index < 4}
                                         />
                                     ))}
                                 </div>
@@ -341,11 +345,12 @@ export default function MemorialsPage() {
                                     <h2 className="text-xl font-semibold text-gray-700 mb-6">All Memorials</h2>
                                 )}
                                 <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                    {basicMemorials.map((memorial) => (
+                                    {basicMemorials.map((memorial, index) => (
                                         <MemorialCard
                                             key={memorial.id}
                                             memorial={memorial}
                                             onSelect={setSelectedMemorial}
+                                            priority={premiumMemorials.length === 0 && index < 4}
                                         />
                                     ))}
                                 </div>
@@ -392,7 +397,7 @@ export default function MemorialsPage() {
                             A permanent memorial where family and friends can gather, light candles, and share cherished memories.
                         </p>
                         <p className="text-slate-400 text-sm italic mb-8">
-                            There is no obligation. Your remembrance alone is prayer.
+                            "Eternal rest grant unto them, O Lord, and let perpetual light shine upon them."
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link

@@ -2,7 +2,7 @@ import { PrismaClient } from '@mpt/database';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { SaintProfile } from '@/components/saints/SaintProfile';
-import { generateSaintSchema } from '@/lib/seo/structuredData';
+import { generateSaintSchema, generateBreadcrumbSchema } from '@/lib/seo/structuredData';
 import { toSafeJSON } from '@/lib/dto';
 
 const prisma = new PrismaClient();
@@ -30,6 +30,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             description: saint.shortBio || undefined,
             images: saint.imageUrl ? [saint.imageUrl] : [],
         },
+        alternates: {
+            canonical: `https://myprayertower.com/saints/${params.slug}`,
+        },
     };
 }
 
@@ -47,11 +50,18 @@ export default async function SaintDetailPage({ params }: Props) {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(generateSaintSchema({
-                        ...saint,
-                        slug: saint.slug || '',
-                        patronOf: saint.patronOf || undefined
-                    }))
+                    __html: JSON.stringify([
+                        generateSaintSchema({
+                            ...saint,
+                            slug: saint.slug || '',
+                            patronOf: saint.patronOf || undefined
+                        }),
+                        generateBreadcrumbSchema([
+                            { name: 'Home', url: 'https://myprayertower.com' },
+                            { name: 'Saints', url: 'https://myprayertower.com/saints' },
+                            { name: saint.name, url: `https://myprayertower.com/saints/${saint.slug}` },
+                        ])
+                    ])
                 }}
             />
             <SaintProfile saint={toSafeJSON(saint)} />

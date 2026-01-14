@@ -1,104 +1,112 @@
 import { MetadataRoute } from 'next';
 import { PrismaClient } from '@mpt/database';
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export async function generateSitemaps() {
+    return [
+        { id: 'static' },
+        { id: 'churches' },
+        { id: 'saints' },
+        { id: 'prayers' },
+        { id: 'memorials' },
+    ];
+}
+
+export default async function sitemap({ id }: { id: string }): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://myprayertower.com';
     const lastModified = new Date();
     const prisma = new PrismaClient();
 
-    // 1. Static Core Pages
-    // 1. Static Core Pages
-    const coreRoutes = [
-        { url: '', priority: 1.0, changeFrequency: 'daily', images: ['https://myprayertower.com/opengraph-image'] },
-        { url: '/candles', priority: 0.9, changeFrequency: 'weekly', images: ['https://myprayertower.com/images/candles/altar.png'] },
-        { url: '/prayers', priority: 0.9, changeFrequency: 'daily' },
-        { url: '/saints', priority: 0.8, changeFrequency: 'daily' },
-        { url: '/mass-offerings', priority: 0.8, changeFrequency: 'weekly' },
-        { url: '/about', priority: 0.7, changeFrequency: 'monthly' },
-        { url: '/contact', priority: 0.6, changeFrequency: 'monthly' },
-        { url: '/donate', priority: 0.7, changeFrequency: 'monthly' },
-        { url: '/memorials', priority: 0.8, changeFrequency: 'daily' },
-        { url: '/prayer-wall', priority: 0.8, changeFrequency: 'hourly' },
-        { url: '/journey', priority: 0.8, changeFrequency: 'weekly' },
-        { url: '/bible', priority: 0.7, changeFrequency: 'monthly' },
-        { url: '/confession', priority: 0.7, changeFrequency: 'monthly' },
-        { url: '/rosary', priority: 0.7, changeFrequency: 'monthly' },
-        { url: '/groups', priority: 0.7, changeFrequency: 'weekly' },
-        { url: '/login', priority: 0.5, changeFrequency: 'yearly' },
-        { url: '/register', priority: 0.5, changeFrequency: 'yearly' },
-    ].map((route) => ({
-        url: `${baseUrl}${route.url}`,
-        lastModified,
-        changeFrequency: route.changeFrequency as any,
-        priority: route.priority,
-        ...(route.images ? { images: route.images } : {}),
-    }));
-
     try {
-        // 2. Fetch Dynamic Data - NOW USING SLUGS for SEO-friendly URLs
-        const [churches, saints, prayers, memorials] = await Promise.all([
-            prisma.church.findMany({
+        if (id === 'static') {
+            const coreRoutes = [
+                { url: '', priority: 1.0, changeFrequency: 'daily', images: ['https://myprayertower.com/opengraph-image'] },
+                { url: '/candles', priority: 0.9, changeFrequency: 'weekly', images: ['https://myprayertower.com/images/candles/altar.png'] },
+                { url: '/prayers', priority: 0.9, changeFrequency: 'daily' },
+                { url: '/saints', priority: 0.8, changeFrequency: 'daily' },
+                { url: '/mass-offerings', priority: 0.8, changeFrequency: 'weekly' },
+                { url: '/about', priority: 0.7, changeFrequency: 'monthly' },
+                { url: '/contact', priority: 0.6, changeFrequency: 'monthly' },
+                { url: '/donate', priority: 0.7, changeFrequency: 'monthly' },
+                { url: '/memorials', priority: 0.8, changeFrequency: 'daily' },
+                { url: '/prayer-wall', priority: 0.8, changeFrequency: 'hourly' },
+                { url: '/journey', priority: 0.8, changeFrequency: 'weekly' },
+                { url: '/bible', priority: 0.7, changeFrequency: 'monthly' },
+                { url: '/confession', priority: 0.7, changeFrequency: 'monthly' },
+                { url: '/rosary', priority: 0.7, changeFrequency: 'monthly' },
+                { url: '/groups', priority: 0.7, changeFrequency: 'weekly' },
+                { url: '/login', priority: 0.5, changeFrequency: 'yearly' },
+                { url: '/register', priority: 0.5, changeFrequency: 'yearly' },
+            ];
+
+            return coreRoutes.map((route) => ({
+                url: `${baseUrl}${route.url}`,
+                lastModified,
+                changeFrequency: route.changeFrequency as any,
+                priority: route.priority,
+                ...(route.images ? { images: route.images } : {}),
+            }));
+        }
+
+        if (id === 'churches') {
+            const churches = await prisma.church.findMany({
                 select: { slug: true },
-                // where: { isVerified: true }, // Include ALL churches for maximum SEO coverage
-                take: 45000 // Max safe limit per sitemap
-            }),
-            prisma.saint.findMany({
+                take: 45000
+            });
+            return churches.map((church) => ({
+                url: `${baseUrl}/churches/${church.slug}`,
+                lastModified,
+                changeFrequency: 'weekly',
+                priority: 0.7,
+            }));
+        }
+
+        if (id === 'saints') {
+            const saints = await prisma.saint.findMany({
                 select: { slug: true },
                 take: 10000
-            }),
-            prisma.prayer.findMany({
-                where: {
-                    slug: { not: null }
-                },
+            });
+            return saints.map((saint) => ({
+                url: `${baseUrl}/saints/${saint.slug}`,
+                lastModified,
+                changeFrequency: 'monthly',
+                priority: 0.6,
+            }));
+        }
+
+        if (id === 'prayers') {
+            const prayers = await prisma.prayer.findMany({
+                where: { slug: { not: null } },
                 select: { slug: true },
                 take: 10000
-            }),
-            prisma.memorial.findMany({
+            });
+            return prayers.map((prayer) => ({
+                url: `${baseUrl}/prayers/${prayer.slug}`,
+                lastModified,
+                changeFrequency: 'monthly',
+                priority: 0.6,
+            }));
+        }
+
+        if (id === 'memorials') {
+            const memorials = await prisma.memorial.findMany({
                 select: { slug: true },
                 where: { isPublic: true },
                 take: 10000
-            })
-        ]);
-
-        // 3. Map to Sitemap Entries with SEO-friendly slugs
-        const churchRoutes = churches.map((church) => ({
-            url: `${baseUrl}/churches/${church.slug}`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: 0.7,
-        }));
-
-        const saintRoutes = saints.map((saint) => ({
-            url: `${baseUrl}/saints/${saint.slug}`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly' as const,
-            priority: 0.6,
-        }));
-
-        // Prayer URLs use the ID since Prayer model doesn't have a slug field
-        // The prayers/[slug] route might be using a Title-based approach
-        const prayerRoutes = prayers
-            .filter(p => p.slug) // Double check filter
-            .map((prayer) => ({
-                url: `${baseUrl}/prayers/${prayer.slug}`,
-                lastModified: new Date(),
-                changeFrequency: 'monthly' as const,
+            });
+            return memorials.map((memorial) => ({
+                url: `${baseUrl}/memorials/${memorial.slug}`,
+                lastModified,
+                changeFrequency: 'weekly',
                 priority: 0.6,
             }));
+        }
 
-        const memorialRoutes = memorials.map((memorial) => ({
-            url: `${baseUrl}/memorials/${memorial.slug}`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: 0.6,
-        }));
-
-        await prisma.$disconnect();
-
-        return [...coreRoutes, ...churchRoutes, ...saintRoutes, ...prayerRoutes, ...memorialRoutes];
+        return [];
 
     } catch (error) {
-        console.error('Failed to generate dynamic sitemap:', error);
-        return coreRoutes;
+        console.error(`Failed to generate sitemap for ${id}:`, error);
+        return [];
+    } finally {
+        await prisma.$disconnect();
     }
 }

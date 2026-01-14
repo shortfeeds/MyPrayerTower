@@ -2,7 +2,9 @@ import { PrismaClient } from '@mpt/database';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ChurchProfile } from '@/components/churches/ChurchProfile';
-import { generateChurchSchema } from '@/lib/seo/structuredData';
+import { generateChurchSchema, generateBreadcrumbSchema } from '@/lib/seo/structuredData';
+
+import { cache } from 'react';
 
 const prisma = new PrismaClient();
 
@@ -11,10 +13,31 @@ interface Props {
     searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const church = await prisma.church.findUnique({
-        where: { slug: params.slug },
+// Cached data fetcher to prevent double DB calls
+const getChurch = cache(async (slug: string) => {
+    return await prisma.church.findUnique({
+        where: { slug },
+        include: {
+            Diocese: true,
+            ChurchStaff: true,
+            ChurchImage: true,
+            ChurchEvent: {
+                where: {
+                    startDate: {
+                        gte: new Date(),
+                    },
+                },
+                orderBy: {
+                    startDate: 'asc',
+                },
+                take: 5,
+            },
+        },
     });
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const church = await getChurch(params.slug);
 
     if (!church) {
         return {
@@ -33,29 +56,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             description,
             images: church.primaryImageUrl ? [church.primaryImageUrl] : [],
         },
+        alternates: {
+            canonical: `https://myprayertower.com/churches/${params.slug}`,
+        },
     };
 }
 
 export default async function ChurchDetailPage({ params }: Props) {
-    const church = await prisma.church.findUnique({
-        where: { slug: params.slug },
-        include: {
-            Diocese: true,
-            ChurchStaff: true,
-            ChurchImage: true,
-            ChurchEvent: {
-                where: {
-                    startDate: {
-                        gte: new Date(),
-                    },
-                },
-                orderBy: {
-                    startDate: 'asc',
-                },
-                take: 5,
-            },
-        },
-    });
+    const church = await getChurch(params.slug);
 
     if (!church) {
         notFound();
@@ -75,12 +83,19 @@ export default async function ChurchDetailPage({ params }: Props) {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(generateChurchSchema({
-                        ...church,
-                        slug: church.slug || '',
-                        latitude: church.latitude || undefined,
-                        longitude: church.longitude || undefined,
-                    }))
+                    __html: JSON.stringify([
+                        generateChurchSchema({
+                            ...church,
+                            slug: church.slug || '',
+                            latitude: church.latitude || undefined,
+                            longitude: church.longitude || undefined,
+                        }),
+                        generateBreadcrumbSchema([
+                            { name: 'Home', url: 'https://myprayertower.com' },
+                            { name: 'Churches', url: 'https://myprayertower.com/churches' },
+                            { name: church.name, url: `https://myprayertower.com/churches/${church.slug}` },
+                        ])
+                    ])
                 }}
             />
             <ChurchProfile church={serializedChurch as any} />

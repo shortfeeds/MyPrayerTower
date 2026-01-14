@@ -239,7 +239,7 @@ export function ChurchProfile({ church }: { church: Church }) {
 
                 {church.primaryImageUrl && (
                     <div className="absolute inset-0">
-                        <img src={church.primaryImageUrl} alt={church.name} className="w-full h-full object-cover mix-blend-overlay opacity-50" />
+                        <img src={church.primaryImageUrl} alt={church.name} className="w-full h-full object-cover mix-blend-overlay opacity-50" fetchPriority="high" />
                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent" />
                         <div className="absolute inset-0 bg-blue-900/30" />
                     </div>

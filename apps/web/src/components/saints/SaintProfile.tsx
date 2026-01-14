@@ -20,7 +20,6 @@ interface Saint {
     feastDay: string | null;
     bornDate: string | null;
     diedDate: string | null;
-    canonizationType: string | null;
     biography: string | null;
     shortBio: string | null;
     patronOf: string[] | null;
@@ -87,11 +86,6 @@ export function SaintProfile({ saint }: { saint: Saint }) {
                             </div>
 
                             <div className="flex-1">
-                                {saint.canonizationType && (
-                                    <span className="inline-flex items-center px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white text-sm font-semibold rounded-full mb-4 border border-white/20">
-                                        {saint.canonizationType}
-                                    </span>
-                                )}
                                 <h1 className="text-4xl lg:text-5xl font-serif font-bold text-white mb-3">{saint.name}</h1>
                                 {saint.title && (
                                     <p className="text-xl text-amber-100 mb-4">{saint.title}</p>
