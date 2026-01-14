@@ -51,7 +51,17 @@ export const metadata: Metadata = {
         address: false,
         telephone: false,
     },
-    // manifest property removed to use generated manifest.ts
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
     icons: {
         icon: [
             { url: '/favicon.ico', sizes: 'any' },
@@ -77,16 +87,16 @@ export const metadata: Metadata = {
                 url: '/opengraph-image',
                 width: 1200,
                 height: 630,
-                alt: 'MyPrayerTower Dashboard',
+                alt: 'MyPrayerTower - Connect, Pray, Grow',
             },
         ],
     },
     twitter: {
         card: 'summary_large_image',
         title: 'MyPrayerTower',
-        description: 'Find churches, request prayers, and grow in faith.',
+        description: 'Find churches, request prayers, and grow in faith with the #1 Catholic App.',
         creator: '@myprayertower',
-        images: ['/twitter-image'],
+        images: ['/opengraph-image'], // Use the generate OG image for Twitter too
     },
     category: 'Lifestyle',
     verification: {
@@ -97,8 +107,8 @@ export const metadata: Metadata = {
 export const viewport = {
     width: 'device-width',
     initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
+    maximumScale: 5,
+    userScalable: true,
 };
 
 

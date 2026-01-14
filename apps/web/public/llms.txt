@@ -1,0 +1,23 @@
+# MyPrayerTower - Catholic Prayer & Church Finder
+
+## About
+MyPrayerTower is the #1 Catholic services platform connecting the faithful with spiritual resources and community.
+- **Mission**: Connect. Pray. Grow.
+- **Database**: 50,000+ Churches, 3,900+ Prayers, 10,000+ Saints.
+
+## Key Features for Users
+- **Find Mass Times**: Locate Catholic churches worldwide with confession and adoration schedules.
+- **Prayer Library**: Extensive collection including specific prayers (e.g., "Act of Consecration").
+- **Virtual Candles**: Light a candle for intentions (1-day to 30-day options).
+- **Daily Spiritual Growth**: Daily readings, Rosary audio, and Saint of the Day.
+
+## Navigation
+- **Home**: https://myprayertower.com
+- **Prayers**: https://myprayertower.com/prayers
+- **Saints**: https://myprayertower.com/saints
+- **Churches**: https://myprayertower.com/churches
+- **Light a Candle**: https://myprayertower.com/candles
+
+## Contact
+- **Email**: support@myprayertower.com
+- **Social**: @MyPrayerTower on all platforms

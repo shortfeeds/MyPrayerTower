@@ -9,8 +9,6 @@ import { generatePrayerSchema } from '@/lib/seo/structuredData';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { PrayerContent } from './PrayerContent';
 
-// const prisma = new PrismaClient(); // Removed local instantiation
-
 interface Props {
     params: { slug: string };
 }
@@ -29,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title: `${prayer.title} | Catholic Prayers`,
             description: (prayer.content || '').substring(0, 150) + '...',
             type: 'article',
-            publishedTime: prayer.created_at || undefined, // Handle null for Metadata type
+            publishedTime: prayer.created_at || undefined,
             authors: ['MyPrayerTower'],
         },
     };
@@ -38,52 +36,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 import { PrayerCategorySidebar } from '@/components/prayers/PrayerCategorySidebar';
 import { PrayerContextBox } from '@/components/prayers/PrayerContextBox';
 
-// ... (imports)
-
 export default async function PrayerDetailPage({ params }: Props) {
     const prayer = toSafeJSON(await db.prayer.findFirst({
         where: { slug: params.slug },
     }));
 
-    if (!prayer || !prayer.isPublished) {
+    // Check if prayer exists (is_active field is optional, default to showing)
+    if (!prayer) {
         notFound();
     }
 
-    // Fetch stats for sidebar
-    const allPrayers = await db.prayer.findMany({
-        where: { isPublished: true },
-        select: {
-            categoryId: true,
-            category: {
-                select: { name: true, slug: true }
-            }
-        },
+    // Fetch category stats using new flat schema
+    const categoryCounts = await db.prayer.groupBy({
+        by: ['category', 'category_label'],
+        _count: { category: true },
     });
 
-    const categoryMap = new Map<string, { label: string; count: number }>();
-    allPrayers.forEach(p => {
-        if (p.category) {
-            const existing = categoryMap.get(p.category.slug);
-            if (existing) {
-                existing.count++;
-            } else {
-                categoryMap.set(p.category.slug, { label: p.category.name, count: 1 });
-            }
-        }
-    });
+    const categories = categoryCounts.map((c: any) => ({
+        slug: c.category,
+        label: c.category_label || c.category,
+        count: c._count.category,
+    })).sort((a, b) => a.label.localeCompare(b.label));
 
-    const categories = Array.from(categoryMap.entries())
-        .map(([slug, data]) => ({ slug, label: data.label, count: data.count }))
-        .sort((a, b) => a.label.localeCompare(b.label));
+    const totalPrayers = categoryCounts.reduce((sum: number, c: any) => sum + c._count.category, 0);
 
-    const totalPrayers = Math.max(allPrayers.length, 3900);
-
-
+    // Fetch related prayers (same category, different prayer)
     const relatedPrayers = toSafeJSON(await db.prayer.findMany({
         where: {
-            categoryId: prayer.categoryId,
+            category: prayer.category,
             id: { not: prayer.id },
-            isPublished: true,
         },
         take: 3,
     }));
@@ -97,8 +78,8 @@ export default async function PrayerDetailPage({ params }: Props) {
                         id: prayer.id,
                         title: prayer.title,
                         content: prayer.content,
-                        category: prayer.categoryId,
-                        category_label: undefined
+                        category: prayer.category,
+                        category_label: prayer.category_label
                     }))
                 }}
             />
@@ -127,9 +108,9 @@ export default async function PrayerDetailPage({ params }: Props) {
                                     className="inline-flex items-center text-sm font-semibold px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition-all border border-white/20"
                                 >
                                     <Tag size={14} className="mr-2" />
-                                    {prayer.category_label}
+                                    {prayer.category_label || prayer.category}
                                 </Link>
-                                {prayer.tags && prayer.tags.length > 0 && prayer.tags.slice(0, 3).map((tag, i) => (
+                                {prayer.tags && prayer.tags.length > 0 && prayer.tags.slice(0, 3).map((tag: string, i: number) => (
                                     <span key={i} className="inline-flex items-center text-sm px-4 py-2 bg-white/10 text-white/80 rounded-full border border-white/10">
                                         {tag}
                                     </span>
@@ -189,7 +170,7 @@ export default async function PrayerDetailPage({ params }: Props) {
                                     </h3>
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                                         <div className="flex flex-wrap gap-3 flex-1">
-                                            {relatedPrayers.map((p) => (
+                                            {relatedPrayers.map((p: any) => (
                                                 <Link
                                                     key={p.id}
                                                     href={`/prayers/${p.slug || p.id}`}

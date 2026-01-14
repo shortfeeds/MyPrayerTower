@@ -7,15 +7,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const prisma = new PrismaClient();
 
     // 1. Static Core Pages
+    // 1. Static Core Pages
     const coreRoutes = [
-        '', '/about', '/contact', '/donate', '/candles', '/mass-offerings',
-        '/memorials', '/prayer-wall', '/journey', '/prayers', '/saints', '/bible', '/confession', '/rosary',
-        '/groups', '/login', '/register',
+        { url: '', priority: 1.0, changeFrequency: 'daily', images: ['https://myprayertower.com/opengraph-image'] },
+        { url: '/candles', priority: 0.9, changeFrequency: 'weekly', images: ['https://myprayertower.com/images/candles/altar.png'] },
+        { url: '/prayers', priority: 0.9, changeFrequency: 'daily' },
+        { url: '/saints', priority: 0.8, changeFrequency: 'daily' },
+        { url: '/mass-offerings', priority: 0.8, changeFrequency: 'weekly' },
+        { url: '/about', priority: 0.7, changeFrequency: 'monthly' },
+        { url: '/contact', priority: 0.6, changeFrequency: 'monthly' },
+        { url: '/donate', priority: 0.7, changeFrequency: 'monthly' },
+        { url: '/memorials', priority: 0.8, changeFrequency: 'daily' },
+        { url: '/prayer-wall', priority: 0.8, changeFrequency: 'hourly' },
+        { url: '/journey', priority: 0.8, changeFrequency: 'weekly' },
+        { url: '/bible', priority: 0.7, changeFrequency: 'monthly' },
+        { url: '/confession', priority: 0.7, changeFrequency: 'monthly' },
+        { url: '/rosary', priority: 0.7, changeFrequency: 'monthly' },
+        { url: '/groups', priority: 0.7, changeFrequency: 'weekly' },
+        { url: '/login', priority: 0.5, changeFrequency: 'yearly' },
+        { url: '/register', priority: 0.5, changeFrequency: 'yearly' },
     ].map((route) => ({
-        url: `${baseUrl}${route}`,
+        url: `${baseUrl}${route.url}`,
         lastModified,
-        changeFrequency: route === '' ? 'daily' as const : 'weekly' as const,
-        priority: route === '' ? 1 : 0.8,
+        changeFrequency: route.changeFrequency as any,
+        priority: route.priority,
+        ...(route.images ? { images: route.images } : {}),
     }));
 
     try {
