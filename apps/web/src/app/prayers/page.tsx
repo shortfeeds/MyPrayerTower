@@ -161,13 +161,13 @@ function PrayerList() {
                             </h3>
 
                             <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3 flex-1 font-serif">
-                                {prayer.content.replace(/<[^>]*>?/gm, '')}
+                                {String(prayer.content || '').replace(/<[^>]*>?/gm, '')}
                             </p>
 
                             <div className="flex items-center justify-between pt-4 border-t border-gray-50 text-xs text-gray-400">
                                 <span className="flex items-center gap-1.5 font-medium">
                                     <Clock className="w-3.5 h-3.5" />
-                                    ~{prayer.readingTime?.replace('read', '').trim() || '2 min'}
+                                    ~{String(prayer.readingTime || '2 min').replace('read', '').trim()}
                                 </span>
                                 <span className="flex items-center gap-1 text-amber-600 font-semibold opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
                                     Read Prayer <ChevronRight className="w-3.5 h-3.5" />
