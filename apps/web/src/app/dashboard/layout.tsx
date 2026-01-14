@@ -12,7 +12,8 @@ import {
     Settings,
     CreditCard,
     LogOut,
-    ChevronRight
+    ChevronRight,
+    BookHeart,
 } from 'lucide-react';
 
 const sidebarItems = [

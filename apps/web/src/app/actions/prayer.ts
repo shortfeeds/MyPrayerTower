@@ -31,7 +31,7 @@ export async function getPrayerRequests(page = 1, limit = 10, category?: string)
         const prayers = await prisma.prayerRequest.findMany({
             where: whereClause,
             include: {
-                User: { // Relation name is User
+                user: { // relation name is lowercase
                     select: {
                         firstName: true,
                         lastName: true,
@@ -39,7 +39,7 @@ export async function getPrayerRequests(page = 1, limit = 10, category?: string)
                     }
                 },
                 _count: {
-                    select: { PrayerAction: true } // Relation name is PrayerAction
+                    select: { prayerActions: true } // relation name is lowercase
                 }
             },
             orderBy: { createdAt: 'desc' },
@@ -54,8 +54,8 @@ export async function getPrayerRequests(page = 1, limit = 10, category?: string)
                 content: p.content,
                 category: p.category.charAt(0) + p.category.slice(1).toLowerCase(),
                 visibility: p.visibility.toLowerCase(),
-                user: p.isAnonymous ? null : p.User, // Use p.User
-                prayerCount: p.prayerCount + (p._count?.PrayerAction || 0), // Use p._count.PrayerAction
+                user: p.isAnonymous ? null : p.user, // Use p.user
+                prayerCount: p.prayerCount + (p._count?.prayerActions || 0), // Use p._count.prayerActions
                 createdAt: p.createdAt,
                 isAnswered: p.isAnswered,
                 status: p.status,

@@ -97,22 +97,32 @@ export const SACRED_COPY = {
 
     // === AFFIRMATIONS ===
     affirmations: {
-        prayerReceived: "Your prayer has been received.",
-        heldInPrayer: "You are held in our community's prayers.",
-        notAlone: "You are not alone.",
-        godHears: "God hears the prayers of the heart.",
-        peace: "May peace be with you.",
+        prayerReceived: "Your prayer has been received in heaven.",
+        lights: "This light shines as a beacon of your faith.",
+        peace: "May the peace of God, which transcends all understanding, guard your heart.",
+        daily: [
+            "You are loved beyond measure.",
+            "Walk in faith, not by sight.",
+            "His grace is sufficient for you.",
+            "Be still and know that I am God.",
+            "The Lord is your shepherd; you shall not want."
+        ],
+        welcome: "Welcome home to your sacred space.",
+        checkout: "Thank you for supporting our mission. Your generosity lights the way for others.",
     },
 
-    // === RETENTION (GENTLE) ===
+    // Retention Messages - Gentle, not pestering
     retention: {
-        feastDay: (saintName: string) =>
-            `Today is the Feast of ${saintName}. Would you like to pray with us?`,
-        anniversary: (name: string) =>
-            `${name}'s anniversary is approaching. Light a remembrance candle?`,
-        candleComplete: "Your candle has completed its vigil. Your intentions remain in prayer.",
-        gentleReturn: "It's been a while since you visited. Your prayer space awaits.",
+        feastDay: (saint: string) => `Today we celebrate ${saint}. Join the universal church in prayer.`,
+        anniversary: (name: string) => `Remembering ${name} today. Their light still shines.`,
+        missed: "The chapel is always open when you are ready to return.",
+        streak: "Your faithfulness is a blessing. Keep walking this path.", // Internal use, not shown as "streak"
     },
+
+    // Forbidden Transactional Words - purely for documentation/linter future use
+    forbidden: [
+        "Buy Now", "Checkout", "Cart", "Product", "Price", "Deal", "Discount", "Sale", "Premium Subscription"
+    ]
 };
 
 // === FORBIDDEN PATTERNS ===
