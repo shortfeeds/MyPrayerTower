@@ -59,8 +59,18 @@ export function CandleHero() {
                         Light a Candle
                     </h1>
 
-                    <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-300 md:text-gray-200 leading-relaxed mb-10">
-                        Join our global community in prayer. Light a virtual candle to represent your intentions, gratitude, or memory of a loved one.
+                    {/* Spiritual Meaning - Before any pricing */}
+                    <p className="max-w-2xl mx-auto text-lg md:text-xl text-amber-200/90 italic font-serif leading-relaxed mb-4">
+                        "Lighting a candle is an ancient act of faith — a silent prayer that continues even when words fail."
+                    </p>
+
+                    <p className="max-w-2xl mx-auto text-base md:text-lg text-gray-300 md:text-gray-200 leading-relaxed mb-4">
+                        Join our global community in prayer. Your candle becomes a symbol of your intentions, gratitude, or loving memory.
+                    </p>
+
+                    {/* Reassurance - No pressure */}
+                    <p className="max-w-xl mx-auto text-sm text-gray-400 mb-10">
+                        There is no obligation. Your presence and prayers are the greatest gift.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

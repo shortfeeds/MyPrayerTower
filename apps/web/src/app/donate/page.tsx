@@ -230,9 +230,13 @@ export default function DonatePage() {
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold">Support Our Mission</h1>
-                            <p className="text-white/80">Your generosity helps us serve millions worldwide</p>
+                            <p className="text-white/90 italic">"Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver." — 2 Corinthians 9:7</p>
                         </div>
                     </div>
+                    {/* Reassurance - No pressure */}
+                    <p className="mt-4 text-white/80 text-sm max-w-xl">
+                        There is no obligation. Your presence and prayers are the greatest gift. Give only as you feel called.
+                    </p>
                 </div>
             </div>
 

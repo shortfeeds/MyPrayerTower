@@ -268,6 +268,10 @@ export default function MassOfferingsPage() {
                         <div>
                             <h1 className="font-serif text-4xl md:text-5xl font-bold mb-2">Request a Holy Mass</h1>
                             <p className="text-lg text-slate-300 max-w-xl">Have a Mass offered for your intentions. A timeless Catholic tradition of prayer and remembrance.</p>
+                            {/* Reassurance */}
+                            <p className="text-sm text-slate-400 mt-3 italic">
+                                "The Mass is the most perfect form of prayer." — Pope Paul VI. There is no obligation — your prayer alone is pleasing to God.
+                            </p>
                         </div>
                     </div>
                 </div>
