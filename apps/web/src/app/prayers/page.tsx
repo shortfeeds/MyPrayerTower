@@ -194,7 +194,7 @@ export default function PrayersPage() {
         <div className="min-h-screen bg-gradient-to-br from-amber-50/50 to-white/50">
             {/* Hero Section */}
             <div className="relative bg-white border-b border-gray-200 pt-16 pb-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/patterns/subtle-crosses.png')] opacity-[0.03]" />
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-50/30 to-transparent" />
                 <div className="container mx-auto px-4 relative">
                     <div className="max-w-3xl mx-auto text-center space-y-6">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-wider mb-4">

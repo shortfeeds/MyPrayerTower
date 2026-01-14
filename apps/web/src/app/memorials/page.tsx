@@ -88,6 +88,16 @@ export default function MemorialsPage() {
         return colors[index];
     };
 
+    // Format date helper
+    const formatDate = (dateString: string | null) => {
+        if (!dateString) return null;
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+    };
+
     // Separate premium and basic memorials
     const premiumMemorials = memorials.filter(m => m.tier === 'PREMIUM');
     const basicMemorials = memorials.filter(m => m.tier === 'BASIC');

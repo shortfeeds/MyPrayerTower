@@ -253,7 +253,7 @@ export default function CandlesPage() {
         <div className="min-h-screen bg-black text-gray-100 selection:bg-amber-500/30">
             {/* Header / Hero */}
             <div className="relative border-b border-neutral-800 bg-neutral-950 pt-24 pb-16 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/patterns/dust.png')] opacity-10" />
+                <div className="absolute inset-0 bg-gradient-to-b from-amber-900/5 to-transparent" />
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-1/2 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none" />
 
                 <div className="container mx-auto px-4 relative z-10 text-center">

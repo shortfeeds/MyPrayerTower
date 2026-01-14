@@ -1,16 +1,16 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { ArrowRight, Users } from 'lucide-react';
-import { OfferingsGrid } from '@/components/home/OfferingsGrid';
+import { ArrowRight } from 'lucide-react';
+import { CoreActions } from '@/components/home/CoreActions';
+import { SocialReassurance } from '@/components/home/SocialReassurance';
+import { WhyWeExist } from '@/components/home/WhyWeExist';
+import { FeatureDiscovery } from '@/components/home/FeatureDiscovery';
+import { InvitationToReturn } from '@/components/home/InvitationToReturn';
 import { DailyFocus } from '@/components/home/DailyFocus';
 import { ParticleBackground } from '@/components/ui/ParticleBackground';
-import { TrustBar } from '@/components/home/TrustBar';
-import { StatisticsBand } from '@/components/home/StatisticsBand';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
-import { PromotionalBanner, AppDownloadBanner } from '@/components/home/PromotionalBanner';
-import { HowItWorks } from '@/components/home/HowItWorks';
-import { CardSkeleton } from '@/components/ui/Skeleton';
+import { AppDownloadBanner } from '@/components/home/PromotionalBanner';
 import { PersonalizedHome } from '@/components/dashboard/PersonalizedHome';
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay } from '@/app/actions/home';
 
@@ -36,47 +36,57 @@ async function AsyncDailyFocus() {
     }
 }
 
+/**
+ * LoggedOutHomePage
+ * 
+ * Redesigned following Faith-Based UX wireframe:
+ * 1. Hero - Emotional safety + clarity
+ * 2. Core Actions - 3 choices only
+ * 3. Social Reassurance - Gentle belonging
+ * 4. Why We Exist - Meaning first
+ * 5. Feature Discovery - Soft exploration
+ * 6. Invitation to Return - Gentle retention
+ */
 function LoggedOutHomePage() {
     return (
         <div className="flex flex-col min-h-screen selection:bg-gold-500/30 selection:text-gold-200">
-            {/* Hero Section */}
-            <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-sacred-800 via-sacred-900 to-gray-950 text-white pb-32">
-                {/* Subtle Animated Background - Calmer */}
+            {/* ============================================
+                SECTION 1: HERO (Above the Fold)
+                Goal: Immediate emotional safety + clarity
+            ============================================ */}
+            <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-sacred-800 via-sacred-900 to-gray-950 text-white pb-32">
+                {/* Subtle Animated Background */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-sacred-600/20 rounded-full blur-[120px]"></div>
                     <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gold-600/10 rounded-full blur-[100px]"></div>
                 </div>
 
-                {/* Reduced Particles for Calmness */}
                 <div className="opacity-20">
                     <ParticleBackground count={3} opacity={0.2} />
                 </div>
 
-                <div className="absolute inset-0 opacity-[0.03] bg-[url('/pattern.svg')] pointer-events-none mix-blend-overlay"></div>
-
                 <div className="container mx-auto px-4 relative z-10 pt-20 md:pt-28 text-center">
-
-                    {/* Main Headline - Spiritual Focus */}
+                    {/* Mission-Driven Headline */}
                     <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight animate-fade-in-up tracking-tight drop-shadow-2xl">
-                        Lift Your Heart<br />
+                        A global Catholic community
+                        <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-gold-300 to-gold-100">
-                            to God
+                            united in prayer.
                         </span>
                     </h1>
 
-                    {/* Sub-headline - Purpose Driven */}
+                    {/* Supportive Sub-line */}
                     <p className="text-xl md:text-2xl text-blue-100/80 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in-up font-light delay-100">
-                        Join a global community in faith, prayer, and devotion.
-                        Sanctify your day, every day.
+                        Pray together, light candles of hope, and offer intentions in faith.
                     </p>
 
-                    {/* Simplified CTAs - Action Oriented */}
+                    {/* Two Primary CTAs Only */}
                     <div className="flex flex-col sm:flex-row gap-5 justify-center animate-fade-in-up mb-16 delay-200">
                         <Link
                             href="/prayer-wall"
                             className="inline-flex items-center justify-center px-10 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/20 group"
                         >
-                            Pray Now
+                            Start Praying
                             <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <Link
@@ -87,11 +97,7 @@ function LoggedOutHomePage() {
                         </Link>
                     </div>
 
-                    {/* Trust Signal - Subtle & Integrated */}
-                    <div className="inline-flex items-center justify-center gap-2 opacity-60 animate-fade-in delay-300">
-                        <Users className="w-4 h-4 text-gold-400" />
-                        <span className="text-sm font-medium text-blue-100 tracking-wide">Praying with 10,000+ Catholics Worldwide</span>
-                    </div>
+                    {/* NO stats, NO feature lists, NO secondary links */}
                 </div>
             </section>
 
@@ -106,38 +112,42 @@ function LoggedOutHomePage() {
                 </Suspense>
             </div>
 
-            {/* Reorganized Content Flow */}
-            <div className="py-16">
-                <TrustBar />
-            </div>
+            {/* ============================================
+                SECTION 2: CORE ACTIONS (3 Only)
+                Goal: Reduce decision fatigue
+            ============================================ */}
+            <CoreActions />
 
-            {/* Offerings Grid - Moved below TrustBar */}
-            <div className="bg-gray-50 py-16 border-t border-gray-100">
-                <div className="container mx-auto px-4">
-                    <div className="text-center max-w-3xl mx-auto mb-12">
-                        <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">Ways to Participate</h2>
-                        <p className="text-gray-600">Engage deeply with your faith through our community offerings.</p>
-                    </div>
-                    <OfferingsGrid />
-                </div>
-            </div>
+            {/* ============================================
+                SECTION 3: SOCIAL REASSURANCE
+                Goal: Belonging, not persuasion
+            ============================================ */}
+            <SocialReassurance />
 
-            {/* Statistics Band - "A Global Community United in Prayer" */}
-            <StatisticsBand />
+            {/* ============================================
+                SECTION 4: WHY WE EXIST
+                Goal: Meaning before monetization
+            ============================================ */}
+            <WhyWeExist />
 
-            {/* Testimonials - "Stories of Grace & Growth" - Moved below Statistics */}
-            <div className="bg-white py-20 border-t border-gray-50">
+            {/* ============================================
+                SECTION 5: FEATURE DISCOVERY
+                Goal: Exploration, not conversion
+            ============================================ */}
+            <FeatureDiscovery />
+
+            {/* Testimonials - Social Proof (Soft) */}
+            <div className="bg-slate-50 py-16 border-t border-gray-100">
                 <TestimonialsSection />
             </div>
 
-            <div className="py-8 bg-white border-t border-gray-100">
-                <HowItWorks />
-            </div>
+            {/* ============================================
+                SECTION 6: INVITATION TO RETURN
+                Goal: Retention without pressure
+            ============================================ */}
+            <InvitationToReturn />
 
-            <div className="py-8 bg-cream-50">
-                <PromotionalBanner />
-            </div>
-
+            {/* App Download */}
             <AppDownloadBanner />
         </div>
     );
