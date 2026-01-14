@@ -43,7 +43,7 @@ const ALL_OFFERINGS: OfferingOption[] = [
     { id: 'SPIRITUAL_BOUQUET_GARDEN', name: 'Garden of Grace', icon: '💝', price: 20, description: '3 candles + rosary + card', category: 'bouquet' },
     { id: 'SPIRITUAL_BOUQUET_HEAVENLY', name: 'Heavenly Tribute', icon: '💖', price: 50, description: '7 candles + Mass + rosary', category: 'bouquet' },
     { id: 'SPIRITUAL_BOUQUET_ETERNAL', name: 'Eternal Peace', icon: '👑', price: 100, description: '30 candles + 3 Masses', category: 'bouquet' },
-    { id: 'SPIRITUAL_BOUQUET_LEGACY', name: 'Legacy Remembrance', icon: '🕊️', price: 299, description: '100 candles + 10 Masses + weekly rosary', category: 'bouquet' },
+    { id: 'SPIRITUAL_BOUQUET_LEGACY', name: 'Legacy Remembrance', icon: '🕊️', price: 300, description: '100 candles + 10 Masses + weekly rosary', category: 'bouquet' },
 ];
 
 interface CartItem {

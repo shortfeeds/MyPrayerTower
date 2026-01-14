@@ -432,7 +432,7 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                                 >
                                     <div className="font-bold text-gray-900">Garden of Grace</div>
                                     <p className="text-sm text-gray-500 mb-2">3 candles + 1 rosary + prayer card</p>
-                                    <div className="text-amber-600 font-bold">$19</div>
+                                    <div className="text-amber-600 font-bold">$20</div>
                                 </button>
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
@@ -440,7 +440,7 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                                 >
                                     <div className="font-bold text-gray-900">Heavenly Tribute</div>
                                     <p className="text-sm text-gray-500 mb-2">7 candles + 1 Mass + 1 rosary</p>
-                                    <div className="text-amber-600 font-bold">$49</div>
+                                    <div className="text-amber-600 font-bold">$50</div>
                                 </button>
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
@@ -448,7 +448,7 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                                 >
                                     <div className="font-bold text-gray-900">Eternal Peace</div>
                                     <p className="text-sm text-gray-500 mb-2">30 candles + 3 Masses + 3 rosaries + flowers</p>
-                                    <div className="text-amber-600 font-bold">$99</div>
+                                    <div className="text-amber-600 font-bold">$100</div>
                                 </button>
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
@@ -456,7 +456,7 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                                 >
                                     <div className="font-bold text-gray-900">Legacy Remembrance</div>
                                     <p className="text-sm text-gray-500 mb-2">100 candles + 10 Masses + weekly rosary for 1 year</p>
-                                    <div className="text-amber-600 font-bold">$299</div>
+                                    <div className="text-amber-600 font-bold">$300</div>
                                 </button>
                             </div>
                         </div>
