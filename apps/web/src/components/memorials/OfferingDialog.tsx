@@ -40,9 +40,10 @@ const ALL_OFFERINGS: OfferingOption[] = [
     { id: 'ROSARY_FULL', name: 'Full Rosary', icon: '📿', price: 15, category: 'sacred' },
     { id: 'MASS', name: 'Holy Mass', icon: '✝️', price: 25, description: 'For the repose of the soul', category: 'sacred' },
     // Spiritual Bouquets
-    { id: 'BOUQUET_GARDEN', name: 'Garden of Grace', icon: '💝', price: 20, description: '3 candles + rosary + card', category: 'bouquet' },
-    { id: 'BOUQUET_HEAVENLY', name: 'Heavenly Tribute', icon: '💖', price: 50, description: '7 candles + Mass + rosary', category: 'bouquet' },
-    { id: 'BOUQUET_ETERNAL', name: 'Eternal Peace', icon: '👑', price: 100, description: '30 candles + 3 Masses', category: 'bouquet' },
+    { id: 'SPIRITUAL_BOUQUET_GARDEN', name: 'Garden of Grace', icon: '💝', price: 20, description: '3 candles + rosary + card', category: 'bouquet' },
+    { id: 'SPIRITUAL_BOUQUET_HEAVENLY', name: 'Heavenly Tribute', icon: '💖', price: 50, description: '7 candles + Mass + rosary', category: 'bouquet' },
+    { id: 'SPIRITUAL_BOUQUET_ETERNAL', name: 'Eternal Peace', icon: '👑', price: 100, description: '30 candles + 3 Masses', category: 'bouquet' },
+    { id: 'SPIRITUAL_BOUQUET_LEGACY', name: 'Legacy Remembrance', icon: '🕊️', price: 299, description: '100 candles + 10 Masses + weekly rosary', category: 'bouquet' },
 ];
 
 interface CartItem {
@@ -162,48 +163,48 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
         return (
             <div
                 key={offering.id}
-                className={`relative p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer group ${isSelected
+                className={`relative p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 transition-all duration-200 cursor-pointer group ${isSelected
                     ? 'border-amber-400 bg-gradient-to-br from-amber-50 to-orange-50 shadow-lg shadow-amber-100'
                     : 'border-gray-100 bg-white hover:border-amber-200 hover:shadow-md'
                     }`}
                 onClick={() => !isSelected && addToCart(offering)}
             >
                 {isSelected && (
-                    <div className="absolute -top-2 -right-2 w-7 h-7 bg-gradient-to-br from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md">
+                    <div className="absolute -top-2 -right-2 w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md">
                         {qty}
                     </div>
                 )}
 
                 <div className="text-center">
-                    <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">{offering.icon}</div>
-                    <div className="font-semibold text-gray-900 text-sm leading-tight">{offering.name}</div>
+                    <div className="text-2xl sm:text-3xl mb-1 sm:mb-2 group-hover:scale-110 transition-transform">{offering.icon}</div>
+                    <div className="font-semibold text-gray-900 text-xs sm:text-sm leading-tight line-clamp-2 min-h-[2.5em]">{offering.name}</div>
                     {offering.description && (
-                        <div className="text-[10px] text-gray-500 mt-1 leading-tight">{offering.description}</div>
+                        <div className="text-[9px] sm:text-[10px] text-gray-500 mt-1 leading-tight hidden sm:block">{offering.description}</div>
                     )}
-                    <div className="text-amber-600 font-bold text-base mt-2">${Math.round(offering.price)}</div>
+                    <div className="text-amber-600 font-bold text-sm sm:text-base mt-1 sm:mt-2">${Math.round(offering.price)}</div>
                 </div>
 
-                <div className="flex items-center justify-center gap-2 mt-3">
+                <div className="flex items-center justify-center gap-2 mt-2 sm:mt-3">
                     {isSelected ? (
                         <>
                             <button
                                 onClick={(e) => { e.stopPropagation(); removeFromCart(offering.id); }}
-                                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
                             >
-                                <Minus className="w-4 h-4 text-gray-600" />
+                                <Minus className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
                             </button>
-                            <span className="w-8 text-center font-bold text-gray-900">{qty}</span>
+                            <span className="w-4 sm:w-8 text-center font-bold text-gray-900 text-xs sm:text-base">{qty}</span>
                             <button
                                 onClick={(e) => { e.stopPropagation(); addToCart(offering); }}
-                                className="w-8 h-8 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center transition-colors"
+                                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center transition-colors"
                             >
-                                <Plus className="w-4 h-4" />
+                                <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                             </button>
                         </>
                     ) : (
                         <button
                             onClick={(e) => { e.stopPropagation(); addToCart(offering); }}
-                            className="px-4 py-1.5 text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full hover:from-amber-600 hover:to-orange-600 transition-all shadow-sm"
+                            className="px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full hover:from-amber-600 hover:to-orange-600 transition-all shadow-sm w-full"
                         >
                             Add
                         </button>
@@ -224,28 +225,28 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
     return (
         <Fragment>
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={onClose} />
-            <div className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-3xl md:max-h-[85vh] bg-white rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden">
+            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-3xl max-h-[90vh] bg-white rounded-2xl sm:rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden">
 
                 {/* Header */}
-                <div className="relative bg-gradient-to-r from-amber-600 via-orange-500 to-rose-500 text-white p-5">
-                    <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors">
+                <div className="relative bg-gradient-to-r from-amber-600 via-orange-500 to-rose-500 text-white p-4 sm:p-5 flex-shrink-0">
+                    <button onClick={onClose} className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 hover:bg-white/20 rounded-full transition-colors">
                         <X className="w-5 h-5" />
                     </button>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4 pr-8">
                         {memorial.photoUrl ? (
-                            <img src={memorial.photoUrl} alt={fullName} className="w-14 h-14 rounded-full object-cover border-3 border-white/40 shadow-lg" />
+                            <img src={memorial.photoUrl} alt={fullName} className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover border-2 sm:border-3 border-white/40 shadow-lg" />
                         ) : (
-                            <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-2xl shadow-lg">✝️</div>
+                            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-white/20 flex items-center justify-center text-xl sm:text-2xl shadow-lg">✝️</div>
                         )}
-                        <div>
-                            <div className="text-xs text-white/80 uppercase tracking-wide font-medium">Send a tribute to</div>
-                            <div className="text-xl font-bold">{fullName}</div>
+                        <div className="min-w-0">
+                            <div className="text-[10px] sm:text-xs text-white/80 uppercase tracking-wide font-medium truncate">Send a tribute to</div>
+                            <div className="text-lg sm:text-xl font-bold truncate">{fullName}</div>
                         </div>
                     </div>
                 </div>
 
                 {success ? (
-                    <div className="flex-1 flex flex-col items-center justify-center p-8">
+                    <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto">
                         <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
                             <Check className="w-12 h-12 text-green-600" />
                         </div>
@@ -253,7 +254,7 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                         <p className="text-gray-500 text-center">Your offerings have been lovingly sent in memory of {fullName}.</p>
                     </div>
                 ) : showPayPal ? (
-                    <div className="flex-1 p-8 overflow-y-auto">
+                    <div className="flex-1 p-4 sm:p-8 overflow-y-auto">
                         <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">Complete Your Offering</h3>
                         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 mb-6 border border-amber-100">
                             <div className="flex justify-between items-center mb-3">
@@ -281,25 +282,25 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                 ) : (
                     <>
                         {/* Tab Navigation */}
-                        <div className="flex border-b border-gray-100 px-4 pt-4">
+                        <div className="flex border-b border-gray-100 px-2 sm:px-4 pt-2 sm:pt-4 flex-shrink-0">
                             {tabs.map(tab => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`flex-1 py-3 px-4 text-sm font-semibold rounded-t-xl transition-all ${activeTab === tab.id
+                                    className={`flex-1 py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold rounded-t-xl transition-all ${activeTab === tab.id
                                         ? 'bg-amber-50 text-amber-700 border-b-2 border-amber-500'
                                         : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                                         }`}
                                 >
-                                    <span className="mr-2">{tab.icon}</span>
-                                    {tab.label}
+                                    <span className="mr-1 sm:mr-2 block sm:inline text-center text-lg sm:text-base">{tab.icon}</span>
+                                    <span className="block sm:inline text-center">{tab.label}</span>
                                 </button>
                             ))}
                         </div>
 
                         {/* Offerings Grid */}
-                        <div className="flex-1 overflow-y-auto p-4">
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                        <div className="flex-1 overflow-y-auto p-3 sm:p-4 min-h-0">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
                                 {filteredOfferings.map(renderOfferingCard)}
                             </div>
 
@@ -310,10 +311,10 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                         placeholder="Add a personal message (optional)..."
-                                        className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none bg-white text-gray-800 placeholder-gray-400"
+                                        className="w-full p-3 sm:p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none bg-white text-gray-800 placeholder-gray-400 text-sm"
                                         rows={2}
                                     />
-                                    <label className="flex items-center gap-3 text-sm text-gray-600 cursor-pointer">
+                                    <label className="flex items-center gap-3 text-sm text-gray-600 cursor-pointer select-none">
                                         <input
                                             type="checkbox"
                                             checked={isAnonymous}
@@ -327,26 +328,26 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                         </div>
 
                         {/* Footer with Submit Button */}
-                        <div className="border-t border-gray-100 bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+                        <div className="border-t border-gray-100 bg-white p-3 sm:p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex-shrink-0 z-10">
                             <button
                                 onClick={handleSubmit}
                                 disabled={cartItems.length === 0 || submitting}
-                                className="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:via-orange-600 hover:to-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 text-lg"
+                                className="w-full py-3 sm:py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:via-orange-600 hover:to-rose-600 text-white font-bold rounded-xl sm:rounded-2xl shadow-lg shadow-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 sm:gap-3 text-base sm:text-lg"
                             >
                                 {submitting ? (
-                                    <Loader2 className="w-6 h-6 animate-spin" />
+                                    <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
                                 ) : (
                                     <>
-                                        <Heart className="w-5 h-5" />
+                                        <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                                         {totalItems > 0 ? (
                                             <span>Make Offering — ${totalPrice}</span>
                                         ) : (
-                                            <span>Select Offerings Above</span>
+                                            <span>Select Offerings Above</span> // Changed from "Select Offerings" to match original logic but be clearer
                                         )}
                                     </>
                                 )}
                             </button>
-                            <p className="text-center text-xs text-gray-400 mt-3">
+                            <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-2 sm:mt-3">
                                 Your offering supports the maintenance of this sacred memorial space.
                             </p>
                         </div>

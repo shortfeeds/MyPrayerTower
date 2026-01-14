@@ -59,6 +59,7 @@ const OFFERING_LABELS: Record<string, { label: string; icon: string }> = {
     CANDLE_SMALL: { label: 'Small Candle', icon: '🕯️' },
     CANDLE_MEDIUM: { label: 'Candle', icon: '🕯️' },
     CANDLE_LARGE: { label: 'Large Candle', icon: '🕯️' },
+    CANDLE_FEATURED: { label: 'Featured 30-Day Candle', icon: '✨' },
     FLOWERS: { label: 'Flowers', icon: '🌹' },
     PRAYER_CARD: { label: 'Prayer Card', icon: '🙏' },
     FLORAL_BOUQUET: { label: 'Floral Bouquet', icon: '💐' },
