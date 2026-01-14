@@ -54,13 +54,13 @@ const FEATURES = [
  */
 export function FeatureDiscovery() {
     return (
-        <section className="py-20 bg-white border-t border-gray-100">
+        <section className="py-20 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
-                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-3">
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900 dark:text-white mb-3">
                         Explore Your Faith
                     </h2>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Discover resources to deepen your spiritual journey.
                     </p>
                 </div>
@@ -76,14 +76,14 @@ export function FeatureDiscovery() {
                         >
                             <Link
                                 href={feature.href}
-                                className="block p-6 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors group text-center h-full"
+                                className="block p-6 bg-slate-50 dark:bg-slate-800 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group text-center h-full"
                             >
-                                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-white shadow-sm flex items-center justify-center text-slate-600 group-hover:text-indigo-600 transition-colors">
+                                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-white dark:bg-slate-900 shadow-sm flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                                     <feature.icon className="w-6 h-6" />
                                 </div>
-                                <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                                <p className="text-sm text-gray-500 mb-3">{feature.description}</p>
-                                <span className="text-xs font-medium text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{feature.title}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{feature.description}</p>
+                                <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
                                     Explore <ChevronRight className="w-3 h-3" />
                                 </span>
                             </Link>

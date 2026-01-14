@@ -13,7 +13,7 @@ import { motion } from 'framer-motion';
  */
 export function WhyWeExist() {
     return (
-        <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
+        <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
             <div className="container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -22,13 +22,13 @@ export function WhyWeExist() {
                     viewport={{ once: true }}
                     className="max-w-3xl mx-auto text-center"
                 >
-                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-6">
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900 dark:text-white mb-6">
                         Why MyPrayerTower Exists
                     </h2>
-                    <p className="text-lg text-gray-600 leading-relaxed mb-4">
+                    <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                         In moments of need, remembrance, or gratitude, prayer brings us together.
                     </p>
-                    <p className="text-lg text-gray-600 leading-relaxed">
+                    <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
                         MyPrayerTower exists to provide a peaceful place where intentions are shared, remembered, and lifted in faith.
                     </p>
                 </motion.div>

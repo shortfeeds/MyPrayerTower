@@ -18,7 +18,7 @@ import { SACRED_COPY } from '@/lib/sacred-copy';
  */
 export function InvitationToReturn() {
     return (
-        <section className="py-20 bg-gradient-to-b from-indigo-50 to-white">
+        <section className="py-20 bg-gradient-to-b from-indigo-50 to-white dark:from-indigo-950/30 dark:to-slate-900">
             <div className="container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -27,10 +27,10 @@ export function InvitationToReturn() {
                     viewport={{ once: true }}
                     className="max-w-2xl mx-auto text-center"
                 >
-                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-4">
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900 dark:text-white mb-4">
                         Your Sacred Space Awaits
                     </h2>
-                    <p className="text-lg text-gray-600 leading-relaxed mb-8">
+                    <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
                         Create your personal prayer space and return whenever you need.
                     </p>
 
@@ -44,14 +44,14 @@ export function InvitationToReturn() {
                         </Link>
                         <Link
                             href="/settings/reminders"
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-200 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
                         >
                             <Bell className="w-5 h-5" />
                             Receive Gentle Reminders
                         </Link>
                     </div>
 
-                    <p className="mt-6 text-sm text-gray-500 italic">
+                    <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 italic">
                         {SACRED_COPY.journey.return}
                     </p>
                 </motion.div>

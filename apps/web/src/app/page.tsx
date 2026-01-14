@@ -129,7 +129,7 @@ function LoggedOutHomePage() {
             <FeatureDiscovery />
 
             {/* Testimonials - Social Proof (Soft) */}
-            <div className="bg-slate-50 py-16 border-t border-gray-100">
+            <div className="bg-slate-50 dark:bg-slate-900 py-16 border-t border-gray-100 dark:border-slate-800">
                 <TestimonialsSection />
             </div>
 
