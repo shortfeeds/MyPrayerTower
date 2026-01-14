@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { toSafeJSON } from '@/lib/dto';
+import { unstable_cache } from 'next/cache';
+
+// Cache category counts for 1 hour (they rarely change)
+const getCachedCategories = unstable_cache(
+    async () => {
+        const categoryCounts = await db.prayer.groupBy({
+            by: ['category', 'category_label'],
+            _count: { category: true },
+            orderBy: { category: 'asc' }
+        });
+
+        return categoryCounts.map((c: any) => ({
+            id: c.category,
+            slug: c.category,
+            name: c.category_label || c.category,
+            count: c._count.category
+        })).sort((a: any, b: any) => a.name.localeCompare(b.name));
+    },
+    ['prayer-categories'],
+    { revalidate: 3600, tags: ['prayers'] }
+);
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -26,30 +47,26 @@ export async function GET(request: NextRequest) {
             where.category = categorySlug;
         }
 
-        // Fetch prayers and total count
-        const [prayers, total] = await Promise.all([
+        // Fetch prayers with only needed fields (much faster)
+        const [prayers, total, categories] = await Promise.all([
             db.prayer.findMany({
                 where,
                 skip,
                 take: limit,
-                orderBy: [{ title: 'asc' }]
+                orderBy: [{ title: 'asc' }],
+                select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    content: true,
+                    category: true,
+                    category_label: true,
+                    tags: true,
+                }
             }),
-            db.prayer.count({ where })
+            db.prayer.count({ where }),
+            getCachedCategories()
         ]);
-
-        // Fetch category counts using groupBy for actual counts
-        const categoryCounts = await db.prayer.groupBy({
-            by: ['category', 'category_label'],
-            _count: { category: true },
-            orderBy: { category: 'asc' }
-        });
-
-        const categories = categoryCounts.map((c: any) => ({
-            id: c.category,
-            slug: c.category,
-            name: c.category_label || c.category,
-            count: c._count.category
-        })).sort((a: any, b: any) => a.name.localeCompare(b.name));
 
         // Transform prayers for frontend
         const prayersWithMeta = prayers.map((p: any) => ({
@@ -67,14 +84,13 @@ export async function GET(request: NextRequest) {
             categorySlug: p.category
         }));
 
-        // Return response matching frontend expectations
-        return NextResponse.json({
+        // Return response with cache headers
+        const response = NextResponse.json({
             prayers: toSafeJSON(prayersWithMeta),
             total,
             page,
             totalPages: Math.ceil(total / limit),
             categories: categories,
-            // Add pagination object for frontend compatibility
             pagination: {
                 total,
                 page,
@@ -82,6 +98,11 @@ export async function GET(request: NextRequest) {
                 totalPages: Math.ceil(total / limit)
             }
         });
+
+        // Add cache headers for CDN/browser caching (1 minute)
+        response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+
+        return response;
     } catch (error: any) {
         console.error('Prayers API Error:', error);
         return NextResponse.json({

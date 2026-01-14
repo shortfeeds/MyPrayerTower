@@ -1,6 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getUserFromCookie } from '@/lib/auth';
+import { unstable_cache } from 'next/cache';
+
+// Cache filter data for 1 hour (rarely changes)
+const getCachedFilters = unstable_cache(
+    async () => {
+        const [countries, types, denominations] = await Promise.all([
+            db.church.groupBy({
+                by: ['countryCode', 'country'],
+                _count: true,
+                orderBy: { _count: { countryCode: 'desc' } },
+                take: 50
+            }),
+            db.church.groupBy({
+                by: ['type'],
+                _count: true,
+                orderBy: { _count: { type: 'desc' } }
+            }),
+            db.church.groupBy({
+                by: ['denomination'],
+                _count: true,
+                orderBy: { _count: { denomination: 'desc' } },
+                take: 20
+            })
+        ]);
+
+        return {
+            countries: countries.map(c => ({ code: c.countryCode, name: c.country, count: c._count })),
+            types: types.map(t => ({ type: t.type, count: t._count })),
+            denominations: denominations.map(d => ({ denomination: d.denomination, count: d._count }))
+        };
+    },
+    ['church-filters'],
+    { revalidate: 3600, tags: ['churches'] }
+);
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -49,7 +83,8 @@ export async function GET(request: NextRequest) {
             where.adorationSchedule = { not: null };
         }
 
-        const [churches, total, countries, types, denominations] = await Promise.all([
+        // Fetch churches, count, and cached filters in parallel
+        const [churches, total, filters] = await Promise.all([
             db.church.findMany({
                 where,
                 skip,
@@ -77,8 +112,7 @@ export async function GET(request: NextRequest) {
                     phone: true,
                     email: true,
                     website: true,
-                    description: true,
-                    shortDescription: true,
+                    shortDescription: true,  // Only fetch short description for listing
                     massSchedule: true,
                     confessionSchedule: true,
                     adorationSchedule: true,
@@ -101,26 +135,7 @@ export async function GET(request: NextRequest) {
                 }
             }),
             db.church.count({ where }),
-            // Get unique countries for filter
-            db.church.groupBy({
-                by: ['countryCode', 'country'],
-                _count: true,
-                orderBy: { _count: { countryCode: 'desc' } },
-                take: 50
-            }),
-            // Get unique types for filter
-            db.church.groupBy({
-                by: ['type'],
-                _count: true,
-                orderBy: { _count: { type: 'desc' } }
-            }),
-            // Get unique denominations for filter
-            db.church.groupBy({
-                by: ['denomination'],
-                _count: true,
-                orderBy: { _count: { denomination: 'desc' } },
-                take: 20
-            })
+            getCachedFilters()
         ]);
 
         const mappedChurches = churches.map((church: any) => ({
@@ -129,17 +144,20 @@ export async function GET(request: NextRequest) {
             ChurchFollower: undefined // Clean up
         }));
 
-        return NextResponse.json({
+        const response = NextResponse.json({
             churches: mappedChurches,
             total,
             page,
             totalPages: Math.ceil(total / limit),
-            filters: {
-                countries: countries.map(c => ({ code: c.countryCode, name: c.country, count: c._count })),
-                types: types.map(t => ({ type: t.type, count: t._count })),
-                denominations: denominations.map(d => ({ denomination: d.denomination, count: d._count }))
-            }
+            filters
         });
+
+        // Add cache headers (30 seconds for personalized content)
+        if (!user) {
+            response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+        }
+
+        return response;
     } catch (error: any) {
         console.error('Churches API Error:', error);
         return NextResponse.json({

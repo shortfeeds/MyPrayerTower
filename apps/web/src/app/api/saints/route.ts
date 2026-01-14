@@ -43,9 +43,7 @@ export async function GET(request: NextRequest) {
                     feastMonth: true,
                     feastDayOfMonth: true,
                     feastDay: true,
-                    bornDate: true,
-                    diedDate: true,
-                    biography: true,
+                    shortBio: true,  // Use shortBio directly instead of fetching full biography
                     patronOf: true,
                     imageUrl: true,
                 }
@@ -53,18 +51,17 @@ export async function GET(request: NextRequest) {
             db.saint.count({ where })
         ]);
 
-        // Transform data for frontend
-        const transformedSaints = saints.map(saint => ({
-            ...saint,
-            shortBio: saint.biography?.substring(0, 200) || null
-        }));
-
-        return NextResponse.json({
-            saints: toSafeJSON(transformedSaints),
+        const response = NextResponse.json({
+            saints: toSafeJSON(saints),
             total,
             page,
             totalPages: Math.ceil(total / limit)
         });
+
+        // Add cache headers (1 minute for CDN, 5 minutes stale-while-revalidate)
+        response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+
+        return response;
     } catch (error: any) {
         console.error('Saints API Error:', error);
         return NextResponse.json({

@@ -1,21 +1,31 @@
-import { PrismaClient } from '@mpt/database';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ChurchProfile } from '@/components/churches/ChurchProfile';
 import { generateChurchSchema, generateBreadcrumbSchema } from '@/lib/seo/structuredData';
-
+import { db } from '@/lib/db';
 import { cache } from 'react';
-
-const prisma = new PrismaClient();
 
 interface Props {
     params: { slug: string };
     searchParams: { [key: string]: string | string[] | undefined };
 }
 
+// ISR - revalidate every 30 minutes
+export const revalidate = 1800;
+
+// Pre-generate static pages for verified churches
+export async function generateStaticParams() {
+    const churches = await db.church.findMany({
+        where: { isVerified: true },
+        select: { slug: true },
+        take: 1000, // Limit to top 1000 verified churches
+    });
+    return churches.map(c => ({ slug: c.slug }));
+}
+
 // Cached data fetcher to prevent double DB calls
 const getChurch = cache(async (slug: string) => {
-    return await prisma.church.findUnique({
+    return await db.church.findUnique({
         where: { slug },
         include: {
             Diocese: true,
@@ -40,9 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const church = await getChurch(params.slug);
 
     if (!church) {
-        return {
-            title: 'Church Not Found',
-        };
+        return { title: 'Church Not Found' };
     }
 
     const title = `${church.name} - ${church.city}, ${church.country}`;
