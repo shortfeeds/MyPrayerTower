@@ -39,6 +39,7 @@ export interface Memorial {
     lastName: string;
     birthDate: string | null;
     deathDate: string | null;
+    createdAt: string | Date; // Added for Timeline
     biography: string | null;
     shortBio: string | null;
     photoUrl: string | null;
