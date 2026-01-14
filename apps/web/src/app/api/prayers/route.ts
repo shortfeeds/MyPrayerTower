@@ -8,16 +8,12 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '24');
     const search = searchParams.get('search') || '';
     const categorySlug = searchParams.get('category') || '';
-    const duration = searchParams.get('duration') || '';
 
     try {
         const skip = (page - 1) * limit;
 
-        // Use snake_case for DB query as per Prisma client generation quirks on some envs
-        // or just use 'any' to bypass strict typing until full regen
-        const where: any = {
-            is_active: true
-        };
+        // Build where clause - matching Saints API pattern (simple, no strict filtering initially)
+        const where: any = {};
 
         if (search) {
             where.OR = [
@@ -30,7 +26,7 @@ export async function GET(request: NextRequest) {
             where.category = categorySlug;
         }
 
-        // Fetch prayers
+        // Fetch prayers and total count (matching Saints API pattern)
         const [prayers, total] = await Promise.all([
             db.prayer.findMany({
                 where,
@@ -41,14 +37,12 @@ export async function GET(request: NextRequest) {
             db.prayer.count({ where })
         ]);
 
-        // Fetch distinct categories from the Prayer table itself
-        // aggregating unique combinations of category (slug) and category_label (name)
+        // Fetch distinct categories from the Prayer table
         const categoriesRaw = await db.prayer.findMany({
-            where: { is_active: true } as any,
             select: {
                 category: true,
                 category_label: true
-            } as any, // Cast to any to avoid IDE errors if types aren't synced
+            },
             distinct: ['category']
         });
 
@@ -59,26 +53,14 @@ export async function GET(request: NextRequest) {
             count: 0
         })).sort((a: any, b: any) => a.name.localeCompare(b.name));
 
-        // Post-process prayers to match frontend interface
-        let filteredPrayers = prayers;
-        if (duration) {
-            filteredPrayers = prayers.filter((p: any) => {
-                const words = p.content.split(/\s+/).length;
-                if (duration === 'short') return words < 150;
-                if (duration === 'medium') return words >= 150 && words <= 750;
-                if (duration === 'long') return words > 750;
-                return true;
-            });
-        }
-
-        const prayersWithMeta = filteredPrayers.map((p: any) => ({
-            id: p.id,
+        // Transform prayers for frontend
+        const prayersWithMeta = prayers.map((p: any) => ({
+            id: p.id.toString(), // Convert BigInt to string for JSON serialization
             title: p.title,
             slug: p.slug,
             content: p.content,
-            tags: p.tags,
-            viewCount: p.viewCount || 0,
-            readingTime: Math.ceil(p.content.split(/\s+/).length / 150),
+            tags: p.tags || [],
+            readingTime: Math.ceil((p.content?.split(/\s+/).length || 0) / 150),
             category: {
                 name: p.category_label || p.category,
                 slug: p.category
@@ -98,7 +80,8 @@ export async function GET(request: NextRequest) {
         console.error('Prayers API Error:', error);
         return NextResponse.json({
             error: 'Failed to fetch prayers',
-            details: error.message
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         }, { status: 500 });
     }
 }

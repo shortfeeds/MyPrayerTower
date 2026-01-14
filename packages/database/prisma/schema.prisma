@@ -861,7 +861,7 @@ model User {
   Donation                                   Donation[]
   ExamenEntry                                ExamenEntry[]
   ConfessionLog                              ConfessionLog[]
-  UserPrayerHistory                          UserPrayerHistory[]
+  // UserPrayerHistory removed - model disabled
   UserReminder                               UserReminder[]
   
   // Virtual Candles & Bouquets
@@ -914,24 +914,19 @@ model UserReport {
 }
 
 model Prayer {
-  id             String    @id @default(cuid())
+  id             BigInt    @id @default(autoincrement())
   title          String
-  slug           String?   @unique
+  slug           String?   
   content        String
-  category       String    // Slug: "children"
-  categoryLabel  String?   @map("category_label") // Name: "Children & Youth Prayers"
+  category       String    
+  category_label String?   
   tags           String[]
-  isActive       Boolean   @default(true) @map("is_active")
-  viewCount      Int       @default(0)
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt
+  is_active      Boolean?  @default(true)
+  created_at     DateTime? @default(now())
   
-  // Relations
-  UserPrayerHistory UserPrayerHistory[]
-
-  @@index([isActive])
+  @@map("Prayer")
+  @@index([is_active])
   @@index([category])
-  @@index([tags], type: Gin)
 }
 
 // =========================================
@@ -1121,17 +1116,18 @@ model ConfessionLog {
 // PERSONALIZATION
 // =========================================
 
-model UserPrayerHistory {
-  id        String   @id @default(cuid())
-  userId    String
-  prayerId  String
-  viewedAt  DateTime @default(now())
-  
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Prayer    Prayer   @relation(fields: [prayerId], references: [id])
-  
-  @@index([userId])
-}
+// UserPrayerHistory temporarily disabled - needs BigInt prayerId to match Prayer.id
+// model UserPrayerHistory {
+//   id        String   @id @default(cuid())
+//   userId    String
+//   prayerId  BigInt
+//   viewedAt  DateTime @default(now())
+//   
+//   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   Prayer    Prayer   @relation(fields: [prayerId], references: [id])
+//   
+//   @@index([userId])
+// }
 
 model UserReminder {
   id          String       @id @default(cuid())
