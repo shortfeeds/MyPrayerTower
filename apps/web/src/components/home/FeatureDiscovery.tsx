@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { BookOpen, Users, Rosary, Church, Heart, ChevronRight } from 'lucide-react';
+import { BookOpen, Users, CircleDot, Church, Heart, ChevronRight } from 'lucide-react';
 
 const FEATURES = [
     {
@@ -21,7 +21,7 @@ const FEATURES = [
     },
     {
         id: 'rosary',
-        icon: Rosary,
+        icon: CircleDot,
         title: 'Rosary & Daily Readings',
         description: 'Pray the Rosary and reflect on daily Scripture.',
         href: '/rosary'
