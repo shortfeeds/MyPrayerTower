@@ -17,6 +17,7 @@ import {
 
 const sidebarItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Overview' },
+    { href: '/dashboard/prayer-corner', icon: BookHeart, label: 'My Prayer Corner' }, // New Personal Sanctuary
     { href: '/dashboard/profile', icon: Church, label: 'Church Profile' },
     { href: '/dashboard/announcements', icon: Megaphone, label: 'Announcements' },
     { href: '/dashboard/events', icon: Calendar, label: 'Events' },
@@ -59,8 +60,8 @@ export default function DashboardLayout({
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive
-                                        ? 'bg-primary-50 text-primary-700 font-medium'
-                                        : 'text-gray-600 hover:bg-gray-50'
+                                    ? 'bg-primary-50 text-primary-700 font-medium'
+                                    : 'text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
                                 <item.icon className={`w-5 h-5 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
