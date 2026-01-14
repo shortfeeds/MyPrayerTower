@@ -191,7 +191,7 @@ export default function MemorialsPage() {
                                 className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
                             >
                                 <Gift className="w-4 h-4" />
-                                Send Tribute
+                                Light a Candle
                             </button>
                         ) : (
                             <button
@@ -202,7 +202,7 @@ export default function MemorialsPage() {
                                 }}
                                 className="w-full py-2 rounded-lg font-semibold text-xs text-gray-500 hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all"
                             >
-                                Send Tribute
+                                Visit Chapel
                             </button>
                         )}
                     </div>
@@ -224,14 +224,17 @@ export default function MemorialsPage() {
                     <div className="max-w-3xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-6">
                             <Heart className="w-4 h-4 text-rose-400" />
-                            <span className="text-sm font-medium text-white/90">Eternal Memorials</span>
+                            <span className="text-sm font-medium text-white/90">Digital Chapels</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">
-                            Remember Those We Love
+                            Visit a Chapel of Remembrance
                         </h1>
-                        <p className="text-lg text-slate-300 mb-8">
-                            Create beautiful, lasting tributes for loved ones who have passed. Light candles, request Masses, and share memories.
+                        <p className="text-lg text-slate-300 mb-4">
+                            Create a sacred space to honor the memory of those you love. Light candles, offer prayers, and share cherished memories.
+                        </p>
+                        <p className="text-sm text-slate-400 italic mb-8">
+                            "Eternal rest grant unto them, O Lord, and let perpetual light shine upon them."
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -240,7 +243,7 @@ export default function MemorialsPage() {
                                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all"
                             >
                                 <Plus className="w-5 h-5" />
-                                Create a Memorial
+                                Create a Chapel
                             </Link>
                         </div>
                     </div>
@@ -357,11 +360,13 @@ export default function MemorialsPage() {
                             <span className="text-sm font-medium text-amber-300">Premium Features</span>
                         </div>
                         <h2 className="text-3xl font-serif font-bold mb-4">
-                            Honor Your Loved One Forever
+                            Create a Chapel for Your Loved One
                         </h2>
-                        <p className="text-slate-300 mb-8 max-w-xl mx-auto">
-                            Create a beautiful memorial page where family and friends can light candles,
-                            request Masses, and share cherished memories. Premium memorials get featured placement.
+                        <p className="text-slate-300 mb-4 max-w-xl mx-auto">
+                            A permanent memorial where family and friends can gather, light candles, and share cherished memories.
+                        </p>
+                        <p className="text-slate-400 text-sm italic mb-8">
+                            There is no obligation. Your remembrance alone is prayer.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link

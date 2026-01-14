@@ -349,40 +349,40 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                     <div className="lg:col-span-2 space-y-8">
                         {/* Quick Offerings Section 1 */}
                         <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Quick Acts of Love</h3>
-                            <p className="text-gray-500 mb-6">A small gesture, eternal love</p>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">Light a Candle or Offer a Prayer</h3>
+                            <p className="text-gray-500 mb-6">Your presence and prayers are the greatest gift. These offerings are optional — your remembrance is enough.</p>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
                                     className="flex flex-col items-center p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-100 hover:border-amber-300 transition-all group"
                                 >
                                     <span className="text-3xl mb-2">🕯️</span>
-                                    <span className="font-semibold text-gray-900">Candle</span>
-                                    <span className="text-sm text-amber-600">$1-5</span>
+                                    <span className="font-semibold text-gray-900">Light a Candle</span>
+                                    <span className="text-xs text-amber-600/70">Suggested offering</span>
                                 </button>
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
                                     className="flex flex-col items-center p-4 bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl border border-rose-100 hover:border-rose-300 transition-all group"
                                 >
                                     <span className="text-3xl mb-2">🌹</span>
-                                    <span className="font-semibold text-gray-900">Flowers</span>
-                                    <span className="text-sm text-rose-600">$3</span>
+                                    <span className="font-semibold text-gray-900">Send Flowers</span>
+                                    <span className="text-xs text-rose-600/70">In remembrance</span>
                                 </button>
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
                                     className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-all group"
                                 >
                                     <span className="text-3xl mb-2">🙏</span>
-                                    <span className="font-semibold text-gray-900">Prayer</span>
-                                    <span className="text-sm text-blue-600">$2</span>
+                                    <span className="font-semibold text-gray-900">Offer a Prayer</span>
+                                    <span className="text-xs text-blue-600/70">Join in prayer</span>
                                 </button>
                                 <button
                                     onClick={() => setOfferingDialogOpen(true)}
                                     className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl border border-purple-100 hover:border-purple-300 transition-all group"
                                 >
                                     <span className="text-3xl mb-2">💐</span>
-                                    <span className="font-semibold text-gray-900">Bouquet</span>
-                                    <span className="text-sm text-purple-600">$7</span>
+                                    <span className="font-semibold text-gray-900">Floral Tribute</span>
+                                    <span className="text-xs text-purple-600/70">A loving gesture</span>
                                 </button>
                             </div>
                         </div>
@@ -586,8 +586,8 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                             <button
                                 onClick={() => setRemindersEnabled(!remindersEnabled)}
                                 className={`w-full py-2 font-semibold rounded-xl transition-colors border ${remindersEnabled
-                                        ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-                                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                                    ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
+                                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                                     }`}
                             >
                                 {remindersEnabled ? (
