@@ -1,12 +1,14 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  schemas   = ["public", "auth"]
 }
 
 model AdminUser {
@@ -1123,6 +1125,7 @@ model ConfessionLog {
 
 // UserPrayerHistory temporarily disabled - needs BigInt prayerId to match Prayer.id
 // model UserPrayerHistory {
+
 //   id        String   @id @default(cuid())
 //   userId    String
 //   prayerId  BigInt
