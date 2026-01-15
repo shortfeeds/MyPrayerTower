@@ -1,4 +1,5 @@
 export const runtime = 'nodejs';
+import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
 // Revalidate every 30 seconds

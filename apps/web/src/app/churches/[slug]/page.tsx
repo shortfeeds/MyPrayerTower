@@ -1,4 +1,5 @@
 export const runtime = 'nodejs';
+import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { ChurchProfile } from '@/components/churches/ChurchProfile';
 import { generateChurchSchema, generateBreadcrumbSchema } from '@/lib/seo/structuredData';
