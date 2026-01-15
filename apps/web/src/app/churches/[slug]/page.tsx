@@ -1,5 +1,5 @@
+export const runtime = 'nodejs';
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import { ChurchProfile } from '@/components/churches/ChurchProfile';
 import { generateChurchSchema, generateBreadcrumbSchema } from '@/lib/seo/structuredData';
 import { db } from '@/lib/db';
@@ -20,40 +20,38 @@ export async function generateStaticParams() {
         const churches = await db.church.findMany({
             where: { isVerified: true },
             select: { slug: true },
-            orderBy: [
-                { followerCount: 'desc' },
-                { viewCount: 'desc' }
-            ],
+            // Removed orderBy on non-existent fields to avoid Prisma errors
             take: 100, // Only pre-generate top 100 to prevent build timeout
         });
         return churches.map(c => ({ slug: c.slug }));
     } catch (error) {
         console.error('Error generating static params:', error);
-        return []; // Fallback to dynamic rendering if DB fails
+        return [];
     }
 }
 
 // Cached data fetcher to prevent double DB calls
 const getChurch = cache(async (slug: string) => {
-    return await db.church.findUnique({
-        where: { slug },
-        include: {
-            Diocese: true,
-            ChurchStaff: true,
-            ChurchImage: true,
-            ChurchEvent: {
-                where: {
-                    startDate: {
-                        gte: new Date(),
+    try {
+        return await db.church.findUnique({
+            where: { slug },
+            include: {
+                Diocese: true,
+                ChurchStaff: true,
+                ChurchImage: true,
+                ChurchEvent: {
+                    where: {
+                        startDate: { gte: new Date() }
                     },
-                },
-                orderBy: {
-                    startDate: 'asc',
-                },
-                take: 5,
-            },
-        },
-    });
+                    orderBy: { startDate: 'asc' },
+                    take: 5
+                }
+            }
+        });
+    } catch (e) {
+        console.error('Error fetching church data for slug', slug, e);
+        return null;
+    }
 });
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
