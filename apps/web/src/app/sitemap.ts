@@ -1,14 +1,41 @@
 import { MetadataRoute } from 'next';
 import { db } from '@/lib/db';
 
+export const revalidate = 86400; // Revalidate daily
+
+const CHUNK_SIZE = 5000;
+
 export async function generateSitemaps() {
-    return [
-        { id: 'static' },
-        { id: 'churches' },
-        { id: 'saints' },
-        { id: 'prayers' },
-        { id: 'memorials' },
-    ];
+    try {
+        // 1. Fetch counts (fast)
+        const [churchCount, saintCount, prayerCount, memorialCount] = await Promise.all([
+            db.church.count(),
+            db.saint.count(),
+            db.prayer.count({ where: { slug: { not: null } } }),
+            db.memorial.count({ where: { isPublic: true } }),
+        ]);
+
+        const sitemaps = [{ id: 'static' }];
+
+        // 2. Generate pagination IDs
+        const addChunks = (prefix: string, count: number) => {
+            const chunks = Math.ceil(count / CHUNK_SIZE);
+            for (let i = 0; i < chunks; i++) {
+                sitemaps.push({ id: `${prefix}:${i}` });
+            }
+        };
+
+        addChunks('churches', churchCount);
+        addChunks('saints', saintCount);
+        addChunks('prayers', prayerCount);
+        addChunks('memorials', memorialCount);
+
+        return sitemaps;
+    } catch (error) {
+        console.error('Failed to generate sitemap index:', error);
+        // Fallback to basic if DB fails
+        return [{ id: 'static' }];
+    }
 }
 
 export default async function sitemap({ id }: { id: string }): Promise<MetadataRoute.Sitemap> {
@@ -16,6 +43,7 @@ export default async function sitemap({ id }: { id: string }): Promise<MetadataR
     const lastModified = new Date();
 
     try {
+        // Static Routes
         if (id === 'static') {
             const coreRoutes = [
                 { url: '', priority: 1.0, changeFrequency: 'daily', images: ['https://myprayertower.com/opengraph-image'] },
@@ -46,10 +74,17 @@ export default async function sitemap({ id }: { id: string }): Promise<MetadataR
             }));
         }
 
-        if (id === 'churches') {
+        // Parse ID "type:page"
+        const [type, pageStr] = id.split(':');
+        const page = parseInt(pageStr || '0', 10);
+        const skip = page * CHUNK_SIZE;
+
+        if (type === 'churches') {
             const churches = await db.church.findMany({
                 select: { slug: true },
-                take: 45000
+                skip,
+                take: CHUNK_SIZE,
+                orderBy: { id: 'asc' } // Stable ordering
             });
             return churches.map((church) => ({
                 url: `${baseUrl}/churches/${church.slug}`,
@@ -59,10 +94,12 @@ export default async function sitemap({ id }: { id: string }): Promise<MetadataR
             }));
         }
 
-        if (id === 'saints') {
+        if (type === 'saints') {
             const saints = await db.saint.findMany({
                 select: { slug: true },
-                take: 10000
+                skip,
+                take: CHUNK_SIZE,
+                orderBy: { id: 'asc' }
             });
             return saints.map((saint) => ({
                 url: `${baseUrl}/saints/${saint.slug}`,
@@ -72,11 +109,13 @@ export default async function sitemap({ id }: { id: string }): Promise<MetadataR
             }));
         }
 
-        if (id === 'prayers') {
+        if (type === 'prayers') {
             const prayers = await db.prayer.findMany({
                 where: { slug: { not: null } },
                 select: { slug: true },
-                take: 10000
+                skip,
+                take: CHUNK_SIZE,
+                orderBy: { id: 'asc' }
             });
             return prayers.map((prayer) => ({
                 url: `${baseUrl}/prayers/${prayer.slug}`,
@@ -86,11 +125,13 @@ export default async function sitemap({ id }: { id: string }): Promise<MetadataR
             }));
         }
 
-        if (id === 'memorials') {
+        if (type === 'memorials') {
             const memorials = await db.memorial.findMany({
                 select: { slug: true },
                 where: { isPublic: true },
-                take: 10000
+                skip,
+                take: CHUNK_SIZE,
+                orderBy: { id: 'asc' }
             });
             return memorials.map((memorial) => ({
                 url: `${baseUrl}/memorials/${memorial.slug}`,
