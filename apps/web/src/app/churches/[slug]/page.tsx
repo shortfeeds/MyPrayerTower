@@ -13,14 +13,24 @@ interface Props {
 // ISR - revalidate every 30 minutes
 export const revalidate = 1800;
 
-// Pre-generate static pages for verified churches
+// Pre-generate static pages for top verified churches only
+// The rest will be generated on-demand with ISR
 export async function generateStaticParams() {
-    const churches = await db.church.findMany({
-        where: { isVerified: true },
-        select: { slug: true },
-        take: 1000, // Limit to top 1000 verified churches
-    });
-    return churches.map(c => ({ slug: c.slug }));
+    try {
+        const churches = await db.church.findMany({
+            where: { isVerified: true },
+            select: { slug: true },
+            orderBy: [
+                { followerCount: 'desc' },
+                { viewCount: 'desc' }
+            ],
+            take: 100, // Only pre-generate top 100 to prevent build timeout
+        });
+        return churches.map(c => ({ slug: c.slug }));
+    } catch (error) {
+        console.error('Error generating static params:', error);
+        return []; // Fallback to dynamic rendering if DB fails
+    }
 }
 
 // Cached data fetcher to prevent double DB calls

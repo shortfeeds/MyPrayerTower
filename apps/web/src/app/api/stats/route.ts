@@ -21,7 +21,7 @@ export async function GET() {
                         gte: today
                     }
                 }
-            }),
+            }).catch(() => 0),
             // Count candles lit today
             db.prayerCandle.count({
                 where: {
@@ -29,7 +29,7 @@ export async function GET() {
                         gte: today
                     }
                 }
-            })
+            }).catch(() => 0)
         ]);
 
         // Estimate active sessions without Session table
