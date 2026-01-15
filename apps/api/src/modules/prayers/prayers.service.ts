@@ -23,27 +23,30 @@ export class PrayersService {
 
         const [prayers, total] = await Promise.all([
             this.prisma.prayer.findMany({
-                where: { categoryId: category.id, isPublished: true },
+                where: { category: category.slug, is_active: true }, // Mapped to schema
                 skip,
                 take: limit,
                 orderBy: { title: 'asc' },
             }),
-            this.prisma.prayer.count({ where: { categoryId: category.id, isPublished: true } }),
+            this.prisma.prayer.count({ where: { category: category.slug, is_active: true } }),
         ]);
 
         return { prayers, total, page, limit };
     }
 
     async getPrayerBySlug(slug: string) {
-        const prayer = await this.prisma.prayer.findUnique({
+        const prayer = await this.prisma.prayer.findFirst({
             where: { slug },
-            include: { category: true },
+            // Relation to category doesn't exist in schema, just string field
         });
 
         if (prayer) {
             await this.prisma.prayer.update({
                 where: { id: prayer.id },
-                data: { viewCount: { increment: 1 } },
+                // viewCount not in schema, ignoring update or need to check schema. 
+                // Schema lines 916-931 does NOT have viewCount.
+                // Removing update to avoid error.
+                data: {},
             });
         }
 
@@ -53,7 +56,7 @@ export class PrayersService {
     async searchPrayers(query: string, limit = 20) {
         return this.prisma.prayer.findMany({
             where: {
-                isPublished: true,
+                is_active: true,
                 OR: [
                     { title: { contains: query, mode: 'insensitive' } },
                     { content: { contains: query, mode: 'insensitive' } },
