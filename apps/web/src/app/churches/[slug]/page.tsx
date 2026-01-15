@@ -18,13 +18,9 @@ export const revalidate = 1800;
 // The rest will be generated on-demand with ISR
 export async function generateStaticParams() {
     try {
-        const churches = await db.church.findMany({
-            where: { isVerified: true },
-            select: { slug: true },
-            // Removed orderBy on non-existent fields to avoid Prisma errors
-            take: 100, // Only pre-generate top 100 to prevent build timeout
-        });
-        return churches.map(c => ({ slug: c.slug }));
+        // Returning an empty array to skip static generation at build time
+        // All church pages will be generated on-demand (ISR)
+        return [];
     } catch (error) {
         console.error('Error generating static params:', error);
         return [];
