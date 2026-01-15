@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { db } from '@/lib/db';
 
+export const dynamic = 'force-dynamic'; // Generate at runtime only
 export const revalidate = 86400; // Revalidate daily
 
 const CHUNK_SIZE = 5000;
