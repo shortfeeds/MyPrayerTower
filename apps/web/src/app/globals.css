@@ -2,6 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Sacred UX Design System - Global Polish */
+@layer base {
+  /* Slower, more graceful transitions */
+  * {
+    @apply transition-all duration-500 ease-out;
+  }
+
+  /* Increased spacing for calm feel */
+  body {
+    @apply leading-relaxed;
+    letter-spacing: 0.01em;
+  }
+
+  /* Softer shadows instead of hard borders */
+  .card {
+    @apply shadow-sm hover:shadow-md;
+    border: none;
+  }
+}
+
+@layer utilities {
+  /* Sacred spacing utilities */
+  .sacred-spacing {
+    @apply py-8 md:py-12 lg:py-16;
+  }
+
+  .sacred-container {
+    @apply max-w-5xl mx-auto px-6 lg:px-8;
+  }
+
+  /* Gentle animations - prefer fades */
+  .sacred-fade {
+    @apply opacity-0 animate-in fade-in duration-700;
+  }
+
+  .sacred-slide {
+    @apply opacity-0 animate-in slide-in-from-bottom-4 fade-in duration-700;
+  }
+}
+
 /* Fonts are now self-hosted via next/font in layout.tsx */
 
 /* Google Translate Overrides */

@@ -64,8 +64,12 @@ export const SACRED_COPY = {
     // Saints
     saints: {
         prayWith: "Pray with this Saint",
+        prayWithCTA: "Seek their intercession",
         feastDay: "Honored on",
-        intercession: "Seeking this Saint's intercession"
+        feastDayContext: "Celebrated on",
+        intercession: "Seeking this Saint's intercession",
+        patronOf: "Patron of",
+        devotion: "A model of faith and devotion"
     },
 
     // My Prayer Corner (Dashboard)
