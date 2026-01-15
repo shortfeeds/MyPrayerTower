@@ -649,6 +649,8 @@ model PrayerRequest {
   @@index([status])
   @@index([userId])
   @@index([visibility])
+  @@index([createdAt])
+  @@index([churchId])
 }
 
 model PrayerUpdate {
@@ -880,6 +882,8 @@ model User {
 
   @@index([email])
   @@index([homeChurchId])
+  @@index([createdAt])
+  @@index([subscriptionTier])
 }
 
 model UserBlock {

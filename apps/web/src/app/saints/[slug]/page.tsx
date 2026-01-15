@@ -14,10 +14,7 @@ export const revalidate = 3600;
 
 // Pre-generate static pages for all saints
 export async function generateStaticParams() {
-    const saints = await db.saint.findMany({
-        select: { slug: true },
-    });
-    return saints.map(s => ({ slug: s.slug }));
+    return [];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

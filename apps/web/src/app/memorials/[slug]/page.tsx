@@ -9,11 +9,7 @@ export const revalidate = 1800;
 
 // Pre-generate static pages for all public memorials
 export async function generateStaticParams() {
-    const memorials = await db.memorial.findMany({
-        where: { isPublic: true },
-        select: { slug: true },
-    });
-    return memorials.map(m => ({ slug: m.slug }));
+    return [];
 }
 
 interface Props {

@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { PrismaClient } from '@mpt/database';
+import { db } from '@/lib/db';
 
 export async function generateSitemaps() {
     return [
@@ -14,7 +14,6 @@ export async function generateSitemaps() {
 export default async function sitemap({ id }: { id: string }): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://myprayertower.com';
     const lastModified = new Date();
-    const prisma = new PrismaClient();
 
     try {
         if (id === 'static') {
@@ -48,7 +47,7 @@ export default async function sitemap({ id }: { id: string }): Promise<MetadataR
         }
 
         if (id === 'churches') {
-            const churches = await prisma.church.findMany({
+            const churches = await db.church.findMany({
                 select: { slug: true },
                 take: 45000
             });
@@ -61,7 +60,7 @@ export default async function sitemap({ id }: { id: string }): Promise<MetadataR
         }
 
         if (id === 'saints') {
-            const saints = await prisma.saint.findMany({
+            const saints = await db.saint.findMany({
                 select: { slug: true },
                 take: 10000
             });
@@ -74,7 +73,7 @@ export default async function sitemap({ id }: { id: string }): Promise<MetadataR
         }
 
         if (id === 'prayers') {
-            const prayers = await prisma.prayer.findMany({
+            const prayers = await db.prayer.findMany({
                 where: { slug: { not: null } },
                 select: { slug: true },
                 take: 10000
@@ -88,7 +87,7 @@ export default async function sitemap({ id }: { id: string }): Promise<MetadataR
         }
 
         if (id === 'memorials') {
-            const memorials = await prisma.memorial.findMany({
+            const memorials = await db.memorial.findMany({
                 select: { slug: true },
                 where: { isPublic: true },
                 take: 10000
@@ -106,7 +105,5 @@ export default async function sitemap({ id }: { id: string }): Promise<MetadataR
     } catch (error) {
         console.error(`Failed to generate sitemap for ${id}:`, error);
         return [];
-    } finally {
-        await prisma.$disconnect();
     }
 }

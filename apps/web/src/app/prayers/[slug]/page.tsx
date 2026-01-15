@@ -39,13 +39,7 @@ export const revalidate = 3600;
 
 // Pre-generate static pages for all active prayers
 export async function generateStaticParams() {
-    const prayers = await db.prayer.findMany({
-        where: { is_active: true },
-        select: { slug: true },
-    });
-    return prayers
-        .filter(p => p.slug)
-        .map(p => ({ slug: p.slug! }));
+    return [];
 }
 
 import { PrayerCategorySidebar } from '@/components/prayers/PrayerCategorySidebar';
