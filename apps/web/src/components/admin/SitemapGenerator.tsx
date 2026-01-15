@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { RefreshCw, FileText, CheckCircle, ExternalLink } from 'lucide-react';
-import { generateSitemapAction } from '@/app/actions/sitemap';
+import { generateSitemapAction } from '@/app/actions/generate-sitemap';
 
 export function SitemapGenerator() {
     const [isPending, startTransition] = useTransition();
