@@ -49,8 +49,13 @@ const getChurch = cache(async (slug: string) => {
                 }
             }
         });
-    } catch (e) {
-        console.error('Error fetching church data for slug', slug, e);
+    } catch (e: any) {
+        console.error(`Error fetching church data for slug ${slug}`, {
+            message: e?.message,
+            code: e?.code,
+            meta: e?.meta,
+            stack: e?.stack
+        });
         return null;
     }
 });
