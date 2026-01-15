@@ -258,6 +258,12 @@ export function Footer() {
                             </a>
                         ))}
                     </div>
+
+                    {/* Sacred UX: Closing Emotional Anchor */}
+                    <p className="text-center text-sm text-gray-500 dark:text-gray-400 italic mt-8 mb-4 font-light">
+                        May peace remain with you.
+                    </p>
+
                     <p className="text-center text-xs text-gray-600 mt-4">© {currentYear} MyPrayerTower</p>
                 </div>
             </footer>

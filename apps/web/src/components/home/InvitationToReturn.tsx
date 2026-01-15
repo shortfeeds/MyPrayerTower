@@ -18,7 +18,16 @@ import { SACRED_COPY } from '@/lib/sacred-copy';
  */
 export function InvitationToReturn() {
     return (
-        <section className="py-20 bg-gradient-to-b from-indigo-50 to-white dark:from-indigo-950/30 dark:to-slate-900">
+        <section className="relative py-24 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-950 overflow-hidden">
+            {/* Sacred UX: Mid-page Emotional Anchor */}
+            <div className="container mx-auto px-4 text-center mb-16">
+                <p className="text-xl text-gray-600 dark:text-gray-400 font-light italic mb-2">
+                    A quiet place to return whenever you need prayer.
+                </p>
+            </div>
+
+            <div className="absolute inset-0 pointer-events-none opacity-30"></div> {/* This div seems to be for a background effect, closing it here */}
+
             <div className="container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

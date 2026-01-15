@@ -5,6 +5,7 @@ import { getActiveCandles, prayForCandle } from '@/app/actions/spiritual';
 import { CandleHero } from '@/components/candles/CandleHero';
 import { CandleStats } from '@/components/candles/CandleStats';
 import { CandleCreationModal } from '@/components/candles/CandleCreationModal';
+import { PrayerCompletionModal } from '@/components/prayer/PrayerCompletionModal';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Heart, Clock, Crown, Star, Sparkles } from 'lucide-react';
@@ -189,6 +190,7 @@ export default function CandlesPage() {
     const [candles, setCandles] = useState<Candle[]>([]);
     const [loading, setLoading] = useState(true);
     const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
+    const [prayerCompleteOpen, setPrayerCompleteOpen] = useState(false);
 
     useEffect(() => {
         const fetchCandles = async () => {
@@ -231,6 +233,20 @@ export default function CandlesPage() {
     }), [candles]);
 
     const totalPrayers = candles.reduce((sum, c) => sum + c.prayerCount, 0);
+
+    const handlePrayForCandle = async (candleId: string) => {
+        try {
+            await prayForCandle(candleId);
+            // Show sacred completion modal
+            setPrayerCompleteOpen(true);
+            // Refresh candles after prayer
+            setTimeout(() => {
+                window.location.reload();
+            }, 3500);
+        } catch (error) {
+            console.error('Prayer failed:', error);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-black text-gray-100 selection:bg-amber-500/30">
@@ -288,7 +304,7 @@ export default function CandlesPage() {
                             <p className="text-amber-400/60 text-sm">Angels carry your prayers to Heaven</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.royal.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={() => { }} />)}
+                            {groupedCandles.royal.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
                         {groupedCandles.royal.length > 10 && (
                             <p className="text-center text-amber-400/60 mt-4 text-sm">+ {groupedCandles.royal.length - 10} more candles burning</p>
@@ -304,7 +320,7 @@ export default function CandlesPage() {
                             <p className="text-blue-400/60 text-sm">Under Our Lady of Guadalupe's protection</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.premium.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={() => { }} />)}
+                            {groupedCandles.premium.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
                         {groupedCandles.premium.length > 10 && (
                             <p className="text-center text-blue-400/60 mt-4 text-sm">+ {groupedCandles.premium.length - 10} more candles burning</p>
@@ -320,7 +336,7 @@ export default function CandlesPage() {
                             <p className="text-neutral-400 text-sm">Presented before the Lord at His altar</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.taper.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={() => { }} />)}
+                            {groupedCandles.taper.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
                         {groupedCandles.taper.length > 10 && (
                             <p className="text-center text-amber-100/60 mt-4 text-sm">+ {groupedCandles.taper.length - 10} more candles burning</p>
@@ -336,7 +352,7 @@ export default function CandlesPage() {
                             <p className="text-red-400/60 text-sm">A sincere offering of faith</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.votive.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={() => { }} />)}
+                            {groupedCandles.votive.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
                         {groupedCandles.votive.length > 10 && (
                             <p className="text-center text-red-400/60 mt-4 text-sm">+ {groupedCandles.votive.length - 10} more candles burning</p>
@@ -352,7 +368,7 @@ export default function CandlesPage() {
                             <p className="text-neutral-500 text-sm">A simple prayer for today</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.tealight.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={() => { }} />)}
+                            {groupedCandles.tealight.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
                         {groupedCandles.tealight.length > 10 && (
                             <p className="text-center text-neutral-400/60 mt-4 text-sm">+ {groupedCandles.tealight.length - 10} more candles burning</p>
@@ -386,6 +402,12 @@ export default function CandlesPage() {
                     </motion.button>
                 )}
             </AnimatePresence>
+
+            {/* Universal Prayer Completion Modal */}
+            <PrayerCompletionModal
+                isOpen={prayerCompleteOpen}
+                onClose={() => setPrayerCompleteOpen(false)}
+            />
 
         </div>
     );

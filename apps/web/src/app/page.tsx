@@ -97,7 +97,10 @@ function LoggedOutHomePage() {
                         </Link>
                     </div>
 
-                    {/* Reassurance Line */}
+                    {/* Emotional Reassurance - Sacred UX */}
+                    <p className="text-blue-100/60 text-base font-light italic animate-fade-in-up delay-300">
+                        You are welcome here.
+                    </p>
                     <p className="text-sm md:text-base text-blue-200/60 font-medium tracking-wider animate-delay-300 animate-fade-in-up">
                         A place of prayer, remembrance, and hope.
                     </p>

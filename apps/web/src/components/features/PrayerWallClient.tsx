@@ -10,6 +10,7 @@ import confetti from 'canvas-confetti';
 import { PrayerCardSkeleton } from '@/components/ui/SkeletonLoaders';
 import { ClosingPrayerModal, ReportModal, AnsweredModal } from './PrayerInteractionModals';
 import { SmartAdSlot } from '@/components/ads';
+import { PrayerCompletionModal } from '@/components/prayer/PrayerCompletionModal';
 
 export interface Prayer {
     id: string;
@@ -94,6 +95,7 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
     const [closingPrayerFor, setClosingPrayerFor] = useState<Prayer | null>(null);
     const [reportingPrayerId, setReportingPrayerId] = useState<string | null>(null);
     const [answeringPrayerId, setAnsweringPrayerId] = useState<string | null>(null);
+    const [prayerCompleteOpen, setPrayerCompleteOpen] = useState(false);
 
     // Stillness State
     const [isPrayingId, setIsPrayingId] = useState<string | null>(null);
@@ -155,30 +157,20 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
         // Find the prayer for the modal
         const prayer = prayers.find(p => p.id === prayerId);
 
-        // Stillness Moment (Total 3 seconds)
-        setIsPrayingId(prayerId);
-        setStillnessStage('lifting');
-
-        // Step 1: Lifting (1.5s)
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Step 2: Offered (1.5s)
-        setStillnessStage('offered');
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        setIsPrayingId(null);
-        setStillnessStage(null);
-
-        if (prayer) {
-            triggerSacredMoment('prayer');
-        }
-
+        // Immediately update UI
         setPrayedIds(prev => new Set(Array.from(prev).concat([prayerId])));
         setPrayers(current =>
             current.map(p =>
                 p.id === prayerId ? { ...p, prayerCount: p.prayerCount + 1 } : p
             )
         );
+
+        // Show sacred completion modal
+        setPrayerCompleteOpen(true);
+
+        if (prayer) {
+            triggerSacredMoment('prayer');
+        }
 
         // Only call API for non-sample prayers
         if (!prayerId.startsWith('sample-') && !prayerId.startsWith('s-')) {
@@ -796,6 +788,12 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
                     </div>
                 </div>
             )}
+
+            {/* Universal Prayer Completion Modal */}
+            <PrayerCompletionModal
+                isOpen={prayerCompleteOpen}
+                onClose={() => setPrayerCompleteOpen(false)}
+            />
         </div>
     );
 }
