@@ -20,6 +20,7 @@ import {
     RefreshCw
 } from 'lucide-react';
 import { db } from '@/lib/db';
+import { SitemapGenerator } from '@/components/admin/SitemapGenerator';
 
 export const dynamic = 'force-dynamic';
 
@@ -386,6 +387,7 @@ export default function AdminDashboard() {
 
                 {/* Right Column */}
                 <div className="space-y-6">
+                    <SitemapGenerator />
                     <QuickActions />
                     <Suspense fallback={<div className="h-64 bg-gray-100 rounded-2xl animate-pulse" />}>
                         <SystemStatus />
