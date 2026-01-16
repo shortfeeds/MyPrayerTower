@@ -1,189 +1,348 @@
 import 'package:flutter/material.dart';
-import '../repositories/prayer_request_repository.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import '../../../core/theme/app_theme.dart';
+import '../models/prayer_request_model.dart';
+import '../repositories/prayer_wall_repository.dart';
 
-class PrayerRequestCard extends StatefulWidget {
-  final PrayerRequestData request;
-  final VoidCallback onPray;
-  final bool isOptimistic; // visual state only
+class PrayerRequestCard extends ConsumerStatefulWidget {
+  final PrayerRequest request;
+  final VoidCallback? onPray;
 
-  const PrayerRequestCard({
-    super.key,
-    required this.request,
-    required this.onPray,
-    this.isOptimistic = false,
-  });
+  const PrayerRequestCard({super.key, required this.request, this.onPray});
 
   @override
-  State<PrayerRequestCard> createState() => _PrayerRequestCardState();
+  ConsumerState<PrayerRequestCard> createState() => _PrayerRequestCardState();
 }
 
-class _PrayerRequestCardState extends State<PrayerRequestCard> {
-  late int _count;
-  bool _hasPrayed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _count = widget.request.prayerCount;
-  }
-
-  @override
-  void didUpdateWidget(PrayerRequestCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.request.prayerCount != oldWidget.request.prayerCount) {
-      _count = widget.request.prayerCount;
-    }
-  }
+class _PrayerRequestCardState extends ConsumerState<PrayerRequestCard> {
+  bool _isPrayed = false;
+  bool _isSaved = false;
 
   void _handlePray() {
-    if (_hasPrayed) return;
+    if (_isPrayed) return;
+    setState(() => _isPrayed = true);
 
-    setState(() {
-      _hasPrayed = true;
-      _count++;
-    });
+    // Call repository
+    ref.read(prayerWallRepositoryProvider).prayForRequest(widget.request.id);
 
-    widget.onPray();
+    // Trigger visual feedback (could be animation)
+    if (widget.onPray != null) widget.onPray!();
+  }
+
+  void _handleSave() {
+    setState(() => _isSaved = !_isSaved);
+    // Persist to local storage or API if needed
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isSaved ? 'Saved to Prayer Corner' : 'Removed from Saved',
+        ),
+        duration: const Duration(milliseconds: 1500),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _handleShare() {
+    // Implement share logic
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Sharing functionality comming soon')),
+    );
+  }
+
+  void _handleReport() {
+    // Implement report logic
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Report functionality comming soon')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final req = widget.request;
+    final isAnswered = req.isAnswered;
+    final status = req.status; // unused visually unless archived
+    final isArchived = status == 'ARCHIVED';
+
+    // Author Name
+    String authorName = 'Anonymous';
+    if (!req.isAnonymous) {
+      if (req.user?.firstName != null) {
+        authorName =
+            '${req.user!.firstName!} ${req.user!.lastName?.substring(0, 1) ?? ""}.';
+      } else {
+        // Fallback?
+        authorName = 'Praying Soul';
+      }
+    }
+
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.sacredNavy800,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: isAnswered ? Colors.green.shade200 : const Color(0xFFE5E7EB),
+          width: isAnswered ? 2 : 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.05),
+            offset: const Offset(0, 2),
+            blurRadius: 10,
           ),
         ],
       ),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          // Answered Badge
+          if (isAnswered)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    LucideIcons.checkCircle,
+                    size: 16,
+                    color: Colors.green.shade600,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Answered!',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.green.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Content
+          Text(
+            '"${req.content}"',
+            style: GoogleFonts.merriweather(
+              fontSize: 16,
+              height: 1.6,
+              color: Colors.grey.shade800,
+            ),
+          ),
+
+          const Spacer(),
+          const SizedBox(height: 16),
+          const Divider(height: 24, color: Color(0xFFF3F4F6)),
+
+          // Meta Info
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              Text(
+                authorName,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+              if (req.country != null) ...[
+                Text(
+                  '•',
+                  style: GoogleFonts.inter(color: Colors.grey.shade300),
+                ),
+                Icon(LucideIcons.globe, size: 12, color: Colors.grey.shade400),
+                Text(
+                  req.country!,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ],
+              Text('•', style: GoogleFonts.inter(color: Colors.grey.shade300)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppTheme.sacredNavy50,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+                child: Text(
+                  req.category ?? 'Other',
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.sacredNavy600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(LucideIcons.clock, size: 12, color: Colors.grey.shade300),
+              const SizedBox(width: 4),
+              Text(
+                req.createdAt != null ? timeago.format(req.createdAt!) : '',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: Colors.grey.shade400,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Actions
+          Row(
+            children: [
+              // Pray Button
+              InkWell(
+                onTap: _isPrayed || isArchived ? null : _handlePray,
+                borderRadius: BorderRadius.circular(99),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: _isPrayed
+                        ? null
+                        : const LinearGradient(
+                            colors: [AppTheme.gold400, AppTheme.gold500],
+                          ),
+                    color: _isPrayed ? Colors.green.shade50 : null,
+                    borderRadius: BorderRadius.circular(99),
+                    border: _isPrayed
+                        ? Border.all(color: Colors.green.shade100)
+                        : null,
+                    boxShadow: _isPrayed
+                        ? null
+                        : [
+                            BoxShadow(
+                              color: AppTheme.gold500.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
+                      if (_isPrayed)
+                        Icon(
+                          LucideIcons.check,
+                          size: 14,
+                          color: Colors.green.shade700,
+                        )
+                      else
+                        const Text('🙏', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 6),
                       Text(
-                        widget.request.intention,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          height: 1.5,
+                        _isPrayed ? 'Prayed' : 'Pray',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: _isPrayed
+                              ? Colors.green.shade700
+                              : Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          if (widget.request.category != null) ...[
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppTheme.primaryBlue.withValues(
-                                  alpha: 0.2,
-                                ),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                widget.request.category!,
-                                style: const TextStyle(
-                                  color: AppTheme.primaryBlue,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-                          Text(
-                            widget.request.isAnonymous
-                                ? 'Anonymous'
-                                : widget.request.userName,
-                            style: const TextStyle(
-                              color: Colors.white38,
-                              fontSize: 12,
-                            ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _isPrayed
+                              ? Colors.green.shade200
+                              : Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Text(
+                          '${req.prayerCount + (_isPrayed ? 1 : 0)}',
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: _isPrayed
+                                ? Colors.green.shade800
+                                : Colors.white,
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          // Divider
-          Divider(height: 1, color: Colors.white.withValues(alpha: 0.05)),
-
-          // Action Bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      LucideIcons.flame,
-                      size: 16,
-                      color: _hasPrayed ? Colors.orange : AppTheme.accentGold,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '$_count prayers',
-                      style: TextStyle(
-                        color: _hasPrayed ? Colors.orange : AppTheme.accentGold,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                ElevatedButton.icon(
-                  onPressed: _hasPrayed ? null : _handlePray,
-                  icon: Icon(
-                    _hasPrayed ? LucideIcons.check : LucideIcons.heart,
-                    size: 16,
-                  ),
-                  label: Text(_hasPrayed ? 'Prayed' : 'Pray'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _hasPrayed
-                        ? Colors.green.withValues(alpha: 0.2)
-                        : AppTheme.accentGold.withValues(alpha: 0.15),
-                    foregroundColor: _hasPrayed
-                        ? Colors.green
-                        : AppTheme.accentGold,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+              const Spacer(),
+              // Secondary Actions
+              _ControlIcon(
+                icon: LucideIcons.bookmark,
+                isActive: _isSaved,
+                activeColor: AppTheme.gold600,
+                onTap: _handleSave,
+              ),
+              const SizedBox(width: 4),
+              _ControlIcon(icon: LucideIcons.share2, onTap: _handleShare),
+              const SizedBox(width: 4),
+              _ControlIcon(
+                icon: LucideIcons.flag,
+                hoverColor: Colors.red.shade50,
+                iconColor: Colors.grey.shade400,
+                onTap: _handleReport,
+              ),
+            ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ControlIcon extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final bool isActive;
+  final Color? activeColor;
+  final Color? hoverColor;
+  final Color? iconColor;
+
+  const _ControlIcon({
+    required this.icon,
+    required this.onTap,
+    this.isActive = false,
+    this.activeColor,
+    this.hoverColor,
+    this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isActive
+              ? (activeColor?.withValues(alpha: 0.1) ?? Colors.grey.shade100)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          icon,
+          size: 18,
+          fill: isActive ? 1.0 : 0.0,
+          color: isActive ? activeColor : (iconColor ?? Colors.grey.shade400),
+        ),
       ),
     );
   }

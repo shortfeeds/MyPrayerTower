@@ -5,8 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/billing/billing_service.dart';
-import '../../../core/billing/product_ids.dart';
+import '../../payments/services/payment_service.dart';
 
 class SpiritualBouquetScreen extends ConsumerStatefulWidget {
   const SpiritualBouquetScreen({super.key});
@@ -462,50 +461,75 @@ class _SpiritualBouquetScreenState
   }
 
   Future<void> _handleSubmit(WidgetRef ref) async {
-    if (_totalCents > 0) {
-      // Trigger Billing similar to Mass Offering
-      // NOTE: For MVP, we default to mass_single if mass is selected, or candle_3d if just candle.
-      // This is a simplification.
-      String? productId;
-
-      if (_massesCount > 0) {
-        productId = ProductIds.massSingle;
-      } else if (_candlesCount > 0) {
-        productId = ProductIds.candle3Day;
-      } else if (_rosariesCount > 0) {
-        // Fallback to candle price point for now
-        productId = ProductIds.candle7Day;
-      }
-
-      if (productId != null) {
-        try {
-          await ref
-              .read(billingServiceProvider)
-              .buyConsumable(
-                productId,
-                context: context,
-                itemName: 'Spiritual Bouquet',
-                price: _total,
-              );
-          // Assume success for UI flow
-        } catch (e) {
-          if (!mounted) return;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Billing Failed: $e')));
-          return;
-        }
-      }
-    }
-
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Sent bouquet to ${_recipientNameController.text}!'),
-        backgroundColor: AppTheme.gold500,
-      ),
-    );
-    context.pop();
+    if (_totalCents > 0) {
+      // Paid bouquet - use PayPal
+      try {
+        final paymentService = ref.read(paymentServiceProvider);
+
+        // Build description
+        final items = <String>[];
+        if (_massesCount > 0) {
+          items.add('$_massesCount Mass${_massesCount > 1 ? "es" : ""}');
+        }
+        if (_rosariesCount > 0) {
+          items.add('$_rosariesCount Rosar${_rosariesCount > 1 ? "ies" : "y"}');
+        }
+        if (_prayersCount > 0) {
+          items.add('$_prayersCount Prayer${_prayersCount > 1 ? "s" : ""}');
+        }
+        if (_candlesCount > 0) {
+          items.add('$_candlesCount Candle${_candlesCount > 1 ? "s" : ""}');
+        }
+
+        final description =
+            'Spiritual Bouquet: ${items.join(", ")} for ${_recipientNameController.text}';
+
+        await paymentService.startPayPalPayment(
+          context: context,
+          amount: _total,
+          currency: 'USD',
+          description: description,
+          onSuccess: (transactionId) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  '✅ Bouquet sent to ${_recipientNameController.text}!',
+                ),
+                backgroundColor: Colors.green,
+              ),
+            );
+            context.pop();
+          },
+          onError: (error) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Payment failed: $error'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          },
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } else {
+      //  bouquet (prayers only) - no payment needed
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '🙏 Free prayer bouquet sent to ${_recipientNameController.text}!',
+          ),
+          backgroundColor: AppTheme.gold500,
+        ),
+      );
+      context.pop();
+    }
   }
 }

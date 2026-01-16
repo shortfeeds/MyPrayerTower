@@ -20,7 +20,7 @@ class PrayerWallController extends StateNotifier<AsyncValue<void>> {
   PrayerWallController(this.ref) : super(const AsyncData(null));
 
   Future<void> submitRequest({
-    required String content,
+    required String intention,
     String? category,
     bool isAnonymous = false,
   }) async {
@@ -29,7 +29,7 @@ class PrayerWallController extends StateNotifier<AsyncValue<void>> {
       await ref
           .read(prayerWallRepositoryProvider)
           .submitRequest(
-            content: content,
+            intention: intention,
             category: category,
             isAnonymous: isAnonymous,
           );

@@ -1,21 +1,32 @@
+// Refresh IDE 2
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'reading_model.freezed.dart';
 part 'reading_model.g.dart';
 
 @freezed
-class Reading with _$Reading {
-  const factory Reading({
+class DailyReading with _$DailyReading {
+  const factory DailyReading({
     required String id,
     required DateTime date,
-    required String title,
-    required String reference,
-    required String text, // Markdown text
-    String? imageUrl,
-    @Default('Daily') String type, // Daily, Sunday, Feast
+    String? liturgicalSeason,
     String? liturgicalColor,
-  }) = _Reading;
+    String? feastName,
+    String? firstReading,
+    String? firstReadingRef,
+    String? psalm,
+    String? psalmRef,
+    String? secondReading,
+    String? secondReadingRef,
+    String? gospel,
+    String? gospelRef,
+    String? reflection,
+    DateTime? createdAt,
+  }) = _DailyReading;
 
-  factory Reading.fromJson(Map<String, dynamic> json) =>
-      _$ReadingFromJson(json);
+  factory DailyReading.fromJson(Map<String, dynamic> json) =>
+      _$DailyReadingFromJson(json);
 }
+
+// Legacy alias for backward compatibility
+typedef Reading = DailyReading;

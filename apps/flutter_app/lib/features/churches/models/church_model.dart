@@ -40,6 +40,9 @@ class Church with _$Church {
     DateTime? lastSyncedAt,
     @Default(0) int viewCount,
     @Default(0) int followerCount,
+    @JsonKey(name: 'stripeAccountId') String? stripeAccountId,
+    @JsonKey(name: 'totalDonations') @Default(0) int totalDonations,
+    @JsonKey(name: 'donationCount') @Default(0) int donationCount,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _Church;

@@ -932,3 +932,388 @@ abstract class _DonationRequest implements DonationRequest {
   _$$DonationRequestImplCopyWith<_$DonationRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+Donation _$DonationFromJson(Map<String, dynamic> json) {
+  return _Donation.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Donation {
+  String get id => throw _privateConstructorUsedError;
+  String get churchId => throw _privateConstructorUsedError;
+  String? get userId => throw _privateConstructorUsedError;
+  int get amount => throw _privateConstructorUsedError;
+  String get currency => throw _privateConstructorUsedError;
+  String? get message => throw _privateConstructorUsedError;
+  bool get isAnonymous => throw _privateConstructorUsedError;
+  String? get stripeSessionId => throw _privateConstructorUsedError;
+  String get status =>
+      throw _privateConstructorUsedError; // PENDING, COMPLETED, FAILED
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
+
+  /// Serializes this Donation to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of Donation
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DonationCopyWith<Donation> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DonationCopyWith<$Res> {
+  factory $DonationCopyWith(Donation value, $Res Function(Donation) then) =
+      _$DonationCopyWithImpl<$Res, Donation>;
+  @useResult
+  $Res call({
+    String id,
+    String churchId,
+    String? userId,
+    int amount,
+    String currency,
+    String? message,
+    bool isAnonymous,
+    String? stripeSessionId,
+    String status,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  });
+}
+
+/// @nodoc
+class _$DonationCopyWithImpl<$Res, $Val extends Donation>
+    implements $DonationCopyWith<$Res> {
+  _$DonationCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of Donation
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? churchId = null,
+    Object? userId = freezed,
+    Object? amount = null,
+    Object? currency = null,
+    Object? message = freezed,
+    Object? isAnonymous = null,
+    Object? stripeSessionId = freezed,
+    Object? status = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            churchId: null == churchId
+                ? _value.churchId
+                : churchId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            userId: freezed == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            amount: null == amount
+                ? _value.amount
+                : amount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            currency: null == currency
+                ? _value.currency
+                : currency // ignore: cast_nullable_to_non_nullable
+                      as String,
+            message: freezed == message
+                ? _value.message
+                : message // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            isAnonymous: null == isAnonymous
+                ? _value.isAnonymous
+                : isAnonymous // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            stripeSessionId: freezed == stripeSessionId
+                ? _value.stripeSessionId
+                : stripeSessionId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as String,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DonationImplCopyWith<$Res>
+    implements $DonationCopyWith<$Res> {
+  factory _$$DonationImplCopyWith(
+    _$DonationImpl value,
+    $Res Function(_$DonationImpl) then,
+  ) = __$$DonationImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    String churchId,
+    String? userId,
+    int amount,
+    String currency,
+    String? message,
+    bool isAnonymous,
+    String? stripeSessionId,
+    String status,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  });
+}
+
+/// @nodoc
+class __$$DonationImplCopyWithImpl<$Res>
+    extends _$DonationCopyWithImpl<$Res, _$DonationImpl>
+    implements _$$DonationImplCopyWith<$Res> {
+  __$$DonationImplCopyWithImpl(
+    _$DonationImpl _value,
+    $Res Function(_$DonationImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of Donation
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? churchId = null,
+    Object? userId = freezed,
+    Object? amount = null,
+    Object? currency = null,
+    Object? message = freezed,
+    Object? isAnonymous = null,
+    Object? stripeSessionId = freezed,
+    Object? status = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+  }) {
+    return _then(
+      _$DonationImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        churchId: null == churchId
+            ? _value.churchId
+            : churchId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        userId: freezed == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        amount: null == amount
+            ? _value.amount
+            : amount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        currency: null == currency
+            ? _value.currency
+            : currency // ignore: cast_nullable_to_non_nullable
+                  as String,
+        message: freezed == message
+            ? _value.message
+            : message // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        isAnonymous: null == isAnonymous
+            ? _value.isAnonymous
+            : isAnonymous // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        stripeSessionId: freezed == stripeSessionId
+            ? _value.stripeSessionId
+            : stripeSessionId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as String,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DonationImpl implements _Donation {
+  const _$DonationImpl({
+    required this.id,
+    required this.churchId,
+    this.userId,
+    required this.amount,
+    this.currency = 'usd',
+    this.message,
+    this.isAnonymous = false,
+    this.stripeSessionId,
+    this.status = 'PENDING',
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory _$DonationImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DonationImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String churchId;
+  @override
+  final String? userId;
+  @override
+  final int amount;
+  @override
+  @JsonKey()
+  final String currency;
+  @override
+  final String? message;
+  @override
+  @JsonKey()
+  final bool isAnonymous;
+  @override
+  final String? stripeSessionId;
+  @override
+  @JsonKey()
+  final String status;
+  // PENDING, COMPLETED, FAILED
+  @override
+  final DateTime? createdAt;
+  @override
+  final DateTime? updatedAt;
+
+  @override
+  String toString() {
+    return 'Donation(id: $id, churchId: $churchId, userId: $userId, amount: $amount, currency: $currency, message: $message, isAnonymous: $isAnonymous, stripeSessionId: $stripeSessionId, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DonationImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.churchId, churchId) ||
+                other.churchId == churchId) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.currency, currency) ||
+                other.currency == currency) &&
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.isAnonymous, isAnonymous) ||
+                other.isAnonymous == isAnonymous) &&
+            (identical(other.stripeSessionId, stripeSessionId) ||
+                other.stripeSessionId == stripeSessionId) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    churchId,
+    userId,
+    amount,
+    currency,
+    message,
+    isAnonymous,
+    stripeSessionId,
+    status,
+    createdAt,
+    updatedAt,
+  );
+
+  /// Create a copy of Donation
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DonationImplCopyWith<_$DonationImpl> get copyWith =>
+      __$$DonationImplCopyWithImpl<_$DonationImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DonationImplToJson(this);
+  }
+}
+
+abstract class _Donation implements Donation {
+  const factory _Donation({
+    required final String id,
+    required final String churchId,
+    final String? userId,
+    required final int amount,
+    final String currency,
+    final String? message,
+    final bool isAnonymous,
+    final String? stripeSessionId,
+    final String status,
+    final DateTime? createdAt,
+    final DateTime? updatedAt,
+  }) = _$DonationImpl;
+
+  factory _Donation.fromJson(Map<String, dynamic> json) =
+      _$DonationImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get churchId;
+  @override
+  String? get userId;
+  @override
+  int get amount;
+  @override
+  String get currency;
+  @override
+  String? get message;
+  @override
+  bool get isAnonymous;
+  @override
+  String? get stripeSessionId;
+  @override
+  String get status; // PENDING, COMPLETED, FAILED
+  @override
+  DateTime? get createdAt;
+  @override
+  DateTime? get updatedAt;
+
+  /// Create a copy of Donation
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DonationImplCopyWith<_$DonationImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

@@ -56,6 +56,12 @@ mixin _$Church {
   DateTime? get lastSyncedAt => throw _privateConstructorUsedError;
   int get viewCount => throw _privateConstructorUsedError;
   int get followerCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'stripeAccountId')
+  String? get stripeAccountId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'totalDonations')
+  int get totalDonations => throw _privateConstructorUsedError;
+  @JsonKey(name: 'donationCount')
+  int get donationCount => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
@@ -107,6 +113,9 @@ abstract class $ChurchCopyWith<$Res> {
     DateTime? lastSyncedAt,
     int viewCount,
     int followerCount,
+    @JsonKey(name: 'stripeAccountId') String? stripeAccountId,
+    @JsonKey(name: 'totalDonations') int totalDonations,
+    @JsonKey(name: 'donationCount') int donationCount,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -160,6 +169,9 @@ class _$ChurchCopyWithImpl<$Res, $Val extends Church>
     Object? lastSyncedAt = freezed,
     Object? viewCount = null,
     Object? followerCount = null,
+    Object? stripeAccountId = freezed,
+    Object? totalDonations = null,
+    Object? donationCount = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -297,6 +309,18 @@ class _$ChurchCopyWithImpl<$Res, $Val extends Church>
                 ? _value.followerCount
                 : followerCount // ignore: cast_nullable_to_non_nullable
                       as int,
+            stripeAccountId: freezed == stripeAccountId
+                ? _value.stripeAccountId
+                : stripeAccountId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            totalDonations: null == totalDonations
+                ? _value.totalDonations
+                : totalDonations // ignore: cast_nullable_to_non_nullable
+                      as int,
+            donationCount: null == donationCount
+                ? _value.donationCount
+                : donationCount // ignore: cast_nullable_to_non_nullable
+                      as int,
             createdAt: freezed == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -353,6 +377,9 @@ abstract class _$$ChurchImplCopyWith<$Res> implements $ChurchCopyWith<$Res> {
     DateTime? lastSyncedAt,
     int viewCount,
     int followerCount,
+    @JsonKey(name: 'stripeAccountId') String? stripeAccountId,
+    @JsonKey(name: 'totalDonations') int totalDonations,
+    @JsonKey(name: 'donationCount') int donationCount,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -405,6 +432,9 @@ class __$$ChurchImplCopyWithImpl<$Res>
     Object? lastSyncedAt = freezed,
     Object? viewCount = null,
     Object? followerCount = null,
+    Object? stripeAccountId = freezed,
+    Object? totalDonations = null,
+    Object? donationCount = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -542,6 +572,18 @@ class __$$ChurchImplCopyWithImpl<$Res>
             ? _value.followerCount
             : followerCount // ignore: cast_nullable_to_non_nullable
                   as int,
+        stripeAccountId: freezed == stripeAccountId
+            ? _value.stripeAccountId
+            : stripeAccountId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        totalDonations: null == totalDonations
+            ? _value.totalDonations
+            : totalDonations // ignore: cast_nullable_to_non_nullable
+                  as int,
+        donationCount: null == donationCount
+            ? _value.donationCount
+            : donationCount // ignore: cast_nullable_to_non_nullable
+                  as int,
         createdAt: freezed == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -592,6 +634,9 @@ class _$ChurchImpl implements _Church {
     this.lastSyncedAt,
     this.viewCount = 0,
     this.followerCount = 0,
+    @JsonKey(name: 'stripeAccountId') this.stripeAccountId,
+    @JsonKey(name: 'totalDonations') this.totalDonations = 0,
+    @JsonKey(name: 'donationCount') this.donationCount = 0,
     this.createdAt,
     this.updatedAt,
   }) : _massSchedule = massSchedule,
@@ -698,13 +743,22 @@ class _$ChurchImpl implements _Church {
   @JsonKey()
   final int followerCount;
   @override
+  @JsonKey(name: 'stripeAccountId')
+  final String? stripeAccountId;
+  @override
+  @JsonKey(name: 'totalDonations')
+  final int totalDonations;
+  @override
+  @JsonKey(name: 'donationCount')
+  final int donationCount;
+  @override
   final DateTime? createdAt;
   @override
   final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'Church(id: $id, name: $name, slug: $slug, address: $address, city: $city, state: $state, country: $country, countryCode: $countryCode, postalCode: $postalCode, primaryImageUrl: $primaryImageUrl, website: $website, phone: $phone, email: $email, type: $type, denomination: $denomination, dioceseId: $dioceseId, isVerified: $isVerified, verifiedAt: $verifiedAt, claimedBy: $claimedBy, description: $description, shortDescription: $shortDescription, history: $history, virtualTourUrl: $virtualTourUrl, calendarUrl: $calendarUrl, externalId: $externalId, latitude: $latitude, longitude: $longitude, massSchedule: $massSchedule, confessionSchedule: $confessionSchedule, adorationSchedule: $adorationSchedule, lastSyncedAt: $lastSyncedAt, viewCount: $viewCount, followerCount: $followerCount, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Church(id: $id, name: $name, slug: $slug, address: $address, city: $city, state: $state, country: $country, countryCode: $countryCode, postalCode: $postalCode, primaryImageUrl: $primaryImageUrl, website: $website, phone: $phone, email: $email, type: $type, denomination: $denomination, dioceseId: $dioceseId, isVerified: $isVerified, verifiedAt: $verifiedAt, claimedBy: $claimedBy, description: $description, shortDescription: $shortDescription, history: $history, virtualTourUrl: $virtualTourUrl, calendarUrl: $calendarUrl, externalId: $externalId, latitude: $latitude, longitude: $longitude, massSchedule: $massSchedule, confessionSchedule: $confessionSchedule, adorationSchedule: $adorationSchedule, lastSyncedAt: $lastSyncedAt, viewCount: $viewCount, followerCount: $followerCount, stripeAccountId: $stripeAccountId, totalDonations: $totalDonations, donationCount: $donationCount, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -772,6 +826,12 @@ class _$ChurchImpl implements _Church {
                 other.viewCount == viewCount) &&
             (identical(other.followerCount, followerCount) ||
                 other.followerCount == followerCount) &&
+            (identical(other.stripeAccountId, stripeAccountId) ||
+                other.stripeAccountId == stripeAccountId) &&
+            (identical(other.totalDonations, totalDonations) ||
+                other.totalDonations == totalDonations) &&
+            (identical(other.donationCount, donationCount) ||
+                other.donationCount == donationCount) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -815,6 +875,9 @@ class _$ChurchImpl implements _Church {
     lastSyncedAt,
     viewCount,
     followerCount,
+    stripeAccountId,
+    totalDonations,
+    donationCount,
     createdAt,
     updatedAt,
   ]);
@@ -868,6 +931,9 @@ abstract class _Church implements Church {
     final DateTime? lastSyncedAt,
     final int viewCount,
     final int followerCount,
+    @JsonKey(name: 'stripeAccountId') final String? stripeAccountId,
+    @JsonKey(name: 'totalDonations') final int totalDonations,
+    @JsonKey(name: 'donationCount') final int donationCount,
     final DateTime? createdAt,
     final DateTime? updatedAt,
   }) = _$ChurchImpl;
@@ -940,6 +1006,15 @@ abstract class _Church implements Church {
   int get viewCount;
   @override
   int get followerCount;
+  @override
+  @JsonKey(name: 'stripeAccountId')
+  String? get stripeAccountId;
+  @override
+  @JsonKey(name: 'totalDonations')
+  int get totalDonations;
+  @override
+  @JsonKey(name: 'donationCount')
+  int get donationCount;
   @override
   DateTime? get createdAt;
   @override

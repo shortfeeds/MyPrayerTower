@@ -7,12 +7,12 @@ part of 'prayer_model.dart';
 // **************************************************************************
 
 _$PrayerImpl _$$PrayerImplFromJson(Map<String, dynamic> json) => _$PrayerImpl(
-  id: (json['id'] as num).toInt(),
+  id: _parseId(json['id']),
   title: json['title'] as String,
   slug: json['slug'] as String?,
   content: json['content'] as String,
   category: json['category'] as String,
-  categoryLabel: json['category_label'] as String,
+  categoryLabel: json['category_label'] as String?,
   tags:
       (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],

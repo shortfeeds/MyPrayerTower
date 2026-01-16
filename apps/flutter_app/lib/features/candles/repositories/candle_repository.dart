@@ -20,7 +20,7 @@ class CandleRepository {
     try {
       final response = await _client
           .from(
-            'VirtualCandle',
+            'PrayerCandle',
           ) // Try PascalCase as per Prisma, fallback to lowercase if 404
           .select()
           .eq('isActive', true)
@@ -78,7 +78,7 @@ class CandleRepository {
     );
 
     final response = await _client
-        .from('VirtualCandle')
+        .from('PrayerCandle')
         .insert({
           'intention': intention,
           'name': name,

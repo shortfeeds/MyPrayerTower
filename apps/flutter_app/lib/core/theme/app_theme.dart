@@ -40,6 +40,7 @@ class AppTheme {
   static const Color sacredNavy700 = Color(0xFF152A47);
   static const Color sacredNavy600 = Color(0xFF1A3354);
   static const Color sacredNavy500 = Color(0xFF1E3A5F);
+  static const Color sacredNavy50 = Color(0xFFF8FAFC);
   static const Color gold100 = gold300;
   static const Color cream50 = Color(0xFFFDFBF7);
   static const Color primaryBlue = royalPurple500; // Shift to purple as primary

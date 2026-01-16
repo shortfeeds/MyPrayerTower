@@ -49,8 +49,7 @@ class PrayersRepository {
       // Fetch all prayers to count by category
       final data = await _supabase
           .from('Prayer')
-          .select('category, category_label')
-          .eq('is_active', true);
+          .select('category, category_label');
 
       // Group by category
       final categoryMap = <String, PrayerCategory>{};
@@ -96,7 +95,6 @@ class PrayersRepository {
           .from('Prayer')
           .select()
           .ilike('category', categoryId)
-          .eq('is_active', true)
           .order('title')
           .range(from, to);
 
@@ -128,7 +126,6 @@ class PrayersRepository {
           .from('Prayer')
           .select()
           .or('title.ilike.%$query%,content.ilike.%$query%')
-          .eq('is_active', true)
           .limit(50);
 
       return (data as List).map((json) => Prayer.fromJson(json)).toList();

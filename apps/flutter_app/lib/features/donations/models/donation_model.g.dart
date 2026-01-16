@@ -77,3 +77,37 @@ Map<String, dynamic> _$$DonationRequestImplToJson(
   'coversFee': instance.coversFee,
   'currency': instance.currency,
 };
+
+_$DonationImpl _$$DonationImplFromJson(Map<String, dynamic> json) =>
+    _$DonationImpl(
+      id: json['id'] as String,
+      churchId: json['churchId'] as String,
+      userId: json['userId'] as String?,
+      amount: (json['amount'] as num).toInt(),
+      currency: json['currency'] as String? ?? 'usd',
+      message: json['message'] as String?,
+      isAnonymous: json['isAnonymous'] as bool? ?? false,
+      stripeSessionId: json['stripeSessionId'] as String?,
+      status: json['status'] as String? ?? 'PENDING',
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+    );
+
+Map<String, dynamic> _$$DonationImplToJson(_$DonationImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'churchId': instance.churchId,
+      'userId': instance.userId,
+      'amount': instance.amount,
+      'currency': instance.currency,
+      'message': instance.message,
+      'isAnonymous': instance.isAnonymous,
+      'stripeSessionId': instance.stripeSessionId,
+      'status': instance.status,
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
+    };

@@ -225,7 +225,7 @@ class PremiumCandleWidget extends StatelessWidget {
     return Column(
       children: [
         // Flame
-        _buildRealisticFlame(),
+        RepaintBoundary(child: _buildRealisticFlame()),
         // Wick
         _buildWick(),
         // Candle Body

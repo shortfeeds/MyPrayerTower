@@ -187,6 +187,9 @@ class _PayPalScreenState extends State<PayPalScreen> {
           "cancel_url": "https://myprayertower.com/payment-cancelled",
           "user_action": "PAY_NOW",
           "brand_name": "MyPrayerTower",
+          "shipping_preference": "NO_SHIPPING",
+          "landing_page": "BILLING",
+          "user_experience_flow": "CHECKOUT",
         },
       });
 

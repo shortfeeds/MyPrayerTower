@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -47,130 +46,134 @@ class SaintOfDayCard extends ConsumerWidget {
     return saintAsync.when(
       data: (saint) => FadeInSlideUp(
         delay: const Duration(milliseconds: 100),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 260),
-          child: Container(
-            decoration: AppTheme.sacredCardDecoration,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  // Navigation disabled as feature is removed
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Saint details coming soon')),
-                  );
-                },
-                borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF1E1B4B), // Deep indigo
+                Color(0xFF312E81), // Rich purple
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.gold500.withValues(alpha: 0.2)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Saint details coming soon')),
+                );
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (saint.imageUrl != null)
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(16),
-                        ),
-                        child: Stack(
-                          children: [
-                            CachedNetworkImage(
-                              imageUrl: saint.imageUrl!,
-                              height: 130,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              alignment: Alignment.topCenter,
-                              placeholder: (context, url) => PremiumShimmer(
-                                child: Container(color: AppTheme.sacredNavy800),
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                height: 130,
-                                color: AppTheme.sacredNavy800,
-                                child: const Center(
-                                  child: Icon(
-                                    LucideIcons.image,
-                                    color: AppTheme.textMuted,
-                                  ),
-                                ),
-                              ),
+                    // Header with badge
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.gold500.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: AppTheme.gold500.withValues(alpha: 0.3),
                             ),
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black.withValues(alpha: 0.3),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 10,
-                              right: 10,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.gold500,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Text(
-                                  'Saint of the Day',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.sacredNavy900,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            saint.name,
-                            style: GoogleFonts.merriweather(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.textPrimary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                          if (saint.title != null) ...[
-                            const SizedBox(height: 2),
-                            Text(
-                              saint.title!,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: AppTheme.gold400,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                          const SizedBox(height: 6),
-                          Text(
-                            saint.shortBio ?? '',
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
+                          child: const Icon(
+                            LucideIcons.sparkles,
+                            color: AppTheme.gold500,
+                            size: 24,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.gold500,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Saint of the Day',
                             style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: AppTheme.textSecondary,
-                              height: 1.4,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.sacredNavy900,
                             ),
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Saint name
+                    Text(
+                      saint.name,
+                      style: GoogleFonts.merriweather(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (saint.title != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        saint.title!,
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: AppTheme.gold400,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    // Bio
+                    Text(
+                      saint.shortBio ?? '',
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: Colors.white70,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Read more button
+                    Row(
+                      children: [
+                        Text(
+                          'Learn More',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.gold400,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Icon(
+                          LucideIcons.arrowRight,
+                          size: 14,
+                          color: AppTheme.gold400,
+                        ),
+                      ],
                     ),
                   ],
                 ),

@@ -92,7 +92,8 @@ class PrayerDetailScreen extends ConsumerWidget {
                     ),
                   ),
                   child: Text(
-                    prayer.categoryLabel,
+                    // Use categoryLabel if available, otherwise fallback to category slug
+                    prayer.categoryLabel ?? prayer.category,
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,

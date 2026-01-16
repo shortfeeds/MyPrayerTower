@@ -54,3 +54,24 @@ class DonationRequest with _$DonationRequest {
   factory DonationRequest.fromJson(Map<String, dynamic> json) =>
       _$DonationRequestFromJson(json);
 }
+
+/// Donation record from database (matches Prisma Donation model)
+@freezed
+class Donation with _$Donation {
+  const factory Donation({
+    required String id,
+    required String churchId,
+    String? userId,
+    required int amount,
+    @Default('usd') String currency,
+    String? message,
+    @Default(false) bool isAnonymous,
+    String? stripeSessionId,
+    @Default('PENDING') String status, // PENDING, COMPLETED, FAILED
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) = _Donation;
+
+  factory Donation.fromJson(Map<String, dynamic> json) =>
+      _$DonationFromJson(json);
+}

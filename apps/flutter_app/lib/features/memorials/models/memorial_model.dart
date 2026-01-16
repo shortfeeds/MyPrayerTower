@@ -30,7 +30,24 @@ class Memorial {
   @JsonKey(name: 'video_url')
   final String? videoUrl;
 
+  @JsonKey(name: 'music_url')
+  final String? musicUrl;
+
+  @JsonKey(name: 'is_public', defaultValue: true)
+  final bool isPublic;
+
+  @JsonKey(name: 'payment_id')
+  final String? paymentId;
+
+  @JsonKey(name: 'paid_at')
+  final DateTime? paidAt;
+
+  @JsonKey(name: 'owner_id')
+  final String ownerId;
+
   final String tier; // 'BASIC' or 'PREMIUM'
+
+  // ... (keeping existing fields) ...
 
   @JsonKey(name: 'is_verified')
   final bool isVerified;
@@ -71,7 +88,12 @@ class Memorial {
     this.shortBio,
     this.photoUrl,
     this.videoUrl,
-    required this.tier,
+    this.musicUrl,
+    this.tier = 'BASIC',
+    this.isPublic = true,
+    this.paymentId,
+    this.paidAt,
+    required this.ownerId,
     this.isVerified = false,
     this.totalCandles = 0,
     this.totalMasses = 0,

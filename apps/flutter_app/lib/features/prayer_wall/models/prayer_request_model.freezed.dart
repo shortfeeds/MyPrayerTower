@@ -15,6 +15,200 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
+PrayerUser _$PrayerUserFromJson(Map<String, dynamic> json) {
+  return _PrayerUser.fromJson(json);
+}
+
+/// @nodoc
+mixin _$PrayerUser {
+  String? get firstName => throw _privateConstructorUsedError;
+  String? get lastName => throw _privateConstructorUsedError;
+  String? get avatarUrl => throw _privateConstructorUsedError;
+
+  /// Serializes this PrayerUser to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of PrayerUser
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $PrayerUserCopyWith<PrayerUser> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $PrayerUserCopyWith<$Res> {
+  factory $PrayerUserCopyWith(
+    PrayerUser value,
+    $Res Function(PrayerUser) then,
+  ) = _$PrayerUserCopyWithImpl<$Res, PrayerUser>;
+  @useResult
+  $Res call({String? firstName, String? lastName, String? avatarUrl});
+}
+
+/// @nodoc
+class _$PrayerUserCopyWithImpl<$Res, $Val extends PrayerUser>
+    implements $PrayerUserCopyWith<$Res> {
+  _$PrayerUserCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of PrayerUser
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? firstName = freezed,
+    Object? lastName = freezed,
+    Object? avatarUrl = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            firstName: freezed == firstName
+                ? _value.firstName
+                : firstName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            lastName: freezed == lastName
+                ? _value.lastName
+                : lastName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            avatarUrl: freezed == avatarUrl
+                ? _value.avatarUrl
+                : avatarUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$PrayerUserImplCopyWith<$Res>
+    implements $PrayerUserCopyWith<$Res> {
+  factory _$$PrayerUserImplCopyWith(
+    _$PrayerUserImpl value,
+    $Res Function(_$PrayerUserImpl) then,
+  ) = __$$PrayerUserImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? firstName, String? lastName, String? avatarUrl});
+}
+
+/// @nodoc
+class __$$PrayerUserImplCopyWithImpl<$Res>
+    extends _$PrayerUserCopyWithImpl<$Res, _$PrayerUserImpl>
+    implements _$$PrayerUserImplCopyWith<$Res> {
+  __$$PrayerUserImplCopyWithImpl(
+    _$PrayerUserImpl _value,
+    $Res Function(_$PrayerUserImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of PrayerUser
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? firstName = freezed,
+    Object? lastName = freezed,
+    Object? avatarUrl = freezed,
+  }) {
+    return _then(
+      _$PrayerUserImpl(
+        firstName: freezed == firstName
+            ? _value.firstName
+            : firstName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        lastName: freezed == lastName
+            ? _value.lastName
+            : lastName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        avatarUrl: freezed == avatarUrl
+            ? _value.avatarUrl
+            : avatarUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$PrayerUserImpl implements _PrayerUser {
+  const _$PrayerUserImpl({this.firstName, this.lastName, this.avatarUrl});
+
+  factory _$PrayerUserImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PrayerUserImplFromJson(json);
+
+  @override
+  final String? firstName;
+  @override
+  final String? lastName;
+  @override
+  final String? avatarUrl;
+
+  @override
+  String toString() {
+    return 'PrayerUser(firstName: $firstName, lastName: $lastName, avatarUrl: $avatarUrl)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$PrayerUserImpl &&
+            (identical(other.firstName, firstName) ||
+                other.firstName == firstName) &&
+            (identical(other.lastName, lastName) ||
+                other.lastName == lastName) &&
+            (identical(other.avatarUrl, avatarUrl) ||
+                other.avatarUrl == avatarUrl));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, firstName, lastName, avatarUrl);
+
+  /// Create a copy of PrayerUser
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$PrayerUserImplCopyWith<_$PrayerUserImpl> get copyWith =>
+      __$$PrayerUserImplCopyWithImpl<_$PrayerUserImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$PrayerUserImplToJson(this);
+  }
+}
+
+abstract class _PrayerUser implements PrayerUser {
+  const factory _PrayerUser({
+    final String? firstName,
+    final String? lastName,
+    final String? avatarUrl,
+  }) = _$PrayerUserImpl;
+
+  factory _PrayerUser.fromJson(Map<String, dynamic> json) =
+      _$PrayerUserImpl.fromJson;
+
+  @override
+  String? get firstName;
+  @override
+  String? get lastName;
+  @override
+  String? get avatarUrl;
+
+  /// Create a copy of PrayerUser
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$PrayerUserImplCopyWith<_$PrayerUserImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 PrayerRequest _$PrayerRequestFromJson(Map<String, dynamic> json) {
   return _PrayerRequest.fromJson(json);
 }
@@ -25,9 +219,17 @@ mixin _$PrayerRequest {
   String get content => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
   @JsonKey(name: 'prayerCount')
-  int get prayCount => throw _privateConstructorUsedError;
+  int get prayerCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'isAnonymous')
   bool get isAnonymous => throw _privateConstructorUsedError;
   String? get category => throw _privateConstructorUsedError;
+  String? get country => throw _privateConstructorUsedError;
+  String get visibility => throw _privateConstructorUsedError;
+  @JsonKey(name: 'isAnswered')
+  bool get isAnswered => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
+  @JsonKey(name: 'User')
+  PrayerUser? get user => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this PrayerRequest to a JSON map.
@@ -51,11 +253,18 @@ abstract class $PrayerRequestCopyWith<$Res> {
     String id,
     String content,
     String? userId,
-    @JsonKey(name: 'prayerCount') int prayCount,
-    bool isAnonymous,
+    @JsonKey(name: 'prayerCount') int prayerCount,
+    @JsonKey(name: 'isAnonymous') bool isAnonymous,
     String? category,
+    String? country,
+    String visibility,
+    @JsonKey(name: 'isAnswered') bool isAnswered,
+    String status,
+    @JsonKey(name: 'User') PrayerUser? user,
     DateTime? createdAt,
   });
+
+  $PrayerUserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -76,9 +285,14 @@ class _$PrayerRequestCopyWithImpl<$Res, $Val extends PrayerRequest>
     Object? id = null,
     Object? content = null,
     Object? userId = freezed,
-    Object? prayCount = null,
+    Object? prayerCount = null,
     Object? isAnonymous = null,
     Object? category = freezed,
+    Object? country = freezed,
+    Object? visibility = null,
+    Object? isAnswered = null,
+    Object? status = null,
+    Object? user = freezed,
     Object? createdAt = freezed,
   }) {
     return _then(
@@ -95,9 +309,9 @@ class _$PrayerRequestCopyWithImpl<$Res, $Val extends PrayerRequest>
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
                       as String?,
-            prayCount: null == prayCount
-                ? _value.prayCount
-                : prayCount // ignore: cast_nullable_to_non_nullable
+            prayerCount: null == prayerCount
+                ? _value.prayerCount
+                : prayerCount // ignore: cast_nullable_to_non_nullable
                       as int,
             isAnonymous: null == isAnonymous
                 ? _value.isAnonymous
@@ -107,6 +321,26 @@ class _$PrayerRequestCopyWithImpl<$Res, $Val extends PrayerRequest>
                 ? _value.category
                 : category // ignore: cast_nullable_to_non_nullable
                       as String?,
+            country: freezed == country
+                ? _value.country
+                : country // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            visibility: null == visibility
+                ? _value.visibility
+                : visibility // ignore: cast_nullable_to_non_nullable
+                      as String,
+            isAnswered: null == isAnswered
+                ? _value.isAnswered
+                : isAnswered // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as String,
+            user: freezed == user
+                ? _value.user
+                : user // ignore: cast_nullable_to_non_nullable
+                      as PrayerUser?,
             createdAt: freezed == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -114,6 +348,20 @@ class _$PrayerRequestCopyWithImpl<$Res, $Val extends PrayerRequest>
           )
           as $Val,
     );
+  }
+
+  /// Create a copy of PrayerRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $PrayerUserCopyWith<$Res>? get user {
+    if (_value.user == null) {
+      return null;
+    }
+
+    return $PrayerUserCopyWith<$Res>(_value.user!, (value) {
+      return _then(_value.copyWith(user: value) as $Val);
+    });
   }
 }
 
@@ -130,11 +378,19 @@ abstract class _$$PrayerRequestImplCopyWith<$Res>
     String id,
     String content,
     String? userId,
-    @JsonKey(name: 'prayerCount') int prayCount,
-    bool isAnonymous,
+    @JsonKey(name: 'prayerCount') int prayerCount,
+    @JsonKey(name: 'isAnonymous') bool isAnonymous,
     String? category,
+    String? country,
+    String visibility,
+    @JsonKey(name: 'isAnswered') bool isAnswered,
+    String status,
+    @JsonKey(name: 'User') PrayerUser? user,
     DateTime? createdAt,
   });
+
+  @override
+  $PrayerUserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -154,9 +410,14 @@ class __$$PrayerRequestImplCopyWithImpl<$Res>
     Object? id = null,
     Object? content = null,
     Object? userId = freezed,
-    Object? prayCount = null,
+    Object? prayerCount = null,
     Object? isAnonymous = null,
     Object? category = freezed,
+    Object? country = freezed,
+    Object? visibility = null,
+    Object? isAnswered = null,
+    Object? status = null,
+    Object? user = freezed,
     Object? createdAt = freezed,
   }) {
     return _then(
@@ -173,9 +434,9 @@ class __$$PrayerRequestImplCopyWithImpl<$Res>
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
                   as String?,
-        prayCount: null == prayCount
-            ? _value.prayCount
-            : prayCount // ignore: cast_nullable_to_non_nullable
+        prayerCount: null == prayerCount
+            ? _value.prayerCount
+            : prayerCount // ignore: cast_nullable_to_non_nullable
                   as int,
         isAnonymous: null == isAnonymous
             ? _value.isAnonymous
@@ -185,6 +446,26 @@ class __$$PrayerRequestImplCopyWithImpl<$Res>
             ? _value.category
             : category // ignore: cast_nullable_to_non_nullable
                   as String?,
+        country: freezed == country
+            ? _value.country
+            : country // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        visibility: null == visibility
+            ? _value.visibility
+            : visibility // ignore: cast_nullable_to_non_nullable
+                  as String,
+        isAnswered: null == isAnswered
+            ? _value.isAnswered
+            : isAnswered // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as String,
+        user: freezed == user
+            ? _value.user
+            : user // ignore: cast_nullable_to_non_nullable
+                  as PrayerUser?,
         createdAt: freezed == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -201,9 +482,14 @@ class _$PrayerRequestImpl implements _PrayerRequest {
     required this.id,
     required this.content,
     this.userId,
-    @JsonKey(name: 'prayerCount') this.prayCount = 0,
-    required this.isAnonymous,
+    @JsonKey(name: 'prayerCount') this.prayerCount = 0,
+    @JsonKey(name: 'isAnonymous') this.isAnonymous = false,
     this.category,
+    this.country,
+    this.visibility = 'PUBLIC',
+    @JsonKey(name: 'isAnswered') this.isAnswered = false,
+    this.status = 'PENDING',
+    @JsonKey(name: 'User') this.user,
     this.createdAt,
   });
 
@@ -218,17 +504,32 @@ class _$PrayerRequestImpl implements _PrayerRequest {
   final String? userId;
   @override
   @JsonKey(name: 'prayerCount')
-  final int prayCount;
+  final int prayerCount;
   @override
+  @JsonKey(name: 'isAnonymous')
   final bool isAnonymous;
   @override
   final String? category;
+  @override
+  final String? country;
+  @override
+  @JsonKey()
+  final String visibility;
+  @override
+  @JsonKey(name: 'isAnswered')
+  final bool isAnswered;
+  @override
+  @JsonKey()
+  final String status;
+  @override
+  @JsonKey(name: 'User')
+  final PrayerUser? user;
   @override
   final DateTime? createdAt;
 
   @override
   String toString() {
-    return 'PrayerRequest(id: $id, content: $content, userId: $userId, prayCount: $prayCount, isAnonymous: $isAnonymous, category: $category, createdAt: $createdAt)';
+    return 'PrayerRequest(id: $id, content: $content, userId: $userId, prayerCount: $prayerCount, isAnonymous: $isAnonymous, category: $category, country: $country, visibility: $visibility, isAnswered: $isAnswered, status: $status, user: $user, createdAt: $createdAt)';
   }
 
   @override
@@ -239,12 +540,19 @@ class _$PrayerRequestImpl implements _PrayerRequest {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.content, content) || other.content == content) &&
             (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.prayCount, prayCount) ||
-                other.prayCount == prayCount) &&
+            (identical(other.prayerCount, prayerCount) ||
+                other.prayerCount == prayerCount) &&
             (identical(other.isAnonymous, isAnonymous) ||
                 other.isAnonymous == isAnonymous) &&
             (identical(other.category, category) ||
                 other.category == category) &&
+            (identical(other.country, country) || other.country == country) &&
+            (identical(other.visibility, visibility) ||
+                other.visibility == visibility) &&
+            (identical(other.isAnswered, isAnswered) ||
+                other.isAnswered == isAnswered) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.user, user) || other.user == user) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -256,9 +564,14 @@ class _$PrayerRequestImpl implements _PrayerRequest {
     id,
     content,
     userId,
-    prayCount,
+    prayerCount,
     isAnonymous,
     category,
+    country,
+    visibility,
+    isAnswered,
+    status,
+    user,
     createdAt,
   );
 
@@ -281,9 +594,14 @@ abstract class _PrayerRequest implements PrayerRequest {
     required final String id,
     required final String content,
     final String? userId,
-    @JsonKey(name: 'prayerCount') final int prayCount,
-    required final bool isAnonymous,
+    @JsonKey(name: 'prayerCount') final int prayerCount,
+    @JsonKey(name: 'isAnonymous') final bool isAnonymous,
     final String? category,
+    final String? country,
+    final String visibility,
+    @JsonKey(name: 'isAnswered') final bool isAnswered,
+    final String status,
+    @JsonKey(name: 'User') final PrayerUser? user,
     final DateTime? createdAt,
   }) = _$PrayerRequestImpl;
 
@@ -298,11 +616,24 @@ abstract class _PrayerRequest implements PrayerRequest {
   String? get userId;
   @override
   @JsonKey(name: 'prayerCount')
-  int get prayCount;
+  int get prayerCount;
   @override
+  @JsonKey(name: 'isAnonymous')
   bool get isAnonymous;
   @override
   String? get category;
+  @override
+  String? get country;
+  @override
+  String get visibility;
+  @override
+  @JsonKey(name: 'isAnswered')
+  bool get isAnswered;
+  @override
+  String get status;
+  @override
+  @JsonKey(name: 'User')
+  PrayerUser? get user;
   @override
   DateTime? get createdAt;
 

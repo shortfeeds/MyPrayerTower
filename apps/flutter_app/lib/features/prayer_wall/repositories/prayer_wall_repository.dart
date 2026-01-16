@@ -12,84 +12,26 @@ class PrayerWallRepository {
 
   PrayerWallRepository(this._supabase);
 
-  // In-memory storage for mock data persistence
-  static final List<PrayerRequest> _mockStorage = [
-    PrayerRequest(
-      id: '1',
-      content:
-          'Please pray for my mother who is undergoing surgery tomorrow. May God guide the surgeons hands.',
-      userId: 'user1',
-      isAnonymous: false,
-      category: 'Health',
-      prayCount: 24,
-      createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-    ),
-    PrayerRequest(
-      id: '2',
-      content:
-          'Praying for guidance in my career path. I am at a crossroads and need clarity.',
-      userId: 'user2',
-      isAnonymous: true,
-      category: 'Guidance',
-      prayCount: 15,
-      createdAt: DateTime.now().subtract(const Duration(hours: 5)),
-    ),
-    PrayerRequest(
-      id: '3',
-      content: 'For peace in my family. We are going through a difficult time.',
-      userId: 'user3',
-      isAnonymous: true,
-      category: 'Family',
-      prayCount: 42,
-      createdAt: DateTime.now().subtract(const Duration(days: 1)),
-    ),
-    PrayerRequest(
-      id: '4',
-      content: 'Thanksgiving for a safe delivery of our baby boy! God is good!',
-      userId: 'user4',
-      isAnonymous: false,
-      category: 'Thanksgiving',
-      prayCount: 108,
-      createdAt: DateTime.now().subtract(const Duration(days: 2)),
-    ),
-    PrayerRequest(
-      id: '5',
-      content:
-          'For my friend battling addiction. Please pray for strength and recovery.',
-      userId: 'user5',
-      isAnonymous: true,
-      category: 'Health',
-      prayCount: 56,
-      createdAt: DateTime.now().subtract(const Duration(days: 3)),
-    ),
-    PrayerRequest(
-      id: '6',
-      content:
-          'Prayers for the souls in purgatory, especially those who have no one to pray for them.',
-      userId: 'user6',
-      isAnonymous: false,
-      category: 'Souls',
-      prayCount: 89,
-      createdAt: DateTime.now().subtract(const Duration(days: 4)),
-    ),
-  ];
-
   Future<List<PrayerRequest>> getRequests({
     String? category,
     int page = 1,
+    int limit = 10,
   }) async {
     try {
-      var query = _supabase.from('PrayerRequest').select();
+      var query = _supabase
+          .from('PrayerRequest')
+          .select('*, User(firstName, lastName)')
+          .eq('status', 'APPROVED');
 
-      if (category != null && category != 'ALL') {
-        query = query.eq('category', category);
+      if (category != null && category != 'All') {
+        query = query.eq('category', category.toUpperCase());
       }
 
       // Order by createdAt desc
       final orderedQuery = query.order('createdAt', ascending: false);
 
-      final from = (page - 1) * 20;
-      final to = from + 19;
+      final from = (page - 1) * limit;
+      final to = from + limit - 1;
 
       final data = await orderedQuery.range(from, to);
 
@@ -97,73 +39,70 @@ class PrayerWallRepository {
           .map((json) => PrayerRequest.fromJson(json))
           .toList();
     } catch (e) {
-      // Fallback to mock data
-      return _getMockRequests(category);
+      // Return empty list on error instead of mock data
+      return [];
     }
   }
 
-  Future<void> submitRequest({
-    required String content,
+  Future<bool?> submitRequest({
+    required String intention,
+    String? userName,
     String? category,
+    String? country,
+    String? userId,
+    String visibility = 'PUBLIC',
     bool isAnonymous = false,
   }) async {
     try {
       final user = _supabase.auth.currentUser;
-      if (user == null) {
-        // Allow mock submission without auth for now or throw
-        // throw Exception('User must be logged in to submit a prayer request');
-      }
 
       await _supabase.from('PrayerRequest').insert({
-        'id': DateTime.now().millisecondsSinceEpoch.toString(),
-        'userId': user?.id ?? 'anon',
-        'content': content,
-        'category': category ?? 'OTHER',
+        'content': intention,
+        'userId': user?.id ?? userId, // Fallback if needed
+        'category': category?.toUpperCase() ?? 'OTHER',
         'isAnonymous': isAnonymous,
+        'visibility': visibility,
+        'country': country,
+        'status': 'PENDING',
         'prayerCount': 0,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
       });
+      return true;
     } catch (e) {
-      // Mock success for submission
-      // Add to local mock storage
-      final newRequest = PrayerRequest(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        content: content,
-        userId: 'current_user',
-        isAnonymous: isAnonymous,
-        category: category ?? 'General',
-        prayCount: 0,
-        createdAt: DateTime.now(),
-      );
-      _mockStorage.insert(0, newRequest); // Add to top
-      await Future.delayed(const Duration(seconds: 1));
+      return null;
     }
   }
 
   Future<void> prayForRequest(String id) async {
     try {
-      await _supabase.rpc('increment_prayer_count', params: {'request_id': id});
+      // Use RPC if available, or just increment directly (less safe but works without RPC)
+      // await _supabase.rpc('increment_prayer_count', params: {'request_id': id});
+
+      // Using increment trick with stored procedure is better, but falling back to simple update if needed:
+      await _supabase.rpc(
+        'increment_prayer_request_count',
+        params: {'request_id': id},
+      );
     } catch (e) {
-      // Fallback: increment locally in mock storage
-      final index = _mockStorage.indexWhere((r) => r.id == id);
-      if (index != -1) {
-        final request = _mockStorage[index];
-        _mockStorage[index] = PrayerRequest(
-          id: request.id,
-          content: request.content,
-          userId: request.userId,
-          isAnonymous: request.isAnonymous,
-          category: request.category,
-          prayCount: request.prayCount + 1,
-          createdAt: request.createdAt,
-        );
-      }
+      // debugPrint('Error praying: $e');
     }
   }
 
-  List<PrayerRequest> _getMockRequests(String? category) {
-    if (category != null && category != 'ALL') {
-      return _mockStorage.where((r) => r.category == category).toList();
+  // Get user's own requests
+  Future<List<PrayerRequest>> getUserRequests(String userId) async {
+    try {
+      final data = await _supabase
+          .from('PrayerRequest')
+          .select('*, User(firstName, lastName)')
+          .eq('userId', userId)
+          .order('createdAt', ascending: false);
+
+      return (data as List)
+          .map((json) => PrayerRequest.fromJson(json))
+          .toList();
+    } catch (e) {
+      return [];
     }
-    return _mockStorage;
   }
 }

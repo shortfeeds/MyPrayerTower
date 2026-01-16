@@ -33,8 +33,15 @@ const List<OfferingType> _offeringTypes = [
     id: 'REGULAR',
     name: 'Single Mass',
     icon: '⛪',
-    priceInCents: 1500,
-    description: 'A single Holy Mass offered for your intention',
+    priceInCents: 1000, // Fixed from 1500 ($15 → $10)
+    description: 'One Mass offered for your intention',
+  ),
+  OfferingType(
+    id: 'NOVENA',
+    name: 'Novena of Masses',
+    icon: '📿',
+    priceInCents: 7500,
+    description: '9 consecutive Masses offered for your intention',
   ),
   OfferingType(
     id: 'PERPETUAL',
@@ -46,17 +53,10 @@ const List<OfferingType> _offeringTypes = [
     badge: 'BEST VALUE',
   ),
   OfferingType(
-    id: 'NOVENA',
-    name: 'Novena of Masses',
-    icon: '📿',
-    priceInCents: 7500,
-    description: '9 consecutive Masses offered for your intention',
-  ),
-  OfferingType(
     id: 'GREGORIAN',
     name: 'Gregorian Masses',
     icon: '🙏',
-    priceInCents: 25000,
+    priceInCents: 20000, // Fixed from 25000 ($250 → $200)
     description:
         '30 consecutive Masses for the deceased (traditional devotion)',
   ),
@@ -84,25 +84,25 @@ const List<Map<String, String>> _deceasedIntentions = [
   {'value': 'PURGATORY', 'label': 'Souls in Purgatory'},
 ];
 
-// Add-ons
+// Add-ons (Updated to match README)
 const List<Map<String, dynamic>> _addons = [
   {
     'id': 'candle',
     'name': '🕯️ Virtual Candle',
     'price': 500,
-    'description': '7-day candle on Prayer Wall',
+    'description': '7-day candle added to your request',
   },
   {
-    'id': 'printedCard',
-    'name': '📮 Printed Mass Card',
+    'id': 'floralBouquet', // Changed from 'printedCard'
+    'name': '💐 Virtual Floral Bouquet',
     'price': 1000,
-    'description': 'Beautiful card mailed to you',
+    'description': 'Fresh flowers placed at the altar',
   },
   {
-    'id': 'framedCertificate',
-    'name': '🖼️ Framed Certificate',
-    'price': 3500,
-    'description': 'Premium framed memorial',
+    'id': 'virtualRosary', // Changed from 'framedCertificate'
+    'name': '📿 Virtual Rosary',
+    'price': 1000, // Changed from 3500
+    'description': 'Digital rosary prayer commitment',
   },
 ];
 
@@ -141,8 +141,8 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
   // Add-ons
   final Map<String, bool> _addonsSelected = {
     'candle': false,
-    'printedCard': false,
-    'framedCertificate': false,
+    'floralBouquet': false, // Changed from printedCard
+    'virtualRosary': false, // Changed from framedCertificate
   };
 
   final _selectedIntentions = <String>{};
@@ -158,8 +158,8 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
   int _calculateTotal() {
     int total = _selectedOffering.priceInCents;
     if (_addonsSelected['candle'] == true) total += 500;
-    if (_addonsSelected['printedCard'] == true) total += 1000;
-    if (_addonsSelected['framedCertificate'] == true) total += 3500;
+    if (_addonsSelected['floralBouquet'] == true) total += 1000;
+    if (_addonsSelected['virtualRosary'] == true) total += 1000;
     return total;
   }
 

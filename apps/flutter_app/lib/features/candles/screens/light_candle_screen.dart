@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../payments/services/payment_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/premium_candle_flame.dart';
 import '../repositories/candle_repository.dart';
 import '../../auth/providers/auth_provider.dart';
 
@@ -22,41 +23,74 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
   bool _isAnonymous = false;
   bool _isProcessing = false;
 
-  // Pricing Constants (Matching Web App)
+  // Pricing Constants (Matching Web App & README)
   final List<Map<String, dynamic>> _durations = [
     {
       'value': 'ONE_DAY',
-      'label': '1 Day',
+      'label': 'Humble Prayer',
+      'daysLabel': '1 Day',
       'price': 0.0,
       'priceDisplay': 'Free',
       'tier': 'free',
-      'desc': 'Basic listing',
+      'desc': 'Basic white candle, 24 hours',
     },
     {
       'value': 'THREE_DAYS',
-      'label': '3 Days',
-      'price': 2.99,
-      'priceDisplay': '\$2.99',
-      'tier': 'basic',
-      'desc': 'Standard visibility',
+      'label': 'Devotion Votive',
+      'daysLabel': '3 Days',
+      'price': 2.49, // Fixed from 2.99
+      'priceDisplay': '\$2.49',
+      'tier': 'standard',
+      'desc': '3-day visibility, red glow effect',
     },
     {
       'value': 'SEVEN_DAYS',
-      'label': '7 Days',
-      'price': 5.99,
-      'priceDisplay': '\$5.99',
-      'tier': 'standard',
-      'desc': 'High visibility • More prayers',
+      'label': 'Sacred Altar',
+      'daysLabel': '7 Days',
+      'price': 4.99, // Fixed from 5.99
+      'priceDisplay': '\$4.99',
+      'tier': 'premium',
+      'desc': '1-week visibility, amber altar glow',
+      'badge': 'POPULAR',
+    },
+    {
+      'value': 'FOURTEEN_DAYS', // NEW TIER
+      'label': 'Blessed Marian',
+      'daysLabel': '14 Days',
+      'price': 9.99,
+      'priceDisplay': '\$9.99',
+      'tier': 'premium',
+      'desc': '2-week visibility, blue Marian aura, Premium Animation',
+      'badge': 'BEST VALUE',
     },
     {
       'value': 'THIRTY_DAYS',
-      'label': '30 Days',
+      'label': 'Divine Cathedral',
+      'daysLabel': '30 Days',
       'price': 14.99,
       'priceDisplay': '\$14.99',
       'tier': 'premium',
-      'desc': '3000+ prayers • Featured spot',
+      'desc': 'Gold divine radiance, Sparkle Effects, Top Placement',
+      'badge': 'MOST POWERFUL',
     },
   ];
+
+  Color _getFlameColor(String duration) {
+    switch (duration) {
+      case 'ONE_DAY':
+        return const Color(0xFFFFD54F); // Warm yellow
+      case 'THREE_DAYS':
+        return const Color(0xFFFF6B6B); // Red votive
+      case 'SEVEN_DAYS':
+        return const Color(0xFFFF9800); // Amber altar
+      case 'FOURTEEN_DAYS':
+        return const Color(0xFF64B5F6); // Blue Marian
+      case 'THIRTY_DAYS':
+        return const Color(0xFFFFD700); // Gold divine
+      default:
+        return const Color(0xFFFFD54F);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +130,94 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Premium Animated Candle Header
+              Container(
+                height: 180,
+                margin: const EdgeInsets.only(bottom: 24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.sacredNavy950,
+                      const Color(0xFF1E1B4B).withValues(alpha: 0.8),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppTheme.gold500.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Glow effect
+                    Positioned(
+                      bottom: 20,
+                      child: Container(
+                        width: 100,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.gold500.withValues(alpha: 0.5),
+                              blurRadius: 40,
+                              spreadRadius: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Candle base
+                    Positioned(
+                      bottom: 30,
+                      child: Container(
+                        width: 30,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFF5F5DC), Color(0xFFE8E8D8)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 10,
+                              offset: const Offset(3, 3),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Animated Flame
+                    Positioned(
+                      bottom: 80,
+                      child: PremiumCandleFlame(
+                        size: 40,
+                        isPremium: selectedOption['tier'] == 'premium',
+                        flameColor: _getFlameColor(selectedOption['value']),
+                        glowColor: _getFlameColor(selectedOption['value']),
+                      ),
+                    ),
+                    // Label
+                    Positioned(
+                      bottom: 8,
+                      child: Text(
+                        selectedOption['label'],
+                        style: GoogleFonts.merriweather(
+                          color: AppTheme.gold400,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               // Duration Selection
               Text(
                 'Choose Duration',
@@ -391,14 +513,16 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
       final candleRepo = ref.read(candleRepositoryProvider);
       debugPrint('Lighting candle: $_intention');
 
-      final candle = await candleRepo.lightCandle(
-        name: _isAnonymous ? 'Anonymous' : _userName,
-        intention: _intention,
-        duration: _selectedDuration,
-        userId: userId,
-        amountInCents: (selectedOption['price'] * 100).toInt(),
-        isAnonymous: _isAnonymous,
-      );
+      final candle = await candleRepo
+          .lightCandle(
+            name: _isAnonymous ? 'Anonymous' : _userName,
+            intention: _intention,
+            duration: _selectedDuration,
+            userId: userId,
+            amountInCents: (selectedOption['price'] * 100).toInt(),
+            isAnonymous: _isAnonymous,
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (!mounted) return;
       setState(() => _isProcessing = false);

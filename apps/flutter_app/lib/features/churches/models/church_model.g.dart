@@ -44,6 +44,9 @@ _$ChurchImpl _$$ChurchImplFromJson(Map<String, dynamic> json) => _$ChurchImpl(
       : DateTime.parse(json['lastSyncedAt'] as String),
   viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
   followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
+  stripeAccountId: json['stripeAccountId'] as String?,
+  totalDonations: (json['totalDonations'] as num?)?.toInt() ?? 0,
+  donationCount: (json['donationCount'] as num?)?.toInt() ?? 0,
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
@@ -87,6 +90,9 @@ Map<String, dynamic> _$$ChurchImplToJson(_$ChurchImpl instance) =>
       'lastSyncedAt': instance.lastSyncedAt?.toIso8601String(),
       'viewCount': instance.viewCount,
       'followerCount': instance.followerCount,
+      'stripeAccountId': instance.stripeAccountId,
+      'totalDonations': instance.totalDonations,
+      'donationCount': instance.donationCount,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

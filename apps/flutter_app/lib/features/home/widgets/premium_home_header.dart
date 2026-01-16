@@ -34,28 +34,27 @@ class PremiumHomeHeader extends ConsumerWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // Rich Gradient Background
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xFF0F0518), // Deepest Void Purple
-                    Color(0xFF1E1B4B), // Indigo
-                    Color(0xFF2E1065), // Royal Purple
-                  ],
-                  stops: [0.0, 0.6, 1.0],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomRight,
-                ),
-              ),
+            // Hero Image Background
+            Image.network(
+              'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=800',
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stack) =>
+                  Container(color: const Color(0xFF0F0518)),
             ),
 
-            // Texture overlay (Noise) - Simulated via dot pattern
-            Opacity(
-              opacity: 0.03,
-              child: CustomPaint(
-                painter: _DotPatternPainter(),
-                size: Size.infinite,
+            // Dark Gradient Overlay
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withValues(alpha: 0.7),
+                    Colors.black.withValues(alpha: 0.4),
+                    const Color(0xFF1E1B4B).withValues(alpha: 0.9),
+                  ],
+                  stops: const [0.0, 0.5, 1.0],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
             ),
 
@@ -79,15 +78,18 @@ class PremiumHomeHeader extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Date badge
+                    // Date badge with glassmorphism
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 6,
                       ),
-                      decoration: AppTheme.glassDecoration.copyWith(
-                        color: Colors.black.withValues(alpha: 0.2),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -119,8 +121,8 @@ class PremiumHomeHeader extends ConsumerWidget {
                         letterSpacing: -0.5,
                         shadows: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            blurRadius: 10,
+                            color: Colors.black.withValues(alpha: 0.5),
+                            blurRadius: 20,
                             offset: const Offset(0, 4),
                           ),
                         ],
@@ -131,7 +133,7 @@ class PremiumHomeHeader extends ConsumerWidget {
                       'May His grace be with you today.',
                       style: GoogleFonts.outfit(
                         fontSize: 16,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withValues(alpha: 0.9),
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -251,15 +253,27 @@ class PremiumHomeHeader extends ConsumerWidget {
             ),
           ),
         ),
-        // Profile Avatar
+        // Profile/Login Avatar
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: GestureDetector(
             onTap: () => context.push('/login'),
-            child: const CircleAvatar(
-              radius: 18,
-              backgroundColor: AppTheme.sacredNavy800,
-              child: Icon(LucideIcons.user, size: 18, color: Colors.white),
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppTheme.sacredNavy800,
+                border: Border.all(
+                  color: AppTheme.gold500.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: const Icon(
+                LucideIcons.user,
+                size: 18,
+                color: Colors.white70,
+              ),
             ),
           ),
         ),
@@ -308,26 +322,4 @@ class PremiumHomeHeader extends ConsumerWidget {
     ];
     return '${weekDays[now.weekday - 1]}, ${now.day} ${months[now.month - 1]}';
   }
-}
-
-class _DotPatternPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 1.0;
-
-    const spacing = 20.0;
-    for (double x = 0; x < size.width; x += spacing) {
-      for (double y = 0; y < size.height; y += spacing) {
-        if ((x + y).toInt() % 3 == 0) {
-          // Random-ish pattern
-          canvas.drawCircle(Offset(x, y), 0.5, paint);
-        }
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

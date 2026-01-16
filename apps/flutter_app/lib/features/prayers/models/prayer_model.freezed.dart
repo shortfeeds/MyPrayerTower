@@ -21,13 +21,14 @@ Prayer _$PrayerFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Prayer {
+  @JsonKey(fromJson: _parseId)
   int get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String? get slug => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   String get category => throw _privateConstructorUsedError;
   @JsonKey(name: 'category_label')
-  String get categoryLabel => throw _privateConstructorUsedError;
+  String? get categoryLabel => throw _privateConstructorUsedError;
   List<String> get tags => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_active')
   bool? get isActive => throw _privateConstructorUsedError;
@@ -49,12 +50,12 @@ abstract class $PrayerCopyWith<$Res> {
       _$PrayerCopyWithImpl<$Res, Prayer>;
   @useResult
   $Res call({
-    int id,
+    @JsonKey(fromJson: _parseId) int id,
     String title,
     String? slug,
     String content,
     String category,
-    @JsonKey(name: 'category_label') String categoryLabel,
+    @JsonKey(name: 'category_label') String? categoryLabel,
     List<String> tags,
     @JsonKey(name: 'is_active') bool? isActive,
     @JsonKey(name: 'created_at') DateTime? createdAt,
@@ -81,7 +82,7 @@ class _$PrayerCopyWithImpl<$Res, $Val extends Prayer>
     Object? slug = freezed,
     Object? content = null,
     Object? category = null,
-    Object? categoryLabel = null,
+    Object? categoryLabel = freezed,
     Object? tags = null,
     Object? isActive = freezed,
     Object? createdAt = freezed,
@@ -108,10 +109,10 @@ class _$PrayerCopyWithImpl<$Res, $Val extends Prayer>
                 ? _value.category
                 : category // ignore: cast_nullable_to_non_nullable
                       as String,
-            categoryLabel: null == categoryLabel
+            categoryLabel: freezed == categoryLabel
                 ? _value.categoryLabel
                 : categoryLabel // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             tags: null == tags
                 ? _value.tags
                 : tags // ignore: cast_nullable_to_non_nullable
@@ -139,12 +140,12 @@ abstract class _$$PrayerImplCopyWith<$Res> implements $PrayerCopyWith<$Res> {
   @override
   @useResult
   $Res call({
-    int id,
+    @JsonKey(fromJson: _parseId) int id,
     String title,
     String? slug,
     String content,
     String category,
-    @JsonKey(name: 'category_label') String categoryLabel,
+    @JsonKey(name: 'category_label') String? categoryLabel,
     List<String> tags,
     @JsonKey(name: 'is_active') bool? isActive,
     @JsonKey(name: 'created_at') DateTime? createdAt,
@@ -170,7 +171,7 @@ class __$$PrayerImplCopyWithImpl<$Res>
     Object? slug = freezed,
     Object? content = null,
     Object? category = null,
-    Object? categoryLabel = null,
+    Object? categoryLabel = freezed,
     Object? tags = null,
     Object? isActive = freezed,
     Object? createdAt = freezed,
@@ -197,10 +198,10 @@ class __$$PrayerImplCopyWithImpl<$Res>
             ? _value.category
             : category // ignore: cast_nullable_to_non_nullable
                   as String,
-        categoryLabel: null == categoryLabel
+        categoryLabel: freezed == categoryLabel
             ? _value.categoryLabel
             : categoryLabel // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         tags: null == tags
             ? _value._tags
             : tags // ignore: cast_nullable_to_non_nullable
@@ -222,12 +223,12 @@ class __$$PrayerImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PrayerImpl implements _Prayer {
   const _$PrayerImpl({
-    required this.id,
+    @JsonKey(fromJson: _parseId) required this.id,
     required this.title,
     this.slug,
     required this.content,
     required this.category,
-    @JsonKey(name: 'category_label') required this.categoryLabel,
+    @JsonKey(name: 'category_label') this.categoryLabel,
     final List<String> tags = const [],
     @JsonKey(name: 'is_active') this.isActive = true,
     @JsonKey(name: 'created_at') this.createdAt,
@@ -237,6 +238,7 @@ class _$PrayerImpl implements _Prayer {
       _$$PrayerImplFromJson(json);
 
   @override
+  @JsonKey(fromJson: _parseId)
   final int id;
   @override
   final String title;
@@ -248,7 +250,7 @@ class _$PrayerImpl implements _Prayer {
   final String category;
   @override
   @JsonKey(name: 'category_label')
-  final String categoryLabel;
+  final String? categoryLabel;
   final List<String> _tags;
   @override
   @JsonKey()
@@ -321,12 +323,12 @@ class _$PrayerImpl implements _Prayer {
 
 abstract class _Prayer implements Prayer {
   const factory _Prayer({
-    required final int id,
+    @JsonKey(fromJson: _parseId) required final int id,
     required final String title,
     final String? slug,
     required final String content,
     required final String category,
-    @JsonKey(name: 'category_label') required final String categoryLabel,
+    @JsonKey(name: 'category_label') final String? categoryLabel,
     final List<String> tags,
     @JsonKey(name: 'is_active') final bool? isActive,
     @JsonKey(name: 'created_at') final DateTime? createdAt,
@@ -335,6 +337,7 @@ abstract class _Prayer implements Prayer {
   factory _Prayer.fromJson(Map<String, dynamic> json) = _$PrayerImpl.fromJson;
 
   @override
+  @JsonKey(fromJson: _parseId)
   int get id;
   @override
   String get title;
@@ -346,7 +349,7 @@ abstract class _Prayer implements Prayer {
   String get category;
   @override
   @JsonKey(name: 'category_label')
-  String get categoryLabel;
+  String? get categoryLabel;
   @override
   List<String> get tags;
   @override

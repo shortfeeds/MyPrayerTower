@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/foundation.dart';
 
 final paypalServiceProvider = Provider<PaypalService>((ref) {
   return PaypalService();
@@ -41,7 +40,7 @@ class PaypalService {
                   ? 500
                   : double.infinity,
               child: PaypalCheckoutView(
-                sandboxMode: kDebugMode,
+                sandboxMode: false, // User requested LIVE mode strictly
                 clientId: _clientId,
                 secretKey: _secretKey,
                 transactions: [
@@ -55,7 +54,8 @@ class PaypalService {
                         "shipping_discount": 0,
                       },
                     },
-                    "description": "MyPrayerTower Purchase",
+                    "description":
+                        "MyPrayerTower Digital Service - No Shipping Required",
                     "item_list": {"items": items},
                   },
                 ],

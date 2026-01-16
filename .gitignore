@@ -14,3 +14,14 @@ coverage/
 .vscode/
 *.swp
 *.swo
+
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+.pub-cache/
+.pub_cache/
+*.jar

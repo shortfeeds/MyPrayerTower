@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../widgets/app_bar_menu_button.dart';
+import '../widgets/visual_rosary_beads.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../auth/providers/auth_provider.dart';
 
 class RosaryScreen extends ConsumerStatefulWidget {
@@ -237,9 +239,20 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
                     context,
                   ).textTheme.headlineMedium?.copyWith(color: Colors.white),
                 ),
+                Text(
+                  'Interactive Prayer Guide',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
+                ),
               ],
             ),
           ),
+
+          const SizedBox(height: 24),
+
+          // Interactive Prayer Mode
+          _buildInteractivePrayer(mystery),
 
           const SizedBox(height: 24),
 
@@ -250,7 +263,7 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
 
           const SizedBox(height: 16),
 
-          // Mystery items
+          // Mystery items list (existing)
           ...List.generate(
             mystery.items.length,
             (index) => Container(
@@ -291,51 +304,159 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
             ),
           ),
 
-          const SizedBox(height: 24),
-
-          // Start button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () async {
-                // Determine if user is logged in
-                final authState = ref.read(authProvider);
-                if (authState.value == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please login to track streaks'),
-                    ),
-                  );
-                  return;
-                }
-
-                // Update streak
-                await ref.read(authProvider.notifier).updateStreak();
-
-                if (!mounted) return;
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Prayer recorded! Streak updated 🔥'),
-                    backgroundColor: AppTheme.gold500,
-                  ),
-                );
-                // Optionally go back
-                setState(() => _selectedMystery = -1);
-              },
-              icon: const Icon(LucideIcons.check, size: 18),
-              label: const Text('Mark as Prayed'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: mystery.color,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-            ),
-          ),
-
           const SizedBox(height: 100),
         ],
       ),
     );
+  }
+
+  // New Interactive Mode State
+  int _currentBeadIndex = 0;
+  final int _totalBeads = 53; // Simplified 5 decades
+
+  Widget _buildInteractivePrayer(_Mystery mystery) {
+    // Current prayer logic
+    String prayerName = 'Apostles Creed';
+    if (_currentBeadIndex == 0) {
+      prayerName = 'Sign of the Cross';
+    } else if (_currentBeadIndex == 1) {
+      prayerName = 'Apostles Creed';
+    } else if (_currentBeadIndex < 5) {
+      prayerName = 'Our Father';
+    } else if ((_currentBeadIndex - 5) % 11 == 0) {
+      prayerName = 'Glory Be';
+    } else if ((_currentBeadIndex - 5) % 11 == 1) {
+      prayerName = 'Our Father';
+    } else {
+      prayerName = 'Hail Mary';
+    }
+
+    double progress = _currentBeadIndex / _totalBeads;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.darkCard,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: mystery.color.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Step ${_currentBeadIndex + 1}',
+                style: GoogleFonts.inter(color: AppTheme.textSecondary),
+              ),
+              Icon(LucideIcons.activity, size: 16, color: mystery.color),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            prayerName,
+            style: GoogleFonts.merriweather(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Tap to advance bead',
+            style: GoogleFonts.inter(fontSize: 12, color: Colors.grey),
+          ),
+          const SizedBox(height: 24),
+
+          // Progress Bar
+          LinearProgressIndicator(
+            value: progress,
+            backgroundColor: Colors.black26,
+            valueColor: AlwaysStoppedAnimation(mystery.color),
+            minHeight: 12,
+            borderRadius: BorderRadius.circular(6),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Visual Rosary Beads
+          VisualRosaryBeads(
+            currentBead: _currentBeadIndex,
+            totalBeads: _totalBeads,
+            activeColor: mystery.color,
+          ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: _currentBeadIndex > 0
+                    ? () => setState(() => _currentBeadIndex--)
+                    : null,
+                icon: const Icon(LucideIcons.chevronLeft),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.black26,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+              FloatingActionButton(
+                onPressed: () {
+                  if (_currentBeadIndex < _totalBeads) {
+                    setState(() => _currentBeadIndex++);
+                  } else {
+                    // Complete
+                    _finishRosary();
+                  }
+                },
+                backgroundColor: mystery.color,
+                child: const Icon(LucideIcons.check),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Reset
+                  setState(() => _currentBeadIndex = 0);
+                },
+                icon: const Icon(LucideIcons.refreshCw),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.black26,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _finishRosary() async {
+    // Determine if user is logged in
+    final authState = ref.read(authProvider);
+    if (authState.value == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to track streaks')),
+      );
+      return;
+    }
+
+    // Update streak
+    await ref.read(authProvider.notifier).updateStreak();
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Rosary Completed! Streak updated 🔥'),
+        backgroundColor: AppTheme.gold500,
+      ),
+    );
+    setState(() {
+      _selectedMystery = -1;
+      _currentBeadIndex = 0;
+    });
   }
 }
 

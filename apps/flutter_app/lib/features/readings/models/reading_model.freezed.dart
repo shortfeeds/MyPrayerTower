@@ -15,70 +15,94 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-Reading _$ReadingFromJson(Map<String, dynamic> json) {
-  return _Reading.fromJson(json);
+DailyReading _$DailyReadingFromJson(Map<String, dynamic> json) {
+  return _DailyReading.fromJson(json);
 }
 
 /// @nodoc
-mixin _$Reading {
+mixin _$DailyReading {
   String get id => throw _privateConstructorUsedError;
   DateTime get date => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
-  String get reference => throw _privateConstructorUsedError;
-  String get text => throw _privateConstructorUsedError; // Markdown text
-  String? get imageUrl => throw _privateConstructorUsedError;
-  String get type => throw _privateConstructorUsedError; // Daily, Sunday, Feast
+  String? get liturgicalSeason => throw _privateConstructorUsedError;
   String? get liturgicalColor => throw _privateConstructorUsedError;
+  String? get feastName => throw _privateConstructorUsedError;
+  String? get firstReading => throw _privateConstructorUsedError;
+  String? get firstReadingRef => throw _privateConstructorUsedError;
+  String? get psalm => throw _privateConstructorUsedError;
+  String? get psalmRef => throw _privateConstructorUsedError;
+  String? get secondReading => throw _privateConstructorUsedError;
+  String? get secondReadingRef => throw _privateConstructorUsedError;
+  String? get gospel => throw _privateConstructorUsedError;
+  String? get gospelRef => throw _privateConstructorUsedError;
+  String? get reflection => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
 
-  /// Serializes this Reading to a JSON map.
+  /// Serializes this DailyReading to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of Reading
+  /// Create a copy of DailyReading
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $ReadingCopyWith<Reading> get copyWith => throw _privateConstructorUsedError;
+  $DailyReadingCopyWith<DailyReading> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ReadingCopyWith<$Res> {
-  factory $ReadingCopyWith(Reading value, $Res Function(Reading) then) =
-      _$ReadingCopyWithImpl<$Res, Reading>;
+abstract class $DailyReadingCopyWith<$Res> {
+  factory $DailyReadingCopyWith(
+    DailyReading value,
+    $Res Function(DailyReading) then,
+  ) = _$DailyReadingCopyWithImpl<$Res, DailyReading>;
   @useResult
   $Res call({
     String id,
     DateTime date,
-    String title,
-    String reference,
-    String text,
-    String? imageUrl,
-    String type,
+    String? liturgicalSeason,
     String? liturgicalColor,
+    String? feastName,
+    String? firstReading,
+    String? firstReadingRef,
+    String? psalm,
+    String? psalmRef,
+    String? secondReading,
+    String? secondReadingRef,
+    String? gospel,
+    String? gospelRef,
+    String? reflection,
+    DateTime? createdAt,
   });
 }
 
 /// @nodoc
-class _$ReadingCopyWithImpl<$Res, $Val extends Reading>
-    implements $ReadingCopyWith<$Res> {
-  _$ReadingCopyWithImpl(this._value, this._then);
+class _$DailyReadingCopyWithImpl<$Res, $Val extends DailyReading>
+    implements $DailyReadingCopyWith<$Res> {
+  _$DailyReadingCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Reading
+  /// Create a copy of DailyReading
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
     Object? date = null,
-    Object? title = null,
-    Object? reference = null,
-    Object? text = null,
-    Object? imageUrl = freezed,
-    Object? type = null,
+    Object? liturgicalSeason = freezed,
     Object? liturgicalColor = freezed,
+    Object? feastName = freezed,
+    Object? firstReading = freezed,
+    Object? firstReadingRef = freezed,
+    Object? psalm = freezed,
+    Object? psalmRef = freezed,
+    Object? secondReading = freezed,
+    Object? secondReadingRef = freezed,
+    Object? gospel = freezed,
+    Object? gospelRef = freezed,
+    Object? reflection = freezed,
+    Object? createdAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -90,30 +114,58 @@ class _$ReadingCopyWithImpl<$Res, $Val extends Reading>
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            title: null == title
-                ? _value.title
-                : title // ignore: cast_nullable_to_non_nullable
-                      as String,
-            reference: null == reference
-                ? _value.reference
-                : reference // ignore: cast_nullable_to_non_nullable
-                      as String,
-            text: null == text
-                ? _value.text
-                : text // ignore: cast_nullable_to_non_nullable
-                      as String,
-            imageUrl: freezed == imageUrl
-                ? _value.imageUrl
-                : imageUrl // ignore: cast_nullable_to_non_nullable
+            liturgicalSeason: freezed == liturgicalSeason
+                ? _value.liturgicalSeason
+                : liturgicalSeason // ignore: cast_nullable_to_non_nullable
                       as String?,
-            type: null == type
-                ? _value.type
-                : type // ignore: cast_nullable_to_non_nullable
-                      as String,
             liturgicalColor: freezed == liturgicalColor
                 ? _value.liturgicalColor
                 : liturgicalColor // ignore: cast_nullable_to_non_nullable
                       as String?,
+            feastName: freezed == feastName
+                ? _value.feastName
+                : feastName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            firstReading: freezed == firstReading
+                ? _value.firstReading
+                : firstReading // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            firstReadingRef: freezed == firstReadingRef
+                ? _value.firstReadingRef
+                : firstReadingRef // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            psalm: freezed == psalm
+                ? _value.psalm
+                : psalm // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            psalmRef: freezed == psalmRef
+                ? _value.psalmRef
+                : psalmRef // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            secondReading: freezed == secondReading
+                ? _value.secondReading
+                : secondReading // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            secondReadingRef: freezed == secondReadingRef
+                ? _value.secondReadingRef
+                : secondReadingRef // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            gospel: freezed == gospel
+                ? _value.gospel
+                : gospel // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            gospelRef: freezed == gospelRef
+                ? _value.gospelRef
+                : gospelRef // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            reflection: freezed == reflection
+                ? _value.reflection
+                : reflection // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
           )
           as $Val,
     );
@@ -121,50 +173,65 @@ class _$ReadingCopyWithImpl<$Res, $Val extends Reading>
 }
 
 /// @nodoc
-abstract class _$$ReadingImplCopyWith<$Res> implements $ReadingCopyWith<$Res> {
-  factory _$$ReadingImplCopyWith(
-    _$ReadingImpl value,
-    $Res Function(_$ReadingImpl) then,
-  ) = __$$ReadingImplCopyWithImpl<$Res>;
+abstract class _$$DailyReadingImplCopyWith<$Res>
+    implements $DailyReadingCopyWith<$Res> {
+  factory _$$DailyReadingImplCopyWith(
+    _$DailyReadingImpl value,
+    $Res Function(_$DailyReadingImpl) then,
+  ) = __$$DailyReadingImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({
     String id,
     DateTime date,
-    String title,
-    String reference,
-    String text,
-    String? imageUrl,
-    String type,
+    String? liturgicalSeason,
     String? liturgicalColor,
+    String? feastName,
+    String? firstReading,
+    String? firstReadingRef,
+    String? psalm,
+    String? psalmRef,
+    String? secondReading,
+    String? secondReadingRef,
+    String? gospel,
+    String? gospelRef,
+    String? reflection,
+    DateTime? createdAt,
   });
 }
 
 /// @nodoc
-class __$$ReadingImplCopyWithImpl<$Res>
-    extends _$ReadingCopyWithImpl<$Res, _$ReadingImpl>
-    implements _$$ReadingImplCopyWith<$Res> {
-  __$$ReadingImplCopyWithImpl(
-    _$ReadingImpl _value,
-    $Res Function(_$ReadingImpl) _then,
+class __$$DailyReadingImplCopyWithImpl<$Res>
+    extends _$DailyReadingCopyWithImpl<$Res, _$DailyReadingImpl>
+    implements _$$DailyReadingImplCopyWith<$Res> {
+  __$$DailyReadingImplCopyWithImpl(
+    _$DailyReadingImpl _value,
+    $Res Function(_$DailyReadingImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of Reading
+  /// Create a copy of DailyReading
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
     Object? date = null,
-    Object? title = null,
-    Object? reference = null,
-    Object? text = null,
-    Object? imageUrl = freezed,
-    Object? type = null,
+    Object? liturgicalSeason = freezed,
     Object? liturgicalColor = freezed,
+    Object? feastName = freezed,
+    Object? firstReading = freezed,
+    Object? firstReadingRef = freezed,
+    Object? psalm = freezed,
+    Object? psalmRef = freezed,
+    Object? secondReading = freezed,
+    Object? secondReadingRef = freezed,
+    Object? gospel = freezed,
+    Object? gospelRef = freezed,
+    Object? reflection = freezed,
+    Object? createdAt = freezed,
   }) {
     return _then(
-      _$ReadingImpl(
+      _$DailyReadingImpl(
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
@@ -173,30 +240,58 @@ class __$$ReadingImplCopyWithImpl<$Res>
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        title: null == title
-            ? _value.title
-            : title // ignore: cast_nullable_to_non_nullable
-                  as String,
-        reference: null == reference
-            ? _value.reference
-            : reference // ignore: cast_nullable_to_non_nullable
-                  as String,
-        text: null == text
-            ? _value.text
-            : text // ignore: cast_nullable_to_non_nullable
-                  as String,
-        imageUrl: freezed == imageUrl
-            ? _value.imageUrl
-            : imageUrl // ignore: cast_nullable_to_non_nullable
+        liturgicalSeason: freezed == liturgicalSeason
+            ? _value.liturgicalSeason
+            : liturgicalSeason // ignore: cast_nullable_to_non_nullable
                   as String?,
-        type: null == type
-            ? _value.type
-            : type // ignore: cast_nullable_to_non_nullable
-                  as String,
         liturgicalColor: freezed == liturgicalColor
             ? _value.liturgicalColor
             : liturgicalColor // ignore: cast_nullable_to_non_nullable
                   as String?,
+        feastName: freezed == feastName
+            ? _value.feastName
+            : feastName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        firstReading: freezed == firstReading
+            ? _value.firstReading
+            : firstReading // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        firstReadingRef: freezed == firstReadingRef
+            ? _value.firstReadingRef
+            : firstReadingRef // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        psalm: freezed == psalm
+            ? _value.psalm
+            : psalm // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        psalmRef: freezed == psalmRef
+            ? _value.psalmRef
+            : psalmRef // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        secondReading: freezed == secondReading
+            ? _value.secondReading
+            : secondReading // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        secondReadingRef: freezed == secondReadingRef
+            ? _value.secondReadingRef
+            : secondReadingRef // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        gospel: freezed == gospel
+            ? _value.gospel
+            : gospel // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        gospelRef: freezed == gospelRef
+            ? _value.gospelRef
+            : gospelRef // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        reflection: freezed == reflection
+            ? _value.reflection
+            : reflection // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
       ),
     );
   }
@@ -204,62 +299,95 @@ class __$$ReadingImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$ReadingImpl implements _Reading {
-  const _$ReadingImpl({
+class _$DailyReadingImpl implements _DailyReading {
+  const _$DailyReadingImpl({
     required this.id,
     required this.date,
-    required this.title,
-    required this.reference,
-    required this.text,
-    this.imageUrl,
-    this.type = 'Daily',
+    this.liturgicalSeason,
     this.liturgicalColor,
+    this.feastName,
+    this.firstReading,
+    this.firstReadingRef,
+    this.psalm,
+    this.psalmRef,
+    this.secondReading,
+    this.secondReadingRef,
+    this.gospel,
+    this.gospelRef,
+    this.reflection,
+    this.createdAt,
   });
 
-  factory _$ReadingImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ReadingImplFromJson(json);
+  factory _$DailyReadingImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DailyReadingImplFromJson(json);
 
   @override
   final String id;
   @override
   final DateTime date;
   @override
-  final String title;
-  @override
-  final String reference;
-  @override
-  final String text;
-  // Markdown text
-  @override
-  final String? imageUrl;
-  @override
-  @JsonKey()
-  final String type;
-  // Daily, Sunday, Feast
+  final String? liturgicalSeason;
   @override
   final String? liturgicalColor;
+  @override
+  final String? feastName;
+  @override
+  final String? firstReading;
+  @override
+  final String? firstReadingRef;
+  @override
+  final String? psalm;
+  @override
+  final String? psalmRef;
+  @override
+  final String? secondReading;
+  @override
+  final String? secondReadingRef;
+  @override
+  final String? gospel;
+  @override
+  final String? gospelRef;
+  @override
+  final String? reflection;
+  @override
+  final DateTime? createdAt;
 
   @override
   String toString() {
-    return 'Reading(id: $id, date: $date, title: $title, reference: $reference, text: $text, imageUrl: $imageUrl, type: $type, liturgicalColor: $liturgicalColor)';
+    return 'DailyReading(id: $id, date: $date, liturgicalSeason: $liturgicalSeason, liturgicalColor: $liturgicalColor, feastName: $feastName, firstReading: $firstReading, firstReadingRef: $firstReadingRef, psalm: $psalm, psalmRef: $psalmRef, secondReading: $secondReading, secondReadingRef: $secondReadingRef, gospel: $gospel, gospelRef: $gospelRef, reflection: $reflection, createdAt: $createdAt)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ReadingImpl &&
+            other is _$DailyReadingImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.date, date) || other.date == date) &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.reference, reference) ||
-                other.reference == reference) &&
-            (identical(other.text, text) || other.text == text) &&
-            (identical(other.imageUrl, imageUrl) ||
-                other.imageUrl == imageUrl) &&
-            (identical(other.type, type) || other.type == type) &&
+            (identical(other.liturgicalSeason, liturgicalSeason) ||
+                other.liturgicalSeason == liturgicalSeason) &&
             (identical(other.liturgicalColor, liturgicalColor) ||
-                other.liturgicalColor == liturgicalColor));
+                other.liturgicalColor == liturgicalColor) &&
+            (identical(other.feastName, feastName) ||
+                other.feastName == feastName) &&
+            (identical(other.firstReading, firstReading) ||
+                other.firstReading == firstReading) &&
+            (identical(other.firstReadingRef, firstReadingRef) ||
+                other.firstReadingRef == firstReadingRef) &&
+            (identical(other.psalm, psalm) || other.psalm == psalm) &&
+            (identical(other.psalmRef, psalmRef) ||
+                other.psalmRef == psalmRef) &&
+            (identical(other.secondReading, secondReading) ||
+                other.secondReading == secondReading) &&
+            (identical(other.secondReadingRef, secondReadingRef) ||
+                other.secondReadingRef == secondReadingRef) &&
+            (identical(other.gospel, gospel) || other.gospel == gospel) &&
+            (identical(other.gospelRef, gospelRef) ||
+                other.gospelRef == gospelRef) &&
+            (identical(other.reflection, reflection) ||
+                other.reflection == reflection) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -268,63 +396,92 @@ class _$ReadingImpl implements _Reading {
     runtimeType,
     id,
     date,
-    title,
-    reference,
-    text,
-    imageUrl,
-    type,
+    liturgicalSeason,
     liturgicalColor,
+    feastName,
+    firstReading,
+    firstReadingRef,
+    psalm,
+    psalmRef,
+    secondReading,
+    secondReadingRef,
+    gospel,
+    gospelRef,
+    reflection,
+    createdAt,
   );
 
-  /// Create a copy of Reading
+  /// Create a copy of DailyReading
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ReadingImplCopyWith<_$ReadingImpl> get copyWith =>
-      __$$ReadingImplCopyWithImpl<_$ReadingImpl>(this, _$identity);
+  _$$DailyReadingImplCopyWith<_$DailyReadingImpl> get copyWith =>
+      __$$DailyReadingImplCopyWithImpl<_$DailyReadingImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ReadingImplToJson(this);
+    return _$$DailyReadingImplToJson(this);
   }
 }
 
-abstract class _Reading implements Reading {
-  const factory _Reading({
+abstract class _DailyReading implements DailyReading {
+  const factory _DailyReading({
     required final String id,
     required final DateTime date,
-    required final String title,
-    required final String reference,
-    required final String text,
-    final String? imageUrl,
-    final String type,
+    final String? liturgicalSeason,
     final String? liturgicalColor,
-  }) = _$ReadingImpl;
+    final String? feastName,
+    final String? firstReading,
+    final String? firstReadingRef,
+    final String? psalm,
+    final String? psalmRef,
+    final String? secondReading,
+    final String? secondReadingRef,
+    final String? gospel,
+    final String? gospelRef,
+    final String? reflection,
+    final DateTime? createdAt,
+  }) = _$DailyReadingImpl;
 
-  factory _Reading.fromJson(Map<String, dynamic> json) = _$ReadingImpl.fromJson;
+  factory _DailyReading.fromJson(Map<String, dynamic> json) =
+      _$DailyReadingImpl.fromJson;
 
   @override
   String get id;
   @override
   DateTime get date;
   @override
-  String get title;
-  @override
-  String get reference;
-  @override
-  String get text; // Markdown text
-  @override
-  String? get imageUrl;
-  @override
-  String get type; // Daily, Sunday, Feast
+  String? get liturgicalSeason;
   @override
   String? get liturgicalColor;
+  @override
+  String? get feastName;
+  @override
+  String? get firstReading;
+  @override
+  String? get firstReadingRef;
+  @override
+  String? get psalm;
+  @override
+  String? get psalmRef;
+  @override
+  String? get secondReading;
+  @override
+  String? get secondReadingRef;
+  @override
+  String? get gospel;
+  @override
+  String? get gospelRef;
+  @override
+  String? get reflection;
+  @override
+  DateTime? get createdAt;
 
-  /// Create a copy of Reading
+  /// Create a copy of DailyReading
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ReadingImplCopyWith<_$ReadingImpl> get copyWith =>
+  _$$DailyReadingImplCopyWith<_$DailyReadingImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

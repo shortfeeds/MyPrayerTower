@@ -102,7 +102,7 @@ class _PremiumBottomNavBar extends ConsumerWidget {
         label: 'Home',
       ),
       const _NavItem(
-        path: '/library',
+        path: '/prayers',
         icon: LucideIcons.bookOpen,
         activeIcon: LucideIcons.bookOpenCheck,
         label: 'Pray',
@@ -131,12 +131,27 @@ class _PremiumBottomNavBar extends ConsumerWidget {
 
   int _getSelectedIndex(BuildContext context, List<_NavItem> items) {
     final location = GoRouterState.of(context).uri.path;
+    // Sort items by path length descending to ensuring longest match wins
+    // e.g. /prayers/rosary should match /prayers before /
+    // But we iterate efficiently.
+
+    int bestMatchIndex = 0;
+    int longestMatchLength = 0;
+
     for (int i = 0; i < items.length; i++) {
-      if (location == items[i].path) {
+      final itemPath = items[i].path;
+      if (itemPath == '/' && location == '/') {
         return i;
       }
+
+      if (itemPath != '/' && location.startsWith(itemPath)) {
+        if (itemPath.length > longestMatchLength) {
+          longestMatchLength = itemPath.length;
+          bestMatchIndex = i;
+        }
+      }
     }
-    return 0;
+    return bestMatchIndex;
   }
 
   @override

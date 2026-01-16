@@ -64,7 +64,7 @@ class DailyReadingCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        reading.reference,
+                        reading.firstReadingRef ?? 'Daily Reading',
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           color: AppTheme.gold400,
@@ -74,7 +74,7 @@ class DailyReadingCard extends ConsumerWidget {
                       const SizedBox(height: 6),
                       Flexible(
                         child: Text(
-                          reading.text,
+                          reading.firstReading ?? '',
                           overflow: TextOverflow.ellipsis,
                           maxLines: 5,
                           style: GoogleFonts.merriweather(

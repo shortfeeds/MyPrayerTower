@@ -155,101 +155,134 @@ class VerseOfTheDayCard extends ConsumerWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
+      height: 180,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          // Background decoration
-          Positioned(
-            right: -20,
-            top: -20,
-            child: Icon(
-              LucideIcons.quote,
-              size: 100,
-              color: Colors.white.withValues(alpha: 0.03),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Rich Gradient Background (no image)
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF1E1B4B), // Deep indigo
+                    Color(0xFF312E81), // Rich purple
+                    Color(0xFF1E293B), // Slate
+                  ],
+                  stops: [0.0, 0.5, 1.0],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.accentGold.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'VERSE OF THE DAY',
-                        style: GoogleFonts.inter(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.accentGold,
-                          letterSpacing: 1.0,
+            // Gradient Overlay
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withValues(alpha: 0.8),
+                    Colors.black.withValues(alpha: 0.5),
+                  ],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+              ),
+            ),
+
+            // Quote decoration
+            Positioned(
+              right: 16,
+              top: 16,
+              child: Icon(
+                LucideIcons.quote,
+                size: 40,
+                color: AppTheme.gold500.withValues(alpha: 0.3),
+              ),
+            ),
+
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppTheme.gold500,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '✨ VERSE OF THE DAY',
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            letterSpacing: 1.0,
+                          ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        LucideIcons.share2,
-                        size: 16,
-                        color: Colors.white60,
+                      IconButton(
+                        icon: const Icon(
+                          LucideIcons.share2,
+                          size: 18,
+                          color: Colors.white70,
+                        ),
+                        onPressed: () {
+                          Share.share(
+                            '"$verse" - $reference\n\nShared from MyPrayerTower App',
+                          );
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
-                      onPressed: () {
-                        Share.share(
-                          '"$verse" - $reference\n\nShared from MyPrayerTower App',
-                        );
-                      },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '"$verse"',
+                    style: GoogleFonts.merriweather(
+                      fontSize: 15,
+                      height: 1.5,
+                      color: Colors.white,
+                      fontStyle: FontStyle.italic,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  '"$verse"',
-                  style: GoogleFonts.merriweather(
-                    fontSize: 16,
-                    height: 1.5,
-                    color: Colors.white,
-                    fontStyle: FontStyle.italic,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  reference,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white60,
+                  const SizedBox(height: 8),
+                  Text(
+                    reference,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.gold400,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
