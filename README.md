@@ -15,7 +15,7 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 - 🕯️ **Global Candle Community** - **2,500+ active candles** now visible with country flags and real-time prayer counters.
 - ⏳ **Stillness Moment** - A mindful pause after every prayer action to foster spiritual reflection.
 - 💐 **Spiritual Bouquets** - Send curated bundles of prayers and masses to loved ones.
-- ⛪ **Digital Chapels** - Create beautiful, lasting tributes in our renamed Memorials section.
+- ⛪ **Digital Memorials** - Create beautiful, lasting tributes in our renamed Memorials section.
 - 💎 **Sacred Offerings** - Simplified, whole-number pricing for all contributions.
 - 📱 **Prayer Corner** - A renamed and refocused dashboard for your spiritual journey.
 - 🌍 **Localization** - Added country support to prayers and intentions.
@@ -65,10 +65,6 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 | **Sacrament Records** | Track personal sacrament history | ✅ |
 | **Order History** | Track Mass offerings and donations | ✅ |
 | **Challenges** | Join spiritual challenges (Rosary, Novena, Lent) | ✅ NEW |
-| **Leaderboards** | Community rankings by prayer activity | ✅ NEW |
-| **Prayer Reminders** | Custom notifications for prayer times | ✅ NEW |
-| **Year in Review** | Annual prayer statistics summary | ✅ NEW |
-| **Abandoned Cart** | Auto-recovery for incomplete offerings | ✅ NEW |
 
 ### 🕯️ Spiritual Gifts & Memorials
 | Feature | Description | Status |
@@ -76,7 +72,7 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 | **Virtual Candles** | 5 Tiers (1-30 days) with premium visuals | ✅ NEW |
 | **Spiritual Bouquets** | Gift prayer collections to loved ones | ✅ NEW |
 | **Mass Offerings** | Request Masses with simplified donation tiers | ✅ |
-| **Digital Chapels** | Permanent memorial tributes (formerly Memorial Pages) | ✅ NEW |
+| **Digital Memorials** | Permanent memorial tributes (formerly Memorial Pages) | ✅ NEW |
 | **Prayer Certificates** | Digital Mass cards for gifts | ✅ |
 | **Admin Panel** | Manage offerings, tributes, and abandoned carts | ✅ NEW |
 
@@ -113,11 +109,8 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 |---------|-------------|--------|
 | **Catholic News** | Aggregated Catholic news feed | ✅ |
 | **Pilgrimages** | Holy site information | ✅ |
-| **Podcasts** | Catholic podcast directory | ✅ |
-| **Catholic Art** | Sacred art gallery | ✅ |
 | **Glossary** | Catholic terminology | ✅ |
 | **Quiz** | Faith knowledge quizzes | ✅ |
-| **Wallpapers** | Catholic-themed phone wallpapers | ✅ NEW |
 
 ---
 
@@ -288,22 +281,22 @@ Request Holy Mass to be offered for your specific intentions.
 
 **Add-ons:**
 - 🕯️ **Virtual Candle**: +$5.00 (7-day candle added to request)
-- 📮 **Printed Card**: +$10.00 (Mailed to you or recipient)
-- 🖼️ **Framed Certificate**: +$35.00 (Premium framed enrollment)
+- 💐 **Virtual Floral Bouquet**: +$10.00 (Fresh flowers placed at the altar)
+- 📿 **Virtual Rosary**: +$10.00 (Digital rosary prayer commitment)
 
 ### 🕊️ Memorial Tributes
 Create a lasting digital memorial for a departed loved one.
 | Plan | Price | Features |
 |:-----|:------|:---------|
-| **Basic** | **FREE** | Permanent page, 1 photo, biography, guestbook |
-| **Premium** | $49.99 | All Basic + Unlimited photos, Music, Video tribute, "Featured" placement, QR Code |
+| **Basic** | **FREE** | Permanent page, 1 photo, biography, guestbook, QR Code |
+| **Premium** | $49.99 | All Basic + 10 photos, 2 Video tribute, "Featured" placement, QR Code |
 
 ### 💳 Monthly Subscriptions
 Support the platform and unlock exclusive spiritual benefits.
 | Plan | Price | Benefits |
 |:-----|:------|:---------|
 | **Prayer Partner** | $9.99/mo | 1 Mass/mo, Name on Daily Prayer List, Newsletter |
-| **Family Plan** | $19.99/mo | 3 Masses/mo, Entire family on Prayer List, Priority Requests |
+| **Family Plan** | $19.99/mo | 4 Masses/mo, Entire family on Prayer List, Priority Requests |
 | **Patron Circle** | $49.99/mo | Unlimited requests, Perpetual Enrollment, VIP Support |
 
 ### 💝 One-Time Donations
@@ -314,6 +307,7 @@ Support the mission with a single contribution.
 - **Guardian Angel**: $100
 - **Benefactor**: $250
 - **Patron**: $500
+
 
 ---
 

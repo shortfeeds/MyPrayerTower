@@ -76,8 +76,8 @@ const DECEASED_INTENTIONS = [
 // Add-ons
 const ADDONS = [
     { id: 'candle', name: '🕯️ Virtual Candle', price: 499, description: '7-day candle on Prayer Wall' },
-    { id: 'printedCard', name: '📮 Printed Mass Card', price: 1000, description: 'Beautiful card mailed to you' },
-    { id: 'framedCertificate', name: '🖼️ Framed Certificate', price: 3500, description: 'Premium framed memorial' },
+    { id: 'floralBouquet', name: '💐 Virtual Floral Bouquet', price: 1000, description: 'Fresh flowers placed at the altar' },
+    { id: 'rosary', name: '📿 Virtual Rosary', price: 1000, description: 'Digital rosary prayer commitment' },
 ];
 
 export default function MassOfferingsPage() {
@@ -97,8 +97,8 @@ export default function MassOfferingsPage() {
     const [recipientEmail, setRecipientEmail] = useState('');
     const [recipientName, setRecipientName] = useState('');
     const [giftMessage, setGiftMessage] = useState('');
-    const [addons, setAddons] = useState({ candle: false, printedCard: false, framedCertificate: false });
-    const [shippingAddress, setShippingAddress] = useState('');
+    const [addons, setAddons] = useState({ candle: false, floralBouquet: false, rosary: false });
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
@@ -109,8 +109,8 @@ export default function MassOfferingsPage() {
     const calculateTotal = () => {
         let total = selectedOffering?.price || 0;
         if (addons.candle) total += 500;
-        if (addons.printedCard) total += 1000;
-        if (addons.framedCertificate) total += 3500;
+        if (addons.floralBouquet) total += 1000;
+        if (addons.rosary) total += 1000;
         return total;
     };
 
@@ -235,9 +235,9 @@ export default function MassOfferingsPage() {
                                     recipientName,
                                     giftMessage,
                                     includesVirtualCandle: addons.candle,
-                                    includesPrintedCard: addons.printedCard,
-                                    includesFramedCertificate: addons.framedCertificate,
-                                    printedCardShippingAddress: shippingAddress
+
+                                    includesFloralBouquet: addons.floralBouquet,
+                                    includesRosary: addons.rosary,
                                 }}
                             />
 
@@ -555,21 +555,7 @@ export default function MassOfferingsPage() {
                         </div>
 
                         {/* Shipping address for physical items */}
-                        {(addons.printedCard || addons.framedCertificate) && (
-                            <div className="mb-6 p-4 bg-blue-50 rounded-xl">
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
-                                    📦 Shipping Address
-                                </label>
-                                <textarea
-                                    value={shippingAddress}
-                                    onChange={(e) => setShippingAddress(e.target.value)}
-                                    placeholder="Full shipping address for printed items..."
-                                    rows={3}
-                                    className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
-                                    required
-                                />
-                            </div>
-                        )}
+
 
                         {/* Gift Option */}
                         <div className="mb-8 p-6 bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border-2 border-pink-100">
@@ -691,16 +677,16 @@ export default function MassOfferingsPage() {
                                         <span>$5.00</span>
                                     </div>
                                 )}
-                                {addons.printedCard && (
+                                {addons.floralBouquet && (
                                     <div className="flex justify-between text-amber-800">
-                                        <span>📮 Printed Card</span>
+                                        <span>💐 Virtual Floral Bouquet</span>
                                         <span>$10.00</span>
                                     </div>
                                 )}
-                                {addons.framedCertificate && (
+                                {addons.rosary && (
                                     <div className="flex justify-between text-amber-800">
-                                        <span>🖼️ Framed Certificate</span>
-                                        <span>$35.00</span>
+                                        <span>📿 Virtual Rosary</span>
+                                        <span>$10.00</span>
                                     </div>
                                 )}
                                 <hr className="border-amber-200 my-2" />

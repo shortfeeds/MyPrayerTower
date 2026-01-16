@@ -6,10 +6,18 @@ const prisma = new PrismaClient();
 const FIRST_NAMES = [
     'Maria', 'John', 'Sarah', 'Michael', 'David', 'Grace', 'James', 'Patricia', 'Robert', 'Jennifer',
     'William', 'Elizabeth', 'Thomas', 'Linda', 'Joseph', 'Barbara', 'Charles', 'Susan', 'Christopher', 'Jessica',
-    'Daniel', 'Karen', 'Matthew', 'Nancy', 'Anthony', 'Lisa', 'Mark', 'Margaret', 'Donald', 'Betty'
+    'Daniel', 'Karen', 'Matthew', 'Nancy', 'Anthony', 'Lisa', 'Mark', 'Margaret', 'Donald', 'Betty',
+    'Sofia', 'Mateo', 'Alejandro', 'Isabella', 'Liam', 'Emma', 'Noah', 'Olivia', 'Ethan', 'Ava',
+    'Lucas', 'Mia', 'Mason', 'Charlotte', 'Oliver', 'Amelia', 'Elijah', 'Harper', 'Aiden', 'Evelyn'
 ];
 
-const LAST_INITIALS = ['A.', 'B.', 'C.', 'D.', 'E.', 'F.', 'G.', 'H.', 'I.', 'J.', 'K.', 'L.', 'M.', 'N.', 'O.', 'P.', 'R.', 'S.', 'T.', 'W.'];
+const LAST_INITIALS = ['A.', 'B.', 'C.', 'D.', 'E.', 'F.', 'G.', 'H.', 'I.', 'J.', 'K.', 'L.', 'M.', 'N.', 'O.', 'P.', 'R.', 'S.', 'T.', 'W.', 'Y.', 'Z.'];
+
+const COUNTRIES = [
+    'United States', 'Canada', 'Mexico', 'Brazil', 'Argentina',
+    'United Kingdom', 'Ireland', 'France', 'Italy', 'Spain', 'Germany', 'Poland', 'Portugal',
+    'Philippines', 'Australia', 'Nigeria', 'India', 'Kenya'
+];
 
 const INTENTIONS = [
     "For my mother's healing and recovery from surgery.",
@@ -31,7 +39,12 @@ const INTENTIONS = [
     "For a special intention known only to God.",
     "Thanksgiving for answered prayers regarding my housing situation.",
     "For wisdom for our world leaders.",
-    "For the lonely and forgotten in our community."
+    "For the lonely and forgotten in our community.",
+    "For the protection of my family.",
+    "In memory of my beloved grandmother.",
+    "For a safe journey.",
+    "For healing of relationships.",
+    "For the gift of faith."
 ];
 
 const DURATIONS = [
@@ -50,6 +63,15 @@ const PRICES = {
     'THIRTY_DAYS': 1499
 };
 
+// Weighted likes based on tier to encourage upgrades
+const PRAYER_COUNT_Ranges = {
+    'ONE_DAY': { min: 5, max: 20 },
+    'THREE_DAYS': { min: 20, max: 50 },
+    'SEVEN_DAYS': { min: 50, max: 150 },
+    'FOURTEEN_DAYS': { min: 150, max: 300 },
+    'THIRTY_DAYS': { min: 300, max: 800 } // High popularity for top tier
+};
+
 function getRandomElement<T>(arr: T[]): T {
     return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -62,17 +84,19 @@ function getRandomName(): string {
     return `${getRandomElement(FIRST_NAMES)} ${getRandomElement(LAST_INITIALS)}`;
 }
 
-async function main() {
-    console.log('Start seeding candles...');
+function getRandomCountry(): string {
+    return getRandomElement(COUNTRIES);
+}
 
-    // Optional: clear existing candles if you want a clean slate (safely check first?)
-    // await prisma.prayerCandle.deleteMany({}); 
+async function main() {
+    console.log('Start seeding 2000+ candles...');
 
     const candlesToCreate = [];
+    const COUNT_PER_TIER = 500; // Total 2500 candles
 
     for (const duration of DURATIONS) {
-        // Create 10 candles for each duration
-        for (let i = 0; i < 10; i++) {
+        // Create candles for each duration
+        for (let i = 0; i < COUNT_PER_TIER; i++) {
             const days = {
                 'ONE_DAY': 1,
                 'THREE_DAYS': 3,
@@ -81,41 +105,48 @@ async function main() {
                 'THIRTY_DAYS': 30
             }[duration];
 
-            // Lit sometime in the past few hours/days, so it's currently active
+            // Lit sometime in the past so it's active
+            // Distribute them evenly over the "active" window so we have recent ones and older ones
             const litAt = new Date();
-            const randomHoursAgo = Math.floor(Math.random() * (days * 24 * 0.8)); // Lit within 80% of its duration
+            // Randomly lit strictly within the window that keeps it active
+            const randomHoursAgo = Math.floor(Math.random() * (days * 24 * 0.95));
             litAt.setHours(litAt.getHours() - randomHoursAgo);
 
             const expiresAt = new Date(litAt);
             expiresAt.setDate(expiresAt.getDate() + days);
 
-            const isAnonymous = Math.random() > 0.7; // 30% anonymous
+            const isAnonymous = Math.random() > 0.8; // 20% anonymous
+
+            const range = PRAYER_COUNT_Ranges[duration];
+            const prayerCount = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
 
             candlesToCreate.push({
                 intention: getRandomIntention(),
                 name: isAnonymous ? null : getRandomName(),
+                country: isAnonymous ? null : getRandomCountry(),
                 isAnonymous,
                 duration,
                 litAt,
                 expiresAt,
                 isActive: true,
-                paymentStatus: 'PAID', // Important for getActiveCandles
-                // Use enum if Prisma expects it, but usually string works in JS client if types match
-                // We'll trust the string representation which matches schema enum often
+                paymentStatus: 'PAID',
                 amount: PRICES[duration],
-                prayerCount: Math.floor(Math.random() * 50) + 5, // Random prayer count 5-55
-                // userId and email optional
+                prayerCount: prayerCount,
             });
         }
     }
 
-    // Using createMany for efficiency
-    // Note: SQLite doesn't support createMany in some versions, but Postgres (implied by schema) does.
-    const result = await prisma.prayerCandle.createMany({
-        data: candlesToCreate
-    });
+    // Insert in chunks to avoid memory/query limits
+    const CHUNK_SIZE = 500;
+    for (let i = 0; i < candlesToCreate.length; i += CHUNK_SIZE) {
+        const chunk = candlesToCreate.slice(i, i + CHUNK_SIZE);
+        await prisma.prayerCandle.createMany({
+            data: chunk
+        });
+        console.log(`Inserted chunk ${i / CHUNK_SIZE + 1} of ${Math.ceil(candlesToCreate.length / CHUNK_SIZE)}`);
+    }
 
-    console.log(`Seeded ${result.count} candles successfully.`);
+    console.log(`Seeded ${candlesToCreate.length} candles successfully.`);
 }
 
 main()

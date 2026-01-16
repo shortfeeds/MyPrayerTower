@@ -355,8 +355,11 @@ export default function CandlesPage() {
                             <p className="text-amber-400/60 text-sm">Angels carry your prayers to Heaven</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.royal.map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                            {groupedCandles.royal.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
+                        {groupedCandles.royal.length > 10 && (
+                            <p className="text-center text-amber-400/60 mt-4 text-sm">+ {groupedCandles.royal.length - 10} more candles burning</p>
+                        )}
                     </section>
                 )}
 
@@ -368,8 +371,11 @@ export default function CandlesPage() {
                             <p className="text-blue-400/60 text-sm">Under Our Lady of Guadalupe's protection</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.premium.map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                            {groupedCandles.premium.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
+                        {groupedCandles.premium.length > 10 && (
+                            <p className="text-center text-blue-400/60 mt-4 text-sm">+ {groupedCandles.premium.length - 10} more candles burning</p>
+                        )}
                     </section>
                 )}
 
@@ -381,8 +387,11 @@ export default function CandlesPage() {
                             <p className="text-neutral-400 text-sm">Presented before the Lord at His altar</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.taper.map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                            {groupedCandles.taper.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
+                        {groupedCandles.taper.length > 10 && (
+                            <p className="text-center text-amber-100/60 mt-4 text-sm">+ {groupedCandles.taper.length - 10} more candles burning</p>
+                        )}
                     </section>
                 )}
 
@@ -394,8 +403,11 @@ export default function CandlesPage() {
                             <p className="text-red-400/60 text-sm">A sincere offering of faith</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.votive.map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                            {groupedCandles.votive.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
+                        {groupedCandles.votive.length > 10 && (
+                            <p className="text-center text-red-400/60 mt-4 text-sm">+ {groupedCandles.votive.length - 10} more candles burning</p>
+                        )}
                     </section>
                 )}
 
@@ -407,8 +419,11 @@ export default function CandlesPage() {
                             <p className="text-neutral-500 text-sm">A simple prayer for today</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.tealight.map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                            {groupedCandles.tealight.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
+                        {groupedCandles.tealight.length > 10 && (
+                            <p className="text-center text-neutral-400/60 mt-4 text-sm">+ {groupedCandles.tealight.length - 10} more candles burning</p>
+                        )}
                     </section>
                 )}
             </div>
