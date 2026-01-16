@@ -1160,7 +1160,7 @@ model PrayerCandle {
   name          String?
   email         String?
   amount        Int            // Cents
-  duration      CandleDuration
+  duration      String    // ONE_DAY, THREE_DAYS, SEVEN_DAYS, FOURTEEN_DAYS, THIRTY_DAYS
   color         String         @default("white")
   prayerCount   Int            @default(0)
   litAt         DateTime       @default(now())
@@ -2177,3 +2177,4 @@ model SystemSetting {
   description String?
   updatedAt   DateTime @updatedAt
 }
+

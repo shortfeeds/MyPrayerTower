@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { getUserFromCookie } from '@/lib/auth';
+import { notifyIndexNow } from '@/lib/indexnow';
 
 // Alias db to prisma for compatibility
 const prisma = db;
@@ -114,6 +115,10 @@ export async function submitPrayerRequest(prevState: any, formData: FormData) {
         });
 
         revalidatePath('/prayer-wall');
+
+        // Auto-notify search engines of new content
+        await notifyIndexNow('/prayer-wall');
+
         return { success: true, message: 'Prayer request submitted for review!' };
 
     } catch (error) {

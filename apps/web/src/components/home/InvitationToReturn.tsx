@@ -61,7 +61,7 @@ export function InvitationToReturn() {
                     </div>
 
                     <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 italic">
-                        {SACRED_COPY.journey.return}
+                        No pressure, no notifications. Just an invitation.
                     </p>
                 </motion.div>
             </div>

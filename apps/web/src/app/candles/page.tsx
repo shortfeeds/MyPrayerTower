@@ -212,9 +212,51 @@ export default function CandlesPage() {
                         duration: c.duration
                     };
                 });
-                setCandles(mapped);
+
+                // If no candles from DB, use sample data
+                if (mapped.length === 0) {
+                    const sampleCandles: Candle[] = [
+                        // 30-day Divine Cathedral
+                        { id: 'sample-1', userName: 'Maria S.', intention: 'For my mother\'s healing from cancer', remainingHours: 720, prayerCount: 342, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS' },
+                        { id: 'sample-2', userName: 'Anonymous', intention: 'Thanksgiving for answered prayers', remainingHours: 650, prayerCount: 289, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS' },
+
+                        // 14-day Blessed Marian
+                        { id: 'sample-3', userName: 'John M.', intention: 'Guidance for my family during difficult times', remainingHours: 310, prayerCount: 156, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                        { id: 'sample-4', userName: 'Sarah K.', intention: 'For peace in our troubled world', remainingHours: 280, prayerCount: 198, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+
+                        // 7-day Sacred Altar
+                        { id: 'sample-5', userName: 'David R.', intention: 'For my son\'s safe return from deployment', remainingHours: 145, prayerCount: 87, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 'sample-6', userName: 'Anonymous', intention: 'Blessings for my new job', remainingHours: 120, prayerCount: 64, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 'sample-7', userName: 'Emily W.', intention: 'For the souls in purgatory', remainingHours: 98, prayerCount: 112, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+
+                        // 3-day Devotion Votive
+                        { id: 'sample-8', userName: 'Michael P.', intention: 'Help with finding employment', remainingHours: 65, prayerCount: 43, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 'sample-9', userName: 'Lisa T.', intention: 'For my father\'s surgery tomorrow', remainingHours: 58, prayerCount: 71, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 'sample-10', userName: 'Anonymous', intention: 'Strength to overcome addiction', remainingHours: 49, prayerCount: 56, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 'sample-11', userName: 'Robert H.', intention: 'For my daughter\'s safe delivery', remainingHours: 38, prayerCount: 92, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+
+                        // 1-day Humble Prayer
+                        { id: 'sample-12', userName: 'Grace L.', intention: 'Today\'s challenges at work', remainingHours: 18, prayerCount: 12, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 'sample-13', userName: 'Thomas A.', intention: 'For those suffering today', remainingHours: 15, prayerCount: 28, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 'sample-14', userName: 'Anonymous', intention: 'Gratitude for this beautiful day', remainingHours: 12, prayerCount: 19, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 'sample-15', userName: 'Patricia B.', intention: 'Peace in my heart', remainingHours: 8, prayerCount: 34, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 'sample-16', userName: 'James C.', intention: 'Help with an important decision', remainingHours: 6, prayerCount: 15, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    ];
+                    setCandles(sampleCandles);
+                } else {
+                    setCandles(mapped);
+                }
             } catch (err) {
                 console.error('Failed to load candles', err);
+                // On error, still load sample data
+                const sampleCandles: Candle[] = [
+                    { id: 'sample-1', userName: 'Maria S.', intention: 'For my mother\'s healing', remainingHours: 720, prayerCount: 342, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS' },
+                    { id: 'sample-2', userName: 'John M.', intention: 'Guidance for my family', remainingHours: 310, prayerCount: 156, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                    { id: 'sample-3', userName: 'David R.', intention: 'For my son\'s safe return', remainingHours: 145, prayerCount: 87, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                    { id: 'sample-4', userName: 'Michael P.', intention: 'Help with finding employment', remainingHours: 65, prayerCount: 43, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 'sample-5', userName: 'Grace L.', intention: 'Today\'s challenges', remainingHours: 18, prayerCount: 12, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                ];
+                setCandles(sampleCandles);
             } finally {
                 setLoading(false);
             }

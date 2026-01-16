@@ -171,7 +171,7 @@ const MemorialCard = ({
                             }}
                             className="w-full py-2 rounded-lg font-semibold text-xs text-gray-500 hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all"
                         >
-                            Visit Chapel
+                            Visit Memorial
                         </button>
                     )}
                 </div>
@@ -250,11 +250,11 @@ export default function MemorialsClient() {
                     <div className="max-w-3xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-6">
                             <Heart className="w-4 h-4 text-rose-400" />
-                            <span className="text-sm font-medium text-white/90">Digital Chapels</span>
+                            <span className="text-sm font-medium text-white/90">Digital Memorials</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">
-                            Visit a Chapel of Remembrance
+                            Visit a Memorial of Remembrance
                         </h1>
                         <p className="text-lg text-slate-300 mb-4">
                             Create a sacred space to honor the memory of those you love. Light candles, offer prayers, and share cherished memories.
@@ -269,7 +269,7 @@ export default function MemorialsClient() {
                                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type="text"
-                                        placeholder="Find a memorial chapel..."
+                                        placeholder="Find a memorial..."
                                         className="w-full pl-12 pr-4 py-4 rounded-xl border border-white/10 bg-white/10 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white/20 transition-all backdrop-blur-sm"
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
@@ -280,7 +280,7 @@ export default function MemorialsClient() {
                                     className="flex-shrink-0 px-8 py-4 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-all shadow-lg flex items-center justify-center gap-2 hover:-translate-y-0.5"
                                 >
                                     <Plus className="w-5 h-5" />
-                                    Create Chapel
+                                    Create Memorial
                                 </Link>
                             </div>
                         </div>
@@ -393,7 +393,7 @@ export default function MemorialsClient() {
                             <span className="text-sm font-medium text-amber-300">Premium Features</span>
                         </div>
                         <h2 className="text-3xl font-serif font-bold mb-4">
-                            Create a Chapel for Your Loved One
+                            Create a Memorial for Your Loved One
                         </h2>
                         <p className="text-slate-300 mb-4 max-w-xl mx-auto">
                             A permanent memorial where family and friends can gather, light candles, and share cherished memories.

@@ -81,12 +81,6 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 ### 💳 Payments & Subscriptions
 | Feature | Description | Status |
 |---------|-------------|--------|
-| **Free Tier** | Basic features with ads | ✅ |
-| **Plus Subscription** | $4.99/mo - Ad-free, offline mode, 2 family members | ✅ |
-| **Premium Subscription** | $9.99/mo - All Plus + AI suggestions, 5 family members | ✅ |
-| **Lifetime Access** | $149.99 - All features forever | ✅ |
-| **Google Play Billing** | In-app purchases on Android | ✅ NEW |
-| **Cashfree (Web)** | Web payments via Cashfree | ✅ |
 | **Mass Offerings** | Request Masses for intentions | ✅ |
 | **Platform Donations** | One-time and recurring donations | ✅ |
 
@@ -110,7 +104,7 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 | **Social Sharing** | OG images for prayers | ✅ |
 | **Vercel Analytics** | Performance monitoring | ✅ |
 | **Speed Insights** | Core Web Vitals tracking | ✅ |
-| **Offline Mode** | Use without internet (Premium) | ✅ NEW |
+| **Offline Mode** | Use without internet | ✅ NEW |
 
 ### 📰 Content
 | Feature | Description | Status |

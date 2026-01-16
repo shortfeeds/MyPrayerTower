@@ -117,10 +117,10 @@ export function Header() {
         { href: '/bouquets', label: 'Spiritual Bouquets', icon: BookOpen, description: 'Send spiritual gifts' },
     ];
 
-    // 3. REMEMBER (Digital Chapels)
+    // 3. REMEMBER (Digital Memorials)
     const rememberLinks = [
-        { href: '/memorials', label: 'Search Chapels', icon: Search, description: 'Find a loved one' },
-        { href: '/memorials/create', label: 'Create Chapel', icon: Star, description: 'Create a digital chapel' },
+        { href: '/memorials', label: 'Search Memorials', icon: Search, description: 'Find a loved one' },
+        { href: '/memorials/create', label: 'Create Memorial', icon: Star, description: 'Create a digital memorial' },
         { href: '/anniversaries', label: 'Anniversaries', icon: Calendar, description: 'Remembering dates' },
     ];
 
@@ -176,8 +176,8 @@ export function Header() {
                                 <button
                                     onClick={() => { setPrayOpen(!prayOpen); setOfferOpen(false); setLearnOpen(false); setLocateOpen(false); }}
                                     className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${prayOpen
-                                            ? 'bg-white text-sacred-900 shadow-lg scale-105'
-                                            : 'bg-white/20 text-white hover:bg-white/30 hover:scale-105 shadow-md'
+                                        ? 'bg-white text-sacred-900 shadow-lg scale-105'
+                                        : 'bg-white/20 text-white hover:bg-white/30 hover:scale-105 shadow-md'
                                         }`}
                                 >
                                     <Sparkles className={`w-4 h-4 ${prayOpen ? 'text-gold-600' : 'text-gold-300'}`} />

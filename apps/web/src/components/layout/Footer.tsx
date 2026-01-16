@@ -92,7 +92,7 @@ export function Footer() {
 
     const mobileNavItems = [
         { href: '/', label: 'Home', icon: Home },
-        { href: '/memorials', label: 'Chapels', icon: Heart },
+        { href: '/memorials', label: 'Memorials', icon: Heart },
         { href: '/churches', label: 'Sacred Spaces', icon: Church },
         { href: '/prayers', label: 'Prayers', icon: Star },
         { href: '#offerings', label: 'Offerings', icon: Gift, isAction: true },
@@ -155,7 +155,7 @@ export function Footer() {
                             <ul className="space-y-3 text-sm">
                                 <li><Link href="/candles" className="hover:text-gold-400 transition-colors">Light a Candle</Link></li>
                                 <li><Link href="/mass-offerings" className="hover:text-gold-400 transition-colors">Request Mass</Link></li>
-                                <li><Link href="/memorials" className="hover:text-gold-400 transition-colors">Digital Chapels</Link></li>
+                                <li><Link href="/memorials" className="hover:text-gold-400 transition-colors">Digital Memorials</Link></li>
                                 <li><Link href="/bouquets" className="hover:text-gold-400 transition-colors">Spiritual Bouquets</Link></li>
                                 <li><Link href="/donate" className="hover:text-gold-400 transition-colors">Donate</Link></li>
                             </ul>

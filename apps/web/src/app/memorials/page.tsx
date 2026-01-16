@@ -2,11 +2,11 @@ import { Metadata } from 'next';
 import MemorialsClient from './MemorialsClient';
 
 export const metadata: Metadata = {
-    title: 'Digital Chapels | Sacred Remembrance',
-    description: 'Create a lasting tribute for your loved ones. Light candles, offer prayers, and share memories in a sacred digital sanctuary.',
+    title: 'Digital Memorials | Sacred Remembrance',
+    description: 'Create a lasting tribute. Honor your loved ones with digital memorials, prayers, and remembrance.',
     openGraph: {
-        title: 'Digital Chapels | Sacred Remembrance - MyPrayerTower',
-        description: 'Create a lasting tribute for your loved ones. Light candles, offer prayers, and share memories in a sacred digital sanctuary.',
+        title: 'Digital Memorials | Sacred Remembrance - MyPrayerTower',
+        description: 'Honor your loved ones with digital memorials, prayers, and sacred remembrance.',
         type: 'website',
     },
 };

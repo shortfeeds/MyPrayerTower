@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { getUserFromCookie } from '@/lib/auth';
 import { moderateContent } from '@/lib/moderation';
 import { unstable_cache } from 'next/cache';
+import { notifyIndexNow } from '@/lib/indexnow';
 
 // Alias db to prisma for compatibility with existing code in this file
 const prisma = db;
@@ -121,6 +122,9 @@ export async function lightVirtualCandle(data: {
             }
         });
 
+        // Auto-notify search engines of new candle
+        await notifyIndexNow('/candles');
+
         return { success: true, candle };
     } catch (error) {
         console.error('Error lighting candle:', error);
@@ -165,7 +169,9 @@ export async function createVirtualCandle(data: {
         }
     });
 
-    // Return candle ID for payment flow
+    // Auto-notify search engines
+    await notifyIndexNow('/candles');
+
     return { candleId: candle.id, amount };
 }
 

@@ -205,7 +205,7 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                 <div className="relative z-10 container mx-auto px-4 pt-20 pb-32">
                     <Link href="/memorials" className="inline-flex items-center gap-2 text-slate-300 hover:text-white mb-8 transition-colors">
                         <ChevronLeft className="w-5 h-5" />
-                        Return to Chapels
+                        Return to Memorials
                     </Link>
 
                     <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
@@ -269,8 +269,8 @@ export function MemorialProfile({ initialMemorial }: { initialMemorial: Memorial
                                         // Ideally call API here
                                     }}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${remindersEnabled
-                                            ? 'bg-amber-500/20 border-amber-400 text-amber-200'
-                                            : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
+                                        ? 'bg-amber-500/20 border-amber-400 text-amber-200'
+                                        : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
                                         }`}
                                 >
                                     {remindersEnabled ? <Bell className="w-4 h-4 fill-current" /> : <BellOff className="w-4 h-4" />}
