@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { getActiveCandles, prayForCandle } from '@/app/actions/spiritual';
+import { getActiveCandles, prayForCandle, getPublicCandleStats } from '@/app/actions/spiritual';
 import { CandleHero } from '@/components/candles/CandleHero';
 import { CandleStats } from '@/components/candles/CandleStats';
 import { CandleCreationModal } from '@/components/candles/CandleCreationModal';
@@ -23,6 +23,7 @@ interface Candle {
     tier: CandleTier;
     litAt: string;
     duration: string;
+    country?: string;
 }
 
 // Tier configuration - Spiritual progression to encourage upgrades
@@ -188,6 +189,7 @@ function CandleCard({ candle, onPray }: { candle: Candle; onPray: (id: string) =
 // Main Page
 export default function CandlesPage() {
     const [candles, setCandles] = useState<Candle[]>([]);
+    const [activeCount, setActiveCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
     const [prayerCompleteOpen, setPrayerCompleteOpen] = useState(false);
@@ -195,8 +197,15 @@ export default function CandlesPage() {
     useEffect(() => {
         const fetchCandles = async () => {
             try {
-                const data = await getActiveCandles();
-                const mapped: Candle[] = data.map(c => {
+                // Fetch stats and candles in parallel
+                const [candlesData, stats] = await Promise.all([
+                    getActiveCandles(),
+                    getPublicCandleStats()
+                ]);
+
+                setActiveCount(stats.activeCount);
+
+                const mapped: Candle[] = candlesData.map(c => {
                     const expiresAt = new Date(c.expiresAt);
                     const now = new Date();
                     const hours = Math.max(0, Math.floor((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60)));
@@ -209,7 +218,8 @@ export default function CandlesPage() {
                         prayerCount: c.prayerCount || 0,
                         tier: 'basic',
                         litAt: new Date(c.litAt).toISOString(),
-                        duration: c.duration
+                        duration: c.duration,
+                        country: c.country || undefined
                     };
                 });
 
@@ -217,15 +227,14 @@ export default function CandlesPage() {
                 if (mapped.length === 0) {
                     const sampleCandles: Candle[] = [
                         // 30-day Divine Cathedral
-                        { id: 'sample-1', userName: 'Maria S.', intention: 'For my mother\'s healing from cancer', remainingHours: 720, prayerCount: 342, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS' },
-                        { id: 'sample-2', userName: 'Anonymous', intention: 'Thanksgiving for answered prayers', remainingHours: 650, prayerCount: 289, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS' },
+                        { id: 'sample-1', userName: 'Maria S.', intention: 'For my mother\'s healing from cancer', remainingHours: 720, prayerCount: 342, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'US' },
+                        { id: 'sample-2', userName: 'Anonymous', intention: 'Thanksgiving for answered prayers', remainingHours: 650, prayerCount: 289, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'MX' },
 
                         // 14-day Blessed Marian
-                        { id: 'sample-3', userName: 'John M.', intention: 'Guidance for my family during difficult times', remainingHours: 310, prayerCount: 156, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
-                        { id: 'sample-4', userName: 'Sarah K.', intention: 'For peace in our troubled world', remainingHours: 280, prayerCount: 198, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                        { id: 'sample-3', userName: 'John M.', intention: 'Guidance for my family during difficult times', remainingHours: 310, prayerCount: 156, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'CA' },
+                        { id: 'sample-4', userName: 'Sarah K.', intention: 'For peace in our troubled world', remainingHours: 280, prayerCount: 198, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'GB' },
 
                         // 7-day Sacred Altar
-                        { id: 'sample-5', userName: 'David R.', intention: 'For my son\'s safe return from deployment', remainingHours: 145, prayerCount: 87, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
                         { id: 'sample-6', userName: 'Anonymous', intention: 'Blessings for my new job', remainingHours: 120, prayerCount: 64, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
                         { id: 'sample-7', userName: 'Emily W.', intention: 'For the souls in purgatory', remainingHours: 98, prayerCount: 112, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
 
@@ -324,7 +333,7 @@ export default function CandlesPage() {
                         </div>
                         <div className="w-px h-12 bg-neutral-800" />
                         <div>
-                            <span className="block text-2xl font-bold text-white mb-1">{candles.length}</span>
+                            <span className="block text-2xl font-bold text-white mb-1">{activeCount > 0 ? activeCount.toLocaleString() : candles.length}</span>
                             Active Candles
                         </div>
                     </div>
@@ -346,11 +355,8 @@ export default function CandlesPage() {
                             <p className="text-amber-400/60 text-sm">Angels carry your prayers to Heaven</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.royal.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                            {groupedCandles.royal.map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
-                        {groupedCandles.royal.length > 10 && (
-                            <p className="text-center text-amber-400/60 mt-4 text-sm">+ {groupedCandles.royal.length - 10} more candles burning</p>
-                        )}
                     </section>
                 )}
 
@@ -362,11 +368,8 @@ export default function CandlesPage() {
                             <p className="text-blue-400/60 text-sm">Under Our Lady of Guadalupe's protection</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.premium.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                            {groupedCandles.premium.map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
-                        {groupedCandles.premium.length > 10 && (
-                            <p className="text-center text-blue-400/60 mt-4 text-sm">+ {groupedCandles.premium.length - 10} more candles burning</p>
-                        )}
                     </section>
                 )}
 
@@ -378,11 +381,8 @@ export default function CandlesPage() {
                             <p className="text-neutral-400 text-sm">Presented before the Lord at His altar</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.taper.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                            {groupedCandles.taper.map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
-                        {groupedCandles.taper.length > 10 && (
-                            <p className="text-center text-amber-100/60 mt-4 text-sm">+ {groupedCandles.taper.length - 10} more candles burning</p>
-                        )}
                     </section>
                 )}
 
@@ -394,11 +394,8 @@ export default function CandlesPage() {
                             <p className="text-red-400/60 text-sm">A sincere offering of faith</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.votive.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                            {groupedCandles.votive.map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
-                        {groupedCandles.votive.length > 10 && (
-                            <p className="text-center text-red-400/60 mt-4 text-sm">+ {groupedCandles.votive.length - 10} more candles burning</p>
-                        )}
                     </section>
                 )}
 
@@ -410,11 +407,8 @@ export default function CandlesPage() {
                             <p className="text-neutral-500 text-sm">A simple prayer for today</p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.tealight.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                            {groupedCandles.tealight.map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
                         </div>
-                        {groupedCandles.tealight.length > 10 && (
-                            <p className="text-center text-neutral-400/60 mt-4 text-sm">+ {groupedCandles.tealight.length - 10} more candles burning</p>
-                        )}
                     </section>
                 )}
             </div>

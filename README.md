@@ -12,12 +12,13 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 
 ## ✨ What's New (January 2026)
 - 🕊️ **Sanctuary Redesign** - A complete visual transformation for a more sacred, contemplative experience.
+- 🕯️ **Global Candle Community** - **2,500+ active candles** now visible with country flags and real-time prayer counters.
 - ⏳ **Stillness Moment** - A mindful pause after every prayer action to foster spiritual reflection.
 - 💐 **Spiritual Bouquets** - Send curated bundles of prayers and masses to loved ones.
 - ⛪ **Digital Chapels** - Create beautiful, lasting tributes in our renamed Memorials section.
-- 💎 **Sacred Offerings** - Simplified, whole-number pricing for all contributions ($10, $50).
-- 🕯️ **Refined Offering Dialog** - Beautiful tabbed interface for candles, masses, and bouquets.
+- 💎 **Sacred Offerings** - Simplified, whole-number pricing for all contributions.
 - 📱 **Prayer Corner** - A renamed and refocused dashboard for your spiritual journey.
+- 🌍 **Localization** - Added country support to prayers and intentions.
 
 ---
 
@@ -34,7 +35,7 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 | **Saint of the Day** | Learn about saints throughout the year | ✅ |
 | **Confession Guide** | Examination of conscience tool | ✅ |
 | **Bible Reader** | Full Bible with chapter navigation | ✅ |
-| **Virtual Candles** | Light digital prayer candles for intentions | ✅ NEW |
+| **Virtual Candles** | Light digital prayer candles with premium effects | ✅ NEW |
 | **Daily Examen** | Guided examination of conscience | ✅ NEW |
 
 ### 📖 Faith Resources
@@ -59,6 +60,7 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 | **User Dashboard** | Personal prayer stats and saved content | ✅ |
 | **Prayer Streaks** | Gamification with streak tracking | ✅ |
 | **Badges & Achievements** | 12+ badges for prayer milestones | ✅ |
+| **Country Identification** | Display country flag with user profile | ✅ NEW |
 | **Prayer Groups** | Create and join prayer communities | ✅ |
 | **Sacrament Records** | Track personal sacrament history | ✅ |
 | **Order History** | Track Mass offerings and donations | ✅ |
@@ -71,7 +73,7 @@ Find Catholic churches worldwide, join a global prayer community, and grow in fa
 ### 🕯️ Spiritual Gifts & Memorials
 | Feature | Description | Status |
 |---------|-------------|--------|
-| **Virtual Candles** | 1-30 day digital prayer candles (Whole number offerings) | ✅ NEW |
+| **Virtual Candles** | 5 Tiers (1-30 days) with premium visuals | ✅ NEW |
 | **Spiritual Bouquets** | Gift prayer collections to loved ones | ✅ NEW |
 | **Mass Offerings** | Request Masses with simplified donation tiers | ✅ |
 | **Digital Chapels** | Permanent memorial tributes (formerly Memorial Pages) | ✅ NEW |
@@ -166,18 +168,14 @@ pnpm --filter @mpt/web dev
 # Database (Required)
 DATABASE_URL="postgresql://user:pass@localhost:5432/myprayertower"
 
-# Cashfree Payments (Required for web payments)
-CASHFREE_APP_ID="your_app_id"
-CASHFREE_SECRET_KEY="your_secret_key"
-CASHFREE_ENVIRONMENT="sandbox"  # or "production"
+# PayPal
+NEXT_PUBLIC_PAYPAL_CLIENT_ID=AZ3c6O0DJtvSCjr7LTBRSgugVnLfCJSZmIeB27xEFsgslNkjTu7wR92V1E-K2luCnN4ZIAreeCvx1-Fc
+PAYPAL_CLIENT_SECRET=EHK0ebHCK7vtCuOOznhuoEupHi1rmB3weFoDdnkLbpnm_h7bzjEVhLyUmzSXiub2r-jgCAlGqmnPw9xj
+PAYPAL_ENVIRONMENT=live  # or "live" for production
 
-# Google Play Billing (Required for Android)
-ANDROID_PACKAGE_NAME="com.myprayertower.app"
-GOOGLE_PLAY_CLIENT_EMAIL="service-account@project.iam.gserviceaccount.com"
-GOOGLE_PLAY_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 
-# AdSense (Optional)
-NEXT_PUBLIC_ADSENSE_CLIENT_ID="ca-pub-XXXXXXXXXXXXXXXX"
+# AdSense
+NEXT_PUBLIC_ADSENSE_CLIENT_ID="ca-pub-1009360672921924"
 ```
 
 ---
@@ -266,16 +264,18 @@ Cashfree: https://myprayertower.com/api/webhooks/cashfree
 
 ---
 
-## � Pricing & Plans
+## 💎 Pricing & Plans
 
 ### 🕯️ Virtual Candles
-Light a candle on the global prayer wall for your intentions.
+Light a candle on the global prayer wall. Higher tiers offer extended visibility and premium visual effects.
+
 | Duration | Tier | Price | Features |
 |:---------|:-----|:------|:---------|
-| **1 Day** | Free | $0.00 | Basic white candle, visible for 24 hours |
-| **3 Days** | Basic | $2.99 | 72-hour visibility, basic glow effect |
-| **7 Days** | Standard | $5.99 | 1-week visibility, standard effects |
-| **30 Days** | Premium | $14.99 | 1-month visibility, premium gold/rose effects, "Top Supporter" badge |
+| **1 Day** | **Humble Prayer** | Free | Basic white candle, visible for 24 hours |
+| **3 Days** | **Devotion Votive** | $2.49 | 3-day visibility, red glow effect |
+| **7 Days** | **Sacred Altar** | $4.99 | 1-week visibility, amber altar glow |
+| **14 Days** | **Blessed Marian** | $9.99 | 2-week visibility, blue Marian aura, **Premium Animation** |
+| **30 Days** | **Divine Cathedral** | $14.99 | 1-month visibility, gold divine radiance, **Sparkle Effects**, **Top Placement** |
 
 ### ⛪ Mass Offerings
 Request Holy Mass to be offered for your specific intentions.

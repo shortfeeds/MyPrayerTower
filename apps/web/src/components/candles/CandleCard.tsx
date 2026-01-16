@@ -17,48 +17,11 @@ export interface Candle {
     prayerCount: number;
     isUserCandle?: boolean;
     tier: CandleTier;
+    country?: string;
     litAt?: string;
 }
 
-export const CANDLE_STYLES: Record<CandleColor, { bg: string; flame: string; glow: string; border: string; name: string; badge: string }> = {
-    gold: {
-        bg: 'bg-gradient-to-b from-amber-200 via-yellow-100 to-amber-50',
-        flame: '#FFD700',
-        glow: 'shadow-amber-400/50',
-        border: 'border-amber-400/50',
-        name: 'Sacred Gold',
-        badge: 'bg-gradient-to-r from-amber-400 to-yellow-500'
-    },
-    blue: {
-        bg: 'bg-gradient-to-b from-sky-200 via-blue-100 to-sky-50',
-        flame: '#60A5FA',
-        glow: 'shadow-sky-400/50',
-        border: 'border-sky-400/50',
-        name: 'Blessed Blue',
-        badge: 'bg-gradient-to-r from-sky-400 to-blue-500'
-    },
-    red: {
-        bg: 'bg-gradient-to-b from-rose-200 via-pink-100 to-rose-50',
-        flame: '#FB7185',
-        glow: 'shadow-rose-400/50',
-        border: 'border-rose-400/50',
-        name: 'Divine Love',
-        badge: 'bg-gradient-to-r from-rose-400 to-pink-500'
-    },
-    white: {
-        bg: 'bg-gradient-to-b from-slate-100 via-gray-50 to-white',
-        flame: '#FFA500',
-        glow: 'shadow-orange-300/40',
-        border: 'border-gray-300/50',
-        name: 'Pure Light',
-        badge: 'bg-gradient-to-r from-gray-400 to-gray-500'
-    },
-};
-
-interface CandleCardProps {
-    candle: Candle;
-    onPray: (id: string) => void;
-}
+// ... styles remain same ...
 
 export function CandleCard({ candle, onPray }: CandleCardProps) {
     const style = CANDLE_STYLES[candle.color];
@@ -69,6 +32,15 @@ export function CandleCard({ candle, onPray }: CandleCardProps) {
         setJustPrayed(true);
         onPray(candle.id);
         setTimeout(() => setJustPrayed(false), 2000);
+    };
+
+    const formatTimeLeft = (hours: number) => {
+        if (hours > 24) {
+            const days = Math.floor(hours / 24);
+            const h = hours % 24;
+            return `${days}d ${h}h left`;
+        }
+        return `${hours}h left`;
     };
 
     return (
@@ -126,8 +98,11 @@ export function CandleCard({ candle, onPray }: CandleCardProps) {
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs font-semibold text-gray-900">{candle.userName}</span>
-                            <span className="text-[10px] text-gray-500 flex items-center gap-1">
-                                {candle.remainingHours}h left
+                            {candle.country && (
+                                <span className="text-[10px] text-gray-500 font-medium">{candle.country}</span>
+                            )}
+                            <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                {formatTimeLeft(candle.remainingHours)}
                             </span>
                         </div>
                     </div>
@@ -136,8 +111,8 @@ export function CandleCard({ candle, onPray }: CandleCardProps) {
                     <button
                         onClick={handlePray}
                         className={`group/btn relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${justPrayed
-                                ? 'bg-amber-100 text-amber-700'
-                                : 'bg-gray-50 text-gray-600 hover:bg-amber-50 hover:text-amber-600'
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-gray-50 text-gray-600 hover:bg-amber-50 hover:text-amber-600'
                             }`}
                         disabled={justPrayed}
                     >

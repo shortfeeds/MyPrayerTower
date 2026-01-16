@@ -14,6 +14,7 @@ export type VirtualCandle = {
     intention: string;
     isAnonymous: boolean;
     name: string | null;
+    country: string | null;
     duration: string;
     litAt: Date;
     expiresAt: Date;
@@ -34,12 +35,13 @@ export const getActiveCandles = unstable_cache(
                 paymentStatus: 'PAID'
             },
             orderBy: { litAt: 'desc' },
-            take: 50,
+            take: 100,
             select: {
                 id: true,
                 intention: true,
                 isAnonymous: true,
                 name: true,
+                country: true,
                 duration: true,
                 litAt: true,
                 expiresAt: true,
@@ -58,6 +60,17 @@ export const getActiveCandles = unstable_cache(
     ['active-candles'],
     { revalidate: 60, tags: ['candles'] }
 );
+
+export async function getPublicCandleStats() {
+    const activeCount = await db.prayerCandle.count({
+        where: {
+            isActive: true,
+            expiresAt: { gt: new Date() }
+        }
+    });
+
+    return { activeCount };
+}
 
 // Light a virtual candle (free 1-day candles, or creates pending for paid)
 // Update durationDays map

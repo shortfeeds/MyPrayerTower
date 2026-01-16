@@ -1158,6 +1158,7 @@ model PrayerCandle {
   intention     String
   isAnonymous   Boolean        @default(false)
   name          String?
+  country       String?
   email         String?
   amount        Int            // Cents
   duration      String    // ONE_DAY, THREE_DAYS, SEVEN_DAYS, FOURTEEN_DAYS, THIRTY_DAYS
