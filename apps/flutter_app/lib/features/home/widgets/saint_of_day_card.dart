@@ -160,26 +160,7 @@ class SaintOfDayCard extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10), // Reduced from 16
-                    // Read more button
-                    Row(
-                      children: [
-                        Text(
-                          'Learn More',
-                          style: GoogleFonts.inter(
-                            fontSize: 12, // Reduced from 13
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.gold400,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(
-                          LucideIcons.arrowRight,
-                          size: 12, // Reduced from 14
-                          color: AppTheme.gold400,
-                        ),
-                      ],
-                    ),
+                    // Removed "Learn More" row to save space - card is tappable
                   ],
                 ),
               ),
