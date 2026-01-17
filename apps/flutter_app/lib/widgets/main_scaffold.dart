@@ -256,8 +256,8 @@ class _PremiumNavButtonState extends State<_PremiumNavButton>
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: EdgeInsets.symmetric(
-            horizontal: widget.isActive ? 12 : 8,
-            vertical: 12, // Increased padding
+            horizontal: widget.isActive ? 10 : 6,
+            vertical: 6, // Reduced padding to fit content
           ),
           decoration: widget.isActive
               ? BoxDecoration(
@@ -269,7 +269,7 @@ class _PremiumNavButtonState extends State<_PremiumNavButton>
                       AppTheme.gold400.withValues(alpha: 0.15),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(24), // Larger radius
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: AppTheme.gold500.withValues(alpha: 0.3),
                     width: 1,
@@ -281,22 +281,22 @@ class _PremiumNavButtonState extends State<_PremiumNavButton>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AnimatedScale(
-                scale: widget.isActive ? 1.1 : 1.0,
+                scale: widget.isActive ? 1.05 : 1.0,
                 duration: const Duration(milliseconds: 200),
                 child: Icon(
                   widget.icon,
                   color: widget.isActive
                       ? AppTheme.gold500
                       : Colors.white.withValues(alpha: 0.6),
-                  size: 26, // Increased icon size
+                  size: 22, // Reduced to fit
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2), // Reduced gap
               // Always show label for all items
               Text(
                 widget.label,
                 style: GoogleFonts.inter(
-                  fontSize: 11, // Increased font size
+                  fontSize: 10, // Slightly smaller
                   fontWeight: widget.isActive
                       ? FontWeight.bold
                       : FontWeight.w500,

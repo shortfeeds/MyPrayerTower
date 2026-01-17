@@ -3,63 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/theme/app_theme.dart';
 import '../providers/prayers_provider.dart';
 import '../../../widgets/app_bar_menu_button.dart';
 
-/// Category color configuration matching web app
-const Map<String, Map<String, Color>> categoryColors = {
-  'marian': {
-    'bg': Color(0xFFDBEAFE),
-    'text': Color(0xFF1D4ED8),
-    'accent': Color(0xFF3B82F6),
-  },
-  'saints': {
-    'bg': Color(0xFFF3E8FF),
-    'text': Color(0xFF7C3AED),
-    'accent': Color(0xFF8B5CF6),
-  },
-  'novenas': {
-    'bg': Color(0xFFFEF3C7),
-    'text': Color(0xFFB45309),
-    'accent': Color(0xFFF59E0B),
-  },
-  'healing': {
-    'bg': Color(0xFFD1FAE5),
-    'text': Color(0xFF047857),
-    'accent': Color(0xFF10B981),
-  },
-  'litanies': {
-    'bg': Color(0xFFFFE4E6),
-    'text': Color(0xFFBE123C),
-    'accent': Color(0xFFF43F5E),
-  },
-  'morning': {
-    'bg': Color(0xFFFEF9C3),
-    'text': Color(0xFFA16207),
-    'accent': Color(0xFFEAB308),
-  },
-  'evening': {
-    'bg': Color(0xFFE0E7FF),
-    'text': Color(0xFF4338CA),
-    'accent': Color(0xFF6366F1),
-  },
-  'rosary': {
-    'bg': Color(0xFFFCE7F3),
-    'text': Color(0xFFBE185D),
-    'accent': Color(0xFFEC4899),
-  },
-  'default': {
-    'bg': Color(0xFFF3F4F6),
-    'text': Color(0xFF374151),
-    'accent': Color(0xFF6B7280),
-  },
-};
-
-Map<String, Color> getCategoryStyle(String? slug) {
-  final key = (slug ?? 'default').toLowerCase();
-  return categoryColors[key] ?? categoryColors['default']!;
-}
-
+/// Prayer Library Screen - Sacred Digital Space Theme
 class PrayersScreen extends ConsumerWidget {
   const PrayersScreen({super.key});
 
@@ -68,306 +16,39 @@ class PrayersScreen extends ConsumerWidget {
     final categoriesAsync = ref.watch(prayerCategoriesFromDbProvider);
 
     return Scaffold(
-      backgroundColor: const Color(
-        0xFFFFFBEB,
-      ), // Warm amber background like web
+      backgroundColor: AppTheme.deepSpace,
       body: CustomScrollView(
         slivers: [
-          // Hero Section
-          SliverToBoxAdapter(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: Column(
-                  children: [
-                    // App Bar Row
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        children: [
-                          const AppBarMenuButton(iconColor: Colors.black87),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(
-                              LucideIcons.search,
-                              color: Colors.black87,
-                            ),
-                            onPressed: () => _showSearchDialog(context, ref),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Hero Content
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                      child: Column(
-                        children: [
-                          // Badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.1),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  LucideIcons.bookOpen,
-                                  size: 14,
-                                  color: Colors.white70,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Catholic Treasury',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          // Title
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Library of ',
-                                  style: GoogleFonts.merriweather(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: 'Sacred Prayers',
-                                  style: GoogleFonts.merriweather(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    foreground: Paint()
-                                      ..shader =
-                                          const LinearGradient(
-                                            colors: [
-                                              Color(0xFFD97706),
-                                              Color(0xFFEA580C),
-                                            ],
-                                          ).createShader(
-                                            const Rect.fromLTWH(0, 0, 200, 40),
-                                          ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Explore our comprehensive collection of traditional Catholic prayers, litanies, and novenas.',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
-                              height: 1.5,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 20),
-                          // Search Bar
-                          GestureDetector(
-                            onTap: () => _showSearchDialog(context, ref),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey.shade200),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    LucideIcons.search,
-                                    size: 20,
-                                    color: Colors.grey.shade500,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    'Search prayers, novenas, litanies...',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 14,
-                                      color: Colors.grey.shade500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          // Hero Header
+          SliverToBoxAdapter(child: _buildHeroHeader(context, ref)),
 
-          // Suggested for Today Section
+          // Quick Access Paths
+          SliverToBoxAdapter(child: _buildQuickPaths(context)),
+
+          // Section Title
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        LucideIcons.play,
-                        size: 18,
-                        color: Colors.amber.shade600,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Suggested for Today',
-                        style: GoogleFonts.merriweather(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
+                  const Icon(
+                    LucideIcons.library,
+                    size: 18,
+                    color: AppTheme.gold500,
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _SuggestedCard(
-                          label: 'MORNING OFFERING',
-                          title: 'Act of Consecration',
-                          preview: 'O my Queen, O my Mother, I love thee...',
-                          duration: '~1 min',
-                          gradientColors: const [
-                            Color(0xFFFEF3C7),
-                            Colors.white,
-                          ],
-                          accentColor: const Color(0xFFB45309),
-                          onTap: () => context.push('/prayers/morning'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _SuggestedCard(
-                          label: 'EVENING PEACE',
-                          title: 'Psalm 91',
-                          preview:
-                              'He who dwells in the shelter of the Most High...',
-                          duration: '~3 min',
-                          gradientColors: const [
-                            Color(0xFFDBEAFE),
-                            Colors.white,
-                          ],
-                          accentColor: const Color(0xFF1D4ED8),
-                          onTap: () => context.push('/prayers/evening'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Prayer Paths Section
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                  const SizedBox(width: 8),
                   Text(
-                    'PRAYER PATHS',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.grey.shade500,
-                      letterSpacing: 1.5,
+                    'All Categories',
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _PathChip(
-                        icon: LucideIcons.heart,
-                        label: 'Healing & Comfort',
-                        bgColor: const Color(0xFFD1FAE5),
-                        textColor: const Color(0xFF047857),
-                        onTap: () => context.push('/prayers/healing'),
-                      ),
-                      _PathChip(
-                        icon: LucideIcons.scroll,
-                        label: 'Grief & Loss',
-                        bgColor: const Color(0xFFF1F5F9),
-                        textColor: const Color(0xFF475569),
-                        onTap: () => context.push('/prayers/deceased'),
-                      ),
-                      _PathChip(
-                        icon: LucideIcons.users,
-                        label: 'Family Life',
-                        bgColor: const Color(0xFFFEF3C7),
-                        textColor: const Color(0xFF92400E),
-                        onTap: () => context.push('/prayers/family'),
-                      ),
-                      _PathChip(
-                        icon: LucideIcons.star,
-                        label: 'Marian Devotion',
-                        bgColor: const Color(0xFFDBEAFE),
-                        textColor: const Color(0xFF1D4ED8),
-                        onTap: () => context.push('/prayers/marian'),
-                      ),
-                    ],
                   ),
                 ],
               ),
             ),
           ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
-          // Categories Section Title
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'ALL CATEGORIES',
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.grey.shade500,
-                  letterSpacing: 1.5,
-                ),
-              ),
-            ),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
           // Categories Grid
           categoriesAsync.when(
@@ -378,18 +59,15 @@ class PrayersScreen extends ConsumerWidget {
                   crossAxisCount: 2,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
-                  childAspectRatio: 1.4,
+                  childAspectRatio: 1.3,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final category = categories[index];
-                  final style = getCategoryStyle(category.id);
                   return _CategoryCard(
                     id: category.id,
                     name: category.name,
                     icon: category.icon,
                     count: category.count,
-                    bgColor: style['bg']!,
-                    textColor: style['text']!,
                     onTap: () => context.push(
                       '/prayers/${category.id}',
                       extra: category.name,
@@ -399,42 +77,257 @@ class PrayersScreen extends ConsumerWidget {
               ),
             ),
             loading: () => const SliverFillRemaining(
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(
+                child: CircularProgressIndicator(color: AppTheme.gold500),
+              ),
             ),
             error: (err, _) => SliverToBoxAdapter(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Column(
+              child: _buildErrorState(ref, err.toString()),
+            ),
+          ),
+
+          // Bottom Padding for Floating Nav
+          const SliverToBoxAdapter(child: SizedBox(height: 120)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeroHeader(BuildContext context, WidgetRef ref) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppTheme.royalPurple900, AppTheme.sacredNavy900],
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top Row
+              Row(
+                children: [
+                  const AppBarMenuButton(iconColor: Colors.white70),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(LucideIcons.search, color: Colors.white70),
+                    onPressed: () => _showSearchDialog(context, ref),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Badge
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppTheme.gold500.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppTheme.gold500.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      LucideIcons.bookOpen,
+                      size: 14,
+                      color: AppTheme.gold400,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Catholic Treasury',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.gold400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Title
+              Text(
+                'Library of',
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [AppTheme.gold400, AppTheme.gold600],
+                ).createShader(bounds),
+                child: Text(
+                  'Sacred Prayers',
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              Text(
+                'Explore our comprehensive collection of traditional Catholic prayers, litanies, and novenas.',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: Colors.white.withValues(alpha: 0.7),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Search Bar
+              GestureDetector(
+                onTap: () => _showSearchDialog(context, ref),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
+                  ),
+                  child: Row(
                     children: [
                       Icon(
-                        LucideIcons.alertCircle,
-                        color: Colors.red.shade400,
-                        size: 48,
+                        LucideIcons.search,
+                        size: 20,
+                        color: Colors.white.withValues(alpha: 0.5),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(width: 12),
                       Text(
-                        'Failed to load categories',
+                        'Search prayers, novenas, litanies...',
                         style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red.shade700,
+                          fontSize: 14,
+                          color: Colors.white.withValues(alpha: 0.5),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextButton(
-                        onPressed: () =>
-                            ref.invalidate(prayerCategoriesFromDbProvider),
-                        child: const Text('Retry'),
                       ),
                     ],
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickPaths(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'PRAYER PATHS',
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.textMuted,
+              letterSpacing: 1.5,
             ),
           ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _PathChip(
+                  icon: LucideIcons.sun,
+                  label: 'Morning',
+                  onTap: () => context.push('/prayers/morning'),
+                ),
+                const SizedBox(width: 8),
+                _PathChip(
+                  icon: LucideIcons.moon,
+                  label: 'Evening',
+                  onTap: () => context.push('/prayers/evening'),
+                ),
+                const SizedBox(width: 8),
+                _PathChip(
+                  icon: LucideIcons.heart,
+                  label: 'Healing',
+                  onTap: () => context.push('/prayers/healing'),
+                ),
+                const SizedBox(width: 8),
+                _PathChip(
+                  icon: LucideIcons.star,
+                  label: 'Marian',
+                  onTap: () => context.push('/prayers/marian'),
+                ),
+                const SizedBox(width: 8),
+                _PathChip(
+                  icon: LucideIcons.users,
+                  label: 'Family',
+                  onTap: () => context.push('/prayers/family'),
+                ),
+              ],
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(WidgetRef ref, String error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              LucideIcons.alertCircle,
+              color: AppTheme.error,
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Failed to load prayers',
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error,
+              style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textMuted),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () => ref.invalidate(prayerCategoriesFromDbProvider),
+              icon: const Icon(LucideIcons.refreshCcw, size: 16),
+              label: const Text('Retry'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.gold500,
+                foregroundColor: AppTheme.sacredNavy900,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -444,22 +337,62 @@ class PrayersScreen extends ConsumerWidget {
   }
 }
 
-class _SuggestedCard extends StatelessWidget {
+// Path Chip Widget
+class _PathChip extends StatelessWidget {
+  final IconData icon;
   final String label;
-  final String title;
-  final String preview;
-  final String duration;
-  final List<Color> gradientColors;
-  final Color accentColor;
   final VoidCallback onTap;
 
-  const _SuggestedCard({
+  const _PathChip({
+    required this.icon,
     required this.label,
-    required this.title,
-    required this.preview,
-    required this.duration,
-    required this.gradientColors,
-    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppTheme.sacredNavy900,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppTheme.gold500.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: AppTheme.gold500),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Category Card Widget
+class _CategoryCard extends StatelessWidget {
+  final String id;
+  final String name;
+  final String icon;
+  final int count;
+  final VoidCallback onTap;
+
+  const _CategoryCard({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.count,
     required this.onTap,
   });
 
@@ -471,153 +404,20 @@ class _SuggestedCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: gradientColors,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
+            colors: [
+              AppTheme.sacredNavy900,
+              AppTheme.sacredNavy900.withValues(alpha: 0.8),
+            ],
           ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: accentColor.withValues(alpha: 0.2)),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 12,
               offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                color: accentColor,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              title,
-              style: GoogleFonts.merriweather(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              preview,
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(LucideIcons.clock, size: 12, color: accentColor),
-                const SizedBox(width: 4),
-                Text(
-                  duration,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: accentColor,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PathChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color bgColor;
-  final Color textColor;
-  final VoidCallback onTap;
-
-  const _PathChip({
-    required this.icon,
-    required this.label,
-    required this.bgColor,
-    required this.textColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: textColor.withValues(alpha: 0.2)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 16, color: textColor),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: textColor,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CategoryCard extends StatelessWidget {
-  final String id;
-  final String name;
-  final String icon;
-  final int count;
-  final Color bgColor;
-  final Color textColor;
-  final VoidCallback onTap;
-
-  const _CategoryCard({
-    required this.id,
-    required this.name,
-    required this.icon,
-    required this.count,
-    required this.bgColor,
-    required this.textColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -629,28 +429,28 @@ class _CategoryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: bgColor,
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppTheme.gold500.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Text(icon, style: const TextStyle(fontSize: 20)),
+                  child: Text(icon, style: const TextStyle(fontSize: 22)),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
+                    horizontal: 10,
+                    vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: bgColor,
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppTheme.royalPurple700.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     '$count',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: textColor,
+                      color: AppTheme.gold400,
                     ),
                   ),
                 ),
@@ -659,10 +459,10 @@ class _CategoryCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               name,
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: Colors.white,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -674,6 +474,7 @@ class _CategoryCard extends StatelessWidget {
   }
 }
 
+// Search Dialog
 class _SearchDialog extends ConsumerStatefulWidget {
   const _SearchDialog();
 
@@ -698,8 +499,8 @@ class _SearchDialogState extends ConsumerState<_SearchDialog> {
         : const AsyncValue<List<dynamic>>.data([]);
 
     return Dialog(
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: AppTheme.sacredNavy900,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: Container(
         width: double.infinity,
         constraints: const BoxConstraints(maxHeight: 500, maxWidth: 400),
@@ -713,13 +514,18 @@ class _SearchDialogState extends ConsumerState<_SearchDialog> {
                   child: TextField(
                     controller: _controller,
                     autofocus: true,
+                    style: GoogleFonts.inter(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Search prayers...',
-                      prefixIcon: const Icon(LucideIcons.search),
+                      hintStyle: GoogleFonts.inter(color: AppTheme.textMuted),
+                      prefixIcon: const Icon(
+                        LucideIcons.search,
+                        color: AppTheme.gold500,
+                      ),
                       filled: true,
-                      fillColor: Colors.grey.shade100,
+                      fillColor: AppTheme.deepSpace,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide.none,
                       ),
                     ),
@@ -729,7 +535,7 @@ class _SearchDialogState extends ConsumerState<_SearchDialog> {
                 const SizedBox(width: 8),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(LucideIcons.x),
+                  icon: const Icon(LucideIcons.x, color: AppTheme.textMuted),
                 ),
               ],
             ),
@@ -741,7 +547,7 @@ class _SearchDialogState extends ConsumerState<_SearchDialog> {
                     return Center(
                       child: Text(
                         'Type at least 2 characters to search',
-                        style: GoogleFonts.inter(color: Colors.grey),
+                        style: GoogleFonts.inter(color: AppTheme.textMuted),
                       ),
                     );
                   }
@@ -749,7 +555,7 @@ class _SearchDialogState extends ConsumerState<_SearchDialog> {
                     return Center(
                       child: Text(
                         'No prayers found',
-                        style: GoogleFonts.inter(color: Colors.grey),
+                        style: GoogleFonts.inter(color: AppTheme.textMuted),
                       ),
                     );
                   }
@@ -762,24 +568,27 @@ class _SearchDialogState extends ConsumerState<_SearchDialog> {
                         leading: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFEF3C7),
-                            borderRadius: BorderRadius.circular(8),
+                            color: AppTheme.gold500.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
                             LucideIcons.bookOpen,
                             size: 18,
-                            color: Color(0xFFB45309),
+                            color: AppTheme.gold500,
                           ),
                         ),
                         title: Text(
                           prayer.title,
-                          style: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
                         ),
                         subtitle: Text(
                           prayer.categoryLabel,
                           style: GoogleFonts.inter(
                             fontSize: 12,
-                            color: Colors.grey,
+                            color: AppTheme.textMuted,
                           ),
                         ),
                         onTap: () {
@@ -790,8 +599,15 @@ class _SearchDialogState extends ConsumerState<_SearchDialog> {
                     },
                   );
                 },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (_, __) => const Center(child: Text('Search failed')),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(color: AppTheme.gold500),
+                ),
+                error: (_, __) => Center(
+                  child: Text(
+                    'Search failed',
+                    style: GoogleFonts.inter(color: AppTheme.error),
+                  ),
+                ),
               ),
             ),
           ],
