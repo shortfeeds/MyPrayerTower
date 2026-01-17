@@ -37,12 +37,15 @@ class PrayersScreen extends ConsumerWidget {
                     color: AppTheme.gold500,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    'All Categories',
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  Flexible(
+                    child: Text(
+                      'All Categories',
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -59,7 +62,7 @@ class PrayersScreen extends ConsumerWidget {
                   crossAxisCount: 2,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
-                  childAspectRatio: 1.3,
+                  childAspectRatio: 1.1,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final category = categories[index];
