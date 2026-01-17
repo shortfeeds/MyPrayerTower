@@ -76,7 +76,7 @@ class SaintOfDayCard extends ConsumerWidget {
               },
               borderRadius: BorderRadius.circular(16),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16), // Reduced from 20
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -86,10 +86,10 @@ class SaintOfDayCard extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(10), // Reduced
                           decoration: BoxDecoration(
                             color: AppTheme.gold500.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               color: AppTheme.gold500.withValues(alpha: 0.3),
                             ),
@@ -97,22 +97,22 @@ class SaintOfDayCard extends ConsumerWidget {
                           child: const Icon(
                             LucideIcons.sparkles,
                             color: AppTheme.gold500,
-                            size: 24,
+                            size: 20, // Reduced from 24
                           ),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
+                            horizontal: 10,
+                            vertical: 5,
                           ),
                           decoration: BoxDecoration(
                             color: AppTheme.gold500,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
                             'Saint of the Day',
                             style: GoogleFonts.inter(
-                              fontSize: 11,
+                              fontSize: 10, // Reduced from 11
                               fontWeight: FontWeight.bold,
                               color: AppTheme.sacredNavy900,
                             ),
@@ -120,57 +120,62 @@ class SaintOfDayCard extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12), // Reduced from 16
                     // Saint name
                     Text(
                       saint.name,
                       style: GoogleFonts.merriweather(
-                        fontSize: 20,
+                        fontSize: 17, // Reduced from 20
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
-                      maxLines: 2,
+                      maxLines: 1, // Changed from 2
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (saint.title != null) ...[
-                      const SizedBox(height: 4),
+                    if (saint.title != null) ...const [
+                      SizedBox(height: 2), // Reduced from 4
+                    ],
+                    if (saint.title != null)
                       Text(
                         saint.title!,
                         style: GoogleFonts.inter(
-                          fontSize: 13,
+                          fontSize: 12, // Reduced from 13
                           color: AppTheme.gold400,
                           fontWeight: FontWeight.w500,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8), // Reduced from 12
                     // Bio
-                    Text(
-                      saint.shortBio ?? '',
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: Colors.white70,
-                        height: 1.5,
+                    Flexible(
+                      child: Text(
+                        saint.shortBio ?? '',
+                        maxLines: 2, // Reduced from 3
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(
+                          fontSize: 12, // Reduced from 13
+                          color: Colors.white70,
+                          height: 1.4, // Reduced from 1.5
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10), // Reduced from 16
                     // Read more button
                     Row(
                       children: [
                         Text(
                           'Learn More',
                           style: GoogleFonts.inter(
-                            fontSize: 13,
+                            fontSize: 12, // Reduced from 13
                             fontWeight: FontWeight.w600,
                             color: AppTheme.gold400,
                           ),
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 4),
                         const Icon(
                           LucideIcons.arrowRight,
-                          size: 14,
+                          size: 12, // Reduced from 14
                           color: AppTheme.gold400,
                         ),
                       ],
