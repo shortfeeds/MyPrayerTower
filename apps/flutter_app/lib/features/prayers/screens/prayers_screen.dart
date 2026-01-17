@@ -217,11 +217,14 @@ class PrayersScreen extends ConsumerWidget {
                         color: Colors.white.withValues(alpha: 0.5),
                       ),
                       const SizedBox(width: 12),
-                      Text(
-                        'Search prayers, novenas, litanies...',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          color: Colors.white.withValues(alpha: 0.5),
+                      Flexible(
+                        child: Text(
+                          'Search prayers, novenas, litanies...',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: Colors.white.withValues(alpha: 0.5),
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
