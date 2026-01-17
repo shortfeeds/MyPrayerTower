@@ -115,35 +115,35 @@ class AppTheme {
 
       // Typography
       textTheme: TextTheme(
-        displayLarge: GoogleFonts.outfit(
+        displayLarge: GoogleFonts.playfairDisplay(
           fontSize: 32,
           fontWeight: FontWeight.bold,
           color: textPrimary,
           letterSpacing: -0.5,
         ),
-        displayMedium: GoogleFonts.outfit(
+        displayMedium: GoogleFonts.playfairDisplay(
           fontSize: 28,
           fontWeight: FontWeight.bold,
           color: textPrimary,
           letterSpacing: -0.5,
         ),
-        displaySmall: GoogleFonts.outfit(
+        displaySmall: GoogleFonts.playfairDisplay(
           fontSize: 24,
           fontWeight: FontWeight.w700,
           color: textPrimary,
         ),
-        headlineMedium: GoogleFonts.outfit(
-          fontSize: 20,
+        headlineMedium: GoogleFonts.playfairDisplay(
+          fontSize: 22,
           fontWeight: FontWeight.w600,
           color: textPrimary,
         ),
-        headlineSmall: GoogleFonts.outfit(
+        headlineSmall: GoogleFonts.playfairDisplay(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: textPrimary,
         ),
         titleLarge: GoogleFonts.outfit(
-          fontSize: 16,
+          fontSize: 18,
           fontWeight: FontWeight.w600,
           color: textPrimary,
         ),
@@ -151,7 +151,7 @@ class AppTheme {
           // Keep Inter for reading text
           fontSize: 16,
           color: textSecondary,
-          height: 1.5,
+          height: 1.6,
         ),
         bodyMedium: GoogleFonts.inter(
           fontSize: 14,
@@ -171,8 +171,8 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.outfit(
-          fontSize: 20,
+        titleTextStyle: GoogleFonts.playfairDisplay(
+          fontSize: 22,
           fontWeight: FontWeight.w600,
           color: textPrimary,
         ),
@@ -232,7 +232,7 @@ class AppTheme {
         ),
       ),
 
-      // Bottom Nav
+      // Bottom Nav (Legacy - will be overridden by custom widget)
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: deepSpace,
         selectedItemColor: gold500,
@@ -281,6 +281,20 @@ class AppTheme {
         blurRadius: 16,
         spreadRadius: 2,
         offset: const Offset(0, 4),
+      ),
+    ],
+  );
+
+  static BoxDecoration get floatingNavDecoration => BoxDecoration(
+    color: sacredNavy900.withValues(alpha: 0.8),
+    borderRadius: BorderRadius.circular(32),
+    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.3),
+        blurRadius: 20,
+        spreadRadius: 2,
+        offset: const Offset(0, 8),
       ),
     ],
   );

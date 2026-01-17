@@ -80,18 +80,31 @@ class MainScaffold extends ConsumerWidget {
       },
       child: Scaffold(
         key: scaffoldKey,
-        body: child,
         drawer: const AppDrawer(),
-        extendBody: false,
-        resizeToAvoidBottomInset: true,
-        bottomNavigationBar: const _PremiumBottomNavBar(),
+        extendBody: true, // Allow content to flow behind floating nav
+        resizeToAvoidBottomInset: false, // Don't push nav up on keyboard
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Main Content
+            child,
+
+            // Floating Navigation Bar
+            const Positioned(
+              left: 16,
+              right: 16,
+              bottom: 24, // Floating distance from bottom
+              child: _PremiumFloatingNavBar(),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _PremiumBottomNavBar extends ConsumerWidget {
-  const _PremiumBottomNavBar();
+class _PremiumFloatingNavBar extends ConsumerWidget {
+  const _PremiumFloatingNavBar();
 
   List<_NavItem> _getVisibleItems(Map<String, bool> flags) {
     return [
@@ -118,23 +131,19 @@ class _PremiumBottomNavBar extends ConsumerWidget {
           path: '/prayer-wall',
           icon: LucideIcons.heartHandshake,
           activeIcon: LucideIcons.heartHandshake,
-          label: 'Community',
+          label: 'Social',
         ),
       const _NavItem(
         path: '/memorials',
         icon: LucideIcons.scroll,
         activeIcon: LucideIcons.scrollText,
-        label: 'Memorials',
+        label: 'Tribute',
       ),
     ];
   }
 
   int _getSelectedIndex(BuildContext context, List<_NavItem> items) {
     final location = GoRouterState.of(context).uri.path;
-    // Sort items by path length descending to ensuring longest match wins
-    // e.g. /prayers/rosary should match /prayers before /
-    // But we iterate efficiently.
-
     int bestMatchIndex = 0;
     int longestMatchLength = 0;
 
@@ -143,7 +152,6 @@ class _PremiumBottomNavBar extends ConsumerWidget {
       if (itemPath == '/' && location == '/') {
         return i;
       }
-
       if (itemPath != '/' && location.startsWith(itemPath)) {
         if (itemPath.length > longestMatchLength) {
           longestMatchLength = itemPath.length;
@@ -160,34 +168,13 @@ class _PremiumBottomNavBar extends ConsumerWidget {
     final items = _getVisibleItems(flags);
     final selectedIndex = _getSelectedIndex(context, items);
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppTheme.sacredNavy900.withValues(alpha: 0.98),
-            AppTheme.sacredNavy950,
-          ],
-        ),
-        border: Border(
-          top: BorderSide(
-            color: AppTheme.gold500.withValues(alpha: 0.3),
-            width: 1,
-          ),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(32),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          height: 80, // Increased height for better visibility
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          height: 70,
+          decoration: AppTheme.floatingNavDecoration,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(items.length, (index) {
