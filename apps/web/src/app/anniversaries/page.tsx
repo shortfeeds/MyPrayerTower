@@ -1,6 +1,5 @@
 import { Calendar, Search } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 
 export default function AnniversariesPage() {
     return (
@@ -38,16 +37,12 @@ export default function AnniversariesPage() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                        <Link href="/memorials">
-                            <Button className="bg-blue-600 hover:bg-blue-700 text-white min-w-[200px]">
-                                <Search className="w-4 h-4 mr-2" />
-                                Search Memorials
-                            </Button>
+                        <Link href="/memorials" className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white min-w-[200px] h-10 rounded-md px-4 py-2 font-medium transition-colors">
+                            <Search className="w-4 h-4 mr-2" />
+                            Search Memorials
                         </Link>
-                        <Link href="/">
-                            <Button variant="outline" className="min-w-[200px]">
-                                Return Home
-                            </Button>
+                        <Link href="/" className="inline-flex items-center justify-center border border-gray-200 bg-white hover:bg-gray-100 dark:bg-gray-950 dark:border-gray-800 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-100 min-w-[200px] h-10 rounded-md px-4 py-2 font-medium transition-colors">
+                            Return Home
                         </Link>
                     </div>
                 </div>
