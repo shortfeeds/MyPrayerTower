@@ -5,7 +5,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/billing/billing_service.dart';
 import '../../../core/billing/product_ids.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/constants/sacred_copy.dart';
 import '../../../core/providers/scaffold_key_provider.dart';
 import 'dart:math';
 import '../widgets/premium_candle_widget.dart';

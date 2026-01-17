@@ -60,7 +60,6 @@ import '../features/encyclicals/screens/encyclicals_screen.dart';
 import '../features/vatican_ii/screens/vatican_ii_screen.dart';
 import '../features/summa/screens/summa_screen.dart';
 import '../features/hierarchy/screens/hierarchy_screen.dart';
-import '../features/hierarchy/screens/hierarchy_screen.dart';
 import '../features/history/screens/history_screen.dart';
 import '../features/saints/screens/saints_screen.dart';
 import '../features/churches/screens/churches_screen.dart';
