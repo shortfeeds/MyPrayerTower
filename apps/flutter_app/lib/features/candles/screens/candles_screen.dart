@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/billing/billing_service.dart';
 import '../../../core/billing/product_ids.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/constants/sacred_copy.dart';
 import '../../../core/providers/scaffold_key_provider.dart';
 import 'dart:math';
 import '../widgets/premium_candle_widget.dart';
@@ -34,7 +35,7 @@ class CandleDuration {
 const List<CandleDuration> _durations = [
   CandleDuration(
     value: 'ONE_DAY',
-    label: '1 Day',
+    label: 'Humble Prayer (1 Day)',
     hours: 24,
     priceInCents: 0,
     priceDisplay: 'Free',
@@ -42,7 +43,7 @@ const List<CandleDuration> _durations = [
   ),
   CandleDuration(
     value: 'THREE_DAYS',
-    label: '3 Days',
+    label: 'Devotion Votive (3 Days)',
     hours: 72,
     priceInCents: 299,
     priceDisplay: '\$2.99',
@@ -50,7 +51,7 @@ const List<CandleDuration> _durations = [
   ),
   CandleDuration(
     value: 'SEVEN_DAYS',
-    label: '7 Days',
+    label: 'Sacred Altar (7 Days)',
     hours: 168,
     priceInCents: 599,
     priceDisplay: '\$5.99',
@@ -58,7 +59,7 @@ const List<CandleDuration> _durations = [
   ),
   CandleDuration(
     value: 'THIRTY_DAYS',
-    label: '30 Days',
+    label: 'Divine Cathedral (30 Days)',
     hours: 720,
     priceInCents: 1499,
     priceDisplay: '\$14.99',

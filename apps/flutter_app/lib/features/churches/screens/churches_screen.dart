@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../repositories/churches_repository.dart';
 import '../models/church_model.dart';
+import '../../../core/constants/sacred_copy.dart';
 import '../../../widgets/app_bar_menu_button.dart';
 
 /// Church type labels matching web app
@@ -192,7 +193,7 @@ class _ChurchesScreenState extends ConsumerState<ChurchesScreen> {
                           const SizedBox(height: 20),
                           // Title
                           Text(
-                            'Find Your Church',
+                            SacredCopy.churches.heroTitle,
                             style: GoogleFonts.merriweather(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -202,7 +203,7 @@ class _ChurchesScreenState extends ConsumerState<ChurchesScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Discover Catholic churches near you for Mass times, confession, and adoration.',
+                            SacredCopy.churches.heroSubtitle,
                             style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.white60,

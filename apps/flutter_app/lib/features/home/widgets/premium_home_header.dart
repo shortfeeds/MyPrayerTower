@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/constants/sacred_copy.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../widgets/app_bar_menu_button.dart';
 
@@ -130,9 +131,10 @@ class PremiumHomeHeader extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'May His grace be with you today.',
+                      SacredCopy.welcome.homepage,
                       style: GoogleFonts.outfit(
                         fontSize: 16,
+                        fontStyle: FontStyle.italic,
                         color: Colors.white.withValues(alpha: 0.9),
                         letterSpacing: 0.5,
                       ),

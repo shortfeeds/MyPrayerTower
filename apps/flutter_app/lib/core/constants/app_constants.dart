@@ -61,7 +61,7 @@ class ApiConstants {
   // Supabase Configuration
   static const String supabaseUrl = 'https://htgvilktnadnwlforyjt.supabase.co';
   static const String supabaseAnonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0Z3ZpbGt0bmFkbndsZm9yeWp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2NzA4MTUsImV4cCI6MjA4MjI0NjgxNX0.CzOjq_B--3u5oF3Q3eJ-pXHALL8zNRJx0hjBY3nBPGA';
+      'sb_publishable_14w0nGke1nQwy7Oq5VfYgw_I6iqux2_';
 }
 
 /// App-wide constants
