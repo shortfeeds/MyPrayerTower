@@ -144,12 +144,15 @@ class PrayersScreen extends ConsumerWidget {
                       color: AppTheme.gold400,
                     ),
                     const SizedBox(width: 6),
-                    Text(
-                      'Catholic Treasury',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.gold400,
+                    Flexible(
+                      child: Text(
+                        'Catholic Treasury',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.gold400,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
