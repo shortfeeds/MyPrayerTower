@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/billing/billing_service.dart';
 import '../../../core/billing/product_ids.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/providers/scaffold_key_provider.dart';
 import 'dart:math';
 import '../widgets/premium_candle_widget.dart';
@@ -330,7 +331,7 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Slate-900
+      backgroundColor: AppTheme.deepSpace, // Use Theme Background
       body: CustomScrollView(
         slivers: [
           // Gradient Header
@@ -341,9 +342,9 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFFD97706),
-                    Color(0xFFEA580C),
-                    Color(0xFFE11D48),
+                    AppTheme.gold600,
+                    AppTheme.royalPurple700,
+                    AppTheme.royalPurple900,
                   ],
                 ),
               ),
@@ -673,8 +674,9 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
               ),
-              itemCount: candles.length > (isCompact ? 8 : 9)
-                  ? (isCompact ? 8 : 9)
+              // Increase limit to 12 to show more rows
+              itemCount: candles.length > (isCompact ? 12 : 12)
+                  ? (isCompact ? 12 : 12)
                   : candles.length,
               itemBuilder: (context, index) {
                 final candle = candles[index];
@@ -698,12 +700,89 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
                       }
                     });
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('You prayed for ${candle.displayName}'),
-                        duration: const Duration(seconds: 1),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.pink.shade600,
+                    // Beautiful Success Dialog
+                    showDialog(
+                      context: context,
+                      builder: (context) => Dialog(
+                        backgroundColor: Colors.transparent,
+                        child: Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xFF1E1B4B), // Indigo 950
+                                Color(0xFF312E81), // Indigo 900
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: const Color(
+                                0xFFFFD700,
+                              ).withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFFFFD700,
+                                ).withValues(alpha: 0.1),
+                                blurRadius: 20,
+                                spreadRadius: 0,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                LucideIcons.heartHandshake,
+                                color: Color(0xFFFFD700),
+                                size: 48,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Prayer Offered',
+                                style: GoogleFonts.playfairDisplay(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                '"Your prayer has been offered.\nYou are not alone."',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  height: 1.5,
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              ElevatedButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFFFD700),
+                                  foregroundColor: const Color(0xFF1E1B4B),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 32,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Amen',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     );
                   },
