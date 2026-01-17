@@ -115,8 +115,11 @@ class _PremiumFeatureCardState extends State<PremiumFeatureCard>
                     ),
                     child: LayoutBuilder(
                       builder: (context, constraints) {
+                        // If height is constrained (like 92px in the error), forced compact layout
+                        // or if it's not large.
                         final bool useCompactLayout =
-                            constraints.maxHeight < 100 && !widget.isLarge;
+                            constraints.maxHeight < 125 ||
+                            (!widget.isLarge && constraints.maxHeight < 100);
 
                         // Content for compact layout (Row)
                         if (useCompactLayout) {
