@@ -13,11 +13,67 @@ class SaintsRepository {
   SaintsRepository(this._supabase);
 
   Future<Saint> getSaintOfTheDay({DateTime? date}) async {
+    final now = date ?? DateTime.now();
+    final month = now.month;
+    final day = now.day;
+
     try {
-      final data = await _supabase.from('Saint').select().limit(1).single();
-      return Saint.fromJson(data);
+      // Query by today's feast day (month and day of month)
+      final data = await _supabase
+          .from('Saint')
+          .select()
+          .eq('feastMonth', month)
+          .eq('feastDayOfMonth', day)
+          .limit(1)
+          .maybeSingle();
+
+      if (data != null) {
+        return Saint.fromJson(data);
+      }
+
+      // Fallback: Get any saint for this month
+      final monthData = await _supabase
+          .from('Saint')
+          .select()
+          .eq('feastMonth', month)
+          .limit(1)
+          .maybeSingle();
+
+      if (monthData != null) {
+        return Saint.fromJson(monthData);
+      }
+
+      // Last fallback: Mock data
+      return _getMockSaint();
     } catch (e) {
       return _getMockSaint();
+    }
+  }
+
+  /// Get all saints with optional pagination and month filter
+  Future<List<Saint>> getAllSaints({
+    int page = 1,
+    int limit = 24,
+    int? month,
+  }) async {
+    try {
+      final from = (page - 1) * limit;
+      final to = from + limit - 1;
+
+      var query = _supabase.from('Saint').select();
+
+      if (month != null) {
+        query = query.eq('feastMonth', month);
+      }
+
+      final data = await query
+          .order('feastMonth', ascending: true)
+          .order('feastDayOfMonth', ascending: true)
+          .range(from, to);
+
+      return (data as List).map((json) => Saint.fromJson(json)).toList();
+    } catch (e) {
+      return _getMockSaints();
     }
   }
 
