@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'package:lucide_icons/lucide_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/premium_glass_card.dart';
 
 class VaticanIIScreen extends StatelessWidget {
   const VaticanIIScreen({super.key});
@@ -8,46 +12,56 @@ class VaticanIIScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF9F6),
+      backgroundColor: AppTheme.sacredNavy950,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
-            title: const Text('Vatican II'),
-            backgroundColor: Colors.amber.shade800,
-            foregroundColor: Colors.white,
+            title: Text(
+              'Vatican II',
+              style: GoogleFonts.merriweather(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: AppTheme.sacredNavy900,
+            leading: IconButton(
+              icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
           ),
 
           SliverToBoxAdapter(
             child: Container(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.amber.shade700, Colors.orange.shade900],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+              decoration: const BoxDecoration(
+                gradient: AppTheme.primaryGradient,
               ),
               child: Column(
                 children: [
                   const Icon(
-                    Icons.account_balance,
+                    LucideIcons.landmark,
                     size: 48,
-                    color: Colors.white24,
+                    color: AppTheme.gold500,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Second Vatican Council',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    style: GoogleFonts.merriweather(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontFamily: 'Serif',
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'The 21st Ecumenical Council — 16 documents that shaped the modern Catholic Church.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white70),
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      color: Colors.white70,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),
@@ -55,12 +69,16 @@ class VaticanIIScreen extends StatelessWidget {
           ),
 
           // Constitutions
-          const SliverPadding(
-            padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
             sliver: SliverToBoxAdapter(
               child: Text(
                 'Constitutions (Highest Authority)',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: GoogleFonts.merriweather(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.gold500,
+                ),
               ),
             ),
           ),
@@ -86,12 +104,16 @@ class VaticanIIScreen extends StatelessWidget {
           ),
 
           // Decrees & Declarations
-          const SliverPadding(
-            padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
             sliver: SliverToBoxAdapter(
               child: Text(
                 'Decrees & Declarations',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: GoogleFonts.merriweather(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.gold500,
+                ),
               ),
             ),
           ),
@@ -116,7 +138,7 @@ class VaticanIIScreen extends StatelessWidget {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 50)),
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
     );
@@ -133,24 +155,20 @@ class _DocumentCard extends StatelessWidget {
     Color color;
     switch (document.type) {
       case 'constitution':
-        color = Colors.purple;
+        color = Colors.purpleAccent;
         break;
       case 'decree':
-        color = Colors.blue;
+        color = Colors.blueAccent;
         break;
       default:
-        color = Colors.amber.shade800;
+        color = AppTheme.gold500;
     }
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
-      ),
+    return PremiumGlassCard(
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: () => launchUrl(Uri.parse(document.url)),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -166,10 +184,11 @@ class _DocumentCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: color.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       document.type.toUpperCase(),
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         color: color,
@@ -177,20 +196,25 @@ class _DocumentCard extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  const Icon(Icons.open_in_new, size: 16, color: Colors.grey),
+                  const Icon(
+                    LucideIcons.externalLink,
+                    size: 16,
+                    color: Colors.white30,
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
               Text(
                 document.latinTitle,
-                style: const TextStyle(
+                style: GoogleFonts.merriweather(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
               Text(
                 document.title,
-                style: TextStyle(color: Colors.grey.shade600),
+                style: GoogleFonts.inter(color: Colors.white60, fontSize: 14),
               ),
               const SizedBox(height: 8),
               if (document.type == 'constitution')
@@ -198,16 +222,23 @@ class _DocumentCard extends StatelessWidget {
                   margin: const EdgeInsets.only(top: 4),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
+                    color: Colors.black.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.menu_book, size: 14, color: Colors.grey),
+                      const Icon(
+                        LucideIcons.book,
+                        size: 14,
+                        color: Colors.white54,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Topic: ${document.topic}',
-                        style: const TextStyle(fontSize: 12),
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: Colors.white70,
+                        ),
                       ),
                     ],
                   ),

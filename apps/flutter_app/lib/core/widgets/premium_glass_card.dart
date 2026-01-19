@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class PremiumGlassCard extends StatelessWidget {
   final Widget child;
@@ -59,7 +60,10 @@ class PremiumGlassCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: radius,
-          onTap: onTap,
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap!();
+          },
           splashColor: Colors.white.withValues(alpha: 0.1),
           highlightColor: Colors.white.withValues(alpha: 0.05),
           child: content,

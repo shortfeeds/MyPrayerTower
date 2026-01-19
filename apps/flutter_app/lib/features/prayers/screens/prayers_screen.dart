@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/premium_glass_card.dart';
+import '../../../core/widgets/sacred_shimmer.dart';
 import '../providers/prayers_provider.dart';
 import '../../../widgets/app_bar_menu_button.dart';
 
@@ -79,9 +81,18 @@ class PrayersScreen extends ConsumerWidget {
                 }, childCount: categories.length),
               ),
             ),
-            loading: () => const SliverFillRemaining(
-              child: Center(
-                child: CircularProgressIndicator(color: AppTheme.gold500),
+            loading: () => SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 1.0,
+                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return const SacredShimmer.rectangular(height: 160);
+                }, childCount: 8),
               ),
             ),
             error: (err, _) => SliverToBoxAdapter(
@@ -389,6 +400,10 @@ class _PathChip extends StatelessWidget {
   }
 }
 
+// ... (existing imports will be handled by context if I target correctly, but I need to add the import at top)
+
+// ...
+
 // Category Card Widget
 class _CategoryCard extends StatelessWidget {
   final String id;
@@ -407,77 +422,108 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return PremiumGlassCard(
+      padding: EdgeInsets.zero,
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.sacredNavy900,
-              AppTheme.sacredNavy900.withValues(alpha: 0.8),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+      child: Stack(
+        children: [
+          // 1. Watermark Icon (Background)
+          Positioned(
+            right: -10,
+            bottom: -15,
+            child: Transform.rotate(
+              angle: -0.2,
+              child: Text(
+                icon,
+                style: TextStyle(
+                  fontSize: 80,
+                  color: Colors.white.withValues(alpha: 0.05),
+                ),
+              ),
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
+          ),
+
+          // 2. Content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppTheme.gold500.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(icon, style: const TextStyle(fontSize: 22)),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.royalPurple700.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '$count',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.gold400,
+                // Icon & Count Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.gold500.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.gold500.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Text(icon, style: const TextStyle(fontSize: 24)),
                     ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black26,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '$count',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textMuted,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Title
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    name,
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      height: 1.2,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              name,
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+          ),
+
+          // 3. Subtle Active Indicator line at bottom
+          Positioned(
+            bottom: 0,
+            left: 20,
+            right: 20,
+            child: Container(
+              height: 2,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    AppTheme.gold500.withValues(alpha: 0.5),
+                    Colors.transparent,
+                  ],
+                ),
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

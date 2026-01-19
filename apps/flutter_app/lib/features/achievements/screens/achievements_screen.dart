@@ -2,19 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../providers/achievements_provider.dart';
 
 class Badge {
   final String id;
   final String name;
   final String icon; // Emoji character
-  final bool earned;
   final String description;
 
   const Badge({
     required this.id,
     required this.name,
     required this.icon,
-    required this.earned,
     required this.description,
   });
 }
@@ -35,72 +34,64 @@ class LeaderboardUser {
   });
 }
 
-const List<Badge> _badges = [
+const List<Badge> _allBadges = [
   Badge(
     id: 'first_prayer',
     name: 'First Prayer',
     icon: '🙏',
-    earned: true,
     description: 'Submit your first prayer',
   ),
   Badge(
     id: 'devoted',
     name: 'Devoted',
     icon: '✨',
-    earned: true,
     description: 'Submit 10 prayers',
   ),
   Badge(
     id: 'faithful',
     name: 'Faithful',
     icon: '🕯️',
-    earned: false,
     description: 'Submit 50 prayers',
   ),
   Badge(
     id: 'prayer_warrior',
     name: 'Prayer Warrior',
     icon: '⚔️',
-    earned: false,
     description: 'Submit 100 prayers',
   ),
   Badge(
     id: 'week_streak',
     name: 'Weekly Devotion',
     icon: '🔥',
-    earned: true,
     description: '7-day streak',
   ),
   Badge(
     id: 'month_streak',
     name: 'Monthly Devotion',
     icon: '💎',
-    earned: false,
     description: '30-day streak',
   ),
   Badge(
     id: 'explorer',
     name: 'Explorer',
     icon: '🗺️',
-    earned: true,
     description: 'Save 5 churches',
   ),
   Badge(
     id: 'helper',
     name: 'Helper',
     icon: '🤝',
-    earned: true,
     description: 'Pray for 10 others',
   ),
   Badge(
     id: 'intercessor',
     name: 'Intercessor',
     icon: '🌟',
-    earned: false,
     description: 'Pray for 100 others',
   ),
 ];
 
+// Mock leaderboard for now
 const List<LeaderboardUser> _leaderboard = [
   LeaderboardUser(
     rank: 1,
@@ -138,17 +129,6 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final userStats = {
-    'level': 8,
-    'xp': 780,
-    'xpToNext': 900,
-    'currentStreak': 12,
-    'longestStreak': 24,
-    'totalPrayers': 45,
-    'prayedFor': 156,
-    'rank': 47,
-  };
-
   @override
   void initState() {
     super.initState();
@@ -163,7 +143,9 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final progressPercent = (userStats['xp']! / userStats['xpToNext']!);
+    // Watch real user stats
+    final userStats = ref.watch(userStatsProvider);
+    final progressPercent = (userStats.xp / userStats.xpToNext).clamp(0.0, 1.0);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -182,10 +164,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Color(0xFF7C3AED),
-                Color(0xFF4F46E5),
-              ], // Purple-600 to Indigo-600
+              colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -239,7 +218,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                                 ),
                                 alignment: Alignment.center,
                                 child: Text(
-                                  '${userStats['level']}',
+                                  '${userStats.level}',
                                   style: GoogleFonts.inter(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
@@ -252,7 +231,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Level ${userStats['level']}',
+                                    'Level ${userStats.level}',
                                     style: GoogleFonts.inter(
                                       color: Colors.purple.shade100,
                                       fontSize: 13,
@@ -281,7 +260,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                                 ),
                               ),
                               Text(
-                                '#${userStats['rank']}',
+                                '#${userStats.rank > 0 ? userStats.rank : "--"}',
                                 style: GoogleFonts.inter(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -298,14 +277,14 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '${userStats['xp']} XP',
+                            '${userStats.xp} XP',
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
                             ),
                           ),
                           Text(
-                            '${userStats['xpToNext']} XP',
+                            '${userStats.xpToNext} XP',
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
@@ -327,7 +306,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '${(userStats['xpToNext'] as int) - (userStats['xp'] as int)} XP to Level ${(userStats['level'] as int) + 1}',
+                        '${userStats.xpToNext - userStats.xp} XP to Level ${userStats.level + 1}',
                         style: TextStyle(
                           color: Colors.purple.shade100,
                           fontSize: 12,
@@ -349,7 +328,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                 children: [
                   _StatCard(
                     icon: LucideIcons.flame,
-                    value: userStats['currentStreak'],
+                    value: userStats.currentStreak,
                     label: 'Streak',
                     countLabel: 'days',
                     color: Colors.orange,
@@ -357,7 +336,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                   const SizedBox(width: 8),
                   _StatCard(
                     icon: LucideIcons.trendingUp,
-                    value: userStats['longestStreak'],
+                    value: userStats.longestStreak,
                     label: 'Best',
                     countLabel: 'days',
                     color: Colors.green,
@@ -365,14 +344,14 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                   const SizedBox(width: 8),
                   _StatCard(
                     icon: LucideIcons.target,
-                    value: userStats['totalPrayers'],
+                    value: userStats.totalPrayers,
                     label: 'Prayers',
                     color: Colors.blue,
                   ),
                   const SizedBox(width: 8),
                   _StatCard(
                     icon: LucideIcons.star,
-                    value: userStats['prayedFor'],
+                    value: userStats.prayedFor,
                     label: 'Helped',
                     color: Colors.purple,
                   ),
@@ -406,11 +385,13 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                   ),
-                  itemCount: _badges.length,
+                  itemCount: _allBadges.length,
                   itemBuilder: (context, index) {
-                    final badge = _badges[index];
+                    final badge = _allBadges[index];
+                    final earned = userStats.earnedBadges.contains(badge.id);
+
                     return Opacity(
-                      opacity: badge.earned ? 1.0 : 0.5,
+                      opacity: earned ? 1.0 : 0.5,
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -435,7 +416,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                               ),
                             ),
                             const SizedBox(height: 4),
-                            if (badge.earned)
+                            if (earned)
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 6,
@@ -461,7 +442,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
                   },
                 ),
 
-                // Leaderboard Tab
+                // Leaderboard Tab (Mock for now)
                 ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _leaderboard.length,

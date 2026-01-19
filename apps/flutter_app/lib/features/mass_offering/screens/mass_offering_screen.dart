@@ -984,9 +984,22 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
         ),
         const SizedBox(height: 12),
         Center(
-          child: Text(
-            '🔒 Secure payment via PayPal',
-            style: GoogleFonts.inter(fontSize: 12, color: Colors.grey),
+          child: Column(
+            children: [
+              Text(
+                '🔒 Secure payment via PayPal',
+                style: GoogleFonts.inter(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'All offerings are voluntary and support prayer, remembrance, and platform operations.',
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  color: Colors.grey.shade500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
         ),
       ],

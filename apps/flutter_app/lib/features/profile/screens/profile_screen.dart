@@ -84,8 +84,16 @@ class ProfileScreen extends ConsumerWidget {
             leading: const SizedBox(),
             actions: [
               IconButton(
+                icon: const Icon(
+                  LucideIcons.bookOpen,
+                  color: AppTheme.gold500,
+                  size: 20,
+                ),
+                onPressed: () => context.push('/my-prayer-book'),
+              ),
+              IconButton(
                 icon: const Icon(LucideIcons.settings, color: Colors.white70),
-                onPressed: () {},
+                onPressed: () => context.push('/settings'),
               ),
             ],
           ),
@@ -158,7 +166,7 @@ class ProfileScreen extends ConsumerWidget {
                     title: 'My Prayers',
                     subtitle: 'View your prayer requests',
                     color: Colors.pink,
-                    onTap: () {},
+                    onTap: () => context.push('/my-prayer-book'),
                   ),
                   _MenuItem(
                     icon: LucideIcons.flame,

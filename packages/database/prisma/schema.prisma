@@ -70,6 +70,16 @@ model AppSettings {
   nativeAdsEnabled          Boolean @default(true)
   rewardedAdsEnabled        Boolean @default(true)
   
+  // AdMob Configuration
+  bannerAdUnitIdAndroid       String?
+  bannerAdUnitIdiOS           String?
+  interstitialAdUnitIdAndroid String?
+  interstitialAdUnitIdiOS     String?
+  nativeAdUnitIdAndroid       String?
+  nativeAdUnitIdiOS           String?
+  rewardedAdUnitIdAndroid     String?
+  rewardedAdUnitIdiOS         String?
+  
   // Additional Feature Toggles
   rosaryEnabled             Boolean @default(true)
   bibleEnabled              Boolean @default(true)
@@ -818,6 +828,10 @@ model User {
   level                                      Int               @default(1)
   xp                                         Int               @default(0)
   lastPrayerDate                             DateTime?
+  
+  // Relations
+  sentPartnerRequests     PrayerPartner[]   @relation("SentPartnerRequests")
+  receivedPartnerRequests PrayerPartner[]   @relation("ReceivedPartnerRequests")
   UserBadge                                  UserBadge[]
   BibleProgress                              BibleProgress[]
   ChurchAdmin                                ChurchAdmin[]
@@ -1629,16 +1643,18 @@ enum ModerationStatus {
 }
 
 enum NotificationType {
-  PRAYER_RECEIVED
-  PRAYER_APPROVED
-  PRAYER_REJECTED
-  SOMEONE_PRAYED
-  PRAYER_ANSWERED
-  CHURCH_EVENT
-  CLAIM_STATUS
   SYSTEM
-  DAILY_READING
-  NEW_DOCUMENT
+  ANNOUNCEMENT
+  EVENT
+  PRAYER_REQUEST
+  PRAYER_ANSWERED
+  PRAYER_COMMENT
+  CHURCH_UPDATE
+  DONATION_RECEIPT
+  MASS_OFFERING_UPDATE
+  PRAYER_PARTNER_REQUEST
+  PRAYER_PARTNER_ACCEPTED
+  CLAIM_STATUS
 }
 
 enum PrayerCategory {
@@ -2179,3 +2195,43 @@ model SystemSetting {
   updatedAt   DateTime @updatedAt
 }
 
+model PrayerPartner {
+  id          String            @id @default(cuid())
+  requesterId String
+  receiverId  String
+  status      PrayerPartnerStatus @default(PENDING)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  
+  requester   User              @relation("SentPartnerRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiver    User              @relation("ReceivedPartnerRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, receiverId])
+  @@index([requesterId])
+  @@index([receiverId])
+  @@index([status])
+}
+
+enum PrayerPartnerStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  BLOCKED
+}
+
+
+model Pilgrimage {
+  id            String   @id @default(cuid())
+  name          String
+  location      String
+  country       String
+  description   String   @db.Text
+  significance  String   @db.Text
+  imageUrl      String
+  virtualTourUrl String?
+  
+  viewCount     Int      @default(0)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

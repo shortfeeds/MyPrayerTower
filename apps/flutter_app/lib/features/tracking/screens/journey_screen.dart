@@ -14,6 +14,15 @@ class JourneyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PremiumScaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppTheme.gold500,
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Add Milestone coming soon!')),
+          );
+        },
+        child: const Icon(LucideIcons.plus, color: Colors.black),
+      ),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -48,53 +57,13 @@ class JourneyScreen extends StatelessWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 _buildTimelineItem(
-                  year: '2025',
-                  title: 'Pilgrimage to Lourdes',
-                  description: 'Visited the Grotto of Massabielle.',
-                  icon: LucideIcons.plane,
-                  color: Colors.blue,
-                  isLast: false,
-                ).animate(delay: 100.ms).fadeIn().slideX(),
-                _buildTimelineItem(
-                  year: '2024',
-                  title: 'Confirmation Sponsor',
-                  description: 'Sponsored Michael for his Confirmation.',
-                  icon: LucideIcons.users,
-                  color: Colors.purple,
-                  isLast: false,
-                ).animate(delay: 200.ms).fadeIn().slideX(),
-                _buildTimelineItem(
-                  year: '2023',
-                  title: 'Joined MyPrayerTower',
-                  description: 'Started tracking daily prayers.',
-                  icon: LucideIcons.smartphone,
-                  color: Colors.amber,
-                  isLast: false,
-                ).animate(delay: 300.ms).fadeIn().slideX(),
-                _buildTimelineItem(
-                  year: '2015',
-                  title: 'Marriage',
-                  description: 'Sacrament of Holy Matrimony.',
-                  icon: LucideIcons.heart,
-                  color: Colors.red,
-                  isLast: false,
-                ).animate(delay: 400.ms).fadeIn().slideX(),
-                _buildTimelineItem(
-                  year: '2008',
-                  title: 'First Communion',
-                  description: 'Received the Body of Christ.',
-                  icon: LucideIcons.cookie,
-                  color: Colors.white,
-                  isLast: false,
-                ).animate(delay: 500.ms).fadeIn().slideX(),
-                _buildTimelineItem(
-                  year: '2000',
-                  title: 'Baptism',
-                  description: 'Entered the Catholic Church.',
-                  icon: LucideIcons.droplets,
-                  color: Colors.cyan,
+                  year: DateTime.now().year.toString(),
+                  title: 'Journey Begun',
+                  description: 'Welcome to your spiritual journey.',
+                  icon: LucideIcons.footprints,
+                  color: AppTheme.gold500,
                   isLast: true,
-                ).animate(delay: 600.ms).fadeIn().slideX(),
+                ).animate(delay: 100.ms).fadeIn().slideX(),
 
                 const SizedBox(height: 50),
               ]),

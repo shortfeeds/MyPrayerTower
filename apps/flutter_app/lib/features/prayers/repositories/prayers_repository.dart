@@ -34,7 +34,7 @@ class PrayersRepository {
         return (data as List).map((json) => Prayer.fromJson(json)).toList();
       } else {
         // Fetch all
-        final data = await query.order('title');
+        final data = await query.order('title').limit(10000);
         return (data as List).map((json) => Prayer.fromJson(json)).toList();
       }
     } catch (e) {
@@ -49,7 +49,8 @@ class PrayersRepository {
       // Fetch all prayers to count by category
       final data = await _supabase
           .from('Prayer')
-          .select('category, category_label');
+          .select('category, category_label')
+          .limit(10000);
 
       // Group by category
       final categoryMap = <String, PrayerCategory>{};
@@ -114,6 +115,23 @@ class PrayersRepository {
       return Prayer.fromJson(data);
     } catch (e) {
       return null;
+    }
+  }
+
+  /// Fetch multiple prayers by their IDs
+  Future<List<Prayer>> getPrayersByIds(List<int> ids) async {
+    if (ids.isEmpty) return [];
+    try {
+      final data = await _supabase
+          .from('Prayer')
+          .select()
+          .filter('id', 'in', ids)
+          .order(
+            'title',
+          ); // Sort alphabetically? Or by added order? Alphabetically is standard.
+      return (data as List).map((json) => Prayer.fromJson(json)).toList();
+    } catch (e) {
+      return [];
     }
   }
 

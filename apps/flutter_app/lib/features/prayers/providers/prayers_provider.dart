@@ -7,7 +7,7 @@ final prayersProvider = FutureProvider.autoDispose
     .family<List<Prayer>, String?>((ref, category) {
       return ref
           .watch(prayersRepositoryProvider)
-          .getPrayers(category: category, limit: 50);
+          .getPrayers(category: category, limit: 1000);
     });
 
 /// Provider for paginated prayers in a category
@@ -30,3 +30,15 @@ final prayerSearchProvider = FutureProvider.autoDispose
     .family<List<Prayer>, String>((ref, query) {
       return ref.watch(prayersRepositoryProvider).searchPrayers(query);
     });
+
+/// Provider for random trending prayers
+final trendingPrayersProvider = FutureProvider.autoDispose<List<Prayer>>((
+  ref,
+) async {
+  // Fetch a larger batch of prayers
+  final prayers = await ref
+      .watch(prayersRepositoryProvider)
+      .getPrayers(limit: 50);
+  // Shuffle to randomize "trending" selection
+  return prayers..shuffle();
+});

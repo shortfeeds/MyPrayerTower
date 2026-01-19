@@ -602,6 +602,15 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'All offerings are voluntary and support prayer, remembrance, and platform operations.',
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      color: Colors.white54,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),

@@ -1,7 +1,7 @@
 name: myprayertower_app
 description: "MyPrayerTower - The All-in-One Catholic Services App"
 publish_to: 'none'
-version: 1.0.3+10
+version: 1.0.6+13
 
 environment:
   sdk: ^3.8.1
@@ -12,7 +12,7 @@ dependencies:
   
   # Core State Management & Navigation
   flutter_riverpod: ^2.5.1
-  go_router: ^14.3.0
+  go_router: ^17.0.0
   
   # HTTP Client & API
   dio: ^5.7.0
@@ -24,15 +24,17 @@ dependencies:
   
   # UI Components
   google_fonts: ^6.2.1
+  flutter_markdown: ^0.6.14
   flutter_svg: ^2.0.10
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
   lottie: ^3.1.2
-  flutter_animate: ^4.5.0
+  flutter_animate: ^4.5.2
   
   # Icons
   cupertino_icons: ^1.0.8
   lucide_icons: ^0.257.0
+  audioplayers: ^6.5.1
 
   
   # Maps & Location - REMOVED to reduce app size
@@ -67,6 +69,14 @@ dependencies:
   webview_flutter_web: ^0.2.3+4
   flutter_paypal_payment: ^1.0.8
   timeago: ^3.7.1
+  
+  # New Features Dependencies
+  onesignal_flutter: ^5.1.6           # Push Notifications
+  local_auth: ^2.3.0                  # Biometric Security
+  home_widget: ^0.6.0                 # Home Screen Widget
+  google_generative_ai: ^0.4.3        # AI Companion (Gemini)
+  geolocator: ^14.0.2                 # Parish Finder Location
+  permission_handler: ^11.3.1         # Permissions for location/notifications
 
 
 

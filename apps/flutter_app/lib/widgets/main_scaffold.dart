@@ -89,12 +89,12 @@ class MainScaffold extends ConsumerWidget {
             // Main Content
             child,
 
-            // Floating Navigation Bar
-            const Positioned(
+            // Floating Navigation Bar with safe area for system nav
+            Positioned(
               left: 16,
               right: 16,
-              bottom: 24, // Floating distance from bottom
-              child: _PremiumFloatingNavBar(),
+              bottom: 24 + MediaQuery.of(context).viewPadding.bottom,
+              child: const _PremiumFloatingNavBar(),
             ),
           ],
         ),
@@ -131,13 +131,13 @@ class _PremiumFloatingNavBar extends ConsumerWidget {
           path: '/prayer-wall',
           icon: LucideIcons.heartHandshake,
           activeIcon: LucideIcons.heartHandshake,
-          label: 'Social',
+          label: 'Prayer Wall',
         ),
       const _NavItem(
         path: '/memorials',
         icon: LucideIcons.scroll,
         activeIcon: LucideIcons.scrollText,
-        label: 'Tribute',
+        label: 'Memorials',
       ),
     ];
   }
@@ -253,60 +253,63 @@ class _PremiumNavButtonState extends State<_PremiumNavButton>
         builder: (context, child) {
           return Transform.scale(scale: _scaleAnimation.value, child: child);
         },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(
-            horizontal: widget.isActive ? 10 : 6,
-            vertical: 6, // Reduced padding to fit content
-          ),
-          decoration: widget.isActive
-              ? BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AppTheme.gold500.withValues(alpha: 0.25),
-                      AppTheme.gold400.withValues(alpha: 0.15),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppTheme.gold500.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                )
-              : null,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedScale(
-                scale: widget.isActive ? 1.05 : 1.0,
-                duration: const Duration(milliseconds: 200),
-                child: Icon(
-                  widget.icon,
-                  color: widget.isActive
-                      ? AppTheme.gold500
-                      : Colors.white.withValues(alpha: 0.6),
-                  size: 22, // Reduced to fit
-                ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              padding: EdgeInsets.symmetric(
+                horizontal: widget.isActive ? 20 : 0,
+                vertical: 6,
               ),
-              const SizedBox(height: 2), // Reduced gap
-              // Always show label for all items
-              Text(
-                widget.label,
-                style: GoogleFonts.inter(
-                  fontSize: 10, // Slightly smaller
-                  fontWeight: widget.isActive
-                      ? FontWeight.bold
-                      : FontWeight.w500,
-                  color: widget.isActive
-                      ? AppTheme.gold500
-                      : Colors.white.withValues(alpha: 0.6),
-                ),
+              decoration: widget.isActive
+                  ? BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFFFD700), // Bright Gold
+                          Color(0xFFF59E0B), // Amber 500
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFFD700).withValues(alpha: 0.4),
+                          blurRadius: 12,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    )
+                  : BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+              child: Icon(
+                widget.icon,
+                color: widget.isActive
+                    ? const Color(0xFF1E1B4B) // Sacred Navy for contrast
+                    : Colors.white.withValues(alpha: 0.5),
+                size: 24,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 4),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 200),
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                fontWeight: widget.isActive ? FontWeight.bold : FontWeight.w500,
+                color: widget.isActive
+                    ? const Color(0xFFFFD700) // Gold text for active
+                    : Colors.white.withValues(alpha: 0.5),
+                letterSpacing: 0.3,
+              ),
+              child: Text(widget.label),
+            ),
+          ],
         ),
       ),
     );

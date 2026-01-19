@@ -13,7 +13,8 @@ import '../../ads/widgets/smart_ad_banner.dart';
 import '../widgets/daily_reading_card.dart';
 import '../widgets/saint_of_day_card.dart';
 import '../widgets/live_stats_bar.dart';
-import '../widgets/verse_of_the_day.dart';
+// import '../widgets/verse_of_the_day.dart'; // Replaced
+import '../widgets/home_banners.dart';
 import '../widgets/quick_access_bar.dart';
 import '../widgets/trending_prayers.dart';
 
@@ -58,13 +59,13 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // 4. Verse of the Day
+          // 4. Featured Banners (Carousel) - Replaces Verse of the Day
           const SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 28, 20, 0),
+              padding: EdgeInsets.only(top: 24),
               child: FadeInSlideUp(
                 delay: Duration(milliseconds: 100),
-                child: VerseOfTheDayCard(),
+                child: HomeBannerCarousel(),
               ),
             ),
           ),
@@ -106,10 +107,16 @@ class HomeScreen extends ConsumerWidget {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       clipBehavior: Clip.none,
-                      children: const [
-                        SizedBox(width: 300, child: DailyReadingCard()),
-                        SizedBox(width: 16),
-                        SizedBox(width: 300, child: SaintOfDayCard()),
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.85,
+                          child: const DailyReadingCard(),
+                        ),
+                        const SizedBox(width: 16),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.85,
+                          child: const SaintOfDayCard(),
+                        ),
                       ],
                     ),
                   ),
@@ -173,9 +180,7 @@ class HomeScreen extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-
-                  // Feature Grid
-                  _buildFeatureGrid(context),
+                  _buildCategorizedFeatures(context),
                 ],
               ),
             ),
@@ -245,7 +250,7 @@ class HomeScreen extends ConsumerWidget {
           ),
 
           const SliverToBoxAdapter(
-            child: SizedBox(height: 120),
+            child: SizedBox(height: 140),
           ), // Bottom padding for nav bar
         ],
       ),
@@ -333,9 +338,52 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFeatureGrid(BuildContext context) {
-    final features = _getFeatures();
+  Widget _buildCategorizedFeatures(BuildContext context) {
+    return Column(
+      children: [
+        _buildSectionHeader('Prayer & Devotion', LucideIcons.flame),
+        _buildGrid(context, _getPrayerFeatures()),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Sacred Knowledge', LucideIcons.bookOpen),
+        _buildGrid(context, _getKnowledgeFeatures()),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Sacraments & Liturgy', LucideIcons.church),
+        _buildGrid(context, _getLiturgyFeatures()),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Community & Growth', LucideIcons.heartHandshake),
+        _buildGrid(context, _getCommunityFeatures()),
+      ],
+    );
+  }
 
+  Widget _buildSectionHeader(String title, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppTheme.gold500.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 16, color: AppTheme.gold500),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: GoogleFonts.merriweather(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGrid(BuildContext context, List<_FeatureItem> features) {
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -343,7 +391,7 @@ class HomeScreen extends ConsumerWidget {
         maxCrossAxisExtent: 200,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 1.1,
+        childAspectRatio: 1.3,
       ),
       itemCount: features.length,
       itemBuilder: (context, index) {
@@ -359,46 +407,338 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  List<_FeatureItem> _getFeatures() {
+  List<_FeatureItem> _getPrayerFeatures() {
     return [
-      _FeatureItem(LucideIcons.flame, 'Candles', 'Light a Candle', AppTheme.gold500, '/candles'),
-      _FeatureItem(LucideIcons.handsPraying, 'Prayers', 'Daily Prayers', Colors.blue.shade400, '/prayers'),
-      _FeatureItem(LucideIcons.heartHandshake, 'Prayer Wall', 'Community', Colors.pink.shade400, '/prayer-wall'),
-      _FeatureItem(LucideIcons.user, 'Saints', 'Holy Lives', Colors.purple.shade400, '/saints'),
-      _FeatureItem(LucideIcons.church, 'Churches', 'Find a Church', Colors.blue.shade600, '/churches'),
-      _FeatureItem(LucideIcons.flower, 'Memorials', 'Remembering', Colors.teal.shade500, '/memorials'),
-      _FeatureItem(LucideIcons.circleDot, 'Rosary', 'Holy Rosary', Colors.red.shade400, '/rosary'),
-      _FeatureItem(LucideIcons.bookOpen, 'Readings', 'Daily Readings', Colors.indigo.shade400, '/readings'),
-      _FeatureItem(LucideIcons.book, 'Bible', 'Holy Bible', Colors.brown.shade400, '/bible'),
-      _FeatureItem(LucideIcons.footprints, 'Stations', 'Way of Cross', Colors.grey.shade700, '/stations'),
-      _FeatureItem(LucideIcons.messageCircle, 'Confession', 'Reconciliation', Colors.purple.shade700, '/confession'),
-      _FeatureItem(LucideIcons.search, 'Examen', 'Daily Reflect', Colors.blueGrey, '/examen'),
-      _FeatureItem(LucideIcons.calendar, 'Novenas', '9 Days Prayer', Colors.orange.shade600, '/novenas'),
-      _FeatureItem(LucideIcons.library, 'Library', 'Catholic Texts', Colors.brown.shade600, '/library'),
-      _FeatureItem(LucideIcons.calendarDays, 'Calendar', 'Liturgical', Colors.green.shade600, '/calendar'),
-      _FeatureItem(LucideIcons.gift, 'Donate', 'Support Us', AppTheme.gold500, '/donate'),
-      _FeatureItem(LucideIcons.flower2, 'Bouquets', 'Spiritual Gifts', Colors.pink.shade300, '/bouquets'),
-      _FeatureItem(LucideIcons.bookType, 'Catechism', 'CCC', Colors.amber.shade800, '/catechism'),
-      _FeatureItem(LucideIcons.trophy, 'Challenges', 'Grow Faith', Colors.orange.shade500, '/challenges'),
-      _FeatureItem(LucideIcons.barChart2, 'Leaderboard', 'Activity', Colors.blue.shade400, '/leaderboard'),
-      _FeatureItem(LucideIcons.scale, 'Canon Law', 'Church Law', Colors.grey.shade600, '/canon_law'),
-      _FeatureItem(LucideIcons.scroll, 'Mass Offering', 'Offer Mass', AppTheme.gold600, '/mass-offering'),
-      _FeatureItem(LucideIcons.map, 'Pilgrimages', 'Sacred Places', Colors.green.shade700, '/pilgrimages'),
-      _FeatureItem(LucideIcons.circle, 'Chaplets', 'Divine Mercy', Colors.red.shade600, '/chaplets'),
-      _FeatureItem(LucideIcons.utensilsCrossed, 'Fasting', 'Sacrifice', Colors.grey.shade500, '/fasting'),
-      _FeatureItem(LucideIcons.aLargeSmall, 'Glossary', 'Terms', Colors.teal.shade700, '/glossary'),
-      _FeatureItem(LucideIcons.music, 'Hymns', 'Sacred Music', Colors.blue.shade300, '/hymns'),
-      _FeatureItem(LucideIcons.newspaper, 'News', 'Catholic News', Colors.blue.shade800, '/news'),
-      _FeatureItem(LucideIcons.medal, 'Achievements', 'Badges', AppTheme.gold400, '/achievements'),
-      _FeatureItem(LucideIcons.users, 'Groups', 'Prayer Groups', Colors.indigo.shade500, '/groups'),
-      _FeatureItem(LucideIcons.fileText, 'Encyclicals', 'Papal Docs', Colors.brown.shade500, '/encyclicals'),
-      _FeatureItem(LucideIcons.landmark, 'Vatican II', 'Council Docs', Colors.grey.shade800, '/vatican-ii'),
-      _FeatureItem(LucideIcons.bookOpenText, 'Summa', 'Aquinas', Colors.brown.shade700, '/summa'),
-      _FeatureItem(LucideIcons.network, 'Hierarchy', 'Church Struct', Colors.purple.shade900, '/hierarchy'),
-      _FeatureItem(LucideIcons.hourglass, 'History', 'Church Hist', Colors.brown.shade300, '/history'),
-      _FeatureItem(LucideIcons.droplet, 'Sacraments', 'Records', Colors.blue.shade200, '/sacraments'),
-      _FeatureItem(LucideIcons.award, 'Certificates', 'Sacramental', AppTheme.gold300, '/certificates'),
-      _FeatureItem(LucideIcons.mic2, 'Chant', 'Gregorian', Colors.brown.shade800, '/chant'),
+      _FeatureItem(
+        LucideIcons.flame,
+        'Candles',
+        'Light a Candle',
+        AppTheme.gold500,
+        '/candles',
+      ),
+      _FeatureItem(
+        LucideIcons.sparkles,
+        'Prayers',
+        'Daily Prayers',
+        Colors.blue.shade400,
+        '/prayers',
+      ),
+      _FeatureItem(
+        LucideIcons.circleDot,
+        'Rosary',
+        'Holy Rosary',
+        Colors.red.shade400,
+        '/rosary',
+      ),
+      _FeatureItem(
+        LucideIcons.footprints,
+        'Stations',
+        'Way of Cross',
+        Colors.purple.shade400,
+        '/stations-of-the-cross',
+      ),
+      _FeatureItem(
+        LucideIcons.focus,
+        'Focus Mode',
+        'Distraction Free',
+        Colors.indigo.shade400,
+        '/focus-mode',
+      ),
+      _FeatureItem(
+        LucideIcons.clock,
+        'Divine Office',
+        'Liturgy of Hours',
+        Colors.orange.shade600,
+        '/divine-office',
+      ),
+      _FeatureItem(
+        LucideIcons.circle,
+        'Chaplets',
+        'Divine Mercy',
+        Colors.teal.shade500,
+        '/chaplets',
+      ),
+      _FeatureItem(
+        LucideIcons.calendar,
+        'Novenas',
+        'Tracker',
+        Colors.cyan.shade600,
+        '/novena-tracker',
+      ),
+      _FeatureItem(
+        LucideIcons.search,
+        'Examen',
+        'Daily Reflect',
+        Colors.blueGrey,
+        '/examen',
+      ),
+      _FeatureItem(
+        LucideIcons.utensilsCrossed,
+        'Fasting',
+        'Sacrifice',
+        Colors.grey.shade500,
+        '/fasting',
+      ),
+    ];
+  }
+
+  List<_FeatureItem> _getKnowledgeFeatures() {
+    return [
+      _FeatureItem(
+        LucideIcons.bookOpen,
+        'Readings',
+        'Daily Mass',
+        Colors.green.shade600,
+        '/readings',
+      ),
+      _FeatureItem(
+        LucideIcons.book,
+        'Bible',
+        'Holy Bible',
+        Colors.brown.shade400,
+        '/bible',
+      ),
+      _FeatureItem(
+        LucideIcons.bot,
+        'AI Guide',
+        'Ask Questions',
+        Colors.purpleAccent.shade400,
+        '/ai-companion',
+      ),
+      _FeatureItem(
+        LucideIcons.listChecks,
+        'Plans',
+        'Reading Plans',
+        Colors.blueAccent.shade400,
+        '/reading-plans',
+      ),
+      _FeatureItem(
+        LucideIcons.user,
+        'Saints',
+        'Holy Lives',
+        Colors.orange.shade500,
+        '/saints',
+      ),
+      _FeatureItem(
+        LucideIcons.school,
+        'Catechism',
+        'CCC',
+        Colors.yellow.shade800,
+        '/catechism',
+      ),
+      _FeatureItem(
+        LucideIcons.library,
+        'Library',
+        'Catholic Texts',
+        Colors.blueGrey.shade600,
+        '/library',
+      ),
+      _FeatureItem(
+        LucideIcons.bookOpen,
+        'Summa',
+        'Aquinas',
+        Colors.deepOrange.shade700,
+        '/summa',
+      ),
+      _FeatureItem(
+        LucideIcons.landmark,
+        'Vatican II',
+        'Council Docs',
+        Colors.indigoAccent.shade700,
+        '/vatican-ii',
+      ),
+      _FeatureItem(
+        LucideIcons.fileText,
+        'Encyclicals',
+        'Papal Docs',
+        Colors.amber.shade700,
+        '/encyclicals',
+      ),
+      _FeatureItem(
+        LucideIcons.scale,
+        'Canon Law',
+        'Church Law',
+        Colors.red.shade700,
+        '/canon_law',
+      ),
+      _FeatureItem(
+        LucideIcons.hourglass,
+        'History',
+        'Church Hist',
+        Colors.brown.shade300,
+        '/history',
+      ),
+      _FeatureItem(
+        LucideIcons.type,
+        'Glossary',
+        'Terms',
+        Colors.teal.shade700,
+        '/glossary',
+      ),
+    ];
+  }
+
+  List<_FeatureItem> _getLiturgyFeatures() {
+    return [
+      _FeatureItem(
+        LucideIcons.messageCircle,
+        'Confession',
+        'Reconciliation',
+        Colors.purple.shade700,
+        '/confession',
+      ),
+      _FeatureItem(
+        LucideIcons.video,
+        'Live Mass',
+        'Stream',
+        Colors.redAccent.shade400,
+        '/live-mass',
+      ),
+      _FeatureItem(
+        LucideIcons.droplet,
+        'Sacraments',
+        'Records',
+        Colors.blue.shade500,
+        '/sacraments',
+      ),
+      _FeatureItem(
+        LucideIcons.mapPin,
+        'Find Parish',
+        'Nearby Mass',
+        Colors.green.shade600,
+        '/parish-finder',
+      ),
+      _FeatureItem(
+        LucideIcons.scroll,
+        'Mass Offering',
+        'Offer Mass',
+        AppTheme.gold600,
+        '/mass-offering',
+      ),
+      _FeatureItem(
+        LucideIcons.church,
+        'Directory',
+        'All Churches',
+        Colors.brown.shade500,
+        '/churches',
+      ),
+      _FeatureItem(
+        LucideIcons.calendarDays,
+        'Calendar',
+        'Liturgical',
+        Colors.green.shade700,
+        '/calendar',
+      ),
+      _FeatureItem(
+        LucideIcons.map,
+        'Pilgrimages',
+        'Sacred Places',
+        Colors.deepOrange.shade600,
+        '/pilgrimages',
+      ),
+      _FeatureItem(
+        LucideIcons.mic2,
+        'Chant',
+        'Gregorian',
+        Colors.indigo.shade800,
+        '/chant',
+      ),
+      _FeatureItem(
+        LucideIcons.music,
+        'Hymns',
+        'Sacred Music',
+        Colors.teal.shade600,
+        '/hymns',
+      ),
+    ];
+  }
+
+  List<_FeatureItem> _getCommunityFeatures() {
+    return [
+      _FeatureItem(
+        LucideIcons.heartHandshake,
+        'Prayer Wall',
+        'Community',
+        Colors.pink.shade400,
+        '/prayer-wall',
+      ),
+      _FeatureItem(
+        LucideIcons.users,
+        'Partners',
+        'Find Pray-ers',
+        Colors.blueAccent.shade400,
+        '/prayer-partners',
+      ),
+      _FeatureItem(
+        LucideIcons.users,
+        'Groups',
+        'Prayer Groups',
+        Colors.indigo.shade500,
+        '/groups',
+      ),
+      _FeatureItem(
+        LucideIcons.pencil,
+        'Journal',
+        'Private Notes',
+        Colors.brown.shade400,
+        '/prayer-journal',
+      ),
+      _FeatureItem(
+        LucideIcons.gift,
+        'Donate',
+        'Support Us',
+        AppTheme.gold500,
+        '/donate',
+      ),
+      _FeatureItem(
+        LucideIcons.trophy,
+        'Challenges',
+        'Grow Faith',
+        Colors.orange.shade500,
+        '/challenges',
+      ),
+      _FeatureItem(
+        LucideIcons.medal,
+        'Achievements',
+        'Badges',
+        AppTheme.gold400,
+        '/achievements',
+      ),
+      _FeatureItem(
+        LucideIcons.flower2,
+        'Bouquets',
+        'Spiritual Gifts',
+        Colors.purple.shade400,
+        '/bouquets',
+      ),
+      _FeatureItem(
+        LucideIcons.flower,
+        'Memorials',
+        'Remembering',
+        Colors.grey.shade600,
+        '/memorials',
+      ),
+      _FeatureItem(
+        LucideIcons.newspaper,
+        'News',
+        'Catholic News',
+        Colors.blueGrey.shade500,
+        '/news',
+      ),
+      _FeatureItem(
+        LucideIcons.award,
+        'Certificates',
+        'Sacramental',
+        AppTheme.gold300,
+        '/certificates',
+      ),
+      _FeatureItem(
+        LucideIcons.network,
+        'Hierarchy',
+        'Church Struct',
+        Colors.purple.shade900,
+        '/hierarchy',
+      ),
     ];
   }
 }
@@ -411,3 +751,4 @@ class _FeatureItem {
   final String route;
 
   _FeatureItem(this.icon, this.title, this.subtitle, this.color, this.route);
+}

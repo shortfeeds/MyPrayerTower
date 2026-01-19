@@ -299,10 +299,121 @@ class _SponsorManagementScreenState
   }
 
   void _showAddSponsorDialog() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Add sponsor form coming soon!'),
-        backgroundColor: AppTheme.gold500,
+    final nameController = TextEditingController();
+    final urlController = TextEditingController();
+    String selectedPage = 'home';
+    String selectedPosition = 'banner';
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: AppTheme.sacredNavy900,
+          title: Text(
+            'Add New Sponsor',
+            style: GoogleFonts.merriweather(color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'Sponsor Name',
+                  labelStyle: TextStyle(color: Colors.white70),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white24),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: urlController,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'Image URL',
+                  labelStyle: TextStyle(color: Colors.white70),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white24),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButton<String>(
+                value: selectedPage,
+                dropdownColor: AppTheme.sacredNavy800,
+                isExpanded: true,
+                style: const TextStyle(color: Colors.white),
+                items: ['home', 'prayers', 'saints', 'bible']
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e.toUpperCase()),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (v) => setDialogState(() => selectedPage = v!),
+              ),
+              const SizedBox(height: 8),
+              DropdownButton<String>(
+                value: selectedPosition,
+                dropdownColor: AppTheme.sacredNavy800,
+                isExpanded: true,
+                style: const TextStyle(color: Colors.white),
+                items: ['banner', 'inline', 'sidebar', 'footer']
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e.toUpperCase()),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (v) => setDialogState(() => selectedPosition = v!),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.gold500,
+              ),
+              onPressed: () {
+                if (nameController.text.isNotEmpty) {
+                  setState(() {
+                    _sponsors.insert(
+                      0,
+                      _Sponsor(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        name: nameController.text,
+                        imageUrl: urlController.text.isNotEmpty
+                            ? urlController.text
+                            : 'https://via.placeholder.com/150',
+                        linkUrl: 'https://example.com',
+                        page: selectedPage,
+                        position: selectedPosition,
+                        impressions: 0,
+                        clicks: 0,
+                        isActive: true,
+                        startDate: DateTime.now(),
+                        endDate: DateTime.now().add(const Duration(days: 30)),
+                      ),
+                    );
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text(
+                'Add Sponsor',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

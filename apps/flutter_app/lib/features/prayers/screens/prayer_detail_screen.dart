@@ -5,6 +5,9 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../repositories/prayers_repository.dart';
 import '../models/prayer_model.dart';
+import 'package:flutter/services.dart';
+import '../../settings/providers/settings_provider.dart';
+import '../../../core/services/favorites_service.dart';
 
 class PrayerDetailScreen extends ConsumerWidget {
   final int prayerId;
@@ -13,6 +16,10 @@ class PrayerDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch settings
+    final settings = ref.watch(settingsProvider);
+    final isFavorite = ref.watch(favoritesProvider).contains(prayerId);
+
     // Ideally we would have a specific provider for this
     final prayerFuture = ref
         .watch(prayersRepositoryProvider)
@@ -29,12 +36,27 @@ class PrayerDetailScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
+            icon: const Icon(LucideIcons.type, color: Colors.white),
+            onPressed: () {
+              // Quick toggle if we implemented a dialog, but navigating to settings via Drawer is default.
+              // We could add a bottom sheet here for quick sizing.
+              _showTextSizeSheet(context, ref);
+            },
+          ),
+          IconButton(
             icon: const Icon(LucideIcons.share2, color: Colors.white),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(LucideIcons.heart, color: Colors.white),
-            onPressed: () {},
+            icon: Icon(
+              LucideIcons.heart,
+              color: isFavorite ? Colors.redAccent : Colors.white,
+            ),
+            onPressed: () {
+              ref.read(favoritesProvider.notifier).toggleFavorite(prayerId);
+              // Haptic feedback
+              HapticFeedback.selectionClick();
+            },
           ),
         ],
       ),
@@ -92,7 +114,6 @@ class PrayerDetailScreen extends ConsumerWidget {
                     ),
                   ),
                   child: Text(
-                    // Use categoryLabel if available, otherwise fallback to category slug
                     prayer.categoryLabel ?? prayer.category,
                     style: GoogleFonts.inter(
                       fontSize: 12,
@@ -105,7 +126,7 @@ class PrayerDetailScreen extends ConsumerWidget {
                 Text(
                   prayer.title,
                   style: GoogleFonts.merriweather(
-                    fontSize: 32,
+                    fontSize: 32 * settings.textSizeMultiplier,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                     height: 1.2,
@@ -117,12 +138,65 @@ class PrayerDetailScreen extends ConsumerWidget {
                 Text(
                   prayer.content,
                   style: GoogleFonts.inter(
-                    fontSize: 18,
+                    fontSize: 18 * settings.textSizeMultiplier,
                     color: Colors.white.withValues(alpha: 0.9),
                     height: 1.8,
                   ),
                 ),
                 const SizedBox(height: 100),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showTextSizeSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.sacredNavy900,
+      builder: (context) => Consumer(
+        builder: (context, ref, _) {
+          final settings = ref.watch(settingsProvider);
+          return Container(
+            padding: const EdgeInsets.all(24),
+            height: 200,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Text Size',
+                  style: GoogleFonts.playfairDisplay(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 4,
+                    thumbShape: const RoundSliderThumbShape(
+                      enabledThumbRadius: 8,
+                    ),
+                    overlayShape: const RoundSliderOverlayShape(
+                      overlayRadius: 16,
+                    ),
+                  ),
+                  child: Slider(
+                    value: settings.textSizeMultiplier,
+                    min: 0.8,
+                    max: 1.4,
+                    divisions: 6,
+                    activeColor: AppTheme.gold500,
+                    inactiveColor: Colors.white.withValues(alpha: 0.1),
+                    onChanged: (val) {
+                      ref
+                          .read(settingsProvider.notifier)
+                          .setTextSizeMultiplier(val);
+                    },
+                  ),
+                ),
               ],
             ),
           );

@@ -84,34 +84,40 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
   @override
   void initState() {
     super.initState();
+    // OPTIMIZATION: Load mock data immediately so screen isn't empty
+    _candles = _generateMockData();
+    _sortCandles();
+
+    // Then fetch real data in background
     _loadCandles();
     _startPrayerCountFluctuation();
   }
 
   Future<void> _loadCandles() async {
-    // 1. Generate Mock Data (matches Web App)
+    // Generate fresh mock data to merge with
+    // (Or reuse existing, but generating fresh ensures consisteny if called multiple times)
     final mockCandles = _generateMockData();
 
-    // 2. Fetch Real Data from Supabase
+    // Fetch Real Data from Supabase
     try {
       final realCandles = await ref
           .read(candleRepositoryProvider)
           .getActiveCandles();
 
-      // 3. Merge Strategies
-      // We want real candles to appear first within their tiers?
-      // Or just mix them. Web App sorts by Tier then litAt.
-      // Our fetch already returns sorted items.
+      if (!mounted) return;
 
       setState(() {
-        _candles = [...realCandles, ...mockCandles];
+        // If real candles exist, use them. Otherwise fallback to mock.
+        if (realCandles.isNotEmpty) {
+          _candles = realCandles;
+        } else {
+          _candles = mockCandles;
+        }
         _sortCandles();
       });
     } catch (e) {
-      debugPrint('Error loading candles: \$e');
-      setState(() {
-        _candles = mockCandles;
-      });
+      debugPrint('Error loading candles: $e');
+      // No need to set state if failed, we already have mock data
     }
   }
 
@@ -1005,13 +1011,19 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            d.label,
-                                            style: GoogleFonts.inter(
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.white,
+                                          Flexible(
+                                            child: Text(
+                                              d.label,
+                                              style: GoogleFonts.inter(
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
                                             ),
                                           ),
+                                          const SizedBox(width: 4),
                                           Text(
                                             d.priceDisplay,
                                             style: GoogleFonts.inter(
@@ -1202,7 +1214,7 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
                             ),
                           ),
 
-                          const SizedBox(height: 40),
+                          const SizedBox(height: 100),
                         ],
                       ),
                     ),

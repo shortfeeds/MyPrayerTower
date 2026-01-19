@@ -14,6 +14,22 @@ class TestimoniesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.deepSpace,
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: AppTheme.gold500,
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Testimony submission coming soon!')),
+          );
+        },
+        icon: const Icon(LucideIcons.penTool, color: Colors.black),
+        label: Text(
+          'Share Story',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(

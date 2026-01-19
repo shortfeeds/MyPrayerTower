@@ -18,6 +18,7 @@ import '../features/bible/screens/bible_screen.dart';
 import '../features/bible/screens/bible_chapter_screen.dart';
 import '../features/subscription/screens/subscription_screen.dart';
 import '../features/profile/screens/profile_screen.dart';
+import '../features/profile/screens/my_prayer_book_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/auth/screens/onboarding_screen.dart';
@@ -34,12 +35,13 @@ import '../features/bouquets/screens/spiritual_bouquet_screen.dart';
 
 import '../features/catechism/screens/catechism_screen.dart';
 import '../features/challenges/screens/challenges_screen.dart';
-import '../features/leaderboard/screens/leaderboard_screen.dart';
+// Leaderboard removed
 
 // Quiz feature removed
 // import '../features/quiz/screens/quiz_screen.dart';
 
 import '../features/settings/screens/settings_screen.dart';
+import '../features/settings/screens/legal_screen.dart';
 import '../features/mass_offering/screens/mass_offering_screen.dart';
 
 // Phase 1 New Features
@@ -55,14 +57,15 @@ import '../features/news/screens/news_screen.dart';
 import '../features/achievements/screens/achievements_screen.dart';
 
 // Phase 3 New Features
-import '../features/prayer_groups/screens/prayer_groups_screen.dart';
 import '../features/encyclicals/screens/encyclicals_screen.dart';
 import '../features/vatican_ii/screens/vatican_ii_screen.dart';
 import '../features/summa/screens/summa_screen.dart';
 import '../features/hierarchy/screens/hierarchy_screen.dart';
 import '../features/history/screens/history_screen.dart';
 import '../features/saints/screens/saints_screen.dart';
+import '../features/saints/screens/saint_detail_screen.dart';
 import '../features/churches/screens/churches_screen.dart';
+import '../features/churches/screens/church_detail_screen.dart';
 
 // Phase 8 New Features
 import '../features/sacraments/screens/sacrament_records_screen.dart';
@@ -73,6 +76,23 @@ import '../features/testimonies/screens/testimonies_screen.dart';
 // Phase 9 New Features
 import '../features/tracking/screens/year_in_review_screen.dart';
 import '../features/tracking/screens/journey_screen.dart';
+
+// Phase 10 New Features (2026)
+import '../features/confession/screens/confession_guide_screen.dart';
+import '../features/novena_tracker/screens/novena_tracker_screen.dart';
+import '../features/stations/screens/stations_of_the_cross_screen.dart';
+import '../features/ai_companion/screens/ai_companion_screen.dart';
+import '../features/journal/screens/prayer_journal_screen.dart';
+import '../features/focus_mode/screens/focus_mode_screen.dart';
+import '../features/live_mass/screens/live_mass_screen.dart';
+import '../features/reading_plans/screens/reading_plans_screen.dart';
+import '../features/divine_office/screens/divine_office_screen.dart';
+import '../features/churches/screens/parish_finder_screen.dart';
+import '../features/prayer_partners/screens/prayer_partners_list_screen.dart';
+import '../features/prayer_partners/screens/invite_partner_screen.dart';
+import '../features/prayer_groups/screens/prayer_groups_list_screen.dart';
+import '../features/prayer_groups/screens/create_group_screen.dart';
+import '../features/prayer_groups/screens/group_detail_screen.dart';
 
 import '../widgets/main_scaffold.dart';
 
@@ -116,6 +136,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                 const NoTransitionPage(child: ProfileScreen()),
           ),
           GoRoute(
+            path: '/my-prayer-book',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: MyPrayerBookScreen()),
+          ),
+          GoRoute(
             path: '/confession',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: ConfessionScreen()),
@@ -134,6 +159,57 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/novenas',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: NovenasScreen()),
+          ),
+          // New Phase 10 Features
+          GoRoute(
+            path: '/confession-guide',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ConfessionGuideScreen()),
+          ),
+          GoRoute(
+            path: '/novena-tracker',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: NovenaTrackerScreen()),
+          ),
+          GoRoute(
+            path: '/stations-of-the-cross',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: StationsOfTheCrossScreen()),
+          ),
+          GoRoute(
+            path: '/ai-companion',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: AiCompanionScreen()),
+          ),
+          GoRoute(
+            path: '/prayer-journal',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: PrayerJournalScreen()),
+          ),
+          GoRoute(
+            path: '/focus-mode',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: FocusModeScreen()),
+          ),
+          GoRoute(
+            path: '/live-mass',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: LiveMassScreen()),
+          ),
+          GoRoute(
+            path: '/reading-plans',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReadingPlansScreen()),
+          ),
+          GoRoute(
+            path: '/divine-office',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: DivineOfficeScreen()),
+          ),
+          GoRoute(
+            path: '/parish-finder',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ParishFinderScreen()),
           ),
           GoRoute(
             path: '/library',
@@ -203,11 +279,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: ChallengesScreen()),
           ),
-          GoRoute(
-            path: '/leaderboard',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: LeaderboardScreen()),
-          ),
+          // Leaderboard removed per user request
           GoRoute(
             path: '/canon_law',
             pageBuilder: (context, state) =>
@@ -218,6 +290,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/settings',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: SettingsScreen()),
+          ),
+          GoRoute(
+            path: '/legal',
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>;
+              return LegalScreen(
+                title: extra['title'] as String,
+                content: extra['content'] as String,
+              );
+            },
           ),
           GoRoute(
             path: '/mass-offering',
@@ -259,9 +341,19 @@ final routerProvider = Provider<GoRouter>((ref) {
                 const NoTransitionPage(child: SaintsScreen()),
           ),
           GoRoute(
+            path: '/saints/:id',
+            builder: (context, state) =>
+                SaintDetailScreen(saintId: state.pathParameters['id']!),
+          ),
+          GoRoute(
             path: '/churches',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: ChurchesScreen()),
+          ),
+          GoRoute(
+            path: '/churches/:id',
+            builder: (context, state) =>
+                ChurchDetailScreen(churchId: state.pathParameters['id']!),
           ),
           GoRoute(
             path: '/hymns',
@@ -283,7 +375,19 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/groups',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(child: PrayerGroupsScreen()),
+                const NoTransitionPage(child: PrayerGroupsListScreen()),
+            routes: [
+              GoRoute(
+                path: 'create',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: CreateGroupScreen()),
+              ),
+              GoRoute(
+                path: ':id',
+                builder: (context, state) =>
+                    GroupDetailScreen(groupId: state.pathParameters['id']!),
+              ),
+            ],
           ),
           GoRoute(
             path: '/encyclicals',
@@ -343,6 +447,18 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/journey',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: JourneyScreen()),
+          ),
+          GoRoute(
+            path: '/prayer-partners',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: PrayerPartnersListScreen()),
+            routes: [
+              GoRoute(
+                path: 'invite',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: InvitePartnerScreen()),
+              ),
+            ],
           ),
         ],
       ),

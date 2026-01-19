@@ -23,6 +23,8 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { NewsModule } from './modules/news/news.module';
 import { LiturgicalModule } from './modules/liturgical/liturgical.module';
 import { ModerationModule } from './modules/moderation/moderation.module';
+import { PrayerPartnersModule } from './modules/prayer-partners/prayer-partners.module';
+import { PilgrimagesModule } from './modules/pilgrimages/pilgrimages.module';
 
 // Mass Offerings & Donations
 import { MassOfferingsModule } from './modules/mass-offerings/mass-offerings.module';
@@ -77,6 +79,8 @@ import { PurchasesModule } from './modules/purchases/purchases.module';
         NewsModule,
         LiturgicalModule,
         ModerationModule,
+        PrayerPartnersModule,
+        PilgrimagesModule,
 
         // Mass Offerings & Donations (Centralized)
         MassOfferingsModule,

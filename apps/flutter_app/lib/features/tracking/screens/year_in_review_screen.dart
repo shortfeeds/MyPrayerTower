@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import 'package:share_plus/share_plus.dart';
+
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/premium_glass_card.dart';
 import '../../../core/widgets/shiny_button.dart';
@@ -85,7 +87,11 @@ class YearInReviewScreen extends StatelessWidget {
                 ShinyButton(
                   label: 'Share My Year',
                   icon: LucideIcons.share2,
-                  onPressed: () {},
+                  onPressed: () {
+                    Share.share(
+                      'Check out my 2025 Spiritual Year in Review on MyPrayerTower! 1,248 Prayers and 142 Hours of Grace. #MyPrayerTower',
+                    );
+                  },
                   color: AppTheme.gold500,
                 ).animate(delay: 500.ms).fadeIn(),
 

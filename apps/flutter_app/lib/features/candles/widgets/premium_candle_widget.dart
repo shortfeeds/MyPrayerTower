@@ -145,6 +145,8 @@ class PremiumCandleWidget extends StatelessWidget {
                     // Time remaining
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize
+                          .min, // Fix: Prevent infinite width inside FittedBox
                       children: [
                         Icon(
                           LucideIcons.clock,
@@ -243,6 +245,9 @@ class PremiumCandleWidget extends StatelessWidget {
 
     return SizedBox(
       height: flameHeight + 16,
+      width:
+          flameWidth *
+          4, // Fix: Provide finite width for Stack in unbounded Column
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [

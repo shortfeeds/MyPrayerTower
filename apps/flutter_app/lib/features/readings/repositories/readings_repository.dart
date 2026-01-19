@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/reading_model.dart';
+import '../../home_widget/services/home_widget_service.dart';
 
 final readingsRepositoryProvider = Provider<ReadingsRepository>((ref) {
   return ReadingsRepository();
@@ -10,9 +11,8 @@ class ReadingsRepository {
 
   Future<DailyReading> getDailyReading({DateTime? date}) async {
     // Mock data for now until API is ready
-    return Future.delayed(
-      const Duration(seconds: 1),
-      () => DailyReading(
+    return Future.delayed(const Duration(seconds: 1), () async {
+      final reading = DailyReading(
         id: '1',
         date: date ?? DateTime.now(),
         liturgicalSeason: 'Ordinary Time',
@@ -28,8 +28,11 @@ class ReadingsRepository {
         gospelRef: 'Matthew 5:1-12',
         reflection:
             'Today we reflect on the beginning of creation and God\'s eternal plan.',
-      ),
-    );
+      );
+
+      _updateWidget(reading);
+      return reading;
+    });
   }
 
   Future<List<DailyReading>> getReadingsForWeek() async {
@@ -49,6 +52,15 @@ class ReadingsRepository {
           gospelRef: 'Matthew ${5 + index}:1-12',
         ),
       ),
+    );
+  }
+
+  void _updateWidget(DailyReading reading) {
+    HomeWidgetService.updateWidget(
+      title: 'Verse of the Day',
+      content:
+          reading.gospel ?? reading.firstReading ?? 'Read today\'s gospel.',
+      subtext: reading.gospelRef ?? reading.firstReadingRef,
     );
   }
 }

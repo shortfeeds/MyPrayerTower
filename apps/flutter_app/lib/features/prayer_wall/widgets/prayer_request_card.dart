@@ -133,8 +133,7 @@ class _PrayerRequestCardState extends ConsumerState<PrayerRequestCard> {
             ),
           ),
 
-          const Spacer(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           const Divider(height: 24, color: Color(0xFFF3F4F6)),
 
           // Meta Info

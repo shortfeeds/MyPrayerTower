@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/animations/premium_animations.dart';
 import '../../../core/theme/app_theme.dart';
@@ -70,9 +71,7 @@ class SaintOfDayCard extends ConsumerWidget {
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Saint details coming soon')),
-                );
+                context.push('/saints/st-michael');
               },
               borderRadius: BorderRadius.circular(16),
               child: Padding(

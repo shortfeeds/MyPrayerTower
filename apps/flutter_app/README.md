@@ -19,6 +19,15 @@ The official mobile application for MyPrayerTower, built with Flutter. A compreh
 ### 📚 Knowledge & Saints
 - **Saint of the Day**: Daily saint bios and prayers, synced with the liturgical calendar.
 - **Saints Library**: Searchable database of saints.
+- **Divine Office**: Liturgy of the Hours with auto-selection.
+- **Confession Guide**: Examination of conscience and step-by-step guide.
+- **Parish Finder**: Locate nearby churches and mass times.
+
+### 📱 New Features (v1.1)
+- **Home Screen Widget**: Daily Verse/Prayer right on your home screen.
+- **Biometric Security**: Protect sensitive journal entries with Fingerprint/Face ID.
+- **Audio Chants**: Gregorian chants player.
+- **Gamification**: Earn XP, streaks, and badges for prayer consistency.
 
 ### 🛠️ Key Technical Features
 - **State Management**: flutter_riverpod

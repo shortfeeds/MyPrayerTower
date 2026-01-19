@@ -303,45 +303,35 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
           ),
           const SizedBox(height: 24),
 
-          // Cover Fee Option
-          GestureDetector(
-            onTap: () => setState(() => _coversFee = !_coversFee),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.sacredNavy900,
-                borderRadius: BorderRadius.circular(12),
+          // App is Free Note
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.gold500.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppTheme.gold500.withValues(alpha: 0.3),
               ),
-              child: Row(
-                children: [
-                  Icon(
-                    _coversFee ? LucideIcons.checkSquare : LucideIcons.square,
-                    color: _coversFee ? AppTheme.gold500 : Colors.grey,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Cover processing fees',
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          'Add \$${_feeAmount.toStringAsFixed(2)} so 100% goes to our mission',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppTheme.textSecondary,
-                          ),
-                        ),
-                      ],
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  LucideIcons.sparkles,
+                  size: 20,
+                  color: AppTheme.gold500,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'MyPrayerTower is completely free to use. Your voluntary support helps us grow.',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: Colors.white,
+                      height: 1.4,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
@@ -391,7 +381,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
               ),
             ],
           ),
-          const SizedBox(height: 120), // Clearance for bottom nav bar
+          const SizedBox(height: 140), // Increased clearance for bottom nav bar
         ],
       ),
     );
@@ -576,7 +566,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
               ),
             ),
           ),
-          const SizedBox(height: 120), // Clearance for bottom nav bar
+          const SizedBox(height: 140), // Clearance for bottom nav bar
         ],
       ),
     );
@@ -585,6 +575,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
   void _handleDonate() {
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true, // Show above bottom nav
       backgroundColor: AppTheme.sacredNavy950,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),

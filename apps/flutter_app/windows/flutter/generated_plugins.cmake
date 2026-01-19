@@ -4,9 +4,13 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   app_links
+  audioplayers_windows
   connectivity_plus
   flutter_inappwebview_windows
   flutter_secure_storage_windows
+  geolocator_windows
+  local_auth_windows
+  permission_handler_windows
   share_plus
   url_launcher_windows
 )

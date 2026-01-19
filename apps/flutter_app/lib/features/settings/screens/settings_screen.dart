@@ -3,12 +3,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../widgets/app_bar_menu_button.dart';
+import '../../../core/services/biometric_service.dart';
 
-class SettingsScreen extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../settings/providers/settings_provider.dart';
+import 'legal_screen.dart';
+
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+
     return Scaffold(
       backgroundColor: AppTheme.sacredNavy950,
       appBar: AppBar(
@@ -43,10 +51,121 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             _SettingsTile(
+              icon: LucideIcons.lock,
+              title: 'Biometric Security',
+              subtitle: 'Secure private features',
+              trailing: Switch(
+                value: settings.biometricEnabled,
+                onChanged: (val) async {
+                  if (val) {
+                    // Turn on: Authenticate first
+                    final success = await BiometricService.authenticate();
+                    if (success) {
+                      ref
+                          .read(settingsProvider.notifier)
+                          .setBiometricEnabled(true);
+                    }
+                  } else {
+                    // Turn off
+                    ref
+                        .read(settingsProvider.notifier)
+                        .setBiometricEnabled(false);
+                  }
+                },
+                activeColor: AppTheme.gold500,
+                inactiveThumbColor: Colors.white,
+                inactiveTrackColor: Colors.grey.withValues(alpha: 0.3),
+              ),
+            ),
+            _SettingsTile(
               icon: LucideIcons.globe,
               title: 'Language',
               subtitle: 'English',
               onTap: () {},
+            ),
+          ]),
+          const SizedBox(height: 24),
+          _buildSection('Accessibility', [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        LucideIcons.type,
+                        color: AppTheme.gold500,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        'Text Size',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${(settings.textSizeMultiplier * 100).toInt()}%',
+                        style: GoogleFonts.inter(
+                          color: AppTheme.gold500,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      trackHeight: 4,
+                      thumbShape: const RoundSliderThumbShape(
+                        enabledThumbRadius: 8,
+                      ),
+                      overlayShape: const RoundSliderOverlayShape(
+                        overlayRadius: 16,
+                      ),
+                    ),
+                    child: Slider(
+                      value: settings.textSizeMultiplier,
+                      min: 0.8,
+                      max: 1.4,
+                      divisions: 6,
+                      activeColor: AppTheme.gold500,
+                      inactiveColor: Colors.white.withValues(alpha: 0.1),
+                      onChanged: (val) {
+                        ref
+                            .read(settingsProvider.notifier)
+                            .setTextSizeMultiplier(val);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Aa',
+                          style: GoogleFonts.inter(
+                            color: Colors.white54,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          'Aa',
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ]),
           const SizedBox(height: 24),
@@ -61,13 +180,25 @@ class SettingsScreen extends StatelessWidget {
               icon: LucideIcons.fileText,
               title: 'Terms of Service',
               subtitle: 'Read our terms',
-              onTap: () {},
+              onTap: () => context.push(
+                '/legal',
+                extra: {
+                  'title': 'Terms of Service',
+                  'content': LegalContent.terms,
+                },
+              ),
             ),
             _SettingsTile(
               icon: LucideIcons.shield,
               title: 'Privacy Policy',
               subtitle: 'How we protect your data',
-              onTap: () {},
+              onTap: () => context.push(
+                '/legal',
+                extra: {
+                  'title': 'Privacy Policy',
+                  'content': LegalContent.privacy,
+                },
+              ),
             ),
           ]),
           const SizedBox(height: 24),

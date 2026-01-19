@@ -293,6 +293,9 @@ export function PayPalCheckout({
                     <span className="flex items-center justify-center gap-1">
                         🔒 SSL Secure Payment
                     </span>
+                    <span className="block mt-1 text-[9px] leading-tight">
+                        All offerings are voluntary and support prayer, remembrance, and platform operations.
+                    </span>
                 </p>
             </div>
         </PayPalScriptProvider>

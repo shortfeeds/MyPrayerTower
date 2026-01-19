@@ -177,7 +177,7 @@ class _MemorialsScreenState extends ConsumerState<MemorialsScreen> {
                 }
 
                 return ListView.separated(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                   itemCount: filteredMemorials.length,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 16),
@@ -191,17 +191,20 @@ class _MemorialsScreenState extends ConsumerState<MemorialsScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CreateMemorialScreen()),
-          );
-          _refreshMemorials();
-        },
-        label: const Text('Create Memorial'),
-        icon: const Icon(LucideIcons.plus),
-        backgroundColor: Colors.amber.shade700,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 80),
+        child: FloatingActionButton.extended(
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CreateMemorialScreen()),
+            );
+            _refreshMemorials();
+          },
+          label: const Text('Create Memorial'),
+          icon: const Icon(LucideIcons.plus),
+          backgroundColor: Colors.amber.shade700,
+        ),
       ),
     );
   }

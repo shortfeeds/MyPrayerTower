@@ -39,6 +39,12 @@ class QuickAccessBar extends StatelessWidget {
       route: '/mass-offering',
       gradient: LinearGradient(colors: [AppTheme.gold400, AppTheme.gold500]),
     ),
+    const _QuickAction(
+      icon: LucideIcons.heartHandshake,
+      label: 'Prayer Wall',
+      route: '/prayer-wall',
+      gradient: LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFDB2777)]),
+    ),
   ];
 
   @override

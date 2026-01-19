@@ -11,6 +11,20 @@ rootProject.layout.buildDirectory.value(newBuildDir)
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
+    
+    // Workaround for "different roots" exception on Windows
+    project.afterEvaluate {
+        if (project.plugins.hasPlugin("com.android.library")) {
+             project.extensions.configure<com.android.build.gradle.LibraryExtension> {
+                 testOptions {
+                     unitTests.isReturnDefaultValues = true
+                     unitTests.all {
+                         it.enabled = false
+                     }
+                 }
+             }
+        }
+    }
 }
 subprojects {
     project.evaluationDependsOn(":app")

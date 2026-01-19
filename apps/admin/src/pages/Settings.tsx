@@ -113,6 +113,64 @@ export function Settings() {
                                 </Col>
                             </Row>
                         </Card>
+
+                        <Card title="AdMob Configuration" style={{ marginBottom: 24 }}>
+                            <Divider orientation="left">Banner Ads</Divider>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item name="bannerAdUnitIdAndroid" label="Android Unit ID">
+                                        <Input placeholder="ca-app-pub-..." />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item name="bannerAdUnitIdiOS" label="iOS Unit ID">
+                                        <Input placeholder="ca-app-pub-..." />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            <Divider orientation="left">Interstitial Ads</Divider>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item name="interstitialAdUnitIdAndroid" label="Android Unit ID">
+                                        <Input placeholder="ca-app-pub-..." />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item name="interstitialAdUnitIdiOS" label="iOS Unit ID">
+                                        <Input placeholder="ca-app-pub-..." />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            <Divider orientation="left">Native Ads</Divider>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item name="nativeAdUnitIdAndroid" label="Android Unit ID">
+                                        <Input placeholder="ca-app-pub-..." />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item name="nativeAdUnitIdiOS" label="iOS Unit ID">
+                                        <Input placeholder="ca-app-pub-..." />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            <Divider orientation="left">Rewarded Ads</Divider>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item name="rewardedAdUnitIdAndroid" label="Android Unit ID">
+                                        <Input placeholder="ca-app-pub-..." />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item name="rewardedAdUnitIdiOS" label="iOS Unit ID">
+                                        <Input placeholder="ca-app-pub-..." />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </Card>
                     </Col>
 
                     <Col span={8}>

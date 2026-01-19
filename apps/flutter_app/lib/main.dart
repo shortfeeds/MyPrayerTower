@@ -11,6 +11,8 @@ import 'app/app.dart';
 import 'core/constants/app_constants.dart';
 
 import 'core/services/notification_service.dart';
+import 'features/home_widget/services/home_widget_service.dart';
+import 'features/ads/services/ad_service.dart';
 
 void main() async {
   // Catch all Flutter framework errors
@@ -23,15 +25,6 @@ void main() async {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
-
-      // Initialize AdMob safely
-      try {
-        if (!kIsWeb) {
-          await MobileAds.instance.initialize();
-        }
-      } catch (e) {
-        debugPrint('AdMob initialization skipped: $e');
-      }
 
       // Set preferred orientations
       try {
@@ -83,17 +76,46 @@ void main() async {
       }
 
       // Initialize push notifications with scheduled reminders
+      if (!kIsWeb) {
+        // Fire and forget AdMob initialization to avoid blocking startup
+        MobileAds.instance.initialize();
+      }
       try {
         if (!kIsWeb) {
           final notificationService = NotificationService();
           await notificationService.initialize();
-          await notificationService.scheduleAllDailyReminders();
+          // Schedule in background
+          notificationService.scheduleAllDailyReminders();
         }
       } catch (e) {
         debugPrint('Notification setup skipped: $e');
       }
 
-      runApp(const ProviderScope(child: MyPrayerTowerApp()));
+      // Initialize HomeWidget
+      try {
+        await HomeWidgetService.initialize();
+      } catch (e) {
+        debugPrint('HomeWidget setup skipped: $e');
+      }
+
+      final container = ProviderContainer();
+
+      // Initialize AdService
+      if (!kIsWeb) {
+        try {
+          // Fire and forget AdMob initialization
+          container.read(adServiceProvider).initialize();
+        } catch (e) {
+          debugPrint('AdService init error: $e');
+        }
+      }
+
+      runApp(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MyPrayerTowerApp(),
+        ),
+      );
     },
     (error, stackTrace) {
       debugPrint('Uncaught error: $error');
