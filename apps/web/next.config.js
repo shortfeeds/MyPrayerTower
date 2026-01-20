@@ -81,7 +81,6 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 });
 
 /** @type {import('next').NextConfig} */
-// Force Vercel Build: 2026-01-20
 const nextConfig = {
     transpilePackages: ['@mpt/database', '@cashfreepayments/cashfree-js'],
     reactStrictMode: true,

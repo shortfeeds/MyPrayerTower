@@ -71,7 +71,7 @@ dependencies:
   timeago: ^3.7.1
   
   # New Features Dependencies
-  # onesignal_flutter: ^5.1.6           # Push Notifications
+  # onesignal_flutter: ^5.1.6           # Push Notifications (Replaced by Firebase)
   local_auth: ^2.3.0                  # Biometric Security
   home_widget: ^0.6.0                 # Home Screen Widget
   google_generative_ai: ^0.4.3        # AI Companion (Gemini)

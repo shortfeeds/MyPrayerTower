@@ -1,54 +1,32 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+
+import { Injectable, Logger } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import * as path from 'path';
-import * as fs from 'fs';
+import { ConfigService } from '@nestjs/config';
 
 export interface PushNotification {
-    playerId: string; // Maps to FCM Registration Token
+    playerId: string; // Storing FCM Token here
     title: string;
     body: string;
     data?: Record<string, string>;
     imageUrl?: string;
 }
 
-export interface TopicNotification {
-    segment: string; // Maps to FCM Topic
-    title: string;
-    body: string;
-    data?: Record<string, string>;
-}
-
 @Injectable()
-export class PushNotificationService implements OnModuleInit {
+export class PushNotificationService {
     private readonly logger = new Logger(PushNotificationService.name);
 
-    onModuleInit() {
-        this.initializeFirebase();
-    }
-
-    private initializeFirebase() {
-        if (admin.apps.length > 0) {
-            this.logger.debug('Firebase Admin already initialized');
-            return;
-        }
-
-        const serviceAccountPath = path.resolve(process.cwd(), 'firebase-service-account.json');
-
-        try {
-            if (fs.existsSync(serviceAccountPath)) {
-                // eslint-disable-next-line @typescript-eslint/no-var-requires
-                const serviceAccount = require(serviceAccountPath);
+    constructor(private configService: ConfigService) {
+        if (!admin.apps.length) {
+            try {
+                // Attempt to initialize Firebase Admin
+                // Requires GOOGLE_APPLICATION_CREDENTIALS env var or default creds
                 admin.initializeApp({
-                    credential: admin.credential.cert(serviceAccount),
+                    credential: admin.credential.applicationDefault(),
                 });
-                this.logger.log('Firebase Admin initialized successfully with service account');
-            } else {
-                this.logger.warn(`Firebase Service Account not found at ${serviceAccountPath}. Push notifications will fail until this file is added.`);
-                // Attempt default initialization in case env vars are set
-                admin.initializeApp();
+                this.logger.log('Firebase Admin SDK Initialized');
+            } catch (error) {
+                this.logger.warn(`Firebase Admin Init Failed: ${error.message}. Notifications will explicitly fail.`);
             }
-        } catch (error) {
-            this.logger.error('Failed to initialize Firebase Admin', error);
         }
     }
 
@@ -66,26 +44,26 @@ export class PushNotificationService implements OnModuleInit {
                     body: notification.body,
                     imageUrl: notification.imageUrl,
                 },
-                data: notification.data || {},
+                data: notification.data,
                 android: {
                     notification: {
                         imageUrl: notification.imageUrl,
                     }
                 },
-                apns: notification.imageUrl ? {
+                apns: {
                     payload: {
                         aps: {
                             'mutable-content': 1
                         }
                     },
-                    fcmOptions: {
+                    fcmOptions: notification.imageUrl ? {
                         imageUrl: notification.imageUrl
-                    }
-                } : undefined
+                    } : undefined
+                }
             });
             return true;
         } catch (error) {
-            this.logger.error(`FCM Send Error (Device: ${notification.playerId})`, error);
+            this.logger.error(`Failed to send FCM message: ${error.message}`);
             return false;
         }
     }
@@ -96,61 +74,53 @@ export class PushNotificationService implements OnModuleInit {
     async sendToDevices(playerIds: string[], title: string, body: string, data?: Record<string, string>): Promise<number> {
         if (playerIds.length === 0) return 0;
 
-        // Use sendEachForMulticast
+        // FCM multicast is legacy? No, sendEachForMulticast is available.
+        // Or batching.
         try {
-            const message: admin.messaging.MulticastMessage = {
-                tokens: playerIds,
-                notification: {
-                    title: title,
-                    body: body,
-                },
-                data: data || {},
-            };
+            const messages = playerIds.map(token => ({
+                token,
+                notification: { title, body },
+                data,
+            }));
 
-            const response = await admin.messaging().sendEachForMulticast(message);
+            // Send in batches of 500
+            const batchSize = 500;
+            let successCount = 0;
 
-            if (response.failureCount > 0) {
-                this.logger.warn(`FCM Multicast: ${response.successCount} success, ${response.failureCount} failed.`);
-                response.responses.forEach((resp, idx) => {
-                    if (!resp.success) {
-                        // Ideally disable/remove bad tokens here
-                        this.logger.debug(`Token failed: ${playerIds[idx]} - ${resp.error?.message}`);
-                    }
-                });
+            for (let i = 0; i < messages.length; i += batchSize) {
+                const batch = messages.slice(i, i + batchSize);
+                const response = await admin.messaging().sendEach(batch);
+                successCount += response.successCount;
             }
 
-            return response.successCount;
+            return successCount;
         } catch (error) {
-            this.logger.error('FCM Multicast Error', error);
+            this.logger.error(`Batch send failed: ${error.message}`);
             return 0;
         }
     }
 
     /**
-     * Send notification to a specific Topic (Segment)
+     * Send notification to a Segment (Topic)
      */
     async sendToSegment(segment: string, title: string, body: string, data?: Record<string, string>): Promise<boolean> {
         try {
-            // Convert segment name to valid topic if needed (remove spaces etc)
-            // For now assume segment matches topic name
-            const topic = segment.replace(/[^a-zA-Z0-9-_.~%]/g, '_');
+            // Map segment names to valid topic names (no spaces)
+            const topic = segment.replace(/\s+/g, '_').toLowerCase();
 
             await admin.messaging().send({
                 topic: topic,
-                notification: {
-                    title: title,
-                    body: body,
-                },
-                data: data || {},
+                notification: { title, body },
+                data,
             });
             return true;
         } catch (error) {
-            this.logger.error(`FCM Topic Send Error (${segment})`, error);
+            this.logger.error(`Topic send failed: ${error.message}`);
             return false;
         }
     }
 
-    // ============ Specific Notification Types ============
+    // ============ Specific Notification Types (Wrappers) ============
 
     async notifyPrayerReceived(playerId: string, prayerTitle: string, count: number) {
         return this.sendToDevice({

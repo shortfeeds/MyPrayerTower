@@ -1,0 +1,48 @@
+# MyPrayerTower - Robots.txt
+# Updated: 2026-01-15
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.myprayertower.com/sitemap.xml
+
+# Bing Webmaster Verification
+# https://www.myprayertower.com/9f3a7c2e8d4b1a0f6e5c9d7a3b2f8e1c.txt
+
+# IndexNow API Key Verification
+# https://www.myprayertower.com/565731002ad842e8bf184087dab6dc41.txt
+
+# Block AI scrapers (optional - can be removed if you want AI training)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Disallow admin and API routes
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /dashboard/
+
+# Allow public content
+Allow: /prayers/
+Allow: /saints/
+Allow: /candles/
+Allow: /memorials/
+Allow: /churches/
+Allow: /readings/
+Allow: /mass-offerings/

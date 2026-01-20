@@ -1,0 +1,117 @@
+{
+    "introduction": {
+        "title": "Welcome to Your Confession Guide",
+        "description": "This examination of conscience will help you reflect on your life and prepare for the Sacrament of Reconciliation.",
+        "duration": "10-15 minutes"
+    },
+    "commandments": [
+        {
+            "id": 1,
+            "text": "I am the Lord thy God, thou shalt not have any strange gods before Me.",
+            "questions": [
+                "Have I doubted in matters of faith?",
+                "Have I denied my faith?",
+                "Have I spoken against God or His Saints?",
+                "Have I neglected my daily prayers?",
+                "Have I engaged in superstitious practices (e.g., horoscopes, fortune telling)?",
+                "Have I received Holy Communion while in a state of mortal sin?"
+            ]
+        },
+        {
+            "id": 2,
+            "text": "Thou shalt not take the name of the Lord thy God in vain.",
+            "questions": [
+                "Have I used God's name in anger or carelessly?",
+                "Have I cursed or sworn?",
+                "Have I broken a promise or vow made to God?",
+                "Have I spoken disrespectfully of holy things?"
+            ]
+        },
+        {
+            "id": 3,
+            "text": "Remember to keep holy the Sabbath day.",
+            "questions": [
+                "Have I missed Mass on Sunday or a Holy Day of Obligation through my own fault?",
+                "Have I been late for Mass or left early without a good reason?",
+                "Have I done unnecessary work on Sunday that prevented me from worshiping God or resting?",
+                "Have I failed to support the Church according to my means?"
+            ]
+        },
+        {
+            "id": 4,
+            "text": "Honor thy father and mother.",
+            "questions": [
+                "Have I been disrespectful to my parents or lawful superiors?",
+                "Have I neglected my duties to my family?",
+                "Have I failed to care for my parents in their old age or need?",
+                "Have I set a bad example for my children or siblings?"
+            ]
+        },
+        {
+            "id": 5,
+            "text": "Thou shalt not kill.",
+            "questions": [
+                "Have I harbored hatred or anger in my heart?",
+                "Have I fought with or physically injured others?",
+                "Have I abused alcohol or drugs?",
+                "Have I driven recklessly?",
+                "Have I participated in or encouraged abortion or euthanasia?",
+                "Have I wished evil upon another?"
+            ]
+        },
+        {
+            "id": 6,
+            "text": "Thou shalt not commit adultery.",
+            "questions": [
+                "Have I dwelled on impure thoughts?",
+                "Have I looked at pornography or impure images?",
+                "Have I committed impure acts alone or with others?",
+                "Have I been unfaithful to my spouse in thought or deed?",
+                "Have I dressed immodestly?"
+            ]
+        },
+        {
+            "id": 7,
+            "text": "Thou shalt not steal.",
+            "questions": [
+                "Have I taken what is not mine?",
+                "Have I returned or made restitution for what I have stolen?",
+                "Have I wasted time at work or school?",
+                "Have I cheated in business or games?",
+                "Have I failed to pay my debts?"
+            ]
+        },
+        {
+            "id": 8,
+            "text": "Thou shalt not bear false witness against thy neighbor.",
+            "questions": [
+                "Have I lied?",
+                "Have I gossiped or spoken badly of others (detraction or calumny)?",
+                "Have I judged others rashly?",
+                "Have I revealed secrets I should have kept?",
+                "Have I failed to defend someone's reputation when I could have?"
+            ]
+        },
+        {
+            "id": 9,
+            "text": "Thou shalt not covet thy neighbor's wife.",
+            "questions": [
+                "Have I consented to impure thoughts?",
+                "Have I looked at others with lust?"
+            ]
+        },
+        {
+            "id": 10,
+            "text": "Thou shalt not covet thy neighbor's goods.",
+            "questions": [
+                "Have I been envious of the possessions or success of others?",
+                "Have I been greedy or overly attached to material things?",
+                "Have I neglected the poor or those in need?"
+            ]
+        }
+    ],
+    "actOfContrition": {
+        "traditional": "O my God, I am heartily sorry for having offended Thee, and I detest all my sins because of Thy just punishments, but most of all because they offend Thee, my God, who art all good and deserving of all my love. I firmly resolve with the help of Thy grace to sin no more and to avoid the near occasion of sin. Amen.",
+        "modern": "My God, I am sorry for my sins with all my heart. In choosing to do wrong and failing to do good, I have sinned against you whom I should love above all things. I firmly intend, with your help, to do penance, to sin no more, and to avoid whatever leads me to sin. Our Savior Jesus Christ suffered and died for us. In his name, my God, have mercy."
+    }
+}

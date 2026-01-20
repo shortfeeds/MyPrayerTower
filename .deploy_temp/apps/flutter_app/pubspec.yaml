@@ -1,0 +1,100 @@
+name: myprayertower_app
+description: "MyPrayerTower - The All-in-One Catholic Services App"
+publish_to: 'none'
+version: 1.0.6+13
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Core State Management & Navigation
+  flutter_riverpod: ^2.5.1
+  go_router: ^17.0.0
+  
+  # HTTP Client & API
+  dio: ^5.7.0
+  
+  # Storage & Security
+  flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.3.2
+  hive_flutter: ^1.1.0
+  
+  # UI Components
+  google_fonts: ^6.2.1
+  flutter_markdown: ^0.6.14
+  flutter_svg: ^2.0.10
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  lottie: ^3.1.2
+  flutter_animate: ^4.5.2
+  
+  # Icons
+  cupertino_icons: ^1.0.8
+  lucide_icons: ^0.257.0
+  audioplayers: ^6.5.1
+
+  
+  # Maps & Location - REMOVED to reduce app size
+  # google_maps_flutter: ^2.9.0
+  # geolocator: ^12.0.0
+  # geocoding: ^3.0.0
+  
+  # Payments (Google Play Billing)
+  in_app_purchase: ^3.2.0
+  
+  # Utils
+  intl: ^0.19.0
+  url_launcher: ^6.3.2
+  share_plus: ^10.0.2
+  connectivity_plus: ^6.0.5
+  # Code Generation
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+  google_mobile_ads: ^6.0.0
+  supabase_flutter: ^2.12.0
+  
+  # Notifications
+  firebase_messaging: ^15.2.4
+  firebase_core: ^3.13.0
+  flutter_local_notifications: ^19.5.0
+  timezone: ^0.10.1
+  webview_flutter: ^4.8.0
+
+  http: ^1.6.0
+
+
+  webview_flutter_web: ^0.2.3+4
+  flutter_paypal_payment: ^1.0.8
+  timeago: ^3.7.1
+  
+  # New Features Dependencies
+  # onesignal_flutter: ^5.1.6           # Push Notifications
+  local_auth: ^2.3.0                  # Biometric Security
+  home_widget: ^0.6.0                 # Home Screen Widget
+  google_generative_ai: ^0.4.3        # AI Companion (Gemini)
+  geolocator: ^14.0.2                 # Parish Finder Location
+  permission_handler: ^11.3.1         # Permissions for location/notifications
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.5.4
+  freezed: ^2.4.7
+  json_serializable: ^6.7.1
+  flutter_launcher_icons: ^0.14.4
+  mockito: ^5.4.6
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/images/candles/
+    - assets/icons/
+    - assets/data/

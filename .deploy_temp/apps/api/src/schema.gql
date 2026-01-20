@@ -1,0 +1,16 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Mutation {
+  login(email: String!, password: String!): String!
+  register(email: String!, firstName: String!, language: String, lastName: String!, password: String!): String!
+}
+
+type Query {
+  church(id: String!): String!
+  churches(city: String, country: String, denomination: String, limit: Int, page: Int, search: String): String!
+  denominations: String!
+  me: String!
+  nearbyChurches(latitude: Float!, longitude: Float!, radiusKm: Float): String!
+}

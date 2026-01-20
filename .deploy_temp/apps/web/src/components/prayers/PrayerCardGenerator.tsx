@@ -1,0 +1,226 @@
+'use client';
+
+import React, { useState, useRef } from 'react';
+import { X, Download, Share2, Image as ImageIcon, Palette, Check } from 'lucide-react';
+import { toPng } from 'html-to-image';
+
+interface PrayerCardProps {
+    title: string;
+    content: string;
+    onClose: () => void;
+}
+
+const BACKGROUNDS = [
+    { id: 'classic', name: 'Classic', classes: 'bg-white text-gray-900' },
+    { id: 'midnight', name: 'Midnight', classes: 'bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white' },
+    { id: 'sunset', name: 'Sunset', classes: 'bg-gradient-to-br from-orange-100 via-amber-100 to-rose-100 text-gray-900' },
+    { id: 'ocean', name: 'Ocean', classes: 'bg-gradient-to-br from-cyan-900 via-blue-800 to-indigo-900 text-white' },
+    { id: 'sacred', name: 'Sacred', classes: 'bg-gradient-to-br from-purple-900 via-fuchsia-900 to-slate-900 text-white' },
+    { id: 'paper', name: 'Parchment', classes: 'bg-[#f5e6d3] text-[#5c4033]' },
+];
+
+export function PrayerCardGenerator({ title, content, onClose, mode = 'modal' }: PrayerCardProps & { mode?: 'modal' | 'inline' }) {
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [selectedBg, setSelectedBg] = useState(BACKGROUNDS[1]);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [canShare, setCanShare] = useState(false);
+
+    React.useEffect(() => {
+        if (typeof navigator !== 'undefined' && navigator.share) {
+            setCanShare(true);
+        }
+    }, []);
+
+    const generateBlob = async () => {
+        if (!cardRef.current) return null;
+        try {
+            const dataUrl = await toPng(cardRef.current, {
+                quality: 0.95,
+                pixelRatio: 2, // High res for mobile
+                cacheBust: true,
+                backgroundColor: 'white', // Ensure no transparency issues
+            });
+
+            const res = await fetch(dataUrl);
+            const blob = await res.blob();
+            // Force strict PNG type
+            return blob.slice(0, blob.size, 'image/png');
+        } catch (err) {
+            console.error('Failed to generate blob', err);
+            return null;
+        }
+    };
+
+    const handleShare = async () => {
+        if (!cardRef.current) return;
+        setIsGenerating(true);
+
+        try {
+            const blob = await generateBlob();
+            if (!blob) throw new Error('Failed to generate image');
+
+            // Sanitize filename
+            const filename = `${title.slice(0, 20).replace(/[^a-z0-9]/gi, '-').toLowerCase()}-prayer.png`;
+            const file = new File([blob], filename, { type: 'image/png' });
+
+            const shareData = {
+                files: [file],
+                title: 'Share Prayer',
+                text: `${title} - Join me in prayer on MyPrayerTower https://myprayertower.com`,
+            };
+
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+            } else {
+                handleDownload();
+            }
+        } catch (err) {
+            console.error('Error sharing:', err);
+            if ((err as Error).name !== 'AbortError') {
+                await handleDownload();
+            }
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    const handleDownload = async () => {
+        if (!cardRef.current) return;
+
+        try {
+            setIsGenerating(true);
+            const dataUrl = await toPng(cardRef.current, {
+                quality: 0.95,
+                pixelRatio: 2,
+                cacheBust: true,
+                backgroundColor: 'white',
+            });
+
+            const link = document.createElement('a');
+            // Ensure .png extension
+            link.download = `${title.slice(0, 20).replace(/[^a-z0-9]/gi, '-').toLowerCase()}-prayer.png`;
+            link.href = dataUrl;
+            link.click();
+        } catch (err) {
+            console.error('Failed to generate image', err);
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    const Container = mode === 'modal' ? 'div' : React.Fragment;
+    const containerProps = mode === 'modal'
+        ? { className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" }
+        : {};
+
+    const Wrapper = mode === 'modal' ? 'div' : 'div';
+    const wrapperClasses = mode === 'modal'
+        ? "bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row shadow-2xl relative"
+        : "bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col md:flex-row shadow-sm";
+
+    const contentAreaClasses = mode === 'modal'
+        ? "flex-1 bg-gray-100 p-8 flex items-center justify-center overflow-auto min-h-[400px]"
+        : "flex-1 bg-gray-50/50 p-6 md:p-12 flex items-center justify-center";
+
+    return (
+        <Container {...containerProps}>
+            <div className={wrapperClasses}>
+                {mode === 'modal' && (
+                    <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-black/10 hover:bg-black/20 rounded-full z-10 md:hidden text-white">
+                        <X className="w-5 h-5" />
+                    </button>
+                )}
+
+                {/* Preview Area */}
+                <div className={contentAreaClasses}>
+                    <div
+                        ref={cardRef}
+                        className={`w-full max-w-[350px] aspect-[4/5] rounded-xl p-8 flex flex-col items-center justify-center text-center relative shadow-2xl transition-all duration-300 ${selectedBg.classes}`}
+                    >
+                        {/* Watermark/Logo */}
+                        <div className="absolute top-6 left-0 right-0 flex justify-center opacity-50">
+                            <span className="text-xs uppercase tracking-widest font-semibold flex items-center gap-1.5">
+                                <Share2 className="w-3 h-3" /> MyPrayerTower
+                            </span>
+                        </div>
+
+                        <div className="my-auto">
+                            <h2 className="text-2xl font-serif font-bold mb-6 leading-tight">
+                                {title}
+                            </h2>
+                            {/* Line Clamp for long prayers to fit card */}
+                            <p className="font-medium leading-relaxed italic text-sm opacity-90 line-clamp-[12]">
+                                "{content}"
+                            </p>
+                        </div>
+
+                        <div className="absolute bottom-6 left-0 right-0 flex justify-center opacity-40">
+                            <span className="text-[10px]">myprayertower.com/prayers</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Controls */}
+                <div className="w-full md:w-80 bg-white p-6 border-l border-gray-100 flex flex-col">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                            <ImageIcon className="w-5 h-5 text-blue-600" />
+                            Customize
+                        </h3>
+                        {mode === 'modal' && (
+                            <button onClick={onClose} className="hidden md:block p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                <X className="w-5 h-5 text-gray-500" />
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="space-y-6 flex-1">
+                        <div>
+                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block flex items-center gap-1.5">
+                                <Palette className="w-4 h-4" /> Theme
+                            </label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {BACKGROUNDS.map(bg => (
+                                    <button
+                                        key={bg.id}
+                                        onClick={() => setSelectedBg(bg)}
+                                        className={`relative h-12 rounded-lg border-2 transition-all overflow-hidden ${selectedBg.id === bg.id ? 'border-blue-600 ring-2 ring-blue-100' : 'border-transparent hover:border-gray-200'}`}
+                                    >
+                                        <div className={`w-full h-full ${bg.classes}`} />
+                                        {selectedBg.id === bg.id && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                                <Check className="w-4 h-4 text-white drop-shadow-md" />
+                                            </div>
+                                        )}
+                                        <span className="sr-only">{bg.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-100 mt-auto space-y-3">
+                        <button
+                            onClick={canShare ? handleShare : handleDownload}
+                            disabled={isGenerating}
+                            className={`w-full py-3.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-pink-500/25 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2`}
+                        >
+                            {isGenerating ? (
+                                <>Processing...</>
+                            ) : (
+                                <>
+                                    {canShare ? <Share2 className="w-5 h-5" /> : <Download className="w-5 h-5" />}
+                                    {canShare ? 'Share to Story' : 'Download Image'}
+                                </>
+                            )}
+                        </button>
+
+                        <p className="text-xs text-center text-gray-400 mt-2">
+                            {canShare ? 'Perfect for Instagram Stories & WhatsApp' : 'Download and share to your story'}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </Container>
+    );
+}

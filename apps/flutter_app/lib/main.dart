@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart'; // Added Firebase Core
 
 import 'app/app.dart';
 import 'core/constants/app_constants.dart';
@@ -14,7 +14,6 @@ import 'core/constants/app_constants.dart';
 import 'core/services/notification_service.dart';
 import 'features/home_widget/services/home_widget_service.dart';
 import 'features/ads/services/ad_service.dart';
-// import 'firebase_options.dart'; // Removed: File missing and unused (Native config used)
 
 void main() async {
   // Catch all Flutter framework errors
@@ -48,6 +47,16 @@ void main() async {
         debugPrint('System UI setup error: $e');
       }
 
+      // Initialize Firebase (before other services)
+      try {
+        if (!kIsWeb) {
+          await Firebase.initializeApp();
+          debugPrint('Firebase initialized successfully');
+        }
+      } catch (e) {
+        debugPrint('Firebase initialization failed: $e');
+      }
+
       // Initialize Supabase
       try {
         await Supabase.initialize(
@@ -69,26 +78,19 @@ void main() async {
       // Create Provider Container
       final container = ProviderContainer();
 
-      // Initialize push notifications (Firebase)
       if (!kIsWeb) {
         MobileAds.instance.initialize();
       }
+
+      // Initialize Notification Service (Firebase)
       try {
         if (!kIsWeb) {
-          // Initialize Firebase
-          // If firebase_options.dart exists, we use it. If not, we rely on native config (google-services.json)
-          // Since user provided google-services.json manually, we might not have options.
-          try {
-            await Firebase.initializeApp(); // Uses Native Config (google-services.json) on Android
-          } catch (e) {
-            debugPrint('Firebase init failed (Native): $e');
-          }
-
           final notificationService = container.read(
             notificationServiceProvider,
           );
+          // No arguments needed for Firebase (configured via gradle/plist or options)
           await notificationService.initialize();
-          // Schedule in background
+
           notificationService.scheduleAllDailyReminders();
         }
       } catch (e) {

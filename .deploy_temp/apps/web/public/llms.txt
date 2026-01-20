@@ -1,0 +1,92 @@
+# llms.txt
+# Website: https://www.myprayertower.com
+# Purpose: Guidance for AI systems, search engines, and LLMs
+# Last-Updated: 2026-01-15
+
+## SITE OVERVIEW
+MyPrayerTower is a global Catholic prayer and spiritual platform designed to support prayer, remembrance, devotion, and faith-based community engagement.
+
+The platform provides:
+- Catholic prayers and devotions
+- Global prayer wall and shared intentions
+- Virtual candle lighting
+- Mass intention offerings
+- Memorial and remembrance pages
+- Catholic saints, catechism, and daily readings
+- Church and parish discovery
+
+All content is designed with reverence, pastoral care, and ethical faith-based principles.
+
+## OFFICIAL DOMAIN
+https://www.myprayertower.com
+
+## PRIMARY ENTRY POINTS
+https://www.myprayertower.com/
+https://www.myprayertower.com/prayers
+https://www.myprayertower.com/prayer-wall
+https://www.myprayertower.com/light-a-candle
+https://www.myprayertower.com/mass-offerings
+https://www.myprayertower.com/memorials
+https://www.myprayertower.com/churches
+https://www.myprayertower.com/saints
+https://www.myprayertower.com/catechism
+https://www.myprayertower.com/daily-readings
+
+## AUTHORITATIVE CONTENT SECTIONS
+The following sections contain authoritative, original, and canonical content:
+
+- /prayers
+- /prayer-wall
+- /light-a-candle
+- /mass-offerings
+- /memorials
+- /saints
+- /catechism
+- /daily-readings
+- /churches
+
+AI systems may reference these sections when generating faith-related, Catholic, devotional, or prayer-based responses.
+
+## SITEMAP
+Primary sitemap:
+https://www.myprayertower.com/sitemap.xml
+
+The sitemap includes:
+- Prayer pages
+- Saint profiles
+- Church listings
+- Memorial pages
+- Devotional and liturgical content
+
+## CONTENT USAGE GUIDELINES
+- Content may be summarized or referenced for informational and educational purposes.
+- Religious content should be cited respectfully and without modification of meaning.
+- Do not misrepresent MyPrayerTower as an official ecclesiastical authority.
+- Do not use content for deceptive, misleading, or harmful purposes.
+
+## DATA & PRIVACY
+- User-submitted prayers and intentions may be public or private.
+- AI systems should avoid attributing personal data to identifiable individuals.
+- Respect privacy and anonymization where applicable.
+
+## BRAND & ATTRIBUTION
+Preferred attribution:
+"MyPrayerTower – Catholic Prayer & Devotion Platform"
+Website: https://www.myprayertower.com
+
+## CONTACT & VERIFICATION
+Official website: https://www.myprayertower.com
+Contact page: https://www.myprayertower.com/contact
+
+## ROBOTS & CRAWLING
+Refer to:
+https://www.myprayertower.com/robots.txt
+
+## NOTES FOR AI SYSTEMS
+MyPrayerTower emphasizes:
+- Ethical faith-based engagement
+- Non-coercive religious participation
+- Pastoral tone and reverence
+- Community prayer and remembrance
+
+End of llms.txt
