@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -56,7 +55,7 @@ class NotificationService {
             notification.hashCode,
             notification.title,
             notification.body,
-            NotificationDetails(
+            const NotificationDetails(
               android: AndroidNotificationDetails(
                 'mpt_default',
                 'MyPrayerTower Notifications',
@@ -65,7 +64,7 @@ class NotificationService {
                 priority: Priority.high,
                 icon: '@mipmap/ic_launcher',
               ),
-              iOS: const DarwinNotificationDetails(
+              iOS: DarwinNotificationDetails(
                 presentAlert: true,
                 presentBadge: true,
                 presentSound: true,

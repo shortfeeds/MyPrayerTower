@@ -66,8 +66,8 @@ dependencies:
   http: ^1.6.0
 
 
-  webview_flutter_web: ^0.2.3+4
-  flutter_paypal_payment: ^1.0.8
+  # webview_flutter_web: ^0.2.3+4
+  # flutter_paypal_payment: ^1.0.8
   timeago: ^3.7.1
   
   # New Features Dependencies
