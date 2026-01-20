@@ -192,7 +192,7 @@ export default function RootLayout({
                 <SpeedInsights />
                 <GoogleAnalytics gaId="G-1X6N63VWZH" />
 
-                {/* Google AdSense - DISABLED
+                {/* Google AdSense - Lazy Loaded */}
                 {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
                     <Script
                         id="adsense"
@@ -201,7 +201,7 @@ export default function RootLayout({
                         crossOrigin="anonymous"
                         strategy="lazyOnload"
                     />
-                )} */}
+                )}
             </body>
         </html >
     );

@@ -109,13 +109,7 @@ export function SmartAdSlot({
     if (loading) return null;
 
     const renderAd = () => {
-        // Google Ads DISABLED - Only show Offline/Sponsor Ads
-        if (ad?.adSource === 'GOOGLE') {
-            // Google AdSense disabled - skip to placeholder or nothing
-            return showPlaceholder ? null : null;
-        }
-
-        /* ORIGINAL GOOGLE AD CODE - DISABLED
+        // Render Google Ad if source is Google
         if (ad?.adSource === 'GOOGLE' && ad.googleAdUnitId) {
             return (
                 <div className={`text-center my-4 relative z-0 ${className}`}>
@@ -129,7 +123,6 @@ export function SmartAdSlot({
                 </div>
             );
         }
-        */
 
         // Render Offline Sponsor Ad
         if (ad?.adSource === 'OFFLINE' && ad.imageUrl) {
