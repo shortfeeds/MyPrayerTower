@@ -52,7 +52,14 @@ class PremiumHomeHeader extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: GestureDetector(
-            onTap: () => context.push('/profile'),
+            onTap: () {
+              final user = ref.read(authProvider).value;
+              if (user != null) {
+                context.push('/profile');
+              } else {
+                context.push('/login');
+              }
+            },
             child: Container(
               width: 38,
               height: 38,
@@ -185,7 +192,7 @@ class PremiumHomeHeader extends ConsumerWidget {
                         style: GoogleFonts.inter(
                           fontSize: 15,
                           fontWeight: FontWeight.w300,
-                          color: Colors.white.withValues(alpha: 0.8),
+                          color: Colors.white.withValues(alpha: 0.9),
                           height: 1.5,
                         ),
                         maxLines: 2,

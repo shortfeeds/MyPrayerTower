@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { AdminService } from './admin.service';
 
 import { UseGuards } from '@nestjs/common';
@@ -67,5 +67,78 @@ export class AdminController {
     @Post('settings') // Using Post for simplicity, could be Put
     async updateSettings(@Body() data: any) {
         return this.adminService.updateSettings(data);
+    }
+
+    // ===== USER MANAGEMENT =====
+    @Get('users')
+    async getUsers(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+        @Query('search') search?: string,
+    ) {
+        return this.adminService.getUsers(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+            search,
+        );
+    }
+
+    @Post('users')
+    async createUser(@Body() data: any) {
+        return this.adminService.createUser(data);
+    }
+
+    @Put('users/:id')
+    async updateUser(@Param('id') id: string, @Body() data: any) {
+        return this.adminService.updateUser(id, data);
+    }
+
+    @Delete('users/:id')
+    async deleteUser(@Param('id') id: string) {
+        return this.adminService.deleteUser(id);
+    }
+
+    @Post('users/:id/ban')
+    async banUser(@Param('id') id: string, @Body('reason') reason: string) {
+        return this.adminService.banUser(id, reason);
+    }
+
+    @Post('users/:id/unban')
+    async unbanUser(@Param('id') id: string) {
+        return this.adminService.unbanUser(id);
+    }
+
+    // ===== CHURCH MANAGEMENT =====
+    @Get('churches')
+    async getChurches(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+        @Query('search') search?: string,
+    ) {
+        return this.adminService.getChurches(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+            search,
+        );
+    }
+
+    @Post('churches')
+    async createChurch(@Body() data: any) {
+        return this.adminService.createChurch(data);
+    }
+
+    @Put('churches/:id')
+    async updateChurch(@Param('id') id: string, @Body() data: any) {
+        return this.adminService.updateChurch(id, data);
+    }
+
+    @Delete('churches/:id')
+    async deleteChurch(@Param('id') id: string) {
+        return this.adminService.deleteChurch(id);
+    }
+
+    @Post('churches/unverify-all')
+    async unverifyAllChurches() {
+        return this.adminService.unverifyAllChurches();
     }
 }

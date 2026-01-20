@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../payments/services/payment_service.dart';
+
+import '../../payments/widgets/smart_checkout_sheet.dart';
 import '../../../core/theme/app_theme.dart';
 import '../repositories/donations_repository.dart';
 
@@ -20,7 +21,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
   late TabController _tabController;
   String? _selectedTierId;
   int _customAmount = 0;
-  bool _coversFee = false;
+  final bool _coversFee = false;
   int? _selectedPlanIndex;
 
   @override
@@ -573,71 +574,30 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
   }
 
   void _handleDonate() {
-    showModalBottomSheet(
+    SmartCheckoutSheet.show(
       context: context,
-      useRootNavigator: true, // Show above bottom nav
-      backgroundColor: AppTheme.sacredNavy950,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Select Payment Method',
-              style: GoogleFonts.merriweather(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            // PayPal Button
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pop(context);
-                final service = ref.read(paymentServiceProvider);
-                service.startPayPalPayment(
-                  context: context,
-                  amount: _totalAmount,
-                  currency: 'USD',
-                  description: 'Donation to MyPrayerTower',
-                  onSuccess: (id) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Donation successful! ID: $id'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  },
-                  onError: (error) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Payment failed: $error'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  },
-                );
-              },
-              icon: const Icon(LucideIcons.creditCard, color: Colors.white),
-              label: const Text('Pay with PayPal'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF003087), // PayPal Blue
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            const SizedBox(height: 24),
-          ],
-        ),
-      ),
+      ref: ref,
+      amount: _totalAmount,
+      currency: 'USD',
+      description: 'Donation to MyPrayerTower',
+      itemName: 'Donation',
+      itemIcon: '💝',
+      onSuccess: (id) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Donation successful! ID: $id'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      },
+      onError: (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Payment failed: $error'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      },
     );
   }
 

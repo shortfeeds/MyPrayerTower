@@ -19,6 +19,7 @@ model AdminUser {
   lastLoginAt  DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime
+  createdNotifications Notification[]
 
   @@index([email])
 }
@@ -567,10 +568,10 @@ model NewsArticle {
   @@index([source])
 }
 
-model Notification {
+model UserNotification {
   id        String           @id
   userId    String
-  type      NotificationType
+  type      UserNotificationType
   title     String
   body      String
   data      Json?
@@ -837,7 +838,8 @@ model User {
   ChurchAdmin                                ChurchAdmin[]
   ChurchClaim                                ChurchClaim[]
   ChurchFollower                             ChurchFollower[]
-  Notification                               Notification[]
+  userNotifications                          UserNotification[]
+  notificationReceivers                      NotificationReceiver[]
   PrayerAction                               PrayerAction[]
   PrayerRequest                              PrayerRequest[]
   SacramentRecord                            SacramentRecord[]
@@ -898,6 +900,7 @@ model User {
   @@index([homeChurchId])
   @@index([createdAt])
   @@index([subscriptionTier])
+  deviceTokens                               DeviceToken[]
 }
 
 model UserBlock {
@@ -1642,7 +1645,7 @@ enum ModerationStatus {
   ARCHIVED
 }
 
-enum NotificationType {
+enum UserNotificationType {
   SYSTEM
   ANNOUNCEMENT
   EVENT
@@ -2234,4 +2237,88 @@ model Pilgrimage {
   
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model Notification {
+  id             String               @id @default(cuid())
+  title          String
+  message        String               @db.Text
+  type           NotificationType
+  targetAudience NotificationAudience
+  status         NotificationStatus   @default(DRAFT)
+  scheduledFor   DateTime?
+  sentAt         DateTime?
+  metadata       Json? // For deep links or extra data
+
+  // For targeted notifications
+  receivers NotificationReceiver[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  createdBy   String?
+  createdByUser AdminUser? @relation(fields: [createdBy], references: [id])
+}
+
+model NotificationReceiver {
+  id             String       @id @default(cuid())
+  notificationId String
+  userId         String
+  readAt         DateTime?
+  status         DeliveryStatus @default(PENDING)
+  
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([notificationId, userId])
+  @@index([userId])
+  @@index([status])
+}
+
+enum NotificationType {
+  PUSH
+  EMAIL
+  IN_APP
+  ALL
+}
+
+enum NotificationAudience {
+  ALL
+  PREMIUM
+  FREE
+  SPECIFIC
+}
+
+enum NotificationStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+  CANCELLED
+  FAILED
+}
+
+enum DeliveryStatus {
+  PENDING
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+model DeviceToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  platform  String   // 'android', 'ios', 'web'
+  userAgent String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([platform])
 }

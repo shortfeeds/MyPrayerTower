@@ -20,15 +20,18 @@ interface CreateCandleModalProps {
 
 import Image from 'next/image';
 
-const DURATIONS = [
+import { usePricing } from '@/contexts/PricingContext';
+
+const DEFAULT_DURATIONS = [
     { value: 'ONE_DAY', label: 'Humble Prayer', daysLabel: '1 Day', hours: 24, price: 0, priceDisplay: 'Free', tier: 'free', desc: 'A simple prayer for today', image: '/images/candles/humble.png', spiritual: 'A humble beginning', tierBadge: '' },
-    { value: 'THREE_DAYS', label: 'Devotion Votive', daysLabel: '3 Days', hours: 72, price: 249, priceDisplay: '$2.49', tier: 'standard', desc: 'Sincere devotion with Cross', image: '/images/candles/devotion_glow.png', spiritual: '✞ Your faith grows stronger', tierBadge: '' },
-    { value: 'SEVEN_DAYS', label: 'Sacred Altar', daysLabel: '7 Days', hours: 168, price: 499, priceDisplay: '$4.99', tier: 'premium', desc: 'Carried to God\'s altar', image: '/images/candles/altar.png', spiritual: '⛪ Presented before the Lord', tierBadge: 'Popular' },
+    { value: 'THREE_DAYS', label: 'Devotion Votive', daysLabel: '3 Days', hours: 72, price: 299, priceDisplay: '$2.99', tier: 'standard', desc: 'Sincere devotion with Cross', image: '/images/candles/devotion_glow.png', spiritual: '✞ Your faith grows stronger', tierBadge: '' },
+    { value: 'SEVEN_DAYS', label: 'Sacred Altar', daysLabel: '7 Days', hours: 168, price: 599, priceDisplay: '$5.99', tier: 'premium', desc: 'Carried to God\'s altar', image: '/images/candles/altar.png', spiritual: '⛪ Presented before the Lord', tierBadge: 'Popular' },
     { value: 'FOURTEEN_DAYS', label: 'Blessed Marian', daysLabel: '14 Days', hours: 336, price: 999, priceDisplay: '$9.99', tier: 'premium', desc: 'Under Our Lady\'s protection', image: '/images/candles/marian_glow.png', spiritual: '✨ Mary intercedes for you', tierBadge: 'Best Value', bestValue: true },
     { value: 'THIRTY_DAYS', label: 'Divine Cathedral', daysLabel: '30 Days', hours: 720, price: 1499, priceDisplay: '$14.99', tier: 'premium', desc: 'Angels carry your prayer to Heaven', image: '/images/candles/divine.png', spiritual: '🕊️ Your prayer ascends to Heaven', tierBadge: 'Most Powerful' },
 ];
 
 export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandleModalProps) {
+    const { prices, formatPrice } = usePricing();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -40,7 +43,24 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
         email: '' // Optional for receipt
     });
 
-    const selectedTier = DURATIONS.find(d => d.value === formData.duration) || DURATIONS[0];
+    // Merge default structure with dynamic prices
+    const durations = DEFAULT_DURATIONS.map(d => {
+        let dynamicPrice = d.price;
+        if (prices?.candles) {
+            if (d.value === 'ONE_DAY') dynamicPrice = prices.candles.oneDay;
+            if (d.value === 'THREE_DAYS') dynamicPrice = prices.candles.threeDay;
+            if (d.value === 'SEVEN_DAYS') dynamicPrice = prices.candles.sevenDay;
+            if (d.value === 'THIRTY_DAYS') dynamicPrice = prices.candles.thirtyDay;
+            // Note: Fourteen days currently doesn't have a specific setting, using default or closest approximation
+        }
+        return {
+            ...d,
+            price: dynamicPrice,
+            priceDisplay: formatPrice(dynamicPrice)
+        };
+    });
+
+    const selectedTier = durations.find(d => d.value === formData.duration) || durations[0];
 
     const handleSubmit = async () => {
         if (selectedTier.price === 0) {
@@ -182,7 +202,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                                 </p>
 
                                 <div className="space-y-2 mb-4">
-                                    {DURATIONS.map((tier) => {
+                                    {durations.map((tier) => {
                                         const isSelected = formData.duration === tier.value;
                                         return (
                                             <button

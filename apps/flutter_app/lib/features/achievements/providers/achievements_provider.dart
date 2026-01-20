@@ -120,7 +120,10 @@ class UserStatsNotifier extends StateNotifier<UserStats> {
     int newLongest = state.longestStreak;
     DateTime? last = state.lastPrayerDate;
 
-    if (last != null) {
+    // If first prayer ever, start streak at 1
+    if (last == null) {
+      newStreak = 1;
+    } else {
       final lastDate = DateTime(last.year, last.month, last.day);
       final diff = today.difference(lastDate).inDays;
 
@@ -132,9 +135,6 @@ class UserStatsNotifier extends StateNotifier<UserStats> {
         newStreak = 1;
       }
       // If diff == 0 (same day), do nothing to streak
-    } else {
-      // First prayer ever
-      newStreak = 1;
     }
 
     if (newStreak > newLongest) {

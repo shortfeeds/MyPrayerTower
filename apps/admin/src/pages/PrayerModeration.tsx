@@ -1,15 +1,13 @@
-import { useState } from 'react';
-import { Card, Table, Tag, Button, Modal, Input, Space, Select, message } from 'antd';
+import { useEffect, useState } from 'react';
+import { Card, Table, Tag, Button, Modal, Input, Space, Select, message, Spin, Empty } from 'antd';
 import { CheckOutlined, CloseOutlined, EyeOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 const { TextArea } = Input;
-
-// Mock data
-const mockPrayers = [
-    { id: '1', content: 'Please pray for my mother who is having surgery tomorrow.', user: 'Maria S.', category: 'Health', visibility: 'public', createdAt: '5 min ago' },
-    { id: '2', content: 'For peace in our family and reconciliation between my siblings.', user: 'Anonymous', category: 'Family', visibility: 'anonymous', createdAt: '12 min ago' },
-    { id: '3', content: 'For guidance in finding a new job.', user: 'John D.', category: 'Work', visibility: 'public', createdAt: '1 hour ago' },
-];
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
 
 const rejectionReasons = [
     'Contains inappropriate content',
@@ -21,20 +19,87 @@ const rejectionReasons = [
 ];
 
 export function PrayerModeration() {
+    const [prayers, setPrayers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [selectedPrayer, setSelectedPrayer] = useState<any>(null);
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
+    const [processing, setProcessing] = useState(false);
 
-    const handleApprove = (_id: string) => {
-        message.success('Prayer approved and published');
-        // TODO: Call API
+    useEffect(() => {
+        fetchPendingPrayers();
+    }, []);
+
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('token');
+        return { Authorization: `Bearer ${token}` };
     };
 
-    const handleReject = () => {
-        message.warning('Prayer rejected');
-        setRejectModalOpen(false);
-        setSelectedPrayer(null);
-        // TODO: Call API
+    const fetchPendingPrayers = async () => {
+        try {
+            setLoading(true);
+            const res = await fetch(`${API_URL}/admin/prayers/pending`, {
+                headers: getAuthHeaders()
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setPrayers(data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch pending prayers', err);
+            message.error('Failed to load pending prayers');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleApprove = async (id: string) => {
+        try {
+            setProcessing(true);
+            const res = await fetch(`${API_URL}/admin/prayers/${id}/approve`, {
+                method: 'POST',
+                headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' }
+            });
+
+            if (res.ok) {
+                message.success('Prayer approved and published');
+                setPrayers(prev => prev.filter(p => p.id !== id));
+                setSelectedPrayer(null);
+            } else {
+                throw new Error('Failed to approve');
+            }
+        } catch (err) {
+            message.error('Failed to approve prayer');
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    const handleReject = async () => {
+        if (!selectedPrayer) return;
+
+        try {
+            setProcessing(true);
+            const res = await fetch(`${API_URL}/admin/prayers/${selectedPrayer.id}/reject`, {
+                method: 'POST',
+                headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason: rejectionReason })
+            });
+
+            if (res.ok) {
+                message.warning('Prayer rejected');
+                setPrayers(prev => prev.filter(p => p.id !== selectedPrayer.id));
+                setRejectModalOpen(false);
+                setSelectedPrayer(null);
+                setRejectionReason('');
+            } else {
+                throw new Error('Failed to reject');
+            }
+        } catch (err) {
+            message.error('Failed to reject prayer');
+        } finally {
+            setProcessing(false);
+        }
     };
 
     const columns = [
@@ -49,7 +114,12 @@ export function PrayerModeration() {
                 </span>
             ),
         },
-        { title: 'User', dataIndex: 'user', key: 'user' },
+        {
+            title: 'User',
+            dataIndex: ['user', 'displayName'],
+            key: 'user',
+            render: (text: string, record: any) => text || record.user?.firstName || 'Anonymous'
+        },
         {
             title: 'Category',
             dataIndex: 'category',
@@ -61,12 +131,17 @@ export function PrayerModeration() {
             dataIndex: 'visibility',
             key: 'visibility',
             render: (vis: string) => (
-                <Tag color={vis === 'public' ? 'green' : 'orange'}>
-                    {vis === 'public' ? '🌍 Public' : '👤 Anonymous'}
+                <Tag color={vis === 'PUBLIC' ? 'green' : 'orange'}>
+                    {vis === 'PUBLIC' ? '🌍 Public' : '👤 Anonymous'}
                 </Tag>
             ),
         },
-        { title: 'Submitted', dataIndex: 'createdAt', key: 'createdAt' },
+        {
+            title: 'Submitted',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            render: (d: string) => dayjs(d).fromNow()
+        },
         {
             title: 'Actions',
             key: 'actions',
@@ -82,6 +157,7 @@ export function PrayerModeration() {
                         type="primary"
                         icon={<CheckOutlined />}
                         onClick={() => handleApprove(record.id)}
+                        loading={processing && selectedPrayer?.id === record.id}
                     >
                         Approve
                     </Button>
@@ -104,16 +180,23 @@ export function PrayerModeration() {
         <div>
             <h1 style={{ marginBottom: 24 }}>Prayer Moderation</h1>
             <p style={{ marginBottom: 24, color: '#666' }}>
-                <Tag color="orange">{mockPrayers.length}</Tag> prayers awaiting moderation
+                <Tag color="orange">{prayers.length}</Tag> prayers awaiting moderation
             </p>
 
             <Card>
-                <Table
-                    columns={columns}
-                    dataSource={mockPrayers}
-                    rowKey="id"
-                    pagination={{ pageSize: 10 }}
-                />
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: 40 }}>
+                        <Spin size="large" />
+                    </div>
+                ) : (
+                    <Table
+                        columns={columns}
+                        dataSource={prayers}
+                        rowKey="id"
+                        pagination={{ pageSize: 10 }}
+                        locale={{ emptyText: <Empty description="No pending prayers found" /> }}
+                    />
+                )}
             </Card>
 
             {/* View Modal */}
@@ -125,16 +208,22 @@ export function PrayerModeration() {
                     <Button key="reject" danger onClick={() => setRejectModalOpen(true)}>
                         Reject
                     </Button>,
-                    <Button key="approve" type="primary" onClick={() => { handleApprove(selectedPrayer?.id); setSelectedPrayer(null); }}>
+                    <Button
+                        key="approve"
+                        type="primary"
+                        onClick={() => handleApprove(selectedPrayer?.id)}
+                        loading={processing}
+                    >
                         Approve
                     </Button>,
                 ]}
             >
                 {selectedPrayer && (
                     <div>
-                        <p><strong>From:</strong> {selectedPrayer.user}</p>
+                        <p><strong>From:</strong> {selectedPrayer.user?.displayName || selectedPrayer.user?.firstName || 'Anonymous'}</p>
                         <p><strong>Category:</strong> {selectedPrayer.category}</p>
                         <p><strong>Visibility:</strong> {selectedPrayer.visibility}</p>
+                        <p><strong>Submitted:</strong> {dayjs(selectedPrayer.createdAt).format('MMMM D, YYYY h:mm A')}</p>
                         <p><strong>Content:</strong></p>
                         <div style={{ background: '#f5f5f5', padding: 16, borderRadius: 8, marginTop: 8 }}>
                             {selectedPrayer.content}
@@ -150,7 +239,7 @@ export function PrayerModeration() {
                 onCancel={() => { setRejectModalOpen(false); setRejectionReason(''); }}
                 onOk={handleReject}
                 okText="Reject"
-                okButtonProps={{ danger: true }}
+                okButtonProps={{ danger: true, loading: processing }}
             >
                 <p>Select a reason for rejection:</p>
                 <Select
@@ -169,3 +258,4 @@ export function PrayerModeration() {
         </div>
     );
 }
+

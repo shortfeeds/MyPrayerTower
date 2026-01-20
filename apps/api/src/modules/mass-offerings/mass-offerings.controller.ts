@@ -1,5 +1,6 @@
 import { Controller, Post, Get, Body, Query, Param, UseGuards, Request } from '@nestjs/common';
 import { MassOfferingsService, CreateMassOfferingDto } from './mass-offerings.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('mass-offerings')
 export class MassOfferingsController {
@@ -49,10 +50,8 @@ export class MassOfferingsController {
      * Get user's offering history (requires auth)
      */
     @Get('my-offerings')
+    @UseGuards(JwtAuthGuard)
     async getMyOfferings(@Request() req: any) {
-        if (!req.user?.id) {
-            return { offerings: [], message: 'Please log in to view your offerings' };
-        }
         return this.massOfferingsService.getUserOfferings(req.user.id);
     }
 
@@ -60,12 +59,12 @@ export class MassOfferingsController {
      * Admin: Get all offerings
      */
     @Get('admin/all')
+    @UseGuards(JwtAuthGuard)
     async getAllOfferings(
         @Query('status') status?: string,
         @Query('limit') limit?: string,
         @Query('offset') offset?: string,
     ) {
-        // TODO: Add admin auth guard
         return this.massOfferingsService.getAllOfferings(
             status as any,
             limit ? parseInt(limit) : 50,
@@ -77,11 +76,11 @@ export class MassOfferingsController {
      * Admin: Assign offering to partner
      */
     @Post('admin/:id/assign')
+    @UseGuards(JwtAuthGuard)
     async assignToPartner(
         @Param('id') offeringId: string,
         @Body() data: { partnerId: string },
     ) {
-        // TODO: Add admin auth guard
         return this.massOfferingsService.assignToPartner(offeringId, data.partnerId);
     }
 
@@ -89,11 +88,11 @@ export class MassOfferingsController {
      * Admin: Schedule Mass
      */
     @Post('admin/:id/schedule')
+    @UseGuards(JwtAuthGuard)
     async scheduleMass(
         @Param('id') offeringId: string,
         @Body() data: { celebrationDate: string; massTime?: string; celebrant?: string },
     ) {
-        // TODO: Add admin auth guard
         return this.massOfferingsService.scheduleMass(
             offeringId,
             new Date(data.celebrationDate),
@@ -106,8 +105,8 @@ export class MassOfferingsController {
      * Admin: Mark as offered
      */
     @Post('admin/:id/mark-offered')
+    @UseGuards(JwtAuthGuard)
     async markAsOffered(@Param('id') offeringId: string) {
-        // TODO: Add admin auth guard
         return this.massOfferingsService.markAsOffered(offeringId);
     }
 }

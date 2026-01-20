@@ -32,4 +32,34 @@ export class SaintsService {
             take: 20,
         });
     }
+    async update(id: string, data: any) {
+        return this.prisma.saint.update({
+            where: { id },
+            data: {
+                ...data,
+                updatedAt: new Date()
+            }
+        });
+    }
+
+    async delete(id: string) {
+        return this.prisma.saint.delete({
+            where: { id }
+        });
+    }
+
+    async create(data: any) {
+        // Generate ID if not present (assuming simple uuid/string strategy)
+        // If imports needed, add them at top, but to avoid import mess in replace, 
+        // we use a simple random string or rely on client sending it? 
+        // Better to use crypto (available in Node global)
+        const id = data.id || crypto.randomUUID();
+        return this.prisma.saint.create({
+            data: {
+                ...data,
+                id,
+                updatedAt: new Date()
+            }
+        });
+    }
 }

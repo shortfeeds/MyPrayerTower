@@ -87,7 +87,7 @@ import '../features/focus_mode/screens/focus_mode_screen.dart';
 import '../features/live_mass/screens/live_mass_screen.dart';
 import '../features/reading_plans/screens/reading_plans_screen.dart';
 import '../features/divine_office/screens/divine_office_screen.dart';
-import '../features/churches/screens/parish_finder_screen.dart';
+
 import '../features/prayer_partners/screens/prayer_partners_list_screen.dart';
 import '../features/prayer_partners/screens/invite_partner_screen.dart';
 import '../features/prayer_groups/screens/prayer_groups_list_screen.dart';
@@ -205,11 +205,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/divine-office',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: DivineOfficeScreen()),
-          ),
-          GoRoute(
-            path: '/parish-finder',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ParishFinderScreen()),
           ),
           GoRoute(
             path: '/library',

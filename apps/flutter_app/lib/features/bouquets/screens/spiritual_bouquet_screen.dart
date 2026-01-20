@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../payments/widgets/smart_checkout_sheet.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../payments/services/payment_service.dart';
 
 class SpiritualBouquetScreen extends ConsumerStatefulWidget {
   const SpiritualBouquetScreen({super.key});
@@ -141,33 +141,34 @@ class _SpiritualBouquetScreenState
             ),
             const SizedBox(height: 16),
 
+            // Prayers - Free (simple toggle, no counter)
+            _buildFreeItemToggle(
+              icon: '🙏',
+              title: 'Prayers',
+              subtitle: 'A gift of prayer — Always Free',
+              isIncluded: _prayersCount > 0,
+              onChanged: (v) => setState(() => _prayersCount = v ? 1 : 0),
+            ),
             _buildItemSelector(
-              icon: '⛪',
-              title: 'Holy Masses',
-              subtitle: '\$10.00 each',
-              count: _massesCount,
-              onChanged: (v) => setState(() => _massesCount = v),
+              icon: '🕯️',
+              title: 'Virtual Candle',
+              subtitle: '\$2.99 each',
+              count: _candlesCount,
+              onChanged: (v) => setState(() => _candlesCount = v),
             ),
             _buildItemSelector(
               icon: '📿',
-              title: 'Rosaries',
+              title: 'Rosary',
               subtitle: '\$5.00 each',
               count: _rosariesCount,
               onChanged: (v) => setState(() => _rosariesCount = v),
             ),
             _buildItemSelector(
-              icon: '🙏',
-              title: 'Prayers',
-              subtitle: 'Free',
-              count: _prayersCount,
-              onChanged: (v) => setState(() => _prayersCount = v),
-            ),
-            _buildItemSelector(
-              icon: '🕯️',
-              title: 'Candles',
-              subtitle: '\$2.99 each',
-              count: _candlesCount,
-              onChanged: (v) => setState(() => _candlesCount = v),
+              icon: '⛪',
+              title: 'Holy Mass',
+              subtitle: '\$10.00 each',
+              count: _massesCount,
+              onChanged: (v) => setState(() => _massesCount = v),
             ),
             const SizedBox(height: 24),
 
@@ -325,6 +326,64 @@ class _SpiritualBouquetScreenState
       _recipientNameController.text.isNotEmpty &&
       _recipientEmailController.text.isNotEmpty;
 
+  // Widget for free items with simple toggle (no counter)
+  Widget _buildFreeItemToggle({
+    required String icon,
+    required String title,
+    required String subtitle,
+    required bool isIncluded,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isIncluded
+            ? Colors.green.withValues(alpha: 0.1)
+            : AppTheme.darkCard,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isIncluded
+              ? Colors.green.withValues(alpha: 0.5)
+              : Colors.transparent,
+        ),
+      ),
+      child: Row(
+        children: [
+          Text(icon, style: const TextStyle(fontSize: 28)),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: Colors.green.shade300,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: isIncluded,
+            onChanged: onChanged,
+            activeColor: Colors.green,
+            activeTrackColor: Colors.green.withValues(alpha: 0.3),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ... _buildItemSelector, _buildTextField, _buildSummaryRow match original ...
   Widget _buildItemSelector({
     required String icon,
@@ -466,8 +525,6 @@ class _SpiritualBouquetScreenState
     if (_totalCents > 0) {
       // Paid bouquet - use PayPal
       try {
-        final paymentService = ref.read(paymentServiceProvider);
-
         // Build description
         final items = <String>[];
         if (_massesCount > 0) {
@@ -486,11 +543,14 @@ class _SpiritualBouquetScreenState
         final description =
             'Spiritual Bouquet: ${items.join(", ")} for ${_recipientNameController.text}';
 
-        await paymentService.startPayPalPayment(
+        SmartCheckoutSheet.show(
           context: context,
+          ref: ref,
           amount: _total,
           currency: 'USD',
           description: description,
+          itemName: 'Spiritual Bouquet',
+          itemIcon: '💐',
           onSuccess: (transactionId) {
             if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(

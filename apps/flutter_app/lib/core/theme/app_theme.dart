@@ -25,8 +25,10 @@ class AppTheme {
 
   // Text Colors
   static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFCBD5E1); // Blue-ish gray
-  static const Color textMuted = Color(0xFF64748B);
+  static const Color textSecondary = Color(
+    0xFFE2E8F0,
+  ); // Brighter for better visibility
+  static const Color textMuted = Color(0xFF94A3B8); // Increased brightness
 
   // Functional
   static const Color error = Color(0xFFFF453A);
@@ -263,6 +265,22 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
+      ),
+
+      // Dialog Theme - White background with black text for visibility
+      dialogTheme: DialogThemeData(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: GoogleFonts.inter(
+          color: Colors.black87,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        contentTextStyle: GoogleFonts.inter(
+          color: Colors.black87,
+          fontSize: 14,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
     );
   }

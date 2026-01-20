@@ -33,6 +33,7 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
 
 // In-App Purchases (Google Play)
 import { PurchasesModule } from './modules/purchases/purchases.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 @Module({
     imports: [
@@ -89,6 +90,9 @@ import { PurchasesModule } from './modules/purchases/purchases.module';
 
         // In-App Purchases
         PurchasesModule,
+
+        // Analytics
+        AnalyticsModule,
     ],
 })
 export class AppModule { }

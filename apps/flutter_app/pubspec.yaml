@@ -57,8 +57,8 @@ dependencies:
   supabase_flutter: ^2.12.0
   
   # Notifications
-  # firebase_messaging: ^15.2.4
-  # firebase_core: ^3.13.0
+  firebase_messaging: ^15.2.4
+  firebase_core: ^3.13.0
   flutter_local_notifications: ^19.5.0
   timezone: ^0.10.1
   webview_flutter: ^4.8.0
@@ -71,7 +71,7 @@ dependencies:
   timeago: ^3.7.1
   
   # New Features Dependencies
-  onesignal_flutter: ^5.1.6           # Push Notifications
+  # onesignal_flutter: ^5.1.6           # Push Notifications
   local_auth: ^2.3.0                  # Biometric Security
   home_widget: ^0.6.0                 # Home Screen Widget
   google_generative_ai: ^0.4.3        # AI Companion (Gemini)
@@ -95,5 +95,6 @@ flutter:
   
   assets:
     - assets/images/
+    - assets/images/candles/
     - assets/icons/
     - assets/data/

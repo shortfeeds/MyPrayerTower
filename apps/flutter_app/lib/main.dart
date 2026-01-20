@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'app/app.dart';
 import 'core/constants/app_constants.dart';
@@ -13,6 +14,7 @@ import 'core/constants/app_constants.dart';
 import 'core/services/notification_service.dart';
 import 'features/home_widget/services/home_widget_service.dart';
 import 'features/ads/services/ad_service.dart';
+// import 'firebase_options.dart'; // Removed: File missing and unused (Native config used)
 
 void main() async {
   // Catch all Flutter framework errors
@@ -57,17 +59,6 @@ void main() async {
         debugPrint('Supabase initialization error: $e');
       }
 
-      // Seed Data (Safe to run repeatedly) - skip on error
-      /*
-      try {
-        final seedingService = SeedingService(Supabase.instance.client);
-        await seedingService.seedPrayerLibrary();
-        await seedingService.seedPrayerWall();
-      } catch (e) {
-        debugPrint('Seeding skipped: $e');
-      }
-      */
-
       // Initialize Hive for local storage
       try {
         await Hive.initFlutter();
@@ -75,14 +66,27 @@ void main() async {
         debugPrint('Hive initialization error: $e');
       }
 
-      // Initialize push notifications with scheduled reminders
+      // Create Provider Container
+      final container = ProviderContainer();
+
+      // Initialize push notifications (Firebase)
       if (!kIsWeb) {
-        // Fire and forget AdMob initialization to avoid blocking startup
         MobileAds.instance.initialize();
       }
       try {
         if (!kIsWeb) {
-          final notificationService = NotificationService();
+          // Initialize Firebase
+          // If firebase_options.dart exists, we use it. If not, we rely on native config (google-services.json)
+          // Since user provided google-services.json manually, we might not have options.
+          try {
+            await Firebase.initializeApp(); // Uses Native Config (google-services.json) on Android
+          } catch (e) {
+            debugPrint('Firebase init failed (Native): $e');
+          }
+
+          final notificationService = container.read(
+            notificationServiceProvider,
+          );
           await notificationService.initialize();
           // Schedule in background
           notificationService.scheduleAllDailyReminders();
@@ -98,12 +102,9 @@ void main() async {
         debugPrint('HomeWidget setup skipped: $e');
       }
 
-      final container = ProviderContainer();
-
       // Initialize AdService
       if (!kIsWeb) {
         try {
-          // Fire and forget AdMob initialization
           container.read(adServiceProvider).initialize();
         } catch (e) {
           debugPrint('AdService init error: $e');

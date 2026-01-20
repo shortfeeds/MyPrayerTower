@@ -151,7 +151,7 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
     return SliverAppBar(
       backgroundColor: AppTheme.sacredNavy950,
       title: Text(
-        'Prayer Wall',
+        'Global Prayer Wall',
         style: GoogleFonts.merriweather(
           fontWeight: FontWeight.bold,
           color: Colors.white,
@@ -207,7 +207,7 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Share your burdens,\nlift each other up.',
+              'Share your intentions.\nLift each other up.',
               textAlign: TextAlign.center,
               style: GoogleFonts.merriweather(
                 fontSize: 28,
@@ -218,7 +218,7 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Join our global community of prayer warriors interceding for one another 24/7.',
+              'Join the global chorus of prayer. Together, we lift each other up to the Heavens.',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 16,

@@ -24,6 +24,9 @@
         "paths": {
             "@/*": [
                 "./src/*"
+            ],
+            "@mpt/database": [
+                "../../packages/database/src"
             ]
         }
     },

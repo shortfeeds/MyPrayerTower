@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "560388216969",
+    "firebase_url": "https://trinity-pixels-default-rtdb.firebaseio.com",
+    "project_id": "trinity-pixels",
+    "storage_bucket": "trinity-pixels.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560388216969:android:5beaccba89c3b729dfce58",
+        "android_client_info": {
+          "package_name": "com.myprayertower.myprayertower_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUwdMCtfmOEod6Yxvn80HNmzO_RYVFhwI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "560388216969-fdblraa6kvi40mt086p2qvgvi2akj7d7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

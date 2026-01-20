@@ -27,6 +27,8 @@ class _InvitePartnerScreenState extends ConsumerState<InvitePartnerScreen> {
     final controller = ref.read(prayerPartnerControllerProvider.notifier);
     await controller.invitePartner(_emailController.text.trim());
 
+    if (!mounted) return;
+
     final state = ref.read(prayerPartnerControllerProvider);
     if (state.hasError) {
       ScaffoldMessenger.of(
@@ -36,7 +38,7 @@ class _InvitePartnerScreenState extends ConsumerState<InvitePartnerScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Invitation sent!')));
-      if (mounted) context.pop();
+      context.pop();
     }
   }
 

@@ -313,7 +313,7 @@ class HomeScreen extends ConsumerWidget {
                     'Pray for your loved ones',
                     style: GoogleFonts.inter(
                       fontSize: 14,
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Colors.white.withValues(alpha: 0.85),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -600,13 +600,6 @@ class HomeScreen extends ConsumerWidget {
         'Records',
         Colors.blue.shade500,
         '/sacraments',
-      ),
-      _FeatureItem(
-        LucideIcons.mapPin,
-        'Find Parish',
-        'Nearby Mass',
-        Colors.green.shade600,
-        '/parish-finder',
       ),
       _FeatureItem(
         LucideIcons.scroll,

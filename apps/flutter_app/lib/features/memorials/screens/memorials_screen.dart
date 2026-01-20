@@ -75,7 +75,7 @@ class _MemorialsScreenState extends ConsumerState<MemorialsScreen> {
             child: Column(
               children: [
                 Text(
-                  'Remember Those We Love',
+                  'Visit a Memorial of Remembrance',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.merriweather(
                     fontSize: 20,
@@ -85,11 +85,21 @@ class _MemorialsScreenState extends ConsumerState<MemorialsScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Create lasting tributes for loved ones.',
+                  'Light candles, offer prayers, and share cherished memories.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
                     color: Colors.blueGrey.shade200,
                     fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '"Eternal rest grant unto them, O Lord."',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.merriweather(
+                    color: Colors.blueGrey.shade300,
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
                 const SizedBox(height: 20),

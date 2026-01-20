@@ -69,7 +69,11 @@ class LibraryScreen extends ConsumerWidget {
           ),
 
           // 2. Spiritual Growth Section
-          _buildSectionHeader('Spiritual Growth', LucideIcons.trendingUp, Colors.green),
+          _buildSectionHeader(
+            'Spiritual Growth',
+            LucideIcons.trendingUp,
+            Colors.green,
+          ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverGrid.count(
@@ -91,13 +95,6 @@ class LibraryScreen extends ConsumerWidget {
                   icon: LucideIcons.checkCircle,
                   color: Colors.blue,
                   onTap: () => context.push('/challenges'),
-                ),
-                _PremiumTile(
-                  title: 'Leaderboard',
-                  subtitle: 'Community rank',
-                  icon: LucideIcons.barChart2,
-                  color: Colors.purple,
-                  onTap: () => context.push('/leaderboard'),
                 ),
                 _PremiumTile(
                   title: 'Fasting',
@@ -155,7 +152,8 @@ class LibraryScreen extends ConsumerWidget {
                     color: Colors.indigo,
                     width: 200,
                     onTap: () => context.push('/groups'),
-                    image: 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?auto=format&fit=crop&q=80',
+                    image:
+                        'https://images.unsplash.com/photo-1544427920-c49ccfb85579?auto=format&fit=crop&q=80',
                   ),
                   const SizedBox(width: 12),
                   _LargePremiumTile(
@@ -165,7 +163,8 @@ class LibraryScreen extends ConsumerWidget {
                     color: Colors.pink,
                     width: 160,
                     onTap: () => context.push('/memorials'),
-                    image: 'https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?auto=format&fit=crop&q=80',
+                    image:
+                        'https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?auto=format&fit=crop&q=80',
                   ),
                   const SizedBox(width: 12),
                   _LargePremiumTile(
@@ -175,7 +174,8 @@ class LibraryScreen extends ConsumerWidget {
                     color: Colors.red,
                     width: 160,
                     onTap: () => context.push('/news'),
-                    image: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80',
+                    image:
+                        'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80',
                   ),
                   const SizedBox(width: 12),
                   _LargePremiumTile(
@@ -185,7 +185,8 @@ class LibraryScreen extends ConsumerWidget {
                     color: Colors.amber,
                     width: 180,
                     onTap: () => context.push('/testimonies'),
-                    image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&q=80',
+                    image:
+                        'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&q=80',
                   ),
                 ].animate(interval: 100.ms).fadeIn().slideX(begin: 0.2, end: 0),
               ),
@@ -202,85 +203,156 @@ class LibraryScreen extends ConsumerWidget {
               crossAxisSpacing: 12,
               childAspectRatio: 0.75, // Tall for icon + text
               children: [
-                _ToolIcon(title: 'Prayers', icon: LucideIcons.bookOpen, color: Colors.blue, onTap: () => context.push('/prayers')),
-                _ToolIcon(title: 'Rosary', icon: LucideIcons.circleDot, color: Colors.pink, onTap: () => context.push('/rosary')),
-                _ToolIcon(title: 'Bible', icon: LucideIcons.book, color: Colors.brown, onTap: () => context.push('/bible')),
-                _ToolIcon(title: 'Novena', icon: LucideIcons.flame, color: Colors.orange, onTap: () => context.push('/novenas')),
-                _ToolIcon(title: 'Stations', icon: LucideIcons.cross, color: Colors.red, onTap: () => context.push('/stations')),
-                _ToolIcon(title: 'Confession', icon: LucideIcons.userCheck, color: Colors.purple, onTap: () => context.push('/confession')),
-                _ToolIcon(title: 'Examen', icon: LucideIcons.search, color: Colors.indigo, onTap: () => context.push('/examen')),
-                _ToolIcon(title: 'Calendar', icon: LucideIcons.calendar, color: Colors.green, onTap: () => context.push('/calendar')),
-                _ToolIcon(title: 'Chaplets', icon: LucideIcons.gem, color: Colors.deepPurple, onTap: () => context.push('/chaplets')),
-                _ToolIcon(title: 'Hymns', icon: LucideIcons.music, color: Colors.indigo, onTap: () => context.push('/hymns')),
-                _ToolIcon(title: 'Pilgrims', icon: LucideIcons.plane, color: Colors.blue, onTap: () => context.push('/pilgrimages')),
-                _ToolIcon(title: 'Glossary', icon: LucideIcons.type, color: Colors.brown, onTap: () => context.push('/glossary')),
-                _ToolIcon(title: 'Chant', icon: LucideIcons.music, color: Colors.deepOrange, onTap: () => context.push('/chant')),
+                _ToolIcon(
+                  title: 'Prayers',
+                  icon: LucideIcons.bookOpen,
+                  color: Colors.blue,
+                  onTap: () => context.push('/prayers'),
+                ),
+                _ToolIcon(
+                  title: 'Rosary',
+                  icon: LucideIcons.circleDot,
+                  color: Colors.pink,
+                  onTap: () => context.push('/rosary'),
+                ),
+                _ToolIcon(
+                  title: 'Bible',
+                  icon: LucideIcons.book,
+                  color: Colors.brown,
+                  onTap: () => context.push('/bible'),
+                ),
+                _ToolIcon(
+                  title: 'Novena',
+                  icon: LucideIcons.flame,
+                  color: Colors.orange,
+                  onTap: () => context.push('/novenas'),
+                ),
+                _ToolIcon(
+                  title: 'Stations',
+                  icon: LucideIcons.cross,
+                  color: Colors.red,
+                  onTap: () => context.push('/stations'),
+                ),
+                _ToolIcon(
+                  title: 'Confession',
+                  icon: LucideIcons.userCheck,
+                  color: Colors.purple,
+                  onTap: () => context.push('/confession'),
+                ),
+                _ToolIcon(
+                  title: 'Examen',
+                  icon: LucideIcons.search,
+                  color: Colors.indigo,
+                  onTap: () => context.push('/examen'),
+                ),
+                _ToolIcon(
+                  title: 'Calendar',
+                  icon: LucideIcons.calendar,
+                  color: Colors.green,
+                  onTap: () => context.push('/calendar'),
+                ),
+                _ToolIcon(
+                  title: 'Chaplets',
+                  icon: LucideIcons.gem,
+                  color: Colors.deepPurple,
+                  onTap: () => context.push('/chaplets'),
+                ),
+                _ToolIcon(
+                  title: 'Hymns',
+                  icon: LucideIcons.music,
+                  color: Colors.indigo,
+                  onTap: () => context.push('/hymns'),
+                ),
+                _ToolIcon(
+                  title: 'Pilgrims',
+                  icon: LucideIcons.plane,
+                  color: Colors.blue,
+                  onTap: () => context.push('/pilgrimages'),
+                ),
+                _ToolIcon(
+                  title: 'Glossary',
+                  icon: LucideIcons.type,
+                  color: Colors.brown,
+                  onTap: () => context.push('/glossary'),
+                ),
+                _ToolIcon(
+                  title: 'Chant',
+                  icon: LucideIcons.music,
+                  color: Colors.deepOrange,
+                  onTap: () => context.push('/chant'),
+                ),
               ].animate(interval: 30.ms).fadeIn().scale(),
             ),
           ),
 
           // 5. Reference Library
-          _buildSectionHeader('Reference Library', LucideIcons.library, Colors.brown),
+          _buildSectionHeader(
+            'Reference Library',
+            LucideIcons.library,
+            Colors.brown,
+          ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                _ReferenceCard(
-                  title: 'Catechism of the Catholic Church',
-                  subtitle: 'The full text of the Catechism',
-                  icon: LucideIcons.book,
-                  color: Colors.amber.shade800,
-                  onTap: () => context.push('/catechism'),
-                ),
-                const SizedBox(height: 12),
-                _ReferenceCard(
-                  title: 'Code of Canon Law',
-                  subtitle: 'Ecclesiastical laws',
-                  icon: LucideIcons.gavel,
-                  color: Colors.purple.shade700,
-                  onTap: () => context.push('/canon_law'),
-                ),
-                const SizedBox(height: 12),
-                _ReferenceCard(
-                  title: 'Papal Encyclicals',
-                  subtitle: 'Letters from the Popes',
-                  icon: LucideIcons.scroll,
-                  color: Colors.teal.shade700,
-                  onTap: () => context.push('/encyclicals'),
-                ),
-                const SizedBox(height: 12),
-                _ReferenceCard(
-                  title: 'Vatican II Documents',
-                  subtitle: 'Constitutions, Decrees & Declarations',
-                  icon: LucideIcons.landmark,
-                  color: Colors.blueGrey.shade700,
-                  onTap: () => context.push('/vatican-ii'),
-                ),
-                 const SizedBox(height: 12),
-                _ReferenceCard(
-                  title: 'Summa Theologica',
-                  subtitle: 'St. Thomas Aquinas',
-                  icon: LucideIcons.scale,
-                  color: Colors.brown.shade700,
-                  onTap: () => context.push('/summa'),
-                ),
-                 const SizedBox(height: 12),
-                _ReferenceCard(
-                  title: 'Church Hierarchy',
-                  subtitle: 'Structure of the Church',
-                  icon: LucideIcons.network,
-                  color: Colors.indigo.shade700,
-                  onTap: () => context.push('/hierarchy'),
-                ),
-                 const SizedBox(height: 12),
-                _ReferenceCard(
-                  title: 'Church History',
-                  subtitle: '2,000 years of faith',
-                  icon: LucideIcons.hourglass,
-                  color: Colors.deepOrange.shade700,
-                  onTap: () => context.push('/history'),
-                ),
-              ].animate(interval: 50.ms).fadeIn().slideX(begin: 0.1, end: 0)),
+              delegate: SliverChildListDelegate(
+                [
+                  _ReferenceCard(
+                    title: 'Catechism of the Catholic Church',
+                    subtitle: 'The full text of the Catechism',
+                    icon: LucideIcons.book,
+                    color: Colors.amber.shade800,
+                    onTap: () => context.push('/catechism'),
+                  ),
+                  const SizedBox(height: 12),
+                  _ReferenceCard(
+                    title: 'Code of Canon Law',
+                    subtitle: 'Ecclesiastical laws',
+                    icon: LucideIcons.gavel,
+                    color: Colors.purple.shade700,
+                    onTap: () => context.push('/canon_law'),
+                  ),
+                  const SizedBox(height: 12),
+                  _ReferenceCard(
+                    title: 'Papal Encyclicals',
+                    subtitle: 'Letters from the Popes',
+                    icon: LucideIcons.scroll,
+                    color: Colors.teal.shade700,
+                    onTap: () => context.push('/encyclicals'),
+                  ),
+                  const SizedBox(height: 12),
+                  _ReferenceCard(
+                    title: 'Vatican II Documents',
+                    subtitle: 'Constitutions, Decrees & Declarations',
+                    icon: LucideIcons.landmark,
+                    color: Colors.blueGrey.shade700,
+                    onTap: () => context.push('/vatican-ii'),
+                  ),
+                  const SizedBox(height: 12),
+                  _ReferenceCard(
+                    title: 'Summa Theologica',
+                    subtitle: 'St. Thomas Aquinas',
+                    icon: LucideIcons.scale,
+                    color: Colors.brown.shade700,
+                    onTap: () => context.push('/summa'),
+                  ),
+                  const SizedBox(height: 12),
+                  _ReferenceCard(
+                    title: 'Church Hierarchy',
+                    subtitle: 'Structure of the Church',
+                    icon: LucideIcons.network,
+                    color: Colors.indigo.shade700,
+                    onTap: () => context.push('/hierarchy'),
+                  ),
+                  const SizedBox(height: 12),
+                  _ReferenceCard(
+                    title: 'Church History',
+                    subtitle: '2,000 years of faith',
+                    icon: LucideIcons.hourglass,
+                    color: Colors.deepOrange.shade700,
+                    onTap: () => context.push('/history'),
+                  ),
+                ].animate(interval: 50.ms).fadeIn().slideX(begin: 0.1, end: 0),
+              ),
             ),
           ),
 
@@ -370,10 +442,7 @@ class _PremiumTile extends StatelessWidget {
               ),
               Text(
                 subtitle,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  color: Colors.white70,
-                ),
+                style: GoogleFonts.inter(fontSize: 11, color: Colors.white70),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -431,14 +500,16 @@ class _LargePremiumTile extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: image!,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(color: AppTheme.sacredNavy800),
-                  errorWidget: (context, url, error) => Container(color: AppTheme.sacredNavy800),
+                  placeholder: (context, url) =>
+                      Container(color: AppTheme.sacredNavy800),
+                  errorWidget: (context, url, error) =>
+                      Container(color: AppTheme.sacredNavy800),
                 ),
               )
             else
-               Container(color: AppTheme.sacredNavy800),
+              Container(color: AppTheme.sacredNavy800),
 
-             // Content
+            // Content
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -505,9 +576,7 @@ class _ToolIcon extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppTheme.sacredNavy800,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: color.withValues(alpha: 0.3),
-              ),
+              border: Border.all(color: color.withValues(alpha: 0.3)),
               boxShadow: [
                 BoxShadow(
                   color: color.withValues(alpha: 0.1),

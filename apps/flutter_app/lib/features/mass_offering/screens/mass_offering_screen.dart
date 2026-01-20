@@ -5,7 +5,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/providers/scaffold_key_provider.dart';
 
 import 'package:go_router/go_router.dart';
-import '../../payments/services/payment_service.dart';
+
+import '../../payments/widgets/smart_checkout_sheet.dart';
 
 // Mass offering types
 class OfferingType {
@@ -886,66 +887,57 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
               child: ElevatedButton(
                 onPressed:
                     (_name.isNotEmpty && _email.isNotEmpty && !_isSubmitting)
-                    ? () async {
+                    ? () {
                         setState(() => _isSubmitting = true);
-                        try {
-                          final double amount = _calculateTotal() / 100.0;
 
-                          // Trigger PayPal Payment
-                          final paymentService = ref.read(
-                            paymentServiceProvider,
-                          );
-                          paymentService.startPayPalPayment(
-                            context: context,
-                            amount: amount,
-                            currency: 'USD',
-                            description: 'Mass Offering: $_selectedType',
-                            onSuccess: (paymentId) async {
-                              // Log details (placeholder for future backend sync)
-                              debugPrint(
-                                'Offering Successful ($paymentId): '
-                                'For: $_intentionFor, '
-                                'By: $_offeredBy',
-                              );
+                        SmartCheckoutSheet.show(
+                          context: context,
+                          ref: ref,
+                          amount: _calculateTotal() / 100.0,
+                          currency: 'USD',
+                          description: 'Mass Offering: $_selectedType',
+                          itemName: 'Mass Offering',
+                          itemIcon: '⛪',
+                          onSuccess: (paymentId) async {
+                            // Log details (placeholder for future backend sync)
+                            debugPrint(
+                              'Offering Successful ($paymentId): '
+                              'For: $_intentionFor, '
+                              'By: $_offeredBy',
+                            );
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Mass offering submitted successfully!',
-                                  ),
-                                  backgroundColor: Colors.green,
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Mass offering submitted successfully!',
                                 ),
-                              );
+                                backgroundColor: Colors.green,
+                              ),
+                            );
 
-                              if (mounted) {
-                                setState(() => _isSubmitting = false);
-                                // Optional: Navigate back or reset
-                                context.pop();
-                              }
-                            },
-                            onError: (error) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Payment failed: $error'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              if (mounted) {
-                                setState(() => _isSubmitting = false);
-                              }
-                            },
-                          );
-                        } catch (e) {
-                          if (mounted) {
+                            if (mounted) {
+                              setState(() => _isSubmitting = false);
+                              // Optional: Navigate back or reset
+                              context.pop();
+                            }
+                          },
+                          onError: (error) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Error: $e'),
+                                content: Text('Payment failed: $error'),
                                 backgroundColor: Colors.red,
                               ),
                             );
-                            setState(() => _isSubmitting = false);
-                          }
-                        }
+                            if (mounted) {
+                              setState(() => _isSubmitting = false);
+                            }
+                          },
+                          onCancel: () {
+                            if (mounted) {
+                              setState(() => _isSubmitting = false);
+                            }
+                          },
+                        );
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

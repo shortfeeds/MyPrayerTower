@@ -13,6 +13,7 @@ import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/CookieConsent';
 import { SkipToContent } from '@/components/ui/SkipToContent';
 import { SpiritualJourneyProvider } from '@/components/journey/SpiritualJourneyProvider';
+import { PricingProvider } from '@/contexts/PricingContext';
 
 // Self-hosted fonts for performance
 const inter = Inter({
@@ -128,60 +129,62 @@ export default function RootLayout({
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
                 <ThemeProvider>
                     <SpiritualJourneyProvider>
-                        <SkipToContent />
-                        <Header />
-                        <main id="main-content" className="flex-1 w-full">{children}</main>
-                        <Footer />
+                        <PricingProvider>
+                            <SkipToContent />
+                            <Header />
+                            <main id="main-content" className="flex-1 w-full">{children}</main>
+                            <Footer />
 
-                        {/* Global Engagement Components */}
-                        <GlobalEngagement />
-                        <BackToTop />
-                        <CookieConsent />
+                            {/* Global Engagement Components */}
+                            <GlobalEngagement />
+                            <BackToTop />
+                            <CookieConsent />
 
-                        {/* Structured Data */}
-                        <Script
-                            id="schema-org"
-                            type="application/ld+json"
-                            strategy="worker"
-                            dangerouslySetInnerHTML={{
-                                __html: JSON.stringify({
-                                    '@context': 'https://schema.org',
-                                    '@graph': [
-                                        {
-                                            '@type': 'Organization',
-                                            '@id': 'https://myprayertower.com/#organization',
-                                            name: 'MyPrayerTower',
-                                            url: 'https://myprayertower.com',
-                                            logo: 'https://myprayertower.com/icon.png',
-                                            sameAs: [
-                                                'https://www.facebook.com/MyPrayerTower2',
-                                                'https://www.youtube.com/c/MyPrayerTower',
-                                                'https://twitter.com/MyPrayerTower',
-                                                'https://www.instagram.com/myprayertower/',
-                                                'https://www.threads.net/@myprayertower',
-                                                'https://www.pinterest.com/myprayertower/'
-                                            ],
-                                            description: 'The #1 All-in-One Catholic Services App. Find churches, prayer wall, and daily readings.',
-                                        },
-                                        {
-                                            '@type': 'WebSite',
-                                            '@id': 'https://myprayertower.com/#website',
-                                            url: 'https://myprayertower.com',
-                                            name: 'MyPrayerTower',
-                                            description: 'The #1 All-in-One Catholic Services App',
-                                            publisher: {
-                                                '@id': 'https://myprayertower.com/#organization'
+                            {/* Structured Data */}
+                            <Script
+                                id="schema-org"
+                                type="application/ld+json"
+                                strategy="worker"
+                                dangerouslySetInnerHTML={{
+                                    __html: JSON.stringify({
+                                        '@context': 'https://schema.org',
+                                        '@graph': [
+                                            {
+                                                '@type': 'Organization',
+                                                '@id': 'https://myprayertower.com/#organization',
+                                                name: 'MyPrayerTower',
+                                                url: 'https://myprayertower.com',
+                                                logo: 'https://myprayertower.com/icon.png',
+                                                sameAs: [
+                                                    'https://www.facebook.com/MyPrayerTower2',
+                                                    'https://www.youtube.com/c/MyPrayerTower',
+                                                    'https://twitter.com/MyPrayerTower',
+                                                    'https://www.instagram.com/myprayertower/',
+                                                    'https://www.threads.net/@myprayertower',
+                                                    'https://www.pinterest.com/myprayertower/'
+                                                ],
+                                                description: 'The #1 All-in-One Catholic Services App. Find churches, prayer wall, and daily readings.',
                                             },
-                                            potentialAction: {
-                                                '@type': 'SearchAction',
-                                                target: 'https://myprayertower.com/prayers?q={search_term_string}',
-                                                'query-input': 'required name=search_term_string'
+                                            {
+                                                '@type': 'WebSite',
+                                                '@id': 'https://myprayertower.com/#website',
+                                                url: 'https://myprayertower.com',
+                                                name: 'MyPrayerTower',
+                                                description: 'The #1 All-in-One Catholic Services App',
+                                                publisher: {
+                                                    '@id': 'https://myprayertower.com/#organization'
+                                                },
+                                                potentialAction: {
+                                                    '@type': 'SearchAction',
+                                                    target: 'https://myprayertower.com/prayers?q={search_term_string}',
+                                                    'query-input': 'required name=search_term_string'
+                                                }
                                             }
-                                        }
-                                    ]
-                                }),
-                            }}
-                        />
+                                        ]
+                                    }),
+                                }}
+                            />
+                        </PricingProvider>
                     </SpiritualJourneyProvider>
                 </ThemeProvider>
 
@@ -189,7 +192,7 @@ export default function RootLayout({
                 <SpeedInsights />
                 <GoogleAnalytics gaId="G-1X6N63VWZH" />
 
-                {/* Google AdSense - Lazy Loaded */}
+                {/* Google AdSense - DISABLED
                 {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
                     <Script
                         id="adsense"
@@ -198,7 +201,7 @@ export default function RootLayout({
                         crossOrigin="anonymous"
                         strategy="lazyOnload"
                     />
-                )}
+                )} */}
             </body>
         </html >
     );

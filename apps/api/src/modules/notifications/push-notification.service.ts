@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+import * as path from 'path';
+import * as fs from 'fs';
 
 export interface PushNotification {
-    token: string;
+    playerId: string; // Maps to FCM Registration Token
     title: string;
     body: string;
     data?: Record<string, string>;
@@ -11,163 +12,149 @@ export interface PushNotification {
 }
 
 export interface TopicNotification {
-    topic: string;
+    segment: string; // Maps to FCM Topic
     title: string;
     body: string;
     data?: Record<string, string>;
 }
 
 @Injectable()
-export class PushNotificationService {
+export class PushNotificationService implements OnModuleInit {
     private readonly logger = new Logger(PushNotificationService.name);
-    private firebaseApp: admin.app.App | null = null;
 
-    constructor(private configService: ConfigService) {
+    onModuleInit() {
         this.initializeFirebase();
     }
 
     private initializeFirebase() {
-        const serviceAccount = this.configService.get('FIREBASE_SERVICE_ACCOUNT');
+        if (admin.apps.length > 0) {
+            this.logger.debug('Firebase Admin already initialized');
+            return;
+        }
 
-        if (serviceAccount) {
-            try {
-                this.firebaseApp = admin.initializeApp({
-                    credential: admin.credential.cert(JSON.parse(serviceAccount)),
+        const serviceAccountPath = path.resolve(process.cwd(), 'firebase-service-account.json');
+
+        try {
+            if (fs.existsSync(serviceAccountPath)) {
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
+                const serviceAccount = require(serviceAccountPath);
+                admin.initializeApp({
+                    credential: admin.credential.cert(serviceAccount),
                 });
-                this.logger.log('Firebase Admin initialized successfully');
-            } catch (error) {
-                this.logger.error('Failed to initialize Firebase Admin:', error);
+                this.logger.log('Firebase Admin initialized successfully with service account');
+            } else {
+                this.logger.warn(`Firebase Service Account not found at ${serviceAccountPath}. Push notifications will fail until this file is added.`);
+                // Attempt default initialization in case env vars are set
+                admin.initializeApp();
             }
-        } else {
-            this.logger.warn('Firebase service account not configured - push notifications disabled');
+        } catch (error) {
+            this.logger.error('Failed to initialize Firebase Admin', error);
         }
     }
 
     /**
-     * Send push notification to a specific device
+     * Send push notification to a specific device (FCM Token)
      */
     async sendToDevice(notification: PushNotification): Promise<boolean> {
-        if (!this.firebaseApp) {
-            this.logger.warn('Firebase not initialized - skipping push notification');
-            return false;
-        }
-
         try {
-            const message: admin.messaging.Message = {
-                token: notification.token,
+            if (!notification.playerId) return false;
+
+            await admin.messaging().send({
+                token: notification.playerId,
                 notification: {
                     title: notification.title,
                     body: notification.body,
                     imageUrl: notification.imageUrl,
                 },
-                data: notification.data,
+                data: notification.data || {},
                 android: {
-                    priority: 'high',
                     notification: {
-                        channelId: 'default',
-                        sound: 'default',
-                    },
+                        imageUrl: notification.imageUrl,
+                    }
                 },
-                apns: {
+                apns: notification.imageUrl ? {
                     payload: {
                         aps: {
-                            badge: 1,
-                            sound: 'default',
-                        },
+                            'mutable-content': 1
+                        }
                     },
-                },
-            };
-
-            await admin.messaging().send(message);
-            this.logger.log(`Push sent to device: ${notification.token.substring(0, 20)}...`);
+                    fcmOptions: {
+                        imageUrl: notification.imageUrl
+                    }
+                } : undefined
+            });
             return true;
-        } catch (error: any) {
-            this.logger.error('Failed to send push notification:', error.message);
+        } catch (error) {
+            this.logger.error(`FCM Send Error (Device: ${notification.playerId})`, error);
             return false;
         }
     }
 
     /**
-     * Send notification to multiple devices
+     * Send notification to multiple devices (FCM Tokens)
      */
-    async sendToDevices(tokens: string[], title: string, body: string, data?: Record<string, string>): Promise<number> {
-        if (!this.firebaseApp || tokens.length === 0) return 0;
+    async sendToDevices(playerIds: string[], title: string, body: string, data?: Record<string, string>): Promise<number> {
+        if (playerIds.length === 0) return 0;
 
-        const message: admin.messaging.MulticastMessage = {
-            tokens,
-            notification: { title, body },
-            data,
-        };
-
+        // Use sendEachForMulticast
         try {
+            const message: admin.messaging.MulticastMessage = {
+                tokens: playerIds,
+                notification: {
+                    title: title,
+                    body: body,
+                },
+                data: data || {},
+            };
+
             const response = await admin.messaging().sendEachForMulticast(message);
-            this.logger.log(`Sent to ${response.successCount}/${tokens.length} devices`);
+
+            if (response.failureCount > 0) {
+                this.logger.warn(`FCM Multicast: ${response.successCount} success, ${response.failureCount} failed.`);
+                response.responses.forEach((resp, idx) => {
+                    if (!resp.success) {
+                        // Ideally disable/remove bad tokens here
+                        this.logger.debug(`Token failed: ${playerIds[idx]} - ${resp.error?.message}`);
+                    }
+                });
+            }
+
             return response.successCount;
-        } catch (error: any) {
-            this.logger.error('Failed to send multicast:', error.message);
+        } catch (error) {
+            this.logger.error('FCM Multicast Error', error);
             return 0;
         }
     }
 
     /**
-     * Send notification to a topic (e.g., all users, specific church)
+     * Send notification to a specific Topic (Segment)
      */
-    async sendToTopic(notification: TopicNotification): Promise<boolean> {
-        if (!this.firebaseApp) return false;
-
+    async sendToSegment(segment: string, title: string, body: string, data?: Record<string, string>): Promise<boolean> {
         try {
+            // Convert segment name to valid topic if needed (remove spaces etc)
+            // For now assume segment matches topic name
+            const topic = segment.replace(/[^a-zA-Z0-9-_.~%]/g, '_');
+
             await admin.messaging().send({
-                topic: notification.topic,
+                topic: topic,
                 notification: {
-                    title: notification.title,
-                    body: notification.body,
+                    title: title,
+                    body: body,
                 },
-                data: notification.data,
+                data: data || {},
             });
-            this.logger.log(`Push sent to topic: ${notification.topic}`);
-            return true;
-        } catch (error: any) {
-            this.logger.error('Failed to send topic notification:', error.message);
-            return false;
-        }
-    }
-
-    /**
-     * Subscribe device to a topic
-     */
-    async subscribeToTopic(tokens: string[], topic: string): Promise<boolean> {
-        if (!this.firebaseApp) return false;
-
-        try {
-            await admin.messaging().subscribeToTopic(tokens, topic);
             return true;
         } catch (error) {
-            return false;
-        }
-    }
-
-    /**
-     * Unsubscribe device from a topic
-     */
-    async unsubscribeFromTopic(tokens: string[], topic: string): Promise<boolean> {
-        if (!this.firebaseApp) return false;
-
-        try {
-            await admin.messaging().unsubscribeFromTopic(tokens, topic);
-            return true;
-        } catch (error) {
+            this.logger.error(`FCM Topic Send Error (${segment})`, error);
             return false;
         }
     }
 
     // ============ Specific Notification Types ============
 
-    /**
-     * Notify user when someone prays for their request
-     */
-    async notifyPrayerReceived(userToken: string, prayerTitle: string, count: number) {
+    async notifyPrayerReceived(playerId: string, prayerTitle: string, count: number) {
         return this.sendToDevice({
-            token: userToken,
+            playerId,
             title: '🙏 Someone is praying for you!',
             body: count === 1
                 ? `Someone is praying for "${prayerTitle.substring(0, 50)}..."`
@@ -176,42 +163,24 @@ export class PushNotificationService {
         });
     }
 
-    /**
-     * Notify user their prayer was approved
-     */
-    async notifyPrayerApproved(userToken: string, prayerId: string) {
+    async notifyPrayerApproved(playerId: string, prayerId: string) {
         return this.sendToDevice({
-            token: userToken,
+            playerId,
             title: '✅ Prayer Request Published',
             body: 'Your prayer request has been approved and is now visible on the Prayer Wall.',
             data: { type: 'prayer_approved', prayerId, screen: 'prayer-wall' },
         });
     }
 
-    /**
-     * Daily prayer reminder
-     */
-    async sendDailyReminder(userToken: string, userName: string) {
+    async sendDailyReminder(playerId: string, userName: string) {
         const hour = new Date().getHours();
         const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
         return this.sendToDevice({
-            token: userToken,
+            playerId,
             title: `${greeting}, ${userName} 🙏`,
             body: 'Take a moment to pray and check in with the community.',
             data: { type: 'daily_reminder', screen: 'home' },
-        });
-    }
-
-    /**
-     * Church event reminder (24h before)
-     */
-    async notifyUpcomingEvent(userToken: string, churchName: string, eventTitle: string, eventId: string) {
-        return this.sendToDevice({
-            token: userToken,
-            title: `📅 Reminder: ${eventTitle}`,
-            body: `Tomorrow at ${churchName}`,
-            data: { type: 'event_reminder', eventId, screen: 'church' },
         });
     }
 }

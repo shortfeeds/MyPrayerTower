@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -72,9 +73,9 @@ class MainScaffold extends ConsumerWidget {
             ),
           );
 
-          if (shouldExit == true && context.mounted) {
-            // Exit the app by popping the system navigator
-            Navigator.of(context).pop();
+          if (shouldExit == true) {
+            // Exit the app by closing the system navigator
+            SystemNavigator.pop();
           }
         }
       },

@@ -16,6 +16,7 @@ class PaymentService {
     required double amount,
     required String currency,
     required String description,
+    String? userEmail,
     required Function(String) onSuccess,
     required Function(String) onError,
   }) async {
@@ -27,6 +28,7 @@ class PaymentService {
           currency: currency,
           amount: amount,
           description: description,
+          userEmail: userEmail,
           onSuccess: onSuccess,
           onError: onError,
           onCancel: () => onError('Payment Cancelled'),

@@ -18,6 +18,8 @@ interface OfferingDialogProps {
     onClose: () => void;
 }
 
+import { usePricing } from '@/contexts/PricingContext';
+
 interface OfferingOption {
     id: string;
     name: string;
@@ -27,7 +29,7 @@ interface OfferingOption {
     category: 'candles' | 'sacred' | 'bouquet';
 }
 
-const ALL_OFFERINGS: OfferingOption[] = [
+const DEFAULT_OFFERINGS: OfferingOption[] = [
     // Candles
     { id: 'CANDLE_SMALL', name: '3-Day Candle', icon: '🕯️', price: 3, category: 'candles' },
     { id: 'CANDLE_MEDIUM', name: '7-Day Candle', icon: '🕯️', price: 5, category: 'candles' },
@@ -53,11 +55,31 @@ interface CartItem {
 }
 
 export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProps) {
+    const { prices } = usePricing();
     const [cart, setCart] = useState<Map<string, CartItem>>(new Map());
     const [message, setMessage] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
+
+    const allOfferings = DEFAULT_OFFERINGS.map(o => {
+        let price = o.price * 100; // Convert default dollar price to cents for internal consistency
+
+        if (prices) {
+            if (o.id === 'CANDLE_SMALL' && prices.candles?.threeDay) price = prices.candles.threeDay;
+            if (o.id === 'CANDLE_MEDIUM' && prices.candles?.sevenDay) price = prices.candles.sevenDay;
+            if (o.id === 'CANDLE_LARGE' && prices.candles?.thirtyDay) price = prices.candles.thirtyDay;
+
+            if (o.id === 'MASS' && prices.masses?.regular) price = prices.masses.regular;
+
+            // Approximate mapping for bouquets constants for now
+            if (o.id === 'SPIRITUAL_BOUQUET_GARDEN') price = 2000;
+            if (o.id === 'SPIRITUAL_BOUQUET_HEAVENLY') price = 5000;
+            if (o.id === 'SPIRITUAL_BOUQUET_ETERNAL') price = 10000;
+            if (o.id === 'SPIRITUAL_BOUQUET_LEGACY') price = 30000;
+        }
+        return { ...o, price };
+    });
     const [showPayPal, setShowPayPal] = useState(false);
     const [pendingOrder, setPendingOrder] = useState<{ orderId: string; amount: number } | null>(null);
     const [activeTab, setActiveTab] = useState<'candles' | 'sacred' | 'bouquet'>('candles');
@@ -112,7 +134,7 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                         quantity: item.quantity,
                         price: Math.round(item.offering.price),
                     })),
-                    totalAmount: totalPrice * 100,
+                    totalAmount: totalPrice,
                     message,
                     isAnonymous,
                 }),
@@ -165,8 +187,8 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
             <div
                 key={offering.id}
                 className={`relative p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 transition-all duration-200 cursor-pointer group ${isSelected
-                    ? 'border-amber-400 bg-gradient-to-br from-amber-50 to-orange-50 shadow-lg shadow-amber-100'
-                    : 'border-gray-100 bg-white hover:border-amber-200 hover:shadow-md'
+                    ? 'border-amber-400 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/30 shadow-lg shadow-amber-100 dark:shadow-none'
+                    : 'border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-200 dark:hover:border-amber-700 hover:shadow-md'
                     }`}
                 onClick={() => !isSelected && addToCart(offering)}
             >
@@ -178,11 +200,11 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
 
                 <div className="text-center">
                     <div className="text-2xl sm:text-3xl mb-1 sm:mb-2 group-hover:scale-110 transition-transform">{offering.icon}</div>
-                    <div className="font-semibold text-gray-900 text-xs sm:text-sm leading-tight line-clamp-2 min-h-[2.5em]">{offering.name}</div>
+                    <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm leading-tight line-clamp-2 min-h-[2.5em]">{offering.name}</div>
                     {offering.description && (
-                        <div className="text-[9px] sm:text-[10px] text-gray-500 mt-1 leading-tight hidden sm:block">{offering.description}</div>
+                        <div className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 mt-1 leading-tight hidden sm:block">{offering.description}</div>
                     )}
-                    <div className="text-amber-600 font-bold text-sm sm:text-base mt-1 sm:mt-2">${Math.round(offering.price)}</div>
+                    <div className="text-amber-600 font-bold text-sm sm:text-base mt-1 sm:mt-2">${Math.round(offering.price / 100)}</div>
                 </div>
 
                 <div className="flex items-center justify-center gap-2 mt-2 sm:mt-3">
@@ -221,12 +243,12 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
         { id: 'bouquet' as const, label: 'Bouquets', icon: '💝' },
     ];
 
-    const filteredOfferings = ALL_OFFERINGS.filter(o => o.category === activeTab);
+    const filteredOfferings = allOfferings.filter(o => o.category === activeTab);
 
     return (
         <Fragment>
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={onClose} />
-            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-3xl max-h-[90vh] bg-white rounded-2xl sm:rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden">
+            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-3xl max-h-[90vh] bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden">
 
                 {/* Header */}
                 <div className="relative bg-gradient-to-r from-amber-600 via-orange-500 to-rose-500 text-white p-4 sm:p-5 flex-shrink-0">
@@ -251,16 +273,16 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                         <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
                             <Check className="w-12 h-12 text-green-600" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Tribute Sent!</h3>
-                        <p className="text-gray-500 text-center">Your offerings have been lovingly sent in memory of {fullName}.</p>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Tribute Sent!</h3>
+                        <p className="text-gray-500 dark:text-gray-400 text-center">Your offerings have been lovingly sent in memory of {fullName}.</p>
                     </div>
                 ) : showPayPal ? (
                     <div className="flex-1 p-4 sm:p-8 overflow-y-auto">
-                        <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">Complete Your Offering</h3>
-                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 mb-6 border border-amber-100">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">Complete Your Offering</h3>
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6 mb-6 border border-amber-100 dark:border-amber-800/50">
                             <div className="flex justify-between items-center mb-3">
-                                <span className="text-gray-600 font-medium">Total Offering</span>
-                                <span className="text-3xl font-bold text-gray-900">${totalPrice}</span>
+                                <span className="text-gray-600 dark:text-gray-300 font-medium">Total Offering</span>
+                                <span className="text-3xl font-bold text-gray-900 dark:text-amber-400">${Math.round(totalPrice / 100)}</span>
                             </div>
                             <p className="text-sm text-gray-500 italic text-center">
                                 "God loves a cheerful giver." — 2 Corinthians 9:7
@@ -341,7 +363,7 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
                                     <>
                                         <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                                         {totalItems > 0 ? (
-                                            <span>Make Offering — ${totalPrice}</span>
+                                            <span>Make Offering — ${Math.round(totalPrice / 100)}</span>
                                         ) : (
                                             <span>Select Offerings Above</span> // Changed from "Select Offerings" to match original logic but be clearer
                                         )}

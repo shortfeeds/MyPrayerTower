@@ -1,5 +1,6 @@
-import { Controller, Post, Get, Body, Query, Param, Request } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, Param, Request, UseGuards } from '@nestjs/common';
 import { PlatformDonationsService, CreateDonationDto, CreateSubscriptionDto } from './platform-donations.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('donations')
 export class PlatformDonationsController {
@@ -72,14 +73,29 @@ export class PlatformDonationsController {
     }
 
     /**
+     * Admin: Get all donations
+     */
+    @Get('admin/all')
+    @UseGuards(JwtAuthGuard)
+    async getAllDonations(
+        @Query('limit') limit?: string,
+        @Query('offset') offset?: string,
+    ) {
+        return this.donationsService.getAllDonations(
+            limit ? parseInt(limit) : 50,
+            offset ? parseInt(offset) : 0,
+        );
+    }
+
+    /**
      * Admin: Get donation statistics
      */
     @Get('admin/statistics')
+    @UseGuards(JwtAuthGuard)
     async getStatistics(
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,
     ) {
-        // TODO: Add admin auth guard
         return this.donationsService.getStatistics(
             startDate ? new Date(startDate) : undefined,
             endDate ? new Date(endDate) : undefined,

@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../constants/app_constants.dart';
 
 /// Service for managing donation history
 class DonationService {
@@ -36,7 +40,51 @@ class DonationService {
     return total;
   }
 
-  /// Create a new donation record
+  /// Create a new donation via backend API (for payment verification)
+  Future<Map<String, dynamic>?> createDonationViaApi({
+    required double amount,
+    required String type,
+    String? paymentId,
+    String? intention,
+    String? name,
+    String? email,
+  }) async {
+    final user = _supabase.auth.currentUser;
+    final accessToken = _supabase.auth.currentSession?.accessToken;
+
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConstants.baseUrl}/donations/checkout'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({
+          'amount': (amount * 100).toInt(), // Convert to cents
+          'email': email ?? user?.email ?? '',
+          'name': name ?? user?.userMetadata?['full_name'] ?? 'Anonymous',
+          'paypalOrderId': paymentId,
+          'intention': intention,
+          'tier': 'CUSTOM',
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        debugPrint('Donation recorded via API: ${data['orderNumber']}');
+        return data;
+      } else {
+        debugPrint(
+          'API Donation Error: ${response.statusCode} - ${response.body}',
+        );
+      }
+    } catch (e) {
+      debugPrint('API Donation Exception: $e');
+    }
+    return null;
+  }
+
+  /// Create a new donation record (Supabase fallback)
   Future<Donation?> createDonation({
     required double amount,
     required String type, // 'one_time', 'recurring', 'mass_offering'

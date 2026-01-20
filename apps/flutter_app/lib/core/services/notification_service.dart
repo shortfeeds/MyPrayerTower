@@ -1,37 +1,87 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'api_service.dart';
 
-/// Service for handling push notifications (Local Only)
+/// Service for handling push notifications (Local + Firebase)
 class NotificationService {
+  final ApiService _apiService;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
   bool _isInitialized = false;
+
+  NotificationService(this._apiService);
 
   /// Initialize notification service
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
-      // Initialize local notifications
-      await _initializeLocalNotifications();
+      // 1. Firebase Messaging Initialization
+      final messaging = FirebaseMessaging.instance;
 
-      // Check for initial notification (app opened from terminated state)
-      // For local notifications, this is handled via getNotificationAppLaunchDetails
-      final details = await _localNotifications
-          .getNotificationAppLaunchDetails();
-      if (details != null && details.didNotificationLaunchApp) {
-        final response = details.notificationResponse;
-        if (response != null) {
-          _onNotificationTap(response);
-        }
+      // Request permission
+      final settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        provisional: false,
+      );
+
+      debugPrint('User granted permission: ${settings.authorizationStatus}');
+
+      // Get Token
+      final token = await messaging.getToken();
+      if (token != null) {
+        _registerDevice(token);
       }
+
+      // Refresh Token Listener
+      messaging.onTokenRefresh.listen(_registerDevice);
+
+      // Foreground Message Handler
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        debugPrint('Got a message whilst in the foreground!');
+        debugPrint('Message data: ${message.data}');
+
+        if (message.notification != null) {
+          debugPrint(
+            'Message also contained a notification: ${message.notification}',
+          );
+          _showLocalNotification(
+            title: message.notification!.title ?? 'Notification',
+            body: message.notification!.body ?? '',
+            payload: message.data['route'] ?? message.data['screen'],
+          );
+        }
+      });
+
+      // 2. Initialize local notifications
+      await _initializeLocalNotifications();
 
       _isInitialized = true;
     } catch (e) {
       debugPrint('NotificationService initialization failed: $e');
-      // Non-fatal, just log and continue
+    }
+  }
+
+  /// Register device token with backend
+  Future<void> _registerDevice(String token) async {
+    try {
+      if (token.isEmpty) return;
+      final platform = kIsWeb
+          ? 'web'
+          : defaultTargetPlatform.name.toLowerCase();
+
+      await _apiService.post(
+        '/notifications/register-device',
+        data: {'token': token, 'platform': platform},
+      );
+      debugPrint('Firebase Device Registered: $token');
+    } catch (e) {
+      debugPrint('Failed to register device: $e');
     }
   }
 
@@ -41,9 +91,9 @@ class NotificationService {
       '@mipmap/ic_launcher',
     );
     const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
+      requestAlertPermission: false, // Handled by Firebase
+      requestBadgePermission: false,
+      requestSoundPermission: false,
     );
 
     const initSettings = InitializationSettings(
@@ -75,8 +125,8 @@ class NotificationService {
   void _onNotificationTap(NotificationResponse response) {
     final route = response.payload;
     if (route != null) {
-      // Navigate to route
       debugPrint('Local notification tapped: $route');
+      // Navigation logic would go here
     }
   }
 
@@ -95,12 +145,7 @@ class NotificationService {
       icon: '@mipmap/ic_launcher',
     );
 
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-
+    const iosDetails = DarwinNotificationDetails();
     const details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
@@ -123,8 +168,6 @@ class NotificationService {
     required DateTime scheduledTime,
     String? payload,
   }) async {
-    // For scheduled notifications, consider using flutter_local_notifications
-    // with timezone support. This is a simplified version.
     const androidDetails = AndroidNotificationDetails(
       'mpt_scheduled',
       'Scheduled Reminders',
@@ -132,30 +175,16 @@ class NotificationService {
       importance: Importance.high,
       priority: Priority.high,
     );
-
     const iosDetails = DarwinNotificationDetails();
-
     const details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
-    // Note: For proper scheduling, use zonedSchedule with timezone
-    // using tz.TZDateTime.from(scheduledTime, tz.local)
-    // This requires timezone initialization which we skip for this refactor to keep it simple
-    // or we can implement it if needed. For now, using basic show as placeholder
-    // or if scheduledTime is in future, we should use zonedSchedule.
-
-    // Attempting to calculate delay or just show (since the original code didn't fully implement zonedSchedule either)
-    // We will keep the structure but note that real scheduling needs timezone data.
-
     await _localNotifications.show(id, title, body, details, payload: payload);
   }
 
-  // Predefined notification types for the app
-  // ==================================
-
-  /// Morning prayer reminder (7 AM)
+  // Predefined notification types
   Future<void> sendMorningPrayerReminder() async {
     await _showLocalNotification(
       title: '🌅 Good Morning!',
@@ -164,7 +193,6 @@ class NotificationService {
     );
   }
 
-  /// Angelus reminder (12 PM)
   Future<void> sendAngelusReminder() async {
     await _showLocalNotification(
       title: '🔔 The Angelus',
@@ -173,7 +201,6 @@ class NotificationService {
     );
   }
 
-  /// Evening streak reminder (6 PM)
   Future<void> sendStreakReminder(int currentStreak) async {
     await _showLocalNotification(
       title: '🔥 Don\'t break your streak!',
@@ -182,7 +209,6 @@ class NotificationService {
     );
   }
 
-  /// Night prayer reminder (9 PM)
   Future<void> sendNightPrayerReminder() async {
     await _showLocalNotification(
       title: '🌙 Night Prayer',
@@ -191,7 +217,6 @@ class NotificationService {
     );
   }
 
-  /// Inactive user re-engagement (after 3 days)
   Future<void> sendReengagementNotification(String saintName) async {
     await _showLocalNotification(
       title: '🙏 We miss you!',
@@ -200,22 +225,13 @@ class NotificationService {
     );
   }
 
-  /// Schedule all daily reminder notifications
-  /// This sets up recurring notifications at specific times
   Future<void> scheduleAllDailyReminders() async {
-    // Cancel any existing scheduled notifications first
     await _localNotifications.cancelAll();
-
-    // Previously this subscribed to topics.
-    // Since we removed firebase, we should ideally schedule local recurring notifications here.
-    // However, without the timezone package fully setup, we'll just log it.
-    // "Real" implementation would use zonedSchedule with matchDateTimeComponents: DateTimeComponents.time
-
     debugPrint('Scheduled all daily prayer reminders (Local Only)');
   }
 }
 
 /// Provider for NotificationService
 final notificationServiceProvider = Provider<NotificationService>((ref) {
-  return NotificationService();
+  return NotificationService(ref.read(apiServiceProvider));
 });

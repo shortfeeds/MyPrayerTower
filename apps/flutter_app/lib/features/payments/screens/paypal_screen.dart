@@ -13,6 +13,7 @@ class PayPalScreen extends StatefulWidget {
   final String currency;
   final double amount;
   final String description;
+  final String? userEmail;
   final Function(String) onSuccess;
   final Function(String) onError;
   final VoidCallback onCancel;
@@ -25,6 +26,7 @@ class PayPalScreen extends StatefulWidget {
     required this.currency,
     required this.amount,
     required this.description,
+    this.userEmail,
     required this.onSuccess,
     required this.onError,
     required this.onCancel,
@@ -76,8 +78,40 @@ class _PayPalScreenState extends State<PayPalScreen> {
               NavigationDelegate(
                 onPageStarted: (url) =>
                     debugPrint('PayPal: Page started loading: $url'),
-                onPageFinished: (url) =>
-                    debugPrint('PayPal: Page finished loading: $url'),
+                onPageFinished: (url) {
+                  debugPrint('PayPal: Page finished loading: $url');
+                  // Aggressively hide "Cancel and return" link using Timer + CSS
+                  _controller.runJavaScript('''
+                    (function() {
+                      function hideFooter() {
+                          try {
+                              // 1. Hide by HREF (High confidence)
+                              const cancelLinks = document.querySelectorAll('a[href*="payment-cancelled"]');
+                              cancelLinks.forEach(link => {
+                                  link.style.display = 'none !important';
+                                  link.style.visibility = 'hidden !important';
+                                  link.style.opacity = '0 !important';
+                              });
+                              
+                              // 2. Hide by Text Content (Fallback)
+                              const allLinks = document.getElementsByTagName('a');
+                              for (let i = 0; i < allLinks.length; i++) {
+                                if (allLinks[i].textContent && allLinks[i].textContent.includes('Cancel and return')) {
+                                  allLinks[i].style.display = 'none !important';
+                                  allLinks[i].style.visibility = 'hidden !important';
+                                }
+                              }
+                          } catch(e) {}
+                      }
+                      
+                      // Run immediately
+                      hideFooter();
+                      
+                      // Run repeatedly to handle dynamic content loading
+                      setInterval(hideFooter, 500);
+                    })();
+                  ''');
+                },
                 onNavigationRequest: (NavigationRequest request) {
                   debugPrint('PayPal: Navigation request to: ${request.url}');
                   if (request.url.contains('payment-success') ||
@@ -183,13 +217,12 @@ class _PayPalScreenState extends State<PayPalScreen> {
           },
         ],
         "application_context": {
+          "brand_name": "MyPrayerTower",
+          "landing_page": "BILLING",
+          "shipping_preference": "NO_SHIPPING",
+          "user_action": "PAY_NOW",
           "return_url": "https://myprayertower.com/payment-success",
           "cancel_url": "https://myprayertower.com/payment-cancelled",
-          "user_action": "PAY_NOW",
-          "brand_name": "MyPrayerTower",
-          "shipping_preference": "NO_SHIPPING",
-          "landing_page": "BILLING",
-          "user_experience_flow": "CHECKOUT",
         },
       });
 
@@ -350,7 +383,7 @@ class _PayPalScreenState extends State<PayPalScreen> {
                       if (await canLaunchUrl(url)) {
                         await launchUrl(
                           url,
-                          mode: LaunchMode.externalApplication,
+                          mode: LaunchMode.inAppBrowserView, // In-app browser
                         );
                       } else {
                         setState(() {

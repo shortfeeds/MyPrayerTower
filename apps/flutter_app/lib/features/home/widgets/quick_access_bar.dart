@@ -22,16 +22,10 @@ class QuickAccessBar extends StatelessWidget {
       gradient: LinearGradient(colors: [Color(0xFFF59E0B), Color(0xFFEF4444)]),
     ),
     const _QuickAction(
-      icon: LucideIcons.layoutGrid,
+      icon: LucideIcons.circleDot,
       label: 'Rosary',
       route: '/rosary',
       gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFFA855F7)]),
-    ),
-    const _QuickAction(
-      icon: LucideIcons.shield,
-      label: 'Confession',
-      route: '/confession',
-      gradient: LinearGradient(colors: [Color(0xFF10B981), Color(0xFF14B8A6)]),
     ),
     const _QuickAction(
       icon: LucideIcons.scroll,

@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Pilgrimage } from '@prisma/client';
 
@@ -7,27 +8,7 @@ export class PilgrimagesService implements OnModuleInit {
     constructor(private prisma: PrismaService) { }
 
     async onModuleInit() {
-        // Ensure table exists (Fallback for failed db push)
-        try {
-            await this.prisma.$executeRawUnsafe(`
-                CREATE TABLE IF NOT EXISTS "pilgrimages" (
-                    "id" TEXT NOT NULL,
-                    "name" TEXT NOT NULL,
-                    "location" TEXT NOT NULL,
-                    "country" TEXT NOT NULL,
-                    "description" TEXT NOT NULL,
-                    "significance" TEXT NOT NULL,
-                    "imageUrl" TEXT NOT NULL,
-                    "virtualTourUrl" TEXT,
-                    "viewCount" INTEGER NOT NULL DEFAULT 0,
-                    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    "updatedAt" TIMESTAMP(3) NOT NULL,
-                    CONSTRAINT "pilgrimages_pkey" PRIMARY KEY ("id")
-                );
-            `);
-        } catch (e) {
-            console.error('Failed to create pilgrimages table:', e);
-        }
+        // Table creation handled by Prisma Migrate
 
         // Seed data if empty
         try {
@@ -48,6 +29,28 @@ export class PilgrimagesService implements OnModuleInit {
 
     async findOne(id: string) {
         return this.prisma.pilgrimage.findUnique({
+            where: { id },
+        });
+    }
+
+    async create(data: any) {
+        return this.prisma.pilgrimage.create({
+            data: {
+                id: crypto.randomUUID(),
+                ...data
+            }
+        });
+    }
+
+    async update(id: string, data: any) {
+        return this.prisma.pilgrimage.update({
+            where: { id },
+            data,
+        });
+    }
+
+    async remove(id: string) {
+        return this.prisma.pilgrimage.delete({
             where: { id },
         });
     }

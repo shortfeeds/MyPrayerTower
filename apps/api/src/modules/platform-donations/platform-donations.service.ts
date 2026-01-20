@@ -284,4 +284,15 @@ export class PlatformDonationsService {
             estimatedMRR: subscriptions * SUBSCRIPTION_PLANS.PRAYER_PARTNER.amount, // Estimate
         };
     }
+    async getAllDonations(limit = 50, offset = 0) {
+        const [donations, total] = await Promise.all([
+            this.prisma.platformDonation.findMany({
+                take: limit,
+                skip: offset,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.platformDonation.count(),
+        ]);
+        return { data: donations, total };
+    }
 }

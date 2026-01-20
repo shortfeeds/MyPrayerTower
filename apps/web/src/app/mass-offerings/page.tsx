@@ -11,8 +11,10 @@ const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(
 
 import { SACRED_COPY } from '@/lib/sacred-copy';
 
-// Offering types with pricing
-const OFFERING_TYPES = [
+import { usePricing } from '@/contexts/PricingContext';
+
+// Offering types with default pricing
+const DEFAULT_OFFERING_TYPES = [
     {
         id: 'REGULAR',
         name: 'Single Mass',
@@ -81,6 +83,7 @@ const ADDONS = [
 ];
 
 export default function MassOfferingsPage() {
+    const { prices } = usePricing();
     const [step, setStep] = useState(1);
     const [selectedType, setSelectedType] = useState<string>('REGULAR');
     const [isForLiving, setIsForLiving] = useState(false);
@@ -103,14 +106,38 @@ export default function MassOfferingsPage() {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
 
-    const selectedOffering = OFFERING_TYPES.find(o => o.id === selectedType);
+    const offeringTypes = DEFAULT_OFFERING_TYPES.map(o => {
+        let dynamicPrice = o.price;
+        if (prices?.masses) {
+            if (o.id === 'REGULAR') dynamicPrice = prices.masses.regular;
+            if (o.id === 'NOVENA') dynamicPrice = prices.masses.novena;
+            if (o.id === 'PERPETUAL') dynamicPrice = prices.masses.perpetual;
+            if (o.id === 'GREGORIAN') dynamicPrice = prices.masses.gregorian;
+        }
+        // Expedited logic if needed later
+        return { ...o, price: dynamicPrice };
+    });
+
+    const selectedOffering = offeringTypes.find(o => o.id === selectedType);
     const intentionOptions = isForLiving ? LIVING_INTENTIONS : DECEASED_INTENTIONS;
+
+    // Dynamic Add-ons
+    const currentAddons = ADDONS.map(a => {
+        let price = a.price;
+        if (prices?.bouquets) {
+            // Mapping add-ons mainly used in bundles, but also standalone here
+            // For consistency we use defaults or extend settings if needed
+            // Currently using hardcoded prices for add-ons unless mapped
+            if (a.id === 'candle' && prices.candles?.sevenDay) price = prices.candles.sevenDay;
+        }
+        return { ...a, price };
+    });
 
     const calculateTotal = () => {
         let total = selectedOffering?.price || 0;
-        if (addons.candle) total += 500;
-        if (addons.floralBouquet) total += 1000;
-        if (addons.rosary) total += 1000;
+        if (addons.candle) total += currentAddons.find(a => a.id === 'candle')?.price || 500;
+        if (addons.floralBouquet) total += currentAddons.find(a => a.id === 'floralBouquet')?.price || 1000;
+        if (addons.rosary) total += currentAddons.find(a => a.id === 'rosary')?.price || 1000;
         return total;
     };
 
@@ -187,26 +214,26 @@ export default function MassOfferingsPage() {
             {/* PayPal Payment Modal */}
             {showPaymentModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                     <Church className="w-6 h-6 text-amber-500" />
                                     Complete Your Offering
                                 </h2>
-                                <button onClick={() => setShowPaymentModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                                <button onClick={() => setShowPaymentModal(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                                     ✕
                                 </button>
                             </div>
 
-                            <div className="bg-amber-50 rounded-xl p-4 mb-6">
+                            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 mb-6 border border-amber-100 dark:border-amber-800/30">
                                 <div className="flex justify-between items-center mb-2">
-                                    <span className="text-amber-900 font-medium">{selectedOffering?.name}</span>
-                                    <span className="text-xl text-amber-600 font-bold">
+                                    <span className="text-amber-900 dark:text-amber-100 font-medium">{selectedOffering?.name}</span>
+                                    <span className="text-xl text-amber-600 dark:text-amber-400 font-bold">
                                         ${Math.round(calculateTotal() / 100)}
                                     </span>
                                 </div>
-                                <p className="text-xs text-amber-700 truncate">For: {intentionFor}</p>
+                                <p className="text-xs text-amber-700 dark:text-amber-300/80 truncate">For: {intentionFor}</p>
                             </div>
 
                             <PayPalCheckout
@@ -299,7 +326,7 @@ export default function MassOfferingsPage() {
                         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Choose Your Offering</h2>
 
                         <div className="grid gap-4">
-                            {OFFERING_TYPES.map(type => (
+                            {offeringTypes.map(type => (
                                 <button
                                     key={type.id}
                                     onClick={() => setSelectedType(type.id)}
@@ -529,7 +556,7 @@ export default function MassOfferingsPage() {
 
                         {/* Add-ons */}
                         <div className="space-y-3 mb-8">
-                            {ADDONS.map(addon => (
+                            {currentAddons.map(addon => (
                                 <label
                                     key={addon.id}
                                     className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${(addons as any)[addon.id]

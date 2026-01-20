@@ -7,7 +7,7 @@ final prayersProvider = FutureProvider.autoDispose
     .family<List<Prayer>, String?>((ref, category) {
       return ref
           .watch(prayersRepositoryProvider)
-          .getPrayers(category: category, limit: 1000);
+          .getPrayers(category: category, limit: -1); // Fetch all prayers
     });
 
 /// Provider for paginated prayers in a category

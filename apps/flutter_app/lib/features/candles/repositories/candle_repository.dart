@@ -17,128 +17,12 @@ class CandleRepository {
 
   CandleRepository(this._client);
 
-  // Sample candle data for fallback
-  static List<Candle> _sampleCandles() {
-    final random = Random();
-    return [
-      Candle(
-        id: 's-1',
-        intention: 'For world peace and healing of nations',
-        name: 'Maria S.',
-        isAnonymous: false,
-        duration: 'THIRTY_DAYS',
-        litAt: DateTime.now().subtract(const Duration(days: 2)),
-        expiresAt: DateTime.now().add(const Duration(days: 28)),
-        isActive: true,
-        prayerCount: 3500 + random.nextInt(500),
-      ),
-      Candle(
-        id: 's-2',
-        intention: 'For my mother\'s recovery from illness',
-        name: 'John D.',
-        isAnonymous: false,
-        duration: 'SEVEN_DAYS',
-        litAt: DateTime.now().subtract(const Duration(days: 1)),
-        expiresAt: DateTime.now().add(const Duration(days: 6)),
-        isActive: true,
-        prayerCount: 800 + random.nextInt(200),
-      ),
-      Candle(
-        id: 's-3',
-        intention: 'Thanksgiving for answered prayers',
-        name: 'Anonymous',
-        isAnonymous: true,
-        duration: 'THREE_DAYS',
-        litAt: DateTime.now().subtract(const Duration(hours: 12)),
-        expiresAt: DateTime.now().add(const Duration(days: 2, hours: 12)),
-        isActive: true,
-        prayerCount: 350 + random.nextInt(100),
-      ),
-      Candle(
-        id: 's-4',
-        intention: 'For the souls in purgatory',
-        name: 'Fr. Michael',
-        isAnonymous: false,
-        duration: 'THIRTY_DAYS',
-        litAt: DateTime.now().subtract(const Duration(days: 5)),
-        expiresAt: DateTime.now().add(const Duration(days: 25)),
-        isActive: true,
-        prayerCount: 5200 + random.nextInt(800),
-      ),
-      Candle(
-        id: 's-5',
-        intention: 'For my children\'s faith journey',
-        name: 'Patricia O.',
-        isAnonymous: false,
-        duration: 'SEVEN_DAYS',
-        litAt: DateTime.now().subtract(const Duration(hours: 6)),
-        expiresAt: DateTime.now().add(const Duration(days: 6, hours: 18)),
-        isActive: true,
-        prayerCount: 450 + random.nextInt(150),
-      ),
-      Candle(
-        id: 's-6',
-        intention: 'For guidance in my career',
-        name: 'David W.',
-        isAnonymous: false,
-        duration: 'ONE_DAY',
-        litAt: DateTime.now().subtract(const Duration(hours: 2)),
-        expiresAt: DateTime.now().add(const Duration(hours: 22)),
-        isActive: true,
-        prayerCount: 120 + random.nextInt(80),
-      ),
-      Candle(
-        id: 's-7',
-        intention: 'For healing of broken relationships',
-        name: 'Anonymous',
-        isAnonymous: true,
-        duration: 'SEVEN_DAYS',
-        litAt: DateTime.now().subtract(const Duration(days: 3)),
-        expiresAt: DateTime.now().add(const Duration(days: 4)),
-        isActive: true,
-        prayerCount: 1800 + random.nextInt(400),
-      ),
-      Candle(
-        id: 's-8',
-        intention: 'In thanksgiving for a new baby',
-        name: 'Sarah M.',
-        isAnonymous: false,
-        duration: 'THIRTY_DAYS',
-        litAt: DateTime.now().subtract(const Duration(days: 1)),
-        expiresAt: DateTime.now().add(const Duration(days: 29)),
-        isActive: true,
-        prayerCount: 2100 + random.nextInt(300),
-      ),
-      Candle(
-        id: 's-9',
-        intention: 'For protection during travels',
-        name: 'Peter L.',
-        isAnonymous: false,
-        duration: 'THREE_DAYS',
-        litAt: DateTime.now().subtract(const Duration(hours: 8)),
-        expiresAt: DateTime.now().add(const Duration(days: 2, hours: 16)),
-        isActive: true,
-        prayerCount: 280 + random.nextInt(70),
-      ),
-      Candle(
-        id: 's-10',
-        intention: 'For vocations to the priesthood',
-        name: 'Sr. Teresa',
-        isAnonymous: false,
-        duration: 'SEVEN_DAYS',
-        litAt: DateTime.now().subtract(const Duration(hours: 18)),
-        expiresAt: DateTime.now().add(const Duration(days: 5, hours: 6)),
-        isActive: true,
-        prayerCount: 920 + random.nextInt(180),
-      ),
-    ];
-  }
-
   Future<List<Candle>> getActiveCandles() async {
     try {
       final candles = await _fetchCandles('PrayerCandle');
       if (candles.isEmpty) {
-        return _sampleCandles();
+        // Return empty list instead of samples for live data
+        return [];
       }
       return candles;
     } catch (e) {
@@ -146,12 +30,12 @@ class CandleRepository {
       try {
         final candles = await _fetchCandles('prayer_candle');
         if (candles.isEmpty) {
-          return _sampleCandles();
+          return [];
         }
         return candles;
       } catch (e2) {
         debugPrint('Error fetching candles: $e2');
-        return _sampleCandles();
+        return [];
       }
     }
   }
@@ -243,6 +127,8 @@ class CandleRepository {
         return 3;
       case 'SEVEN_DAYS':
         return 7;
+      case 'FOURTEEN_DAYS':
+        return 14;
       case 'THIRTY_DAYS':
         return 30;
       default:

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/church_provider.dart';
@@ -78,160 +79,209 @@ class _ParishFinderScreenState extends ConsumerState<ParishFinderScreen> {
     final currentLocation = ref.watch(currentLocationProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.deepSpace,
-      appBar: AppBar(
-        backgroundColor: AppTheme.darkBg,
-        title: Text(
-          'Parish Finder',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      body: Column(
+      backgroundColor: Colors.black,
+      body: Stack(
         children: [
-          // Search Header
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.royalPurple900.withValues(alpha: 0.6),
-                  AppTheme.sacredNavy900.withValues(alpha: 0.8),
-                ],
-              ),
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(24),
-              ),
+          // Background Image (Altar) - Consistent with Candles Screen
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/candles/altar.png',
+              fit: BoxFit.cover,
             ),
-            child: Column(
-              children: [
-                const Icon(
-                  LucideIcons.mapPin,
-                  size: 48,
-                  color: AppTheme.gold400,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Find Nearby Mass',
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 24,
+          ),
+          // Dark Overlay for readability
+          Positioned.fill(
+            child: Container(color: Colors.black.withValues(alpha: 0.7)),
+          ),
+
+          // Main Content
+          Column(
+            children: [
+              // AppBar (Transparent)
+              AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                title: Text(
+                  'Parish Finder',
+                  style: GoogleFonts.merriweather(
+                    // Use Merriweather for consistency
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Locate Catholic churches and Mass times near you.',
-                  style: GoogleFonts.inter(fontSize: 14, color: Colors.white70),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _isLoadingLocation ? null : _findParishes,
-                    icon: _isLoadingLocation
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.black,
-                            ),
-                          )
-                        : const Icon(LucideIcons.navigation),
-                    label: Text(
-                      _isLoadingLocation
-                          ? 'Locating...'
-                          : 'Use Current Location',
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.gold500,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                leading: IconButton(
+                  icon: const Icon(
+                    LucideIcons.chevronLeft,
+                    color: Colors.white,
                   ),
+                  onPressed: () => context.pop(),
                 ),
-              ],
-            ),
-          ),
+              ),
 
-          // Results
-          Expanded(
-            child: _error != null
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        _error!,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
+              // Search Header with Search Button
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                child: Column(
+                  children: [
+                    const Icon(
+                      LucideIcons.church,
+                      size: 48,
+                      color: AppTheme.gold400,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Find Nearby Mass',
+                      style: GoogleFonts.merriweather(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
-                  )
-                : currentLocation == null
-                ? const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          LucideIcons.church,
-                          size: 64,
-                          color: Colors.white12,
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'Tap the button to find nearby parishes',
-                          style: TextStyle(color: Colors.white38),
-                        ),
-                      ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Locate Catholic churches and Mass times near you.',
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  )
-                : nearbyAsync.when(
-                    data: (churches) {
-                      if (churches.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            'No churches found nearby',
-                            style: TextStyle(color: Colors.white70),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: _isLoadingLocation ? null : _findParishes,
+                        icon: _isLoadingLocation
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(LucideIcons.mapPin),
+                        label: Text(
+                          _isLoadingLocation
+                              ? 'Locating...'
+                              : 'Find Near Current Location',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.gold600,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
                           ),
-                        );
-                      }
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: churches.length,
-                        itemBuilder: (context, index) {
-                          final church = churches[index];
-                          // Simple distance calc approximation or from API if provided
-                          // For now, API doesn't return calculated distance in Church model unless we add field.
-                          // We'll rely on generic display or skip distance for now if null.
-                          return _ParishCard(
-                            church: church,
-                            onMapTap: () => _launchMaps(church.address),
-                            onWebTap: church.website != null
-                                ? () => _launchUrl(church.website!)
-                                : null,
-                          );
-                        },
-                      );
-                    },
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(color: AppTheme.gold500),
-                    ),
-                    error: (e, st) => Center(
-                      child: Text(
-                        'Error: $e',
-                        style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
+                ),
+              ),
+
+              // Results List
+              Expanded(child: _buildBody(nearbyAsync, currentLocation)),
+            ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBody(
+    AsyncValue<List<Church>> nearbyAsync,
+    Position? currentLocation,
+  ) {
+    if (_error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                LucideIcons.alertCircle,
+                color: Colors.redAccent,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Unable to get location',
+                style: GoogleFonts.merriweather(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _error!,
+                style: GoogleFonts.inter(color: Colors.white70),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (currentLocation == null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              LucideIcons.map,
+              size: 64,
+              color: Colors.white.withValues(alpha: 0.1),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Tap above to search nearby',
+              style: GoogleFonts.inter(color: Colors.white38),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return nearbyAsync.when(
+      data: (churches) {
+        if (churches.isEmpty) {
+          return Center(
+            child: Text(
+              'No churches found nearby',
+              style: GoogleFonts.inter(color: Colors.white70),
+            ),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 30),
+          itemCount: churches.length,
+          itemBuilder: (context, index) {
+            final church = churches[index];
+            return _ParishCard(
+              church: church,
+              onMapTap: () => _launchMaps(church.address),
+              onWebTap: church.website != null
+                  ? () => _launchUrl(church.website!)
+                  : null,
+            );
+          },
+        );
+      },
+      loading: () => const Center(
+        child: CircularProgressIndicator(color: AppTheme.gold500),
+      ),
+      error: (e, st) => Center(
+        child: Text(
+          'Error loading churches',
+          style: GoogleFonts.inter(color: Colors.white70),
+        ),
       ),
     );
   }
@@ -257,9 +307,16 @@ class _ParishCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.darkCard,
+        color: Colors.black.withValues(alpha: 0.5), // Semi-transparent card
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,7 +331,7 @@ class _ParishCard extends StatelessWidget {
                   children: [
                     Text(
                       church.name,
-                      style: GoogleFonts.playfairDisplay(
+                      style: GoogleFonts.merriweather(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,

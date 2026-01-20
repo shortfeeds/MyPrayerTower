@@ -192,7 +192,17 @@ export function Dashboard() {
 
     return (
         <div style={{ padding: 24 }}>
-            <h1 style={{ marginBottom: 24 }}>Admin Dashboard</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                <h1 style={{ margin: 0 }}>Admin Dashboard</h1>
+                <div style={{ display: 'flex', gap: 12 }}>
+                    <Button type="primary" icon={<BankOutlined />} onClick={() => window.location.href = '/churches'}>
+                        Add Church
+                    </Button>
+                    <Button icon={<UserOutlined />} onClick={() => message.info('Saints management coming soon!')}>
+                        Add Saint
+                    </Button>
+                </div>
+            </div>
 
             {/* Stats Grid */}
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>

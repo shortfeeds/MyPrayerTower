@@ -20,6 +20,14 @@ export async function GET() {
                 leaderboardEnabled: true,
                 nativeAdsEnabled: true,
                 rewardedAdsEnabled: true,
+                bannerAdUnitIdAndroid: true,
+                bannerAdUnitIdiOS: true,
+                interstitialAdUnitIdAndroid: true,
+                interstitialAdUnitIdiOS: true,
+                nativeAdUnitIdAndroid: true,
+                nativeAdUnitIdiOS: true,
+                rewardedAdUnitIdAndroid: true,
+                rewardedAdUnitIdiOS: true,
                 plusMonthlyPrice: true,
                 plusYearlyPrice: true,
                 premiumMonthlyPrice: true,
@@ -79,6 +87,22 @@ export async function GET() {
                 leaderboardEnabled: settings.leaderboardEnabled,
                 nativeAdsEnabled: settings.nativeAdsEnabled,
                 rewardedAdsEnabled: settings.rewardedAdsEnabled,
+
+                // AdMob Configuration
+                adMob: {
+                    android: {
+                        banner: (settings as any).bannerAdUnitIdAndroid,
+                        interstitial: (settings as any).interstitialAdUnitIdAndroid,
+                        native: (settings as any).nativeAdUnitIdAndroid,
+                        rewarded: (settings as any).rewardedAdUnitIdAndroid
+                    },
+                    ios: {
+                        banner: (settings as any).bannerAdUnitIdiOS,
+                        interstitial: (settings as any).interstitialAdUnitIdiOS,
+                        native: (settings as any).nativeAdUnitIdiOS,
+                        rewarded: (settings as any).rewardedAdUnitIdiOS
+                    }
+                },
 
                 // Pricing Configuration
                 prices: {
