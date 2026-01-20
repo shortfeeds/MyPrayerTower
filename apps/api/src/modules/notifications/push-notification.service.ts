@@ -18,10 +18,22 @@ export class PushNotificationService {
     constructor(private configService: ConfigService) {
         if (!admin.apps.length) {
             try {
-                // Attempt to initialize Firebase Admin
-                // Requires GOOGLE_APPLICATION_CREDENTIALS env var or default creds
+                // Try to load service account from root of apps/api
+                // Use require to handle JSON parsing easily, assuming file exists in CWD or parallel to src
+                let credential;
+                try {
+                    // Start by checking if we are in dev (src access) or prod (dist access)
+                    // But typically process.cwd() is project root.
+                    const serviceAccount = require(require('path').resolve('firebase-service-account.json'));
+                    credential = admin.credential.cert(serviceAccount);
+                    this.logger.log('Loaded Firebase Admin credentials from local JSON file.');
+                } catch (e) {
+                    this.logger.warn('Local firebase-service-account.json not found, falling back to GOOGLE_APPLICATION_CREDENTIALS');
+                    credential = admin.credential.applicationDefault();
+                }
+
                 admin.initializeApp({
-                    credential: admin.credential.applicationDefault(),
+                    credential: credential,
                 });
                 this.logger.log('Firebase Admin SDK Initialized');
             } catch (error) {
