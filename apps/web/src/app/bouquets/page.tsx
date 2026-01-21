@@ -8,6 +8,7 @@ import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
 
 // Dynamic import for PayPal to prevent hydration issues
 const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
+import { saveAbandonedCart } from '@/app/actions/cart';
 
 const occasions = [
     'Birthday', 'Anniversary', 'Get Well Soon', 'In Sympathy', 'Congratulations',
@@ -38,6 +39,7 @@ export default function BouquetsPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPayPal, setShowPayPal] = useState(false);
     const [orderId, setOrderId] = useState<string | null>(null);
+    const [hasSuccess, setHasSuccess] = useState(false);
 
     const totalItems = Object.values(selection).reduce((a, b) => a + b, 0);
     const totalPrice = bouquetItems.reduce((total, item) => {
@@ -52,6 +54,45 @@ export default function BouquetsPage() {
         setSelection(prev => ({ ...prev, [id]: Math.max(0, (prev[id] || 0) - 1) }));
     };
 
+    // Track abandoned cart on unmount
+    useEffect(() => {
+        return () => {
+            // We use a ref or check state, but detailed state access in cleanup is stale due to closure.
+            // We need a ref to access latest state.
+        };
+    }, []);
+
+    // Using refs for latest state access in cleanup
+    const stateRef = useRef({ selection, recipientName, recipientEmail, step, hasSuccess, showPayPal, totalPrice });
+    useEffect(() => {
+        stateRef.current = { selection, recipientName, recipientEmail, step, hasSuccess, showPayPal, totalPrice };
+    }, [selection, recipientName, recipientEmail, step, hasSuccess, showPayPal, totalPrice]);
+
+    useEffect(() => {
+        return () => {
+            const state = stateRef.current;
+            const hasItems = Object.values(state.selection).reduce((a, b) => a + b, 0) > 0;
+
+            if (!state.hasSuccess && hasItems) {
+                saveAbandonedCart({
+                    type: 'SPIRITUAL_BOUQUET',
+                    email: state.recipientEmail || 'anonymous@tracking.com', // Using recipient email if available (often sender puts their own too? No, senderEmail is separate)
+                    // Actually we have senderEmail state too.
+                    data: {
+                        selection: state.selection,
+                        recipientName: state.recipientName,
+                        recipientEmail: state.recipientEmail,
+                        senderName: senderName, // Captured in closure? Need ref for this too if we want it.
+                        totalPrice: state.totalPrice,
+                        step: state.step
+                    },
+                    step: state.showPayPal ? 'payment' : (state.step === 2 ? 'details' : 'selection'),
+                    source: 'WEB'
+                });
+            }
+        };
+    }, []);
+
     const handleSendBouquet = async () => {
         if (totalPrice > 0) {
             setShowPayPal(true);
@@ -65,7 +106,9 @@ export default function BouquetsPage() {
         setIsSubmitting(true);
         try {
             // Data already saved by server-side capture
+            // Data already saved by server-side capture
             alert('Payment successful and bouquet sent!');
+            setHasSuccess(true);
             setStep(1);
             setSelection({ mass: 0, rosary: 0, prayer: 1, candle: 0 });
             setShowPayPal(false);

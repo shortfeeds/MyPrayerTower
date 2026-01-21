@@ -9,6 +9,7 @@ import { lightVirtualCandle } from '@/app/actions/spiritual';
 
 // Dynamic import for PayPal
 const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
+import { saveAbandonedCart } from '@/app/actions/cart';
 
 import { SACRED_COPY } from '@/lib/sacred-copy';
 
@@ -42,6 +43,26 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
         duration: 'ONE_DAY',
         email: '' // Optional for receipt
     });
+    const [hasSuccess, setHasSuccess] = useState(false);
+
+    const handleClose = () => {
+        if (!hasSuccess && step > 1) {
+            // Fire and forget tracking
+            saveAbandonedCart({
+                type: 'CANDLE',
+                email: formData.email || 'anonymous@tracking.com',
+                name: formData.name || null,
+                data: {
+                    ...formData,
+                    tier: selectedTier.label,
+                    price: selectedTier.price
+                },
+                step: step === 3 ? 'payment' : 'details',
+                source: 'WEB'
+            });
+        }
+        onClose();
+    };
 
     // Merge default structure with dynamic prices
     const durations = DEFAULT_DURATIONS.map(d => {
@@ -73,6 +94,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                     duration: formData.duration,
                     name: formData.isAnonymous ? 'Anonymous' : formData.name
                 });
+                setHasSuccess(true);
                 onSuccess();
                 onClose();
             } catch (err: any) {
@@ -96,6 +118,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                 name: formData.isAnonymous ? 'Anonymous' : formData.name,
                 paymentId: details.orderID
             });
+            setHasSuccess(true);
             onSuccess();
             onClose();
         } catch (err: any) {
@@ -115,7 +138,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                    onClick={onClose}
+                    onClick={handleClose}
                 />
 
                 <motion.div
@@ -130,7 +153,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                             <Flame className="w-5 h-5 fill-white animate-pulse" />
                             Light a Candle
                         </h3>
-                        <button onClick={onClose} className="text-white/80 hover:text-white transition-colors">
+                        <button onClick={handleClose} className="text-white/80 hover:text-white transition-colors">
                             <X className="w-6 h-6" />
                         </button>
                     </div>

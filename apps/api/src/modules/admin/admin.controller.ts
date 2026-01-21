@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Patch, Param, Body, Query } from '@nestjs/common';
 import { AdminService } from './admin.service';
 
 import { UseGuards } from '@nestjs/common';
@@ -235,5 +235,59 @@ export class AdminController {
         @Query('endDate') endDate?: string,
     ) {
         return this.adminService.getRevenueReports(startDate, endDate);
+    }
+
+    // ===== ABANDONED CART MANAGEMENT =====
+    @Get('abandoned-carts')
+    async getAbandonedCarts(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+        @Query('type') type?: string,
+        @Query('source') source?: string,
+        @Query('converted') converted?: string,
+    ) {
+        return this.adminService.getAbandonedCarts(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+            { type, source, converted: converted === 'true' ? true : converted === 'false' ? false : undefined },
+        );
+    }
+
+    @Get('abandoned-carts/stats')
+    async getAbandonedCartStats() {
+        return this.adminService.getAbandonedCartStats();
+    }
+
+    @Get('abandoned-carts/:id')
+    async getAbandonedCart(@Param('id') id: string) {
+        return this.adminService.getAbandonedCart(id);
+    }
+
+    @Post('abandoned-carts')
+    async createAbandonedCart(@Body() data: any) {
+        return this.adminService.createAbandonedCart(data);
+    }
+
+    @Post('abandoned-carts/:id/remind')
+    async sendCartReminder(
+        @Param('id') id: string,
+        @Body() options?: { email?: boolean; push?: boolean },
+    ) {
+        return this.adminService.sendCartReminder(id, options);
+    }
+
+    @Post('abandoned-carts/bulk-remind')
+    async sendBulkCartReminders(@Body() data: { ids: string[]; email?: boolean; push?: boolean }) {
+        return this.adminService.sendBulkCartReminders(data.ids, { email: data.email, push: data.push });
+    }
+
+    @Patch('abandoned-carts/:id/convert')
+    async markCartConverted(@Param('id') id: string) {
+        return this.adminService.markCartConverted(id);
+    }
+
+    @Delete('abandoned-carts/:id')
+    async deleteAbandonedCart(@Param('id') id: string) {
+        return this.adminService.deleteAbandonedCart(id);
     }
 }

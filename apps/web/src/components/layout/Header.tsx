@@ -107,7 +107,10 @@ export function Header() {
         { href: '/prayers/rosary', label: 'Holy Rosary', icon: Heart, description: 'Interactive guided prayer' },
         { href: '/prayers', label: 'Prayer Library', icon: Book, description: 'Catholic prayers & litanies' },
         { href: '/prayer-wall', label: 'Prayer Wall', icon: Users, description: 'Community intentions' },
-        { href: '/sessions', label: 'Live Sessions', icon: Sparkles, description: 'Real-time community prayer' },
+        { href: '/novenas', label: 'Novenas', icon: Sparkles, description: '9-day prayer devotions' },
+        { href: '/stations', label: 'Stations of the Cross', icon: MapPin, description: 'Way of the Cross' },
+        { href: '/chaplets', label: 'Chaplets', icon: Star, description: 'Divine Mercy & more' },
+        { href: '/examen', label: 'Daily Examen', icon: BookOpen, description: 'Ignatian reflection' },
     ];
 
     // 2. OFFER (Active Charity/Devotion)
@@ -115,21 +118,25 @@ export function Header() {
         { href: '/candles', label: 'Light a Candle', icon: Flame, description: 'Virtual intentions' },
         { href: '/mass-offerings', label: 'Request a Mass', icon: Gift, description: 'Have a Mass offered' },
         { href: '/bouquets', label: 'Spiritual Bouquets', icon: BookOpen, description: 'Send spiritual gifts' },
+        { href: '/memorials', label: 'Eternal Memorials', icon: Heart, description: 'Honor loved ones' },
     ];
 
-    // 3. REMEMBER (Digital Memorials)
+    // 3. REMEMBER (Eternal Memorials)
     const rememberLinks = [
-        { href: '/memorials', label: 'Search Memorials', icon: Search, description: 'Find a loved one' },
-        { href: '/memorials/create', label: 'Create Memorial', icon: Star, description: 'Create a digital memorial' },
+        { href: '/memorials', label: 'Eternal Memorials', icon: Heart, description: 'Honor loved ones' },
+        { href: '/memorials/create', label: 'Create Memorial', icon: Star, description: 'Create a lasting tribute' },
         { href: '/anniversaries', label: 'Anniversaries', icon: Calendar, description: 'Remembering dates' },
+        { href: '/candles', label: 'Memorial Candles', icon: Flame, description: 'Light for the departed' },
     ];
 
     // 4. DISCOVER (Learn & Locate Combined)
     const discoverLinks = [
-        { href: '/churches', label: 'Find a Sacred Space', icon: MapPin, description: 'Mass, Confession, Adoration' },
+        { href: '/churches', label: 'Find a Church', icon: MapPin, description: 'Mass, Confession, Adoration' },
         { href: '/saints', label: 'Saints & Feasts', icon: User, description: 'Lives of the Holy Ones' },
-        { href: '/bible', label: 'Bible (DuoBiblia)', icon: Book, description: 'Scriptures' },
+        { href: '/bible', label: 'Bible', icon: Book, description: 'Sacred Scriptures' },
         { href: '/catechism', label: 'Catechism', icon: BookOpen, description: 'Church teachings' },
+        { href: '/calendar', label: 'Liturgical Calendar', icon: Calendar, description: 'Feasts & seasons' },
+        { href: '/glossary', label: 'Catholic Glossary', icon: Search, description: 'Terms & definitions' },
     ];
 
     // 5. MY PRAYER CORNER (User) - Handled separately via auth check

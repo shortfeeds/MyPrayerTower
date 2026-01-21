@@ -50,7 +50,7 @@ class _PayPalScreenState extends State<PayPalScreen> {
   String errorMessage = '';
 
   // Store listener to remove it on dispose
-  JSObject? _messageListener;
+  web.EventListener? _messageListener;
 
   // PayPal URLs - using api-m.paypal.com for v2 API
   final String _baseUrl = 'https://api-m.paypal.com';
@@ -81,11 +81,11 @@ class _PayPalScreenState extends State<PayPalScreen> {
   }
 
   void _registerWebListener() {
-    // Create JS callback
-    final callback = (web.MessageEvent event) {
-      final dataAny = event.data as JSAny?;
-      // dartify() converts JS structure to Dart maps/lists where possible, or primitives
-      final data = dataAny?.dartify()?.toString() ?? '';
+    // Create JS callback using proper interop
+    void handleMessage(web.Event event) {
+      final messageEvent = event as web.MessageEvent;
+      final dataAny = messageEvent.data;
+      final data = dataAny?.toString() ?? '';
 
       if (data.contains('payment-success') || data.contains('token=')) {
         // Extract token from message if available
@@ -98,9 +98,9 @@ class _PayPalScreenState extends State<PayPalScreen> {
         widget.onCancel();
         if (mounted) Navigator.of(context).pop();
       }
-    }.toJS;
+    }
 
-    _messageListener = callback;
+    _messageListener = handleMessage.toJS;
     web.window.addEventListener('message', _messageListener);
   }
 

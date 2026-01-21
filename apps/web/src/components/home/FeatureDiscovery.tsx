@@ -6,6 +6,13 @@ import { BookOpen, Users, CircleDot, Church, Heart, ChevronRight } from 'lucide-
 
 const FEATURES = [
     {
+        id: 'memorials',
+        icon: Heart,
+        title: 'Eternal Memorials',
+        description: 'Create lasting tributes for loved ones who have passed.',
+        href: '/memorials'
+    },
+    {
         id: 'prayers',
         icon: BookOpen,
         title: 'Prayer Library',
@@ -13,32 +20,46 @@ const FEATURES = [
         href: '/prayers'
     },
     {
-        id: 'saints',
-        icon: Users,
-        title: 'Saints & Devotions',
-        description: 'Learn about the lives and wisdom of the saints.',
-        href: '/saints'
-    },
-    {
         id: 'rosary',
         icon: CircleDot,
-        title: 'Rosary & Daily Readings',
-        description: 'Pray the Rosary and reflect on daily Scripture.',
+        title: 'Holy Rosary',
+        description: 'Pray the Rosary with guided meditations.',
         href: '/rosary'
+    },
+    {
+        id: 'saints',
+        icon: Users,
+        title: 'Saints & Feasts',
+        description: 'Learn about the lives of the saints.',
+        href: '/saints'
     },
     {
         id: 'churches',
         icon: Church,
-        title: 'Church Finder',
-        description: 'Find Catholic churches and Mass times near you.',
+        title: 'Find a Church',
+        description: 'Locate Catholic churches and Mass times near you.',
         href: '/churches'
     },
     {
-        id: 'memorials',
+        id: 'stations',
         icon: Heart,
-        title: 'Memorials',
-        description: 'Create digital chapels for loved ones.',
-        href: '/memorials'
+        title: 'Stations of the Cross',
+        description: 'Walk the Way of the Cross.',
+        href: '/stations'
+    },
+    {
+        id: 'novenas',
+        icon: BookOpen,
+        title: 'Novenas',
+        description: 'Nine-day prayer devotions.',
+        href: '/novenas'
+    },
+    {
+        id: 'bouquets',
+        icon: Heart,
+        title: 'Spiritual Bouquets',
+        description: 'Send spiritual gifts to loved ones.',
+        href: '/bouquets'
     }
 ];
 
@@ -65,7 +86,7 @@ export function FeatureDiscovery() {
                     </p>
                 </div>
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
                     {FEATURES.map((feature, idx) => (
                         <motion.div
                             key={feature.id}

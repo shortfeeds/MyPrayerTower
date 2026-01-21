@@ -49,7 +49,7 @@ export function SocialReassurance() {
                         className="flex items-center gap-3 text-slate-600 dark:text-slate-300"
                     >
                         <Heart className="w-4 h-4 text-rose-500" />
-                        <span className="text-sm font-medium">Intentions remembered today</span>
+                        <span className="text-sm font-medium">Memorial tributes shared with love</span>
                     </motion.div>
                 </div>
             </div>

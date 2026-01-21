@@ -145,31 +145,33 @@ export function Footer() {
                                 <li><Link href="/prayers/rosary" className="hover:text-gold-400 transition-colors">Holy Rosary</Link></li>
                                 <li><Link href="/prayers" className="hover:text-gold-400 transition-colors">Prayer Library</Link></li>
                                 <li><Link href="/prayer-wall" className="hover:text-gold-400 transition-colors">Prayer Wall</Link></li>
-                                <li><Link href="/sessions" className="hover:text-gold-400 transition-colors">Live Sessions</Link></li>
+                                <li><Link href="/novenas" className="hover:text-gold-400 transition-colors">Novenas</Link></li>
+                                <li><Link href="/stations" className="hover:text-gold-400 transition-colors">Stations of the Cross</Link></li>
                             </ul>
                         </div>
 
-                        {/* 3. OFFER */}
+                        {/* 3. REMEMBER (Eternal Memorials) */}
                         <div className="col-span-1">
-                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider border-b border-gray-800/50 pb-2 inline-block">Offer</h4>
+                            <h4 className="font-bold text-gold-400 mb-6 uppercase text-xs tracking-wider border-b border-gold-600/50 pb-2 inline-block">Remember</h4>
                             <ul className="space-y-3 text-sm">
-                                <li><Link href="/candles" className="hover:text-gold-400 transition-colors">Light a Candle</Link></li>
-                                <li><Link href="/mass-offerings" className="hover:text-gold-400 transition-colors">Request Mass</Link></li>
-                                <li><Link href="/memorials" className="hover:text-gold-400 transition-colors">Digital Memorials</Link></li>
+                                <li><Link href="/memorials" className="hover:text-gold-400 transition-colors font-medium text-white">Eternal Memorials</Link></li>
+                                <li><Link href="/memorials/create" className="hover:text-gold-400 transition-colors">Create Memorial</Link></li>
+                                <li><Link href="/anniversaries" className="hover:text-gold-400 transition-colors">Anniversaries</Link></li>
+                                <li><Link href="/candles" className="hover:text-gold-400 transition-colors">Memorial Candles</Link></li>
                                 <li><Link href="/bouquets" className="hover:text-gold-400 transition-colors">Spiritual Bouquets</Link></li>
-                                <li><Link href="/donate" className="hover:text-gold-400 transition-colors">Donate</Link></li>
                             </ul>
                         </div>
 
-                        {/* 4. DISCOVER (Learn & Locate Combined) */}
+                        {/* 4. DISCOVER */}
                         <div className="col-span-1">
                             <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider border-b border-gray-800/50 pb-2 inline-block">Discover</h4>
                             <ul className="space-y-3 text-sm">
-                                <li><Link href="/bible" className="hover:text-gold-400 transition-colors">Bible (DuoBiblia)</Link></li>
-                                <li><Link href="/saints" className="hover:text-gold-400 transition-colors">Saints</Link></li>
+                                <li><Link href="/bible" className="hover:text-gold-400 transition-colors">Bible</Link></li>
+                                <li><Link href="/saints" className="hover:text-gold-400 transition-colors">Saints & Feasts</Link></li>
                                 <li><Link href="/catechism" className="hover:text-gold-400 transition-colors">Catechism</Link></li>
-                                <li className="pt-2"><Link href="/churches" className="hover:text-gold-400 transition-colors flex items-center gap-1"><Church className="w-3 h-3" /> Sacred Spaces</Link></li>
-                                <li><Link href="/confession" className="hover:text-gold-400 transition-colors">Confession Finder</Link></li>
+                                <li><Link href="/calendar" className="hover:text-gold-400 transition-colors">Liturgical Calendar</Link></li>
+                                <li><Link href="/churches" className="hover:text-gold-400 transition-colors flex items-center gap-1"><Church className="w-3 h-3" /> Find a Church</Link></li>
+                                <li><Link href="/glossary" className="hover:text-gold-400 transition-colors">Glossary</Link></li>
                             </ul>
                         </div>
 
@@ -204,7 +206,7 @@ export function Footer() {
                         <div className="flex gap-6 mt-4 md:mt-0">
                             <Link href="/privacy" className="hover:text-gray-400 transition-colors">Privacy</Link>
                             <Link href="/terms" className="hover:text-gray-400 transition-colors">Terms</Link>
-                            <Link href="/sitemap" className="hover:text-gray-400 transition-colors">Sitemap</Link>
+                            <Link href="/sitemap.xml" className="hover:text-gray-400 transition-colors">Sitemap</Link>
                         </div>
                     </div>
                 </div>
@@ -223,26 +225,32 @@ export function Footer() {
                         <p className="text-gray-500 text-sm">Your digital sanctuary for prayer.</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+                    <div className="grid grid-cols-3 gap-3 mb-6 text-xs">
                         <div>
-                            <h4 className="font-semibold text-white mb-2">Features</h4>
-                            <ul className="space-y-1 text-gray-400">
-                                <li><Link href="/churches" className="hover:text-gold-400">Churches</Link></li>
+                            <h4 className="font-semibold text-white mb-2">Pray</h4>
+                            <ul className="space-y-1.5 text-gray-400">
                                 <li><Link href="/prayer-wall" className="hover:text-gold-400">Prayer Wall</Link></li>
-                                <li><Link href="/candles" className="hover:text-gold-400">Candles</Link></li>
-                                <li><Link href="/memorials" className="hover:text-gold-400">Memorials</Link></li>
-                                <li><Link href="/challenges" className="hover:text-gold-400">Challenges</Link></li>
-                                <li><Link href="/partners" className="hover:text-gold-400">Partners</Link></li>
+                                <li><Link href="/prayers" className="hover:text-gold-400">Prayers</Link></li>
+                                <li><Link href="/readings" className="hover:text-gold-400">Readings</Link></li>
+                                <li><Link href="/novenas" className="hover:text-gold-400">Novenas</Link></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-semibold text-white mb-2">More</h4>
-                            <ul className="space-y-1 text-gray-400">
+                            <h4 className="font-semibold text-gold-400 mb-2">Remember</h4>
+                            <ul className="space-y-1.5 text-gray-400">
+                                <li><Link href="/memorials" className="hover:text-gold-400 font-medium text-white">Eternal Memorials</Link></li>
+                                <li><Link href="/candles" className="hover:text-gold-400">Candles</Link></li>
+                                <li><Link href="/bouquets" className="hover:text-gold-400">Bouquets</Link></li>
+                                <li><Link href="/anniversaries" className="hover:text-gold-400">Anniversaries</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold text-white mb-2">Discover</h4>
+                            <ul className="space-y-1.5 text-gray-400">
+                                <li><Link href="/churches" className="hover:text-gold-400">Churches</Link></li>
                                 <li><Link href="/saints" className="hover:text-gold-400">Saints</Link></li>
-                                <li><Link href="/readings" className="hover:text-gold-400">Readings</Link></li>
-                                <li><Link href="/leaderboard" className="hover:text-gold-400">Leaderboard</Link></li>
-                                <li><Link href="/mass-offerings" className="hover:text-gold-400">Mass Offerings</Link></li>
-                                <li><Link href="/about" className="hover:text-gold-400">About</Link></li>
+                                <li><Link href="/bible" className="hover:text-gold-400">Bible</Link></li>
+                                <li><Link href="/calendar" className="hover:text-gold-400">Calendar</Link></li>
                             </ul>
                         </div>
                     </div>
@@ -259,12 +267,19 @@ export function Footer() {
                         ))}
                     </div>
 
+                    {/* Legal Links */}
+                    <div className="flex justify-center gap-4 mt-6 text-xs text-gray-500">
+                        <Link href="/privacy" className="hover:text-gray-300">Privacy</Link>
+                        <Link href="/terms" className="hover:text-gray-300">Terms</Link>
+                        <Link href="/sitemap.xml" className="hover:text-gray-300">Sitemap</Link>
+                    </div>
+
                     {/* Sacred UX: Closing Emotional Anchor */}
-                    <p className="text-center text-sm text-gray-500 dark:text-gray-400 italic mt-8 mb-4 font-light">
+                    <p className="text-center text-sm text-gray-500 dark:text-gray-400 italic mt-6 mb-4 font-light">
                         May peace remain with you.
                     </p>
 
-                    <p className="text-center text-xs text-gray-600 mt-4">© {currentYear} MyPrayerTower</p>
+                    <p className="text-center text-xs text-gray-600">© {currentYear} MyPrayerTower</p>
                 </div>
             </footer>
 

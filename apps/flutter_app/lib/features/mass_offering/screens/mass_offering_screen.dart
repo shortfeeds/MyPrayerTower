@@ -7,6 +7,7 @@ import '../../../core/providers/scaffold_key_provider.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../payments/widgets/smart_checkout_sheet.dart';
+import '../../../core/services/abandoned_cart_service.dart';
 
 // Mass offering types
 class OfferingType {
@@ -150,6 +151,7 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
 
   bool _isGift = false;
   bool _isSubmitting = false;
+  bool _paymentSuccessful = false; // Track payment status
 
   OfferingType get _selectedOffering =>
       _offeringTypes.firstWhere((o) => o.id == _selectedType);
@@ -162,6 +164,42 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
     if (_addonsSelected['floralBouquet'] == true) total += 1000;
     if (_addonsSelected['virtualRosary'] == true) total += 1000;
     return total;
+  }
+
+  @override
+  void dispose() {
+    // Track abandoned cart if leaving without successful payment and has started process
+    if (!_paymentSuccessful && _step > 1) {
+      Future.microtask(() {
+        try {
+          ref
+              .read(abandonedCartServiceProvider)
+              .saveCart(
+                type: 'MASS_OFFERING',
+                email: _email.isNotEmpty ? _email : 'anonymous@tracking.com',
+                name: _name.isNotEmpty ? _name : null,
+                phone: _phone.isNotEmpty ? _phone : null,
+                data: {
+                  'offeringType': _selectedType,
+                  'isForLiving': _isForLiving,
+                  'intentionFor': _intentionFor,
+                  'selectedIntentions': _selectedIntentions.toList(),
+                  'specialIntention': _specialIntention,
+                  'offeredBy': _offeredBy,
+                  'addons': _addonsSelected,
+                  'isGift': _isGift,
+                  'recipientName': _recipientName,
+                  'recipientEmail': _recipientEmail,
+                  'total': _calculateTotal(),
+                },
+                step: 'step_$_step',
+              );
+        } catch (e) {
+          // Ignore errors during dispose
+        }
+      });
+    }
+    super.dispose();
   }
 
   @override
@@ -899,6 +937,7 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
                           itemName: 'Mass Offering',
                           itemIcon: '⛪',
                           onSuccess: (paymentId) async {
+                            _paymentSuccessful = true; // Mark as successful
                             // Log details (placeholder for future backend sync)
                             debugPrint(
                               'Offering Successful ($paymentId): '

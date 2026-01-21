@@ -17,7 +17,7 @@ export type SearchResult = {
 export async function getCatechismParagraph(number: number) {
     return db.catechismParagraph.findUnique({
         where: { number },
-        include: { section: true }
+        include: { CatechismSection: true }
     });
 }
 
@@ -38,7 +38,7 @@ export async function searchCatechism(query: string) {
 export async function getCanonLaw(number: number) {
     return db.canonLaw.findUnique({
         where: { number },
-        include: { sections: true }
+        include: { CanonLawSection: true }
     });
 }
 
@@ -47,10 +47,10 @@ export async function searchCanonLaw(query: string) {
         where: {
             OR: [
                 { text: { contains: query, mode: 'insensitive' } },
-                { sections: { some: { text: { contains: query, mode: 'insensitive' } } } }
+                { CanonLawSection: { some: { text: { contains: query, mode: 'insensitive' } } } }
             ]
         },
-        include: { sections: true },
+        include: { CanonLawSection: true },
         take: 20,
         orderBy: { number: 'asc' }
     });
@@ -60,6 +60,7 @@ export async function searchCanonLaw(query: string) {
  * GIRM FUNCTIONS
  */
 
+/*
 export async function getGIRMItem(number: number) {
     return db.gIRMItem.findUnique({
         where: { number }
@@ -75,15 +76,16 @@ export async function searchGIRM(query: string) {
         orderBy: { number: 'asc' }
     });
 }
+*/
 
 /**
  * UNIFIED SEARCH
  */
 export async function searchKnowledgeBase(query: string): Promise<SearchResult[]> {
-    const [ccc, canon, girm] = await Promise.all([
+    const [ccc, canon] = await Promise.all([
         searchCatechism(query),
         searchCanonLaw(query),
-        searchGIRM(query)
+        // searchGIRM(query)
     ]);
 
     const results: SearchResult[] = [];
@@ -108,7 +110,7 @@ export async function searchKnowledgeBase(query: string): Promise<SearchResult[]
             });
         }
         // If matches in sections
-        item.sections.forEach(s => {
+        item.CanonLawSection.forEach(s => {
             if (s.text.toLowerCase().includes(query.toLowerCase())) {
                 results.push({
                     id: s.id,
@@ -121,6 +123,7 @@ export async function searchKnowledgeBase(query: string): Promise<SearchResult[]
         });
     });
 
+    /*
     girm.forEach(item => {
         results.push({
             id: item.id,
@@ -129,6 +132,7 @@ export async function searchKnowledgeBase(query: string): Promise<SearchResult[]
             text: item.text
         });
     });
+    */
 
     return results;
 }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Users, Flame, Church } from 'lucide-react';
+import { Users, Flame, Church, Heart } from 'lucide-react';
 import { SACRED_COPY } from '@/lib/sacred-copy';
 
 const CORE_ACTIONS = [
@@ -29,11 +29,22 @@ const CORE_ACTIONS = [
         iconColor: 'text-amber-600 dark:text-amber-400'
     },
     {
+        id: 'memorials',
+        icon: Heart,
+        title: 'Eternal Memorials',
+        description: 'Create lasting tributes for loved ones who have passed.',
+        cta: 'Honor Your Loved Ones',
+        href: '/memorials',
+        color: 'from-rose-500 to-pink-600',
+        bgColor: 'from-rose-50 to-pink-50 dark:from-rose-950/50 dark:to-pink-950/50',
+        iconColor: 'text-rose-600 dark:text-rose-400'
+    },
+    {
         id: 'mass',
         icon: Church,
-        title: 'Offer a Mass Intention',
-        description: 'Entrust your intention through the tradition of the Holy Mass.',
-        cta: 'Offer a Mass Intention',
+        title: 'Request a Mass',
+        description: 'Have a Holy Mass offered for your intentions.',
+        cta: 'Request a Mass',
         href: '/mass-offerings',
         color: 'from-blue-500 to-sky-600',
         bgColor: 'from-blue-50 to-sky-50 dark:from-blue-950/50 dark:to-sky-950/50',
@@ -54,7 +65,7 @@ export function CoreActions() {
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
                     {CORE_ACTIONS.map((action, idx) => (
                         <motion.div
                             key={action.id}
@@ -62,16 +73,16 @@ export function CoreActions() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.1 }}
                             viewport={{ once: true }}
-                            className={`bg-gradient-to-br ${action.bgColor} rounded-3xl p-8 border border-gray-100 dark:border-slate-700 hover:shadow-xl dark:hover:shadow-slate-900/50 transition-all duration-300 group`}
+                            className={`bg-gradient-to-br ${action.bgColor} rounded-3xl p-6 border border-gray-100 dark:border-slate-700 hover:shadow-xl dark:hover:shadow-slate-900/50 transition-all duration-300 group`}
                         >
-                            <div className={`w-14 h-14 rounded-2xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center mb-6 ${action.iconColor} group-hover:scale-110 transition-transform`}>
-                                <action.icon className="w-7 h-7" />
+                            <div className={`w-12 h-12 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center mb-4 ${action.iconColor} group-hover:scale-110 transition-transform`}>
+                                <action.icon className="w-6 h-6" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{action.title}</h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">{action.description}</p>
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{action.title}</h3>
+                            <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed text-sm">{action.description}</p>
                             <Link
                                 href={action.href}
-                                className={`inline-flex items-center justify-center w-full py-3 bg-gradient-to-r ${action.color} text-white font-medium rounded-xl hover:shadow-lg transition-all`}
+                                className={`inline-flex items-center justify-center w-full py-2.5 bg-gradient-to-r ${action.color} text-white font-medium rounded-xl hover:shadow-lg transition-all text-sm`}
                             >
                                 {action.cta}
                             </Link>

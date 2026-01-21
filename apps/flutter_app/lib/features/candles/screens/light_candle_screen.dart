@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../repositories/candle_repository.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../core/services/abandoned_cart_service.dart';
 import '../../../core/services/donation_service.dart';
 
 class LightCandleScreen extends ConsumerStatefulWidget {
@@ -23,6 +24,7 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
   String _email = '';
   bool _isAnonymous = false;
   bool _isProcessing = false;
+  bool _paymentSuccessful = false; // Track payment status
 
   final List<Map<String, dynamic>> _durations = [
     {
@@ -40,8 +42,8 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
       'value': 'THREE_DAYS',
       'label': 'Devotion Votive',
       'daysLabel': '3 Days',
-      'price': 2.49,
-      'priceDisplay': '\$2.49',
+      'price': 2.99,
+      'priceDisplay': '\$2.99',
       'tier': 'standard',
       'spiritual': '✞ Your faith grows stronger',
       'image': 'assets/images/candles/devotion_glow.png',
@@ -51,8 +53,8 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
       'value': 'SEVEN_DAYS',
       'label': 'Sacred Altar',
       'daysLabel': '7 Days',
-      'price': 4.99,
-      'priceDisplay': '\$4.99',
+      'price': 5.99,
+      'priceDisplay': '\$5.99',
       'tier': 'premium',
       'spiritual': '⛪ Presented before the Lord',
       'image': 'assets/images/candles/altar.png',
@@ -85,6 +87,37 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
   Map<String, dynamic> get selectedTier =>
       _durations.firstWhere((d) => d['value'] == _selectedDuration);
 
+  @override
+  void dispose() {
+    // Track abandoned cart if leaving without successful payment (and not free tier)
+    if (!_paymentSuccessful && selectedTier['price'] > 0.0) {
+      // Fire and forget - using a microtask to ensure it runs
+      Future.microtask(() {
+        try {
+          ref
+              .read(abandonedCartServiceProvider)
+              .saveCart(
+                type: 'CANDLE',
+                email: _email.isNotEmpty
+                    ? _email
+                    : 'anonymous@tracking.com', // Fallback for tracking
+                name: _userName.isNotEmpty ? _userName : null,
+                data: {
+                  'duration': _selectedDuration,
+                  'intention': _intention,
+                  'price': selectedTier['price'],
+                  'tier': selectedTier['label'],
+                },
+                step: 'checkout_abandoned',
+              );
+        } catch (e) {
+          // Ignore errors during dispose
+        }
+      });
+    }
+    super.dispose();
+  }
+
   Future<void> _handleSubmit() async {
     if (_intention.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -109,6 +142,7 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
         description: 'Light Candle: ${selectedTier['label']}',
         userEmail: _email.isNotEmpty ? _email : null,
         onSuccess: (transactionId) async {
+          _paymentSuccessful = true; // Mark as successful
           // Record donation via backend API
           await ref
               .read(donationServiceProvider)

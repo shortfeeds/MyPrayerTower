@@ -8,6 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../payments/widgets/smart_checkout_sheet.dart';
 import '../../../core/theme/app_theme.dart';
 import '../repositories/donations_repository.dart';
+import '../../../core/services/abandoned_cart_service.dart';
 
 class DonationScreen extends ConsumerStatefulWidget {
   const DonationScreen({super.key});
@@ -23,6 +24,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
   int _customAmount = 0;
   final bool _coversFee = false;
   int? _selectedPlanIndex;
+  bool _paymentSuccessful = false; // Track payment status
 
   @override
   void initState() {
@@ -32,6 +34,30 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
 
   @override
   void dispose() {
+    // Track abandoned cart if leaving without successful payment and has selected an amount
+    if (!_paymentSuccessful && _selectedAmount > 0) {
+      final isMonthly = _tabController.index == 1;
+      Future.microtask(() {
+        try {
+          ref
+              .read(abandonedCartServiceProvider)
+              .saveCart(
+                type: 'DONATION',
+                email:
+                    'anonymous@tracking.com', // Donation screen doesn't capture email initially
+                data: {
+                  'amount': _selectedAmount,
+                  'tierId': _selectedTierId,
+                  'frequency': isMonthly ? 'MONTHLY' : 'ONE_TIME',
+                  'planIndex': _selectedPlanIndex,
+                },
+                step: 'amount_selected',
+              );
+        } catch (e) {
+          // Ignore errors
+        }
+      });
+    }
     _tabController.dispose();
     super.dispose();
   }
@@ -583,6 +609,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
       itemName: 'Donation',
       itemIcon: '💝',
       onSuccess: (id) {
+        _paymentSuccessful = true; // Mark as successful
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Donation successful! ID: $id'),

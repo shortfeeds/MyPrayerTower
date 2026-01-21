@@ -25,6 +25,8 @@ import { LiturgicalModule } from './modules/liturgical/liturgical.module';
 import { ModerationModule } from './modules/moderation/moderation.module';
 import { PrayerPartnersModule } from './modules/prayer-partners/prayer-partners.module';
 import { PilgrimagesModule } from './modules/pilgrimages/pilgrimages.module';
+import { CartsModule } from './modules/carts/carts.module';
+import { MemorialsModule } from './modules/memorials/memorials.module';
 
 // Mass Offerings & Donations
 import { MassOfferingsModule } from './modules/mass-offerings/mass-offerings.module';
@@ -82,6 +84,8 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
         ModerationModule,
         PrayerPartnersModule,
         PilgrimagesModule,
+        CartsModule,
+        MemorialsModule,
 
         // Mass Offerings & Donations (Centralized)
         MassOfferingsModule,

@@ -564,8 +564,7 @@ model NewsArticle {
   fetchedAt   DateTime @default(now())
 
   @@index([category])
-  @@index([publishedAt])
-  @@index([publishedAt])
+  @@index([publishedAt], map: "news_published_at_idx")
   @@index([source])
 }
 
@@ -2018,6 +2017,7 @@ model AbandonedCart {
   phone         String?
   data          Json      // Serialized form data
   step          String    // Last reached step
+  source        String?   // "FLUTTER" or "WEB"
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   

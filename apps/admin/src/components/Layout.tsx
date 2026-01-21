@@ -20,6 +20,7 @@ import {
     NotificationOutlined,
     EnvironmentOutlined,
     DollarOutlined,
+    ShoppingCartOutlined,
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = AntLayout;
@@ -107,6 +108,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         '/memorials': 'Memorials',
         '/reports': 'Reports',
         '/notifications': 'Notifications',
+        '/abandoned-carts': 'Abandoned Carts',
     };
 
     const menuItems = [
@@ -125,6 +127,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         { key: '/mass-offerings', icon: <HeartOutlined />, label: <Link to="/mass-offerings">Mass Offerings</Link> },
         { key: '/pilgrimages', icon: <EnvironmentOutlined />, label: <Link to="/pilgrimages">Pilgrimages</Link> },
         { key: '/donations', icon: <DollarOutlined />, label: <Link to="/donations">Donations</Link> },
+        { key: '/abandoned-carts', icon: <ShoppingCartOutlined />, label: <Link to="/abandoned-carts">Abandoned Carts</Link> },
         { key: '/memorials', icon: <TeamOutlined />, label: <Link to="/memorials">Memorials</Link> },
         { key: '/saints', icon: <SafetyCertificateOutlined />, label: <Link to="/saints">Saints</Link> }, // Added Saints navigation item
         { key: '/analytics', icon: <BarChartOutlined />, label: <Link to="/analytics">Analytics</Link> },

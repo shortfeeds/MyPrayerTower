@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/services/abandoned_cart_service.dart';
 
 class SpiritualBouquetScreen extends ConsumerStatefulWidget {
   const SpiritualBouquetScreen({super.key});
@@ -28,6 +29,7 @@ class _SpiritualBouquetScreenState
   final _recipientEmailController = TextEditingController();
   final _messageController = TextEditingController();
   String _occasion = 'Birthday';
+  bool _paymentSuccessful = false; // Track payment/submission status
 
   final List<String> _occasions = [
     'Birthday',
@@ -60,6 +62,41 @@ class _SpiritualBouquetScreenState
     _recipientNameController.dispose();
     _recipientEmailController.dispose();
     _messageController.dispose();
+
+    // Track abandoned cart if leaving without successful payment/submission
+    // Track only if they have selected items or entered recipient details
+    if (!_paymentSuccessful &&
+        (_totalCents > 0 ||
+            _prayersCount > 0 ||
+            _recipientNameController.text.isNotEmpty)) {
+      Future.microtask(() {
+        try {
+          ref
+              .read(abandonedCartServiceProvider)
+              .saveCart(
+                type: 'SPIRITUAL_BOUQUET',
+                email:
+                    'anonymous@tracking.com', // Capture email if we have it? _recipientEmail is for recipient
+                name: null, // Sender name not captured in this form?
+                data: {
+                  'masses': _massesCount,
+                  'rosaries': _rosariesCount,
+                  'prayers': _prayersCount,
+                  'candles': _candlesCount,
+                  'recipientName': _recipientNameController.text,
+                  'recipientEmail': _recipientEmailController.text,
+                  'occasion': _occasion,
+                  'message': _messageController.text,
+                  'totalCents': _totalCents,
+                },
+                step: 'shopping_active',
+              );
+        } catch (e) {
+          // Ignore
+        }
+      });
+    }
+
     super.dispose();
   }
 
@@ -552,6 +589,7 @@ class _SpiritualBouquetScreenState
           itemName: 'Spiritual Bouquet',
           itemIcon: '💐',
           onSuccess: (transactionId) {
+            _paymentSuccessful = true; // Mark as successful
             if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -581,6 +619,7 @@ class _SpiritualBouquetScreenState
       }
     } else {
       //  bouquet (prayers only) - no payment needed
+      _paymentSuccessful = true; // Mark as successful
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

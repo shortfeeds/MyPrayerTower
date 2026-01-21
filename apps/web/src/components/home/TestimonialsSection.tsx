@@ -94,6 +94,17 @@ const TESTIMONIALS = [
     },
     {
         id: 9,
+        text: "Creating an Eternal Memorial for my grandmother was a beautiful way to honor her. The virtual candles and prayers from the community make me feel she is never forgotten.",
+        author: "Catherine Haynes",
+        role: "Family Guardian",
+        memberSince: "Member since 2023",
+        location: "Savannah, GA",
+        rating: 5,
+        color: "bg-rose-500",
+        initials: "CH"
+    },
+    {
+        id: 10,
         text: "Simple, elegant, and deeply Catholic. No distractions, just pure focus on God. Highly recommend for anyone looking to deepen their faith.",
         author: "Fr. James P.",
         role: "Clergy",

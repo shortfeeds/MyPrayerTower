@@ -4,6 +4,7 @@ import { useState, Fragment } from 'react';
 import { X, Plus, Minus, Loader2, Check, Sparkles, Gift, Heart, Church } from 'lucide-react';
 import { PayPalCheckout } from '@/components/PayPalCheckout';
 import { SACRED_COPY } from '@/lib/sacred-copy';
+import { saveAbandonedCart } from '@/app/actions/cart';
 
 interface Memorial {
     id: string;
@@ -97,6 +98,37 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
             }
             return newCart;
         });
+    };
+
+    const handleClose = () => {
+        if (!success && cart.size > 0) {
+            // Track abandoned cart
+            const items = Array.from(cart.values()).map(item => ({
+                id: item.offering.id,
+                name: item.offering.name,
+                quantity: item.quantity,
+                price: item.offering.price
+            }));
+
+            saveAbandonedCart({
+                type: 'MEMORIAL_OFFERING',
+                email: 'anonymous@tracking.com', // Memorials don't ask for email until checkout usually, or we can add input?
+                // The dialog asks for message/anonymous but not email explicitly in UI shown?
+                // Actually checkout payload might have it? No, checkout API handles it.
+                // We'll capture what we have.
+                data: {
+                    memorialId: memorial.id,
+                    memorialName: `${memorial.firstName} ${memorial.lastName}`,
+                    items,
+                    totalPrice,
+                    message,
+                    isAnonymous
+                },
+                step: showPayPal ? 'payment' : 'selection',
+                source: 'WEB'
+            });
+        }
+        onClose();
     };
 
     const removeFromCart = (offeringId: string) => {
@@ -247,12 +279,12 @@ export function OfferingDialog({ memorial, isOpen, onClose }: OfferingDialogProp
 
     return (
         <Fragment>
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={onClose} />
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={handleClose} />
             <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-3xl max-h-[90vh] bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden">
 
                 {/* Header */}
                 <div className="relative bg-gradient-to-r from-amber-600 via-orange-500 to-rose-500 text-white p-4 sm:p-5 flex-shrink-0">
-                    <button onClick={onClose} className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 hover:bg-white/20 rounded-full transition-colors">
+                    <button onClick={handleClose} className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 hover:bg-white/20 rounded-full transition-colors">
                         <X className="w-5 h-5" />
                     </button>
                     <div className="flex items-center gap-3 sm:gap-4 pr-8">

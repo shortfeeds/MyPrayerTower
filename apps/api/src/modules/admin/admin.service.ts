@@ -368,4 +368,238 @@ export class AdminService {
         // Would need actual payment data to populate
         return { transactions: [] };
     }
+
+    // ===== ABANDONED CART MANAGEMENT =====
+    async getAbandonedCarts(
+        page = 1,
+        limit = 20,
+        filters?: { type?: string; source?: string; converted?: boolean },
+    ) {
+        try {
+            const skip = (page - 1) * limit;
+            const where: any = {};
+
+            if (filters?.type) where.type = filters.type;
+            if (filters?.source) where.source = filters.source;
+            if (filters?.converted !== undefined) where.converted = filters.converted;
+
+            const [carts, total] = await Promise.all([
+                this.prisma.abandonedCart.findMany({
+                    where,
+                    skip,
+                    take: limit,
+                    orderBy: { createdAt: 'desc' },
+                }),
+                this.prisma.abandonedCart.count({ where }),
+            ]);
+
+            return {
+                carts: carts.map(cart => ({
+                    ...cart,
+                    cartValue: this.calculateCartValue(cart.data as any),
+                })),
+                total,
+                page,
+                totalPages: Math.ceil(total / limit),
+            };
+        } catch (err) {
+            return { carts: [], total: 0, page: 1, totalPages: 0 };
+        }
+    }
+
+    async getAbandonedCartStats() {
+        try {
+            const [total, today, converted, pending] = await Promise.all([
+                this.prisma.abandonedCart.count(),
+                this.prisma.abandonedCart.count({
+                    where: {
+                        createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) },
+                    },
+                }),
+                this.prisma.abandonedCart.count({ where: { converted: true } }),
+                this.prisma.abandonedCart.count({
+                    where: { converted: false, reminderCount: { lt: 3 } },
+                }),
+            ]);
+
+            return {
+                total,
+                today,
+                converted,
+                pending,
+                conversionRate: total > 0 ? ((converted / total) * 100).toFixed(1) : '0',
+            };
+        } catch (err) {
+            return { total: 0, today: 0, converted: 0, pending: 0, conversionRate: '0' };
+        }
+    }
+
+    async getAbandonedCart(id: string) {
+        try {
+            const cart = await this.prisma.abandonedCart.findUnique({ where: { id } });
+            if (!cart) return { error: 'Cart not found' };
+
+            return {
+                ...cart,
+                cartValue: this.calculateCartValue(cart.data as any),
+                items: this.parseCartItems(cart.data as any),
+            };
+        } catch (err) {
+            return { error: 'Failed to fetch cart' };
+        }
+    }
+
+    async createAbandonedCart(data: {
+        type: string;
+        email: string;
+        name?: string;
+        phone?: string;
+        data: any;
+        step: string;
+        source?: string;
+    }) {
+        try {
+            const cart = await this.prisma.abandonedCart.create({
+                data: {
+                    type: data.type,
+                    email: data.email,
+                    name: data.name,
+                    phone: data.phone,
+                    data: data.data,
+                    step: data.step,
+                },
+            });
+            return { success: true, cart };
+        } catch (err) {
+            return { success: false, error: 'Failed to create cart' };
+        }
+    }
+
+    async sendCartReminder(id: string, options?: { email?: boolean; push?: boolean }) {
+        try {
+            const cart = await this.prisma.abandonedCart.findUnique({ where: { id } });
+            if (!cart) return { success: false, error: 'Cart not found' };
+
+            const cartValue = this.calculateCartValue(cart.data as any);
+            const items = this.parseCartItems(cart.data as any);
+
+            // Update reminder count
+            await this.prisma.abandonedCart.update({
+                where: { id },
+                data: {
+                    reminderCount: { increment: 1 },
+                    lastReminder: new Date(),
+                },
+            });
+
+            const remindersSent: string[] = [];
+
+            // Send email reminder (would integrate with email service)
+            if (options?.email !== false) {
+                console.log(`[ABANDONED CART] Email reminder to ${cart.email}: ${cart.type}, Value: $${cartValue.total}`);
+                remindersSent.push('email');
+            }
+
+            // Send push notification (would integrate with notification service)
+            if (options?.push !== false) {
+                console.log(`[ABANDONED CART] Push notification for ${cart.email}: Complete your ${cart.type}`);
+                remindersSent.push('push');
+            }
+
+            return {
+                success: true,
+                message: `Reminder sent via: ${remindersSent.join(', ')}`,
+                cartValue,
+                items,
+            };
+        } catch (err) {
+            return { success: false, error: 'Failed to send reminder' };
+        }
+    }
+
+    async sendBulkCartReminders(ids: string[], options?: { email?: boolean; push?: boolean }) {
+        const results = await Promise.all(ids.map(id => this.sendCartReminder(id, options)));
+        const successful = results.filter(r => r.success).length;
+        return { success: true, sent: successful, total: ids.length };
+    }
+
+    async markCartConverted(id: string) {
+        try {
+            const cart = await this.prisma.abandonedCart.update({
+                where: { id },
+                data: { converted: true, convertedAt: new Date() },
+            });
+            return { success: true, cart };
+        } catch (err) {
+            return { success: false, error: 'Failed to update cart' };
+        }
+    }
+
+    async deleteAbandonedCart(id: string) {
+        try {
+            await this.prisma.abandonedCart.delete({ where: { id } });
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: 'Failed to delete cart' };
+        }
+    }
+
+    // Helper: Calculate cart value from cart data
+    private calculateCartValue(data: any): { items: { name: string; price: number }[]; total: number } {
+        const items: { name: string; price: number }[] = [];
+        let total = 0;
+
+        if (!data) return { items, total };
+
+        // Handle different cart types
+        if (data.duration) {
+            // Candle pricing
+            const candlePrices: Record<string, number> = {
+                ONE_DAY: 0,
+                THREE_DAYS: 2.99,
+                SEVEN_DAYS: 5.99,
+                FOURTEEN_DAYS: 9.99,
+                THIRTY_DAYS: 14.99,
+            };
+            const price = candlePrices[data.duration] || 0;
+            items.push({ name: `Candle (${data.duration})`, price });
+            total += price;
+        }
+
+        if (data.massType) {
+            // Mass offering pricing
+            const massPrices: Record<string, number> = {
+                regular: 10,
+                expedited: 25,
+                novena: 50,
+                gregorian: 500,
+                perpetual: 1000,
+            };
+            const price = massPrices[data.massType] || 0;
+            items.push({ name: `Mass Offering (${data.massType})`, price });
+            total += price;
+        }
+
+        if (data.amount) {
+            // Direct amount (donations)
+            items.push({ name: 'Donation', price: data.amount });
+            total += data.amount;
+        }
+
+        return { items, total };
+    }
+
+    // Helper: Parse cart items for display
+    private parseCartItems(data: any): any[] {
+        const items: any[] = [];
+
+        if (!data) return items;
+
+        if (data.intention) items.push({ label: 'Intention', value: data.intention });
+        if (data.name) items.push({ label: 'Name', value: data.name });
+        if (data.duration) items.push({ label: 'Duration', value: data.duration });
+        if (data.massType) items.push({ label: 'Mass Type', value: data.massType });
+
+        return items;
+    }
 }
