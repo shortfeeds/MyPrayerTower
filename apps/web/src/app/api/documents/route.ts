@@ -3,8 +3,7 @@ import { NextResponse } from 'next/server';
 import {
     searchKnowledgeBase,
     getCatechismParagraph,
-    getCanonLaw,
-    getGIRMItem
+    getCanonLaw
 } from '@/lib/knowledge-base';
 
 export async function GET(request: Request) {
@@ -34,8 +33,6 @@ export async function GET(request: Request) {
                 data = await getCatechismParagraph(num);
             } else if (source === 'Canon') {
                 data = await getCanonLaw(num);
-            } else if (source === 'GIRM') {
-                data = await getGIRMItem(num);
             } else {
                 return NextResponse.json({ error: 'Invalid Source' }, { status: 400 });
             }

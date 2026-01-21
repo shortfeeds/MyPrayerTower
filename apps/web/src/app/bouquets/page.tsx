@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Heart as BouquetHeart, Church, Star, Flower, ChevronLeft, Gift, Mail, Calendar, Send } from 'lucide-react';
 import dynamic from 'next/dynamic';
