@@ -73,9 +73,11 @@ class MainScaffold extends ConsumerWidget {
             ),
           );
 
-          if (shouldExit == true) {
+          if (shouldExit == true && context.mounted) {
+            // Small delay to allow dialog to close properly and prevent black screen
+            await Future.delayed(const Duration(milliseconds: 150));
             // Exit the app by closing the system navigator
-            SystemNavigator.pop();
+            await SystemNavigator.pop();
           }
         }
       },

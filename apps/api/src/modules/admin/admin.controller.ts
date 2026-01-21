@@ -141,4 +141,99 @@ export class AdminController {
     async unverifyAllChurches() {
         return this.adminService.unverifyAllChurches();
     }
+
+    // ===== ARTICLE MANAGEMENT (CMS) =====
+    @Get('articles')
+    async getArticles(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+        @Query('category') category?: string,
+    ) {
+        return this.adminService.getArticles(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+            category,
+        );
+    }
+
+    @Post('articles')
+    async createArticle(@Body() data: any) {
+        return this.adminService.createArticle(data);
+    }
+
+    @Put('articles/:id')
+    async updateArticle(@Param('id') id: string, @Body() data: any) {
+        return this.adminService.updateArticle(id, data);
+    }
+
+    @Delete('articles/:id')
+    async deleteArticle(@Param('id') id: string) {
+        return this.adminService.deleteArticle(id);
+    }
+
+    // ===== MEMORIAL MANAGEMENT =====
+    @Get('memorials')
+    async getMemorials(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+    ) {
+        return this.adminService.getMemorials(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+        );
+    }
+
+    @Post('memorials')
+    async createMemorial(@Body() data: any) {
+        return this.adminService.createMemorial(data);
+    }
+
+    @Put('memorials/:id')
+    async updateMemorial(@Param('id') id: string, @Body() data: any) {
+        return this.adminService.updateMemorial(id, data);
+    }
+
+    @Delete('memorials/:id')
+    async deleteMemorial(@Param('id') id: string) {
+        return this.adminService.deleteMemorial(id);
+    }
+
+    // ===== NOTIFICATION MANAGEMENT =====
+    @Get('notifications')
+    async getNotifications(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+    ) {
+        return this.adminService.getNotifications(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+        );
+    }
+
+    @Get('notifications/recent')
+    async getRecentNotifications() {
+        return this.adminService.getRecentNotifications();
+    }
+
+    @Post('notifications')
+    async sendNotification(@Body() data: any) {
+        return this.adminService.sendNotification(data);
+    }
+
+    // ===== REPORTS =====
+    @Get('reports/users')
+    async getUserReports(
+        @Query('startDate') startDate?: string,
+        @Query('endDate') endDate?: string,
+    ) {
+        return this.adminService.getUserReports(startDate, endDate);
+    }
+
+    @Get('reports/revenue')
+    async getRevenueReports(
+        @Query('startDate') startDate?: string,
+        @Query('endDate') endDate?: string,
+    ) {
+        return this.adminService.getRevenueReports(startDate, endDate);
+    }
 }

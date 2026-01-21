@@ -5,7 +5,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:url_launcher/url_launcher.dart';
+
+// Migrated to package:web
+import 'package:web/web.dart' as web;
+import 'dart:js_interop';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:ui_web' as ui_web if (dart.library.io) 'dart:io';
 
 class PayPalScreen extends StatefulWidget {
   final String clientId;
@@ -44,6 +49,9 @@ class _PayPalScreenState extends State<PayPalScreen> {
   bool isLoading = true;
   String errorMessage = '';
 
+  // Store listener to remove it on dispose
+  JSObject? _messageListener;
+
   // PayPal URLs - using api-m.paypal.com for v2 API
   final String _baseUrl = 'https://api-m.paypal.com';
 
@@ -53,12 +61,47 @@ class _PayPalScreenState extends State<PayPalScreen> {
     debugPrint(
       'PayPal: Initializing payment for \$${widget.amount} ${widget.currency}',
     );
+
     if (kIsWeb) {
       debugPrint(
         'PayPal WARNING: Running on Web. Direct PayPal API calls from browser may fail due to CORS.',
       );
+      _registerWebListener();
     }
+
     _initPayment();
+  }
+
+  @override
+  void dispose() {
+    if (kIsWeb && _messageListener != null) {
+      web.window.removeEventListener('message', _messageListener);
+    }
+    super.dispose();
+  }
+
+  void _registerWebListener() {
+    // Create JS callback
+    final callback = (web.MessageEvent event) {
+      final dataAny = event.data as JSAny?;
+      // dartify() converts JS structure to Dart maps/lists where possible, or primitives
+      final data = dataAny?.dartify()?.toString() ?? '';
+
+      if (data.contains('payment-success') || data.contains('token=')) {
+        // Extract token from message if available
+        final uri = Uri.tryParse(data);
+        final token = uri?.queryParameters['token'];
+        if (token != null) {
+          _captureOrder(token);
+        }
+      } else if (data.contains('payment-cancelled')) {
+        widget.onCancel();
+        if (mounted) Navigator.of(context).pop();
+      }
+    }.toJS;
+
+    _messageListener = callback;
+    web.window.addEventListener('message', _messageListener);
   }
 
   Future<void> _initPayment() async {
@@ -218,7 +261,7 @@ class _PayPalScreenState extends State<PayPalScreen> {
         ],
         "application_context": {
           "brand_name": "MyPrayerTower",
-          "landing_page": "BILLING",
+          "landing_page": "GUEST_CHECKOUT",
           "shipping_preference": "NO_SHIPPING",
           "user_action": "PAY_NOW",
           "return_url": "https://myprayertower.com/payment-success",
@@ -350,58 +393,42 @@ class _PayPalScreenState extends State<PayPalScreen> {
       );
     }
 
-    if (kIsWeb) {
+    if (kIsWeb && checkoutUrl != null) {
+      // Register iframe element for web
+      final viewType = 'paypal-iframe-${DateTime.now().millisecondsSinceEpoch}';
+      // ignore: undefined_prefixed_name
+      ui_web.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
+        final iframe = web.HTMLIFrameElement()
+          ..src = checkoutUrl!
+          ..style.border = 'none'
+          ..style.width = '100%'
+          ..style.height = '100%'
+          ..allow = 'payment'; // check valid attributes for package:web
+
+        return iframe;
+      });
+
       return Scaffold(
-        appBar: AppBar(title: const Text('PayPal Checkout')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.payment, size: 80, color: Colors.blue),
-              const SizedBox(height: 24),
-              Text(
-                'Continue to PayPal to complete your payment',
-                style: GoogleFonts.inter(fontSize: 18),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: 250,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFC439),
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  onPressed: () async {
-                    debugPrint('PayPal: Opening Approval URL: $checkoutUrl');
-                    if (checkoutUrl != null) {
-                      final url = Uri.parse(checkoutUrl!);
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(
-                          url,
-                          mode: LaunchMode.inAppBrowserView, // In-app browser
-                        );
-                      } else {
-                        setState(() {
-                          errorMessage =
-                              'Could not launch PayPal checkout URL.';
-                        });
-                      }
-                    }
-                  },
-                  child: const Text(
-                    'Pay with PayPal',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: Text(
+            'PayPal Checkout',
+            style: GoogleFonts.inter(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Colors.white,
+          elevation: 1,
+          leading: CloseButton(
+            color: Colors.black,
+            onPressed: () {
+              widget.onCancel();
+              Navigator.of(context).pop();
+            },
           ),
         ),
+        body: HtmlElementView(viewType: viewType),
       );
     }
 

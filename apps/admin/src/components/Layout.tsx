@@ -66,13 +66,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     setPendingCount(data.pendingPrayers || 0);
                 }
 
-                // For now, use mock notifications until backend is ready
-                setNotifications([
-                    { id: '1', title: 'New Prayer Request', message: 'A new prayer needs moderation', createdAt: new Date().toISOString(), read: false },
-                    { id: '2', title: 'Church Claim', message: 'New claim submitted for St. Patrick\'s', createdAt: new Date(Date.now() - 3600000).toISOString(), read: false },
-                    { id: '3', title: 'User Report', message: 'User reported for spam', createdAt: new Date(Date.now() - 7200000).toISOString(), read: true },
-                ]);
-                setNotificationCount(2); // Unread count
+                // Fetch real notifications from API
+                const notifRes = await fetch(`${API_URL}/admin/notifications/recent`, {
+                    headers: getAuthHeaders()
+                });
+                if (notifRes.ok) {
+                    const data = await notifRes.json();
+                    setNotifications(data.notifications || data || []);
+                    setNotificationCount(data.unreadCount || data.filter((n: Notification) => !n.read).length || 0);
+                } else {
+                    // Fallback to mock notifications if API unavailable
+                    setNotifications([
+                        { id: '1', title: 'New Prayer Request', message: 'A new prayer needs moderation', createdAt: new Date().toISOString(), read: false },
+                        { id: '2', title: 'Church Claim', message: 'New claim submitted for St. Patrick\'s', createdAt: new Date(Date.now() - 3600000).toISOString(), read: false },
+                        { id: '3', title: 'User Report', message: 'User reported for spam', createdAt: new Date(Date.now() - 7200000).toISOString(), read: true },
+                    ]);
+                    setNotificationCount(2);
+                }
             } catch (err) {
                 console.error('Failed to fetch data', err);
             }

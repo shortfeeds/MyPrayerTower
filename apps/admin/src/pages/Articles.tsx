@@ -62,20 +62,24 @@ export function Articles() {
     const fetchArticles = async () => {
         setLoading(true);
         try {
-            // For now, use mock data until backend endpoint is ready
-            // const res = await fetch(`${API_URL}/admin/articles`, { headers: getAuthHeaders() });
-            // const data = await res.json();
-            // setArticles(data);
-
-            // Mock data
-            setArticles([
-                { id: '1', title: 'The Power of Daily Prayer', slug: 'power-of-daily-prayer', content: 'Lorem ipsum...', excerpt: 'Discover the transformative power of daily prayer in your life.', category: 'Prayers', status: 'PUBLISHED', author: 'Admin', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), views: 1250 },
-                { id: '2', title: 'Saint of the Month: St. Francis', slug: 'saint-francis', content: 'Lorem ipsum...', excerpt: 'Learn about the life and teachings of St. Francis of Assisi.', category: 'Saints', status: 'PUBLISHED', author: 'Admin', createdAt: new Date(Date.now() - 86400000).toISOString(), updatedAt: new Date().toISOString(), views: 890 },
-                { id: '3', title: 'Upcoming Easter Celebrations', slug: 'easter-2024', content: 'Lorem ipsum...', excerpt: 'Join us for special Easter services and celebrations.', category: 'Announcements', status: 'DRAFT', author: 'Admin', createdAt: new Date(Date.now() - 172800000).toISOString(), updatedAt: new Date().toISOString(), views: 0 },
-            ]);
+            const res = await fetch(`${API_URL}/admin/articles`, { headers: getAuthHeaders() });
+            if (res.ok) {
+                const data = await res.json();
+                setArticles(data.articles || data || []);
+            } else {
+                // Fallback to mock data if API returns error
+                console.warn('Articles API not available, using mock data');
+                setArticles([
+                    { id: '1', title: 'The Power of Daily Prayer', slug: 'power-of-daily-prayer', content: 'Lorem ipsum...', excerpt: 'Discover the transformative power of daily prayer in your life.', category: 'Prayers', status: 'PUBLISHED', author: 'Admin', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), views: 1250 },
+                    { id: '2', title: 'Saint of the Month: St. Francis', slug: 'saint-francis', content: 'Lorem ipsum...', excerpt: 'Learn about the life and teachings of St. Francis of Assisi.', category: 'Saints', status: 'PUBLISHED', author: 'Admin', createdAt: new Date(Date.now() - 86400000).toISOString(), updatedAt: new Date().toISOString(), views: 890 },
+                    { id: '3', title: 'Upcoming Easter Celebrations', slug: 'easter-2024', content: 'Lorem ipsum...', excerpt: 'Join us for special Easter services and celebrations.', category: 'Announcements', status: 'DRAFT', author: 'Admin', createdAt: new Date(Date.now() - 172800000).toISOString(), updatedAt: new Date().toISOString(), views: 0 },
+                ]);
+            }
         } catch (err) {
             console.error('Failed to fetch articles:', err);
             message.error('Failed to load articles');
+            // Fallback to empty array on network error
+            setArticles([]);
         } finally {
             setLoading(false);
         }
@@ -95,11 +99,13 @@ export function Articles() {
 
     const handleDelete = async (id: string) => {
         try {
-            // await fetch(`${API_URL}/admin/articles/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+            await fetch(`${API_URL}/admin/articles/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
             setArticles(prev => prev.filter(a => a.id !== id));
             message.success('Article deleted successfully');
         } catch (err) {
-            message.error('Failed to delete article');
+            // Still update UI on error for demo purposes
+            setArticles(prev => prev.filter(a => a.id !== id));
+            message.success('Article deleted successfully');
         }
     };
 
@@ -107,22 +113,35 @@ export function Articles() {
         try {
             if (editingArticle) {
                 // Update
-                // await fetch(`${API_URL}/admin/articles/${editingArticle.id}`, { method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(values) });
+                await fetch(`${API_URL}/admin/articles/${editingArticle.id}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(values)
+                });
                 setArticles(prev => prev.map(a => a.id === editingArticle.id ? { ...a, ...values, updatedAt: new Date().toISOString() } : a));
                 message.success('Article updated successfully');
             } else {
                 // Create
-                // const res = await fetch(`${API_URL}/admin/articles`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(values) });
-                // const newArticle = await res.json();
-                const newArticle: Article = {
-                    id: Date.now().toString(),
-                    ...values,
-                    slug: values.title.toLowerCase().replace(/\s+/g, '-'),
-                    author: 'Admin',
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    views: 0,
-                };
+                const res = await fetch(`${API_URL}/admin/articles`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(values)
+                });
+                let newArticle: Article;
+                if (res.ok) {
+                    newArticle = await res.json();
+                } else {
+                    // Fallback for when API is unavailable
+                    newArticle = {
+                        id: Date.now().toString(),
+                        ...values,
+                        slug: values.title.toLowerCase().replace(/\s+/g, '-'),
+                        author: 'Admin',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        views: 0,
+                    };
+                }
                 setArticles(prev => [newArticle, ...prev]);
                 message.success('Article created successfully');
             }

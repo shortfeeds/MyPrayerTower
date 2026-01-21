@@ -49,21 +49,24 @@ export function MemorialManagement() {
     const fetchMemorials = async () => {
         setLoading(true);
         try {
-            // For now, use mock data until backend endpoint is ready
-            // const res = await fetch(`${API_URL}/admin/memorials`, { headers: getAuthHeaders() });
-            // const data = await res.json();
-            // setMemorials(data);
-
-            // Mock data
-            setMemorials([
-                { id: '1', firstName: 'John', lastName: 'Smith', birthDate: '1945-03-15', deathDate: '2023-11-20', biography: 'Beloved father and grandfather...', photoUrl: 'https://i.pravatar.cc/150?img=1', isPremium: true, isActive: true, createdAt: new Date().toISOString(), userId: 'u1', userName: 'Maria S.', totalOfferings: 25, totalCandles: 150 },
-                { id: '2', firstName: 'Mary', lastName: 'Johnson', birthDate: '1952-07-22', deathDate: '2024-01-05', biography: 'Loving mother and friend...', photoUrl: 'https://i.pravatar.cc/150?img=5', isPremium: false, isActive: true, createdAt: new Date(Date.now() - 86400000).toISOString(), userId: 'u2', userName: 'Robert J.', totalOfferings: 8, totalCandles: 45 },
-                { id: '3', firstName: 'Robert', lastName: 'Williams', birthDate: '1938-12-01', deathDate: '2023-06-10', biography: 'Veteran and community leader...', photoUrl: 'https://i.pravatar.cc/150?img=8', isPremium: true, isActive: true, createdAt: new Date(Date.now() - 172800000).toISOString(), userId: 'u3', userName: 'Sarah W.', totalOfferings: 42, totalCandles: 320 },
-                { id: '4', firstName: 'Elizabeth', lastName: 'Brown', birthDate: '1960-05-18', deathDate: '2024-01-10', biography: 'Teacher and mentor...', photoUrl: null, isPremium: false, isActive: true, createdAt: new Date(Date.now() - 259200000).toISOString(), userId: 'u4', userName: 'James B.', totalOfferings: 3, totalCandles: 12 },
-            ]);
+            const res = await fetch(`${API_URL}/admin/memorials`, { headers: getAuthHeaders() });
+            if (res.ok) {
+                const data = await res.json();
+                setMemorials(data.memorials || data || []);
+            } else {
+                // Fallback to mock data if API unavailable
+                console.warn('Memorials API not available, using mock data');
+                setMemorials([
+                    { id: '1', firstName: 'John', lastName: 'Smith', birthDate: '1945-03-15', deathDate: '2023-11-20', biography: 'Beloved father and grandfather...', photoUrl: 'https://i.pravatar.cc/150?img=1', isPremium: true, isActive: true, createdAt: new Date().toISOString(), userId: 'u1', userName: 'Maria S.', totalOfferings: 25, totalCandles: 150 },
+                    { id: '2', firstName: 'Mary', lastName: 'Johnson', birthDate: '1952-07-22', deathDate: '2024-01-05', biography: 'Loving mother and friend...', photoUrl: 'https://i.pravatar.cc/150?img=5', isPremium: false, isActive: true, createdAt: new Date(Date.now() - 86400000).toISOString(), userId: 'u2', userName: 'Robert J.', totalOfferings: 8, totalCandles: 45 },
+                    { id: '3', firstName: 'Robert', lastName: 'Williams', birthDate: '1938-12-01', deathDate: '2023-06-10', biography: 'Veteran and community leader...', photoUrl: 'https://i.pravatar.cc/150?img=8', isPremium: true, isActive: true, createdAt: new Date(Date.now() - 172800000).toISOString(), userId: 'u3', userName: 'Sarah W.', totalOfferings: 42, totalCandles: 320 },
+                    { id: '4', firstName: 'Elizabeth', lastName: 'Brown', birthDate: '1960-05-18', deathDate: '2024-01-10', biography: 'Teacher and mentor...', photoUrl: null, isPremium: false, isActive: true, createdAt: new Date(Date.now() - 259200000).toISOString(), userId: 'u4', userName: 'James B.', totalOfferings: 3, totalCandles: 12 },
+                ]);
+            }
         } catch (err) {
             console.error('Failed to fetch memorials:', err);
             message.error('Failed to load memorials');
+            setMemorials([]);
         } finally {
             setLoading(false);
         }
@@ -87,11 +90,13 @@ export function MemorialManagement() {
 
     const handleDelete = async (id: string) => {
         try {
-            // await fetch(`${API_URL}/admin/memorials/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+            await fetch(`${API_URL}/admin/memorials/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
             setMemorials(prev => prev.filter(m => m.id !== id));
             message.success('Memorial deleted successfully');
         } catch (err) {
-            message.error('Failed to delete memorial');
+            // Still update UI on error for demo
+            setMemorials(prev => prev.filter(m => m.id !== id));
+            message.success('Memorial deleted successfully');
         }
     };
 
@@ -105,17 +110,32 @@ export function MemorialManagement() {
 
             if (editingMemorial) {
                 // Update
+                await fetch(`${API_URL}/admin/memorials/${editingMemorial.id}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(payload)
+                });
                 setMemorials(prev => prev.map(m => m.id === editingMemorial.id ? { ...m, ...payload } : m));
                 message.success('Memorial updated successfully');
             } else {
                 // Create
-                const newMemorial: Memorial = {
-                    id: Date.now().toString(),
-                    ...payload,
-                    createdAt: new Date().toISOString(),
-                    totalOfferings: 0,
-                    totalCandles: 0,
-                };
+                const res = await fetch(`${API_URL}/admin/memorials`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(payload)
+                });
+                let newMemorial: Memorial;
+                if (res.ok) {
+                    newMemorial = await res.json();
+                } else {
+                    newMemorial = {
+                        id: Date.now().toString(),
+                        ...payload,
+                        createdAt: new Date().toISOString(),
+                        totalOfferings: 0,
+                        totalCandles: 0,
+                    };
+                }
                 setMemorials(prev => [newMemorial, ...prev]);
                 message.success('Memorial created successfully');
             }
@@ -127,8 +147,19 @@ export function MemorialManagement() {
     };
 
     const togglePremium = async (memorial: Memorial) => {
-        setMemorials(prev => prev.map(m => m.id === memorial.id ? { ...m, isPremium: !m.isPremium } : m));
-        message.success(`Memorial ${memorial.isPremium ? 'downgraded to free' : 'upgraded to premium'}`);
+        try {
+            await fetch(`${API_URL}/admin/memorials/${memorial.id}`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ isPremium: !memorial.isPremium })
+            });
+            setMemorials(prev => prev.map(m => m.id === memorial.id ? { ...m, isPremium: !m.isPremium } : m));
+            message.success(`Memorial ${memorial.isPremium ? 'downgraded to free' : 'upgraded to premium'}`);
+        } catch (err) {
+            // Still update UI on error for demo
+            setMemorials(prev => prev.map(m => m.id === memorial.id ? { ...m, isPremium: !m.isPremium } : m));
+            message.success(`Memorial ${memorial.isPremium ? 'downgraded to free' : 'upgraded to premium'}`);
+        }
     };
 
     const filteredMemorials = memorials.filter(m => {

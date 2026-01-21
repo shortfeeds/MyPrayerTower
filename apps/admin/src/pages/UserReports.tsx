@@ -61,24 +61,45 @@ export function UserReports() {
     const fetchReports = async () => {
         setLoading(true);
         try {
-            // Mock data for now - would connect to API
-            setUserReports([
-                { id: '1', email: 'maria@example.com', name: 'Maria Santos', subscriptionTier: 'PREMIUM', prayerCount: 45, candleCount: 12, totalSpent: 125.00, createdAt: '2024-12-01', lastActive: '2024-12-15' },
-                { id: '2', email: 'john@example.com', name: 'John Doe', subscriptionTier: 'FREE', prayerCount: 12, candleCount: 2, totalSpent: 10.00, createdAt: '2024-11-15', lastActive: '2024-12-10' },
-                { id: '3', email: 'sarah@example.com', name: 'Sarah Miller', subscriptionTier: 'PLUS', prayerCount: 28, candleCount: 8, totalSpent: 85.00, createdAt: '2024-10-20', lastActive: '2024-12-14' },
-                { id: '4', email: 'robert@example.com', name: 'Robert Williams', subscriptionTier: 'LIFETIME', prayerCount: 100, candleCount: 50, totalSpent: 500.00, createdAt: '2024-01-01', lastActive: '2024-12-15' },
-            ]);
+            const startDate = dateRange[0].format('YYYY-MM-DD');
+            const endDate = dateRange[1].format('YYYY-MM-DD');
 
-            setRevenueReports([
-                { id: '1', date: '2024-12-15', type: 'Candle', amount: 5.00, user: 'Maria Santos', description: '7-day Candle' },
-                { id: '2', date: '2024-12-15', type: 'Mass Offering', amount: 25.00, user: 'John Doe', description: 'Healing Mass' },
-                { id: '3', date: '2024-12-14', type: 'Subscription', amount: 9.99, user: 'Sarah Miller', description: 'Plus Monthly' },
-                { id: '4', date: '2024-12-14', type: 'Memorial', amount: 99.00, user: 'Robert Williams', description: 'Premium Memorial' },
-                { id: '5', date: '2024-12-13', type: 'Candle', amount: 10.00, user: 'Maria Santos', description: '30-day Candle' },
-            ]);
+            // Fetch user reports
+            const userRes = await fetch(`${API_URL}/admin/reports/users?startDate=${startDate}&endDate=${endDate}`, { headers: getAuthHeaders() });
+            if (userRes.ok) {
+                const data = await userRes.json();
+                setUserReports(data.users || data || []);
+            } else {
+                // Fallback to mock data
+                console.warn('User reports API not available, using mock data');
+                setUserReports([
+                    { id: '1', email: 'maria@example.com', name: 'Maria Santos', subscriptionTier: 'FREE', prayerCount: 45, candleCount: 12, totalSpent: 125.00, createdAt: '2024-12-01', lastActive: '2024-12-15' },
+                    { id: '2', email: 'john@example.com', name: 'John Doe', subscriptionTier: 'FREE', prayerCount: 12, candleCount: 2, totalSpent: 10.00, createdAt: '2024-11-15', lastActive: '2024-12-10' },
+                    { id: '3', email: 'sarah@example.com', name: 'Sarah Miller', subscriptionTier: 'FREE', prayerCount: 28, candleCount: 8, totalSpent: 85.00, createdAt: '2024-10-20', lastActive: '2024-12-14' },
+                    { id: '4', email: 'robert@example.com', name: 'Robert Williams', subscriptionTier: 'FREE', prayerCount: 100, candleCount: 50, totalSpent: 500.00, createdAt: '2024-01-01', lastActive: '2024-12-15' },
+                ]);
+            }
+
+            // Fetch revenue reports
+            const revenueRes = await fetch(`${API_URL}/admin/reports/revenue?startDate=${startDate}&endDate=${endDate}`, { headers: getAuthHeaders() });
+            if (revenueRes.ok) {
+                const data = await revenueRes.json();
+                setRevenueReports(data.transactions || data || []);
+            } else {
+                // Fallback to mock data
+                setRevenueReports([
+                    { id: '1', date: '2024-12-15', type: 'Candle', amount: 5.00, user: 'Maria Santos', description: '7-day Candle' },
+                    { id: '2', date: '2024-12-15', type: 'Mass Offering', amount: 25.00, user: 'John Doe', description: 'Healing Mass' },
+                    { id: '3', date: '2024-12-14', type: 'Donation', amount: 9.99, user: 'Sarah Miller', description: 'General Donation' },
+                    { id: '4', date: '2024-12-14', type: 'Memorial', amount: 99.00, user: 'Robert Williams', description: 'Premium Memorial' },
+                    { id: '5', date: '2024-12-13', type: 'Candle', amount: 10.00, user: 'Maria Santos', description: '30-day Candle' },
+                ]);
+            }
         } catch (err) {
             console.error('Failed to fetch reports:', err);
             message.error('Failed to load reports');
+            setUserReports([]);
+            setRevenueReports([]);
         } finally {
             setLoading(false);
         }

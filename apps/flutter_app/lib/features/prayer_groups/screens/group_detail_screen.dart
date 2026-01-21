@@ -35,6 +35,7 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        scrollable: true,
         title: const Text('Invite Member'),
         content: TextField(
           controller: emailController,
@@ -69,6 +70,7 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        scrollable: true,
         title: const Text('Add Group Prayer'),
         content: TextField(
           controller: _prayerController,

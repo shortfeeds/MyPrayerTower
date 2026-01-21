@@ -198,7 +198,7 @@ export function Dashboard() {
                     <Button type="primary" icon={<BankOutlined />} onClick={() => window.location.href = '/churches'}>
                         Add Church
                     </Button>
-                    <Button icon={<UserOutlined />} onClick={() => message.info('Saints management coming soon!')}>
+                    <Button icon={<UserOutlined />} onClick={() => window.location.href = '/saints'}>
                         Add Saint
                     </Button>
                 </div>

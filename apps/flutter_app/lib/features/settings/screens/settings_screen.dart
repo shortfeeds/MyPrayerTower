@@ -260,9 +260,11 @@ class SettingsScreen extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        content: Text(
-          'Your companion for Catholic prayer and spiritual growth.\n\nVersion 1.0.0\n© 2026 MyPrayerTower',
-          style: GoogleFonts.inter(color: Colors.white70),
+        content: SingleChildScrollView(
+          child: Text(
+            'Your companion for Catholic prayer and spiritual growth.\n\nVersion 1.0.0\n© 2026 MyPrayerTower',
+            style: GoogleFonts.inter(color: Colors.white70),
+          ),
         ),
         actions: [
           TextButton(

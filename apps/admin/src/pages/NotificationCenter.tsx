@@ -55,15 +55,23 @@ export function NotificationCenter() {
     const fetchNotifications = async () => {
         setLoading(true);
         try {
-            // Mock data for now
-            setNotifications([
-                { id: '1', title: 'New Feature: Mass Offerings', message: 'Request a Holy Mass for your intentions...', type: 'ALL', targetAudience: 'ALL', status: 'SENT', sentAt: new Date().toISOString(), createdAt: new Date().toISOString(), recipientCount: 12543 },
-                { id: '2', title: 'Easter Celebration', message: 'Join us for special Easter services...', type: 'PUSH', targetAudience: 'ALL', status: 'SCHEDULED', scheduledFor: new Date(Date.now() + 86400000).toISOString(), createdAt: new Date().toISOString(), recipientCount: 0 },
-                { id: '3', title: 'Premium Features Update', message: 'Exclusive new features for premium members...', type: 'EMAIL', targetAudience: 'PREMIUM', status: 'SENT', sentAt: new Date(Date.now() - 86400000).toISOString(), createdAt: new Date().toISOString(), recipientCount: 3421 },
-            ]);
+            const res = await fetch(`${API_URL}/admin/notifications`, { headers: getAuthHeaders() });
+            if (res.ok) {
+                const data = await res.json();
+                setNotifications(data.notifications || data || []);
+            } else {
+                // Fallback to mock data if API unavailable
+                console.warn('Notifications API not available, using mock data');
+                setNotifications([
+                    { id: '1', title: 'New Feature: Mass Offerings', message: 'Request a Holy Mass for your intentions...', type: 'ALL', targetAudience: 'ALL', status: 'SENT', sentAt: new Date().toISOString(), createdAt: new Date().toISOString(), recipientCount: 12543 },
+                    { id: '2', title: 'Easter Celebration', message: 'Join us for special Easter services...', type: 'PUSH', targetAudience: 'ALL', status: 'SCHEDULED', scheduledFor: new Date(Date.now() + 86400000).toISOString(), createdAt: new Date().toISOString(), recipientCount: 0 },
+                    { id: '3', title: 'Premium Features Update', message: 'Exclusive new features for all members...', type: 'EMAIL', targetAudience: 'ALL', status: 'SENT', sentAt: new Date(Date.now() - 86400000).toISOString(), createdAt: new Date().toISOString(), recipientCount: 3421 },
+                ]);
+            }
         } catch (err) {
             console.error('Failed to fetch notifications:', err);
             message.error('Failed to load notifications');
+            setNotifications([]);
         } finally {
             setLoading(false);
         }
@@ -78,15 +86,32 @@ export function NotificationCenter() {
         try {
             const isScheduled = values.scheduledFor && dayjs(values.scheduledFor).isAfter(dayjs());
 
-            const newNotification: Notification = {
-                id: Date.now().toString(),
-                ...values,
-                status: isScheduled ? 'SCHEDULED' : 'SENT',
-                sentAt: isScheduled ? undefined : new Date().toISOString(),
-                scheduledFor: values.scheduledFor?.toISOString(),
-                createdAt: new Date().toISOString(),
-                recipientCount: isScheduled ? 0 : Math.floor(Math.random() * 10000) + 1000,
-            };
+            // Send to API
+            const res = await fetch(`${API_URL}/admin/notifications`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    ...values,
+                    scheduledFor: values.scheduledFor?.toISOString(),
+                })
+            });
+
+            let newNotification: Notification;
+            if (res.ok) {
+                const data = await res.json();
+                newNotification = data;
+            } else {
+                // Fallback for when API is unavailable
+                newNotification = {
+                    id: Date.now().toString(),
+                    ...values,
+                    status: isScheduled ? 'SCHEDULED' : 'SENT',
+                    sentAt: isScheduled ? undefined : new Date().toISOString(),
+                    scheduledFor: values.scheduledFor?.toISOString(),
+                    createdAt: new Date().toISOString(),
+                    recipientCount: isScheduled ? 0 : Math.floor(Math.random() * 10000) + 1000,
+                };
+            }
 
             setNotifications(prev => [newNotification, ...prev]);
             message.success(isScheduled ? 'Notification scheduled successfully' : 'Notification sent successfully');

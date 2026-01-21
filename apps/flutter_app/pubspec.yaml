@@ -77,6 +77,7 @@ dependencies:
   google_generative_ai: ^0.4.3        # AI Companion (Gemini)
   geolocator: ^14.0.2                 # Parish Finder Location
   permission_handler: ^11.3.1         # Permissions for location/notifications
+  web: ^1.1.1
 
 
 

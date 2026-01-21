@@ -86,120 +86,124 @@ class _OfferingDialogState extends ConsumerState<OfferingDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Send a Tribute',
-              style: GoogleFonts.merriweather(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Selection
-            SizedBox(
-              height: 100,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _offerings.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (context, index) {
-                  final off = _offerings[index];
-                  final isSelected = _selectedType == off['type'];
-                  return GestureDetector(
-                    onTap: () =>
-                        setState(() => _selectedType = off['type'] as String),
-                    child: Container(
-                      width: 100,
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.amber.shade50 : Colors.white,
-                        border: Border.all(
-                          color: isSelected
-                              ? Colors.amber
-                              : Colors.grey.shade300,
-                          width: isSelected ? 2 : 1,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            off['icon'] as String,
-                            style: const TextStyle(fontSize: 24),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            off['label'] as String,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            '\$${off['price']}',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            TextField(
-              controller: _guestNameController,
-              decoration: const InputDecoration(
-                labelText: 'Your Name (Optional)',
-                border: OutlineInputBorder(),
-                isDense: true,
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _messageController,
-              decoration: const InputDecoration(
-                labelText: 'Message (Optional)',
-                border: OutlineInputBorder(),
-                isDense: true,
-              ),
-              maxLines: 2,
-            ),
-
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: (_isLoading || _selectedType == null)
-                    ? null
-                    : _handlePurchase,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  foregroundColor: Colors.black87,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Send a Tribute',
+                style: GoogleFonts.merriweather(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Send Tribute'),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+
+              // Selection
+              SizedBox(
+                height: 100,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _offerings.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    final off = _offerings[index];
+                    final isSelected = _selectedType == off['type'];
+                    return GestureDetector(
+                      onTap: () =>
+                          setState(() => _selectedType = off['type'] as String),
+                      child: Container(
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Colors.amber.shade50
+                              : Colors.white,
+                          border: Border.all(
+                            color: isSelected
+                                ? Colors.amber
+                                : Colors.grey.shade300,
+                            width: isSelected ? 2 : 1,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              off['icon'] as String,
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              off['label'] as String,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '\$${off['price']}',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              TextField(
+                controller: _guestNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Your Name (Optional)',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _messageController,
+                decoration: const InputDecoration(
+                  labelText: 'Message (Optional)',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                maxLines: 2,
+              ),
+
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: (_isLoading || _selectedType == null)
+                      ? null
+                      : _handlePurchase,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.black87,
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Send Tribute'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
