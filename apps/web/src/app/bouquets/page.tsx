@@ -248,7 +248,7 @@ export default function BouquetsPage() {
                     {/* PayPal Modal */}
                     {showPayPal && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                            <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+                            <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="text-xl font-bold text-gray-900">Complete Payment</h2>
                                     <button onClick={() => setShowPayPal(false)} className="text-gray-500 hover:text-gray-700">✕</button>
@@ -273,6 +273,7 @@ export default function BouquetsPage() {
                                         sendDate
                                     }}
                                 />
+                                <div className="h-4"></div>
                             </div>
                         </div>
                     )}

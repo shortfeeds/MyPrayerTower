@@ -311,8 +311,8 @@ async function SystemStatus() {
 
 function QuickActions() {
     const actions = [
-        { name: 'Add Church', href: '/admin/churches/new', icon: Church, color: 'bg-indigo-500' },
-        { name: 'Add Saint', href: '/admin/saints/new', icon: Crown, color: 'bg-amber-500' },
+        { name: 'Add Church', href: '/admin/churches/create', icon: Church, color: 'bg-indigo-500' },
+        { name: 'Add Saint', href: '/admin/cms/saints/create', icon: Crown, color: 'bg-amber-500' },
         { name: 'Create Ad', href: '/admin/ads', icon: Activity, color: 'bg-green-500' },
         { name: 'View Reports', href: '/admin/reports', icon: AlertTriangle, color: 'bg-red-500' },
     ];

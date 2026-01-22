@@ -118,8 +118,11 @@ export function Footer() {
                                 </span>
                                 <span className="font-serif font-bold text-xl text-white tracking-tight">MyPrayerTower</span>
                             </Link>
-                            <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-sm">
-                                Your digital sanctuary for prayer, community, and spiritual growth. Join us in building a global network of faith.
+                            <p className="text-gray-400 text-sm leading-relaxed mb-2 max-w-sm">
+                                Your digital sanctuary for prayer, community, and spiritual growth. Serving the global Catholic community since 2018.
+                            </p>
+                            <p className="text-gray-500 text-[11px] mb-6 max-w-sm">
+                                A Catholic service provider connecting you with churches worldwide. Not a registered charity.
                             </p>
                             <div className="flex gap-2">
                                 {socialLinks.map((s) => (
@@ -170,7 +173,7 @@ export function Footer() {
                                 <li><Link href="/saints" className="hover:text-gold-400 transition-colors">Saints & Feasts</Link></li>
                                 <li><Link href="/catechism" className="hover:text-gold-400 transition-colors">Catechism</Link></li>
                                 <li><Link href="/calendar" className="hover:text-gold-400 transition-colors">Liturgical Calendar</Link></li>
-                                <li><Link href="/churches" className="hover:text-gold-400 transition-colors flex items-center gap-1"><Church className="w-3 h-3" /> Find a Church</Link></li>
+                                <li><Link href="/churches" className="hover:text-gold-400 transition-colors">Find a Church</Link></li>
                                 <li><Link href="/glossary" className="hover:text-gold-400 transition-colors">Glossary</Link></li>
                             </ul>
                         </div>
@@ -180,6 +183,7 @@ export function Footer() {
                             <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider border-b border-gray-800/50 pb-2 inline-block">Company</h4>
                             <ul className="space-y-3 text-sm">
                                 <li><Link href="/about" className="hover:text-gold-400 transition-colors">About Mission</Link></li>
+                                <li><Link href="/how-we-work" className="hover:text-gold-400 transition-colors">How We Work</Link></li>
                                 <li><Link href="/contact" className="hover:text-gold-400 transition-colors">Contact Us</Link></li>
                                 <li><Link href="/partners" className="hover:text-gold-400 transition-colors">Partners</Link></li>
                                 <li><Link href="/privacy" className="hover:text-gold-400 transition-colors text-gray-500">Privacy Policy</Link></li>
@@ -206,6 +210,8 @@ export function Footer() {
                         <div className="flex gap-6 mt-4 md:mt-0">
                             <Link href="/privacy" className="hover:text-gray-400 transition-colors">Privacy</Link>
                             <Link href="/terms" className="hover:text-gray-400 transition-colors">Terms</Link>
+                            <Link href="/contributions" className="hover:text-gray-400 transition-colors">Contributions</Link>
+                            <Link href="/refunds" className="hover:text-gray-400 transition-colors">Refunds</Link>
                             <Link href="/sitemap.xml" className="hover:text-gray-400 transition-colors">Sitemap</Link>
                         </div>
                     </div>

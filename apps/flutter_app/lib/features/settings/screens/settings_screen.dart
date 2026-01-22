@@ -261,9 +261,40 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         content: SingleChildScrollView(
-          child: Text(
-            'Your companion for Catholic prayer and spiritual growth.\n\nVersion 1.0.0\n© 2026 MyPrayerTower',
-            style: GoogleFonts.inter(color: Colors.white70),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Your companion for Catholic prayer and spiritual growth.',
+                style: GoogleFonts.inter(color: Colors.white70),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Version 1.0.0\nServing the global Catholic community since 2018.',
+                style: GoogleFonts.inter(color: Colors.white70),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.gold500.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppTheme.gold500.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Text(
+                  'MyPrayerTower is a Catholic service provider based in Mumbai, India. We are not a registered charity, parish, or canonical entity of the Catholic Church.',
+                  style: GoogleFonts.inter(color: Colors.white60, fontSize: 11),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '© 2018-2026 MyPrayerTower',
+                style: GoogleFonts.inter(color: Colors.white54, fontSize: 12),
+              ),
+            ],
           ),
         ),
         actions: [

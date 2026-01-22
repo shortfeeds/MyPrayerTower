@@ -70,12 +70,6 @@ class PremiumHomeHeader extends ConsumerWidget {
                   color: AppTheme.gold500.withValues(alpha: 0.5),
                   width: 1.5,
                 ),
-                image: const DecorationImage(
-                  image: NetworkImage(
-                    'https://i.pravatar.cc/150?img=68',
-                  ), // Placeholder avatar
-                  fit: BoxFit.cover,
-                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.3),
@@ -83,6 +77,11 @@ class PremiumHomeHeader extends ConsumerWidget {
                     offset: const Offset(0, 2),
                   ),
                 ],
+              ),
+              child: const Icon(
+                LucideIcons.user,
+                color: Colors.white,
+                size: 20,
               ),
             ),
           ),

@@ -103,7 +103,32 @@ export default function PrivacyPolicyPage() {
 
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Payment Information</h3>
                         <p className="text-gray-600 dark:text-gray-400">
-                            When you make purchases (subscriptions, donations, Mass offerings, virtual candles), payment is processed through Google Play Billing (Android app) or PayPal (web). We do not store your full credit card details. We receive confirmation of payment and limited billing information to fulfill your order.
+                            When you make purchases (subscriptions, service contributions, Mass offerings, virtual candles), payment is processed through Google Play Billing (Android app) or PayPal (web). We do not store your full credit card details. We receive confirmation of payment and limited billing information to fulfill your order.
+                        </p>
+                    </section>
+
+                    {/* Financial Disclosure */}
+                    <section className="p-6 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">How Your Service Fees Are Used</h2>
+                        <p className="text-gray-600 dark:text-gray-400 mb-4">
+                            When you pay for services on MyPrayerTower, your funds are allocated approximately as follows:
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div className="p-4 bg-white dark:bg-gray-800 rounded-xl text-center">
+                                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">50%</div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">Platform Development & Maintenance</div>
+                            </div>
+                            <div className="p-4 bg-white dark:bg-gray-800 rounded-xl text-center">
+                                <div className="text-2xl font-bold text-green-600 dark:text-green-400">30%</div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">Partner Church Stipends</div>
+                            </div>
+                            <div className="p-4 bg-white dark:bg-gray-800 rounded-xl text-center">
+                                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">20%</div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">Operations & Support</div>
+                            </div>
+                        </div>
+                        <p className="text-gray-700 dark:text-gray-300 text-sm">
+                            <strong>Important:</strong> MyPrayerTower is NOT a tax-exempt charitable organization in any jurisdiction. Payments made to MyPrayerTower are <strong>not tax-deductible</strong> as charitable contributions.
                         </p>
                     </section>
 

@@ -1,9 +1,15 @@
+import 'package:flutter/material.dart';
+
 /// Novena Definition (static data)
 class NovenaDefinition {
   final String id;
   final String name;
   final String description;
+  final String patron;
   final String patronOf;
+  final String duration;
+  final Color color; // Primary color
+  final Color? colorSecondary; // For gradient
   final String? imageUrl;
   final List<String> dailyPrayers; // 9 prayers, one for each day
   final String openingPrayer;
@@ -13,7 +19,11 @@ class NovenaDefinition {
     required this.id,
     required this.name,
     required this.description,
+    required this.patron,
     required this.patronOf,
+    required this.duration,
+    required this.color,
+    this.colorSecondary,
     this.imageUrl,
     required this.dailyPrayers,
     required this.openingPrayer,

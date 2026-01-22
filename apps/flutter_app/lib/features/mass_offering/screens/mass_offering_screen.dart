@@ -323,7 +323,9 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 120),
+          ), // Increased padding
         ],
       ),
     );

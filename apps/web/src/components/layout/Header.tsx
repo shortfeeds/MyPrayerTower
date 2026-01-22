@@ -118,7 +118,7 @@ export function Header() {
         { href: '/candles', label: 'Light a Candle', icon: Flame, description: 'Virtual intentions' },
         { href: '/mass-offerings', label: 'Request a Mass', icon: Gift, description: 'Have a Mass offered' },
         { href: '/bouquets', label: 'Spiritual Bouquets', icon: BookOpen, description: 'Send spiritual gifts' },
-        { href: '/memorials', label: 'Eternal Memorials', icon: Heart, description: 'Honor loved ones' },
+        { href: '/contributions', label: 'Contributions', icon: CreditCard, description: 'Support our mission' },
     ];
 
     // 3. REMEMBER (Eternal Memorials)

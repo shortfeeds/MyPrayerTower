@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Put, Delete, Patch, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Patch, Param, Body, Query, Request, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 
-import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('admin')
@@ -91,6 +90,11 @@ export class AdminController {
     @Put('users/:id')
     async updateUser(@Param('id') id: string, @Body() data: any) {
         return this.adminService.updateUser(id, data);
+    }
+
+    @Get('users/:id')
+    async getUser(@Param('id') id: string) {
+        return this.adminService.getUser(id);
     }
 
     @Delete('users/:id')
@@ -184,8 +188,8 @@ export class AdminController {
     }
 
     @Post('memorials')
-    async createMemorial(@Body() data: any) {
-        return this.adminService.createMemorial(data);
+    async createMemorial(@Body() data: any, @Request() req) {
+        return this.adminService.createMemorial(data, req.user.userId);
     }
 
     @Put('memorials/:id')
@@ -221,6 +225,24 @@ export class AdminController {
     }
 
     // ===== REPORTS =====
+    @Get('reports')
+    async getReports(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+        @Query('status') status?: string,
+    ) {
+        return this.adminService.getReports(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+            status,
+        );
+    }
+
+    @Put('reports/:id')
+    async updateReport(@Param('id') id: string, @Body('action') action: 'resolve' | 'dismiss') {
+        return this.adminService.updateReport(id, action);
+    }
+
     @Get('reports/users')
     async getUserReports(
         @Query('startDate') startDate?: string,
@@ -229,12 +251,72 @@ export class AdminController {
         return this.adminService.getUserReports(startDate, endDate);
     }
 
+
+
     @Get('reports/revenue')
     async getRevenueReports(
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,
     ) {
         return this.adminService.getRevenueReports(startDate, endDate);
+    }
+
+    // ===== OFFERINGS MANAGEMENT =====
+    @Get('offerings/stats')
+    async getOfferingsStats() {
+        return this.adminService.getOfferingsStats();
+    }
+
+    @Get('mass-offerings')
+    async getMassOfferings(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+        @Query('search') search?: string,
+    ) {
+        return this.adminService.getMassOfferings(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+            search,
+        );
+    }
+
+    @Get('candles')
+    async getCandles(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+        @Query('search') search?: string,
+    ) {
+        return this.adminService.getCandles(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+            search,
+        );
+    }
+
+    @Get('donations')
+    async getDonations(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+        @Query('search') search?: string,
+    ) {
+        return this.adminService.getDonations(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+            search,
+        );
+    }
+
+    @Get('spiritual-bouquets')
+    async getSpiritualBouquets(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+        @Query('search') search?: string,
+    ) {
+        return this.adminService.getSpiritualBouquets(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+            search,
+        );
     }
 
     // ===== ABANDONED CART MANAGEMENT =====

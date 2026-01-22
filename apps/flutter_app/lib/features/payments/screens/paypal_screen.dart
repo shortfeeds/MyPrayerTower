@@ -6,12 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-// Migrated to package:web
-import 'package:web/web.dart' as web;
-import 'dart:js_interop';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:ui_web' as ui_web if (dart.library.io) 'dart:io';
-
 class PayPalScreen extends StatefulWidget {
   final String clientId;
   final String secretKey;
@@ -50,7 +44,7 @@ class _PayPalScreenState extends State<PayPalScreen> {
   String errorMessage = '';
 
   // Store listener to remove it on dispose
-  web.EventListener? _messageListener;
+  // web.EventListener? _messageListener;
 
   // PayPal URLs - using api-m.paypal.com for v2 API
   final String _baseUrl = 'https://api-m.paypal.com';
@@ -66,7 +60,7 @@ class _PayPalScreenState extends State<PayPalScreen> {
       debugPrint(
         'PayPal WARNING: Running on Web. Direct PayPal API calls from browser may fail due to CORS.',
       );
-      _registerWebListener();
+      // _registerWebListener();
     }
 
     _initPayment();
@@ -74,34 +68,10 @@ class _PayPalScreenState extends State<PayPalScreen> {
 
   @override
   void dispose() {
-    if (kIsWeb && _messageListener != null) {
-      web.window.removeEventListener('message', _messageListener);
-    }
+    // if (kIsWeb && _messageListener != null) {
+    //   web.window.removeEventListener('message', _messageListener);
+    // }
     super.dispose();
-  }
-
-  void _registerWebListener() {
-    // Create JS callback using proper interop
-    void handleMessage(web.Event event) {
-      final messageEvent = event as web.MessageEvent;
-      final dataAny = messageEvent.data;
-      final data = dataAny?.toString() ?? '';
-
-      if (data.contains('payment-success') || data.contains('token=')) {
-        // Extract token from message if available
-        final uri = Uri.tryParse(data);
-        final token = uri?.queryParameters['token'];
-        if (token != null) {
-          _captureOrder(token);
-        }
-      } else if (data.contains('payment-cancelled')) {
-        widget.onCancel();
-        if (mounted) Navigator.of(context).pop();
-      }
-    }
-
-    _messageListener = handleMessage.toJS;
-    web.window.addEventListener('message', _messageListener);
   }
 
   Future<void> _initPayment() async {
@@ -261,7 +231,7 @@ class _PayPalScreenState extends State<PayPalScreen> {
         ],
         "application_context": {
           "brand_name": "MyPrayerTower",
-          "landing_page": "GUEST_CHECKOUT",
+          "landing_page": "NO_PREFERENCE",
           "shipping_preference": "NO_SHIPPING",
           "user_action": "PAY_NOW",
           "return_url": "https://myprayertower.com/payment-success",
@@ -393,44 +363,44 @@ class _PayPalScreenState extends State<PayPalScreen> {
       );
     }
 
-    if (kIsWeb && checkoutUrl != null) {
-      // Register iframe element for web
-      final viewType = 'paypal-iframe-${DateTime.now().millisecondsSinceEpoch}';
-      // ignore: undefined_prefixed_name
-      ui_web.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
-        final iframe = web.HTMLIFrameElement()
-          ..src = checkoutUrl!
-          ..style.border = 'none'
-          ..style.width = '100%'
-          ..style.height = '100%'
-          ..allow = 'payment'; // check valid attributes for package:web
-
-        return iframe;
-      });
-
-      return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text(
-            'PayPal Checkout',
-            style: GoogleFonts.inter(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: Colors.white,
-          elevation: 1,
-          leading: CloseButton(
-            color: Colors.black,
-            onPressed: () {
-              widget.onCancel();
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
-        body: HtmlElementView(viewType: viewType),
-      );
-    }
+    // if (kIsWeb && checkoutUrl != null) {
+    //   // Register iframe element for web
+    //   final viewType = 'paypal-iframe-${DateTime.now().millisecondsSinceEpoch}';
+    //   // ignore: undefined_prefixed_name
+    //   ui_web.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
+    //     final iframe = web.HTMLIFrameElement()
+    //       ..src = checkoutUrl!
+    //       ..style.border = 'none'
+    //       ..style.width = '100%'
+    //       ..style.height = '100%'
+    //       ..allow = 'payment'; // check valid attributes for package:web
+    //
+    //     return iframe;
+    //   });
+    //
+    //   return Scaffold(
+    //     backgroundColor: Colors.white,
+    //     appBar: AppBar(
+    //       title: Text(
+    //         'PayPal Checkout',
+    //         style: GoogleFonts.inter(
+    //           color: Colors.black,
+    //           fontWeight: FontWeight.bold,
+    //         ),
+    //       ),
+    //       backgroundColor: Colors.white,
+    //       elevation: 1,
+    //       leading: CloseButton(
+    //         color: Colors.black,
+    //         onPressed: () {
+    //           widget.onCancel();
+    //           Navigator.of(context).pop();
+    //         },
+    //       ),
+    //     ),
+    //     body: HtmlElementView(viewType: viewType),
+    //   );
+    // }
 
     return Scaffold(
       backgroundColor: Colors.white,

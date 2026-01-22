@@ -13,12 +13,11 @@ export default function AboutPage() {
 
                 <div className="container mx-auto px-4 relative z-10">
                     <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-gold-400 text-sm font-medium mb-6">
-                        Established 2024
+                        Serving Since 2018
                     </span>
                     <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">Serving the <span className="text-gold-400">Global Catholic</span> Community</h1>
                     <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-                        MyPrayerTower is the all-in-one digital companion for your faith journey.
-                        Connecting millions of believers to churches, prayers, and the daily rhythm of Catholic life.
+                        MyPrayerTower is a Catholic digital service provider connecting millions of believers to churches, prayers, and the daily rhythm of Catholic life.
                     </p>
                 </div>
             </section>
@@ -32,9 +31,12 @@ export default function AboutPage() {
                     <h2 className="text-3xl md:text-5xl font-serif font-bold text-gray-900 dark:text-white mb-8 leading-tight">
                         "To illuminate the digital world with the light of faith, prayer, and authentic Catholic community."
                     </h2>
-                    <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-serif italic">
-                        MyPrayerTower is a Catholic digital ministry dedicated to helping the faithful pray, connect, and grow.
-                        We are committed to authentic Catholic teaching, reverent spiritual practice, and the belief that prayer changes things.
+                    <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-serif italic mb-6">
+                        MyPrayerTower is a Catholic-owned technology company dedicated to helping the faithful pray, connect, and grow.
+                        We serve as a bridge between users and Catholic churches worldwide, facilitating spiritual services with sincerity and reverence.
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <strong>Note:</strong> MyPrayerTower is a private service provider based in Mumbai, India. We are not a registered charity, parish, or canonical entity of the Catholic Church.
                     </p>
                 </div>
             </section>

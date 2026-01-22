@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import {
     Search,
     Filter,
@@ -84,6 +85,29 @@ export default function AdminChurchesPage() {
         }
     };
 
+    const handleUnverifyAll = async () => {
+        if (!confirm('DANGER: Are you sure you want to remove verification from ALL churches? This action cannot be undone immediately.')) {
+            return;
+        }
+        if (!confirm('Please confirm again: existing verified churches will lose their verified status.')) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+            await fetch('/api/admin/churches/unverify-all', {
+                method: 'POST'
+            });
+            toast.success('All churches have been unverified');
+            fetchChurches();
+        } catch (err) {
+            console.error('Unverify all failed:', err);
+            toast.error('Failed to unverify churches');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const totalPages = Math.ceil(total / limit);
 
     return (
@@ -106,6 +130,14 @@ export default function AdminChurchesPage() {
                         <Plus className="w-4 h-4" />
                         Add Church
                     </Link>
+                    <button
+                        onClick={handleUnverifyAll}
+                        className="px-4 py-2.5 bg-red-100 text-red-700 font-medium rounded-xl hover:bg-red-200 transition-colors flex items-center gap-2"
+                        title="DANGER: Remove verification from ALL churches"
+                    >
+                        <XCircle className="w-4 h-4" />
+                        Unverify All
+                    </button>
                 </div>
             </div>
 
@@ -250,6 +282,13 @@ export default function AdminChurchesPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="relative flex justify-end gap-2">
+                                            <Link
+                                                href={`/admin/churches/${church.id}/edit`}
+                                                className="p-2 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
+                                                title="Edit"
+                                            >
+                                                <Edit2 className="w-4 h-4" />
+                                            </Link>
                                             <Link
                                                 href={`/churches/${church.id}`}
                                                 target="_blank"

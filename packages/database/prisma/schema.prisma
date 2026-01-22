@@ -920,6 +920,7 @@ model User {
   MemorialOffering                           MemorialOffering[]
   MemorialGuestbook                          MemorialGuestbook[]
   filedReports                               Report[]
+  articles                                   Article[]
 
   @@index([email])
   @@index([homeChurchId])
@@ -2348,3 +2349,5 @@ model DeviceToken {
   @@index([userId])
   @@index([platform])
 }
+
+

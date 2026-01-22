@@ -91,7 +91,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                 await lightVirtualCandle({
                     intention: formData.intention,
                     isAnonymous: formData.isAnonymous,
-                    duration: formData.duration,
+                    duration: formData.duration as any,
                     name: formData.isAnonymous ? 'Anonymous' : formData.name
                 });
                 setHasSuccess(true);
@@ -114,9 +114,9 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
             await lightVirtualCandle({
                 intention: formData.intention,
                 isAnonymous: formData.isAnonymous,
-                duration: formData.duration,
+                duration: formData.duration as any,
                 name: formData.isAnonymous ? 'Anonymous' : formData.name,
-                paymentId: details.orderID
+                paymentId: details.orderId
             });
             setHasSuccess(true);
             onSuccess();
@@ -145,7 +145,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden z-10"
+                    className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl z-10 max-h-[90vh] flex flex-col"
                 >
                     {/* Header */}
                     <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-4 flex items-center justify-between">
@@ -158,7 +158,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                         </button>
                     </div>
 
-                    <div className="p-6">
+                    <div className="p-6 overflow-y-auto custom-scrollbar">
                         {error && (
                             <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2">
                                 <span className="font-bold">Error:</span> {error}
@@ -321,7 +321,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                                 <div className="min-h-[150px] relative z-0">
                                     <PayPalCheckout
                                         amount={selectedTier.price}
-                                        currency="USD"
+                                        description="Virtual Candle"
                                         onSuccess={handlePayPalSuccess}
                                         onError={(err) => setError(err.message)}
                                     />

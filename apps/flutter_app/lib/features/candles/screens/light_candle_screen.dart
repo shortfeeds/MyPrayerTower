@@ -276,6 +276,7 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
                       _buildTierSection(),
                       const SizedBox(height: 24),
                       _buildActionSection(),
+                      const SizedBox(height: 120), // Added bottom padding
                     ],
                   ),
                 ),

@@ -196,24 +196,26 @@ class AppTheme {
         margin: EdgeInsets.zero,
       ),
 
-      // Inputs
+      // Inputs - UPDATED for Visibility on White Forms
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: sacredNavy900,
+        fillColor: Colors.white, // Changed to white for forms
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: gold500),
         ),
         contentPadding: const EdgeInsets.all(20),
-        hintStyle: GoogleFonts.inter(color: textMuted),
+        hintStyle: GoogleFonts.inter(color: Colors.grey.shade600),
+        labelStyle: GoogleFonts.inter(color: Colors.black87),
+        floatingLabelStyle: GoogleFonts.inter(color: gold600),
       ),
 
       // Buttons

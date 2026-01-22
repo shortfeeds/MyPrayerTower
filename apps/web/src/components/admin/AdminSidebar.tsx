@@ -6,7 +6,6 @@ import {
     LayoutDashboard,
     Users,
     Church,
-    Crown,
     BookOpen,
     Heart,
     Image,
@@ -21,9 +20,10 @@ import {
     Search,
     Moon,
     Sun,
-    Flame
+    Flame,
+    ShoppingBag
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface MenuItem {
     name: string;
@@ -43,6 +43,18 @@ const menuItems: MenuItem[] = [
             { name: 'Overview', href: '/admin/revenue' },
             { name: 'Transactions', href: '/admin/finance/transactions' },
             { name: 'Analytics', href: '/admin/finance/analytics' },
+        ]
+    },
+    {
+        name: 'Offerings',
+        href: '/admin/offerings',
+        icon: ShoppingBag,
+        children: [
+            { name: 'Dashboard', href: '/admin/offerings' },
+            { name: 'Mass Offerings', href: '/admin/offerings/mass-offerings' },
+            { name: 'Virtual Candles', href: '/admin/offerings/candles' },
+            { name: 'Donations', href: '/admin/offerings/donations' },
+            { name: 'Spiritual Bouquets', href: '/admin/offerings/spiritual-bouquets' },
         ]
     },
     { name: 'Users', href: '/admin/users', icon: Users },
@@ -67,10 +79,12 @@ const menuItems: MenuItem[] = [
             { name: 'Verified', href: '/admin/churches/verified' },
         ]
     },
-    { name: 'Virtual Candles', href: '/admin/candles', icon: Flame },
-    { name: 'Mass Offerings', href: '/admin/mass-offerings', icon: Heart },
+    // { name: 'Virtual Candles', href: '/admin/candles', icon: Flame },
+    // { name: 'Mass Offerings', href: '/admin/mass-offerings', icon: Heart },
+    { name: 'Memorials', href: '/admin/memorials', icon: Moon },
+    { name: 'Abandoned Carts', href: '/admin/abandoned-carts', icon: BookOpen },
     { name: 'Advertisements', href: '/admin/ads', icon: Image },
-    { name: 'Moderation', href: '/admin/moderation', icon: Shield, badge: 3 }, // TODO: Fetch real badge count
+    { name: 'Moderation', href: '/admin/moderation', icon: Shield },
     { name: 'Reports', href: '/admin/reports', icon: Bell },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
@@ -88,6 +102,36 @@ export function AdminSidebar() {
 
     const isActive = (href: string) => pathname === href || pathname?.startsWith(href + '/');
 
+    const [reportCount, setReportCount] = useState(0);
+
+    useEffect(() => {
+        const fetchReportCount = async () => {
+            try {
+                // Determine API base URL - safely handle environment
+                const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+                const res = await fetch(`${API_BASE}/admin/reports?status=PENDING&limit=1`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setReportCount(data.total || 0);
+                }
+            } catch (err) {
+                console.error('Failed to fetch report count', err);
+            }
+        };
+
+        fetchReportCount();
+        // Optional: Poll every minute
+        const interval = setInterval(fetchReportCount, 60000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const updatedMenuItems = menuItems.map(item => {
+        if (item.name === 'Moderation') {
+            return { ...item, badge: reportCount > 0 ? reportCount : undefined };
+        }
+        return item;
+    });
+
     return (
         <>
             {/* Mobile Menu Button */}
@@ -98,31 +142,29 @@ export function AdminSidebar() {
                 {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            {/* Backdrop */}
+            {/* Sidebar Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
                     onClick={() => setIsOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
             <aside className={`
-                fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white transition-transform duration-300 ease-in-out
-                lg:translate-x-0 lg:static lg:inset-0
-                ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+                fixed lg:sticky top-0 left-0 h-screen w-72 bg-[#0F172A] text-white border-r border-gray-800
+                transform transition-transform duration-300 z-50 overflow-y-auto
+                ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
-                {/* Header */}
-                <div className="p-5 border-b border-gray-800">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center">
-                            <span className="text-white font-bold text-lg">M</span>
+                <div className="p-6">
+                    <Link href="/" className="flex items-center gap-2 mb-10">
+                        <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
+                            <Flame className="w-5 h-5 text-white" />
                         </div>
-                        <div>
-                            <h1 className="font-bold text-lg leading-none text-white">MyPrayerTower</h1>
-                            <span className="text-xs text-amber-400 font-medium">Admin Console</span>
-                        </div>
-                    </div>
+                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-500">
+                            PrayerTower
+                        </span>
+                    </Link>
                 </div>
 
                 {/* Search */}

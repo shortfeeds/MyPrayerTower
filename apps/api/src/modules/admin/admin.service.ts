@@ -171,14 +171,47 @@ export class AdminService {
         };
     }
 
+    async getUser(id: string) {
+        return this.prisma.user.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                displayName: true,
+                subscriptionTier: true,
+                emailVerified: true,
+                createdAt: true,
+                lastLoginAt: true,
+            }
+        });
+    }
+
     async createUser(data: any) {
-        return this.prisma.user.create({ data });
+        // Basic implementation - requires password hashing import if real auth used
+        const { password, ...userData } = data;
+        // Note: In a real app, hash password here using bcrypt
+        return this.prisma.user.create({
+            data: {
+                ...userData,
+                id: crypto.randomUUID(), // Ensure ID generation if not auto
+                passwordHash: password ? 'hashed_placeholder' : undefined,
+            }
+        });
     }
 
     async updateUser(id: string, data: any) {
         // Filter out fields that don't exist in the schema
-        const { isBanned, bannedReason, ...validData } = data;
-        return this.prisma.user.update({ where: { id }, data: validData });
+        const { isBanned, bannedReason, password, ...validData } = data;
+        const updateData: any = { ...validData };
+
+        if (password) {
+            // Note: In a real app, hash password here using bcrypt
+            updateData.passwordHash = 'hashed_placeholder';
+        }
+
+        return this.prisma.user.update({ where: { id }, data: updateData });
     }
 
     async deleteUser(id: string) {
@@ -240,56 +273,89 @@ export class AdminService {
         });
     }
 
-    // ===== ARTICLE MANAGEMENT (CMS) =====
-    // Note: Article model needs to be added to Prisma schema
-    async getArticles(page = 1, limit = 20, category?: string) {
-        // Stub implementation - returns empty until Article model is added to schema
-        return { articles: [], total: 0, page, limit };
-    }
 
-    async createArticle(data: any) {
-        // Stub - return the data as if created
+
+    // ===== MEMORIAL MANAGEMENT =====
+    async getMemorials(page = 1, limit = 20) {
+        const skip = (page - 1) * limit;
+        const [memorials, total] = await Promise.all([
+            this.prisma.memorial.findMany({
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: { owner: { select: { firstName: true, lastName: true, email: true } } }
+            }),
+            this.prisma.memorial.count()
+        ]);
+
         return {
-            id: `article_${Date.now()}`,
-            ...data,
-            slug: data.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-            author: data.author || 'Admin',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            views: 0,
+            memorials: memorials.map(m => ({
+                ...m,
+                isActive: m.isPublic,
+                isPremium: m.tier === 'PREMIUM',
+                totalOfferings: m.totalCandles + m.totalMasses + m.totalFlowers + m.totalPrayers,
+                userName: m.owner ? `${m.owner.firstName} ${m.owner.lastName}` : 'Unknown'
+            })),
+            total,
+            page,
+            limit
         };
     }
 
-    async updateArticle(id: string, data: any) {
-        return { id, ...data, updatedAt: new Date() };
-    }
+    async createMemorial(data: any, adminId: string) {
+        // Generate slug
+        let slug = `${data.firstName}-${data.lastName}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        // Ensure uniqueness with timestamp
+        slug = `${slug}-${Date.now().toString().slice(-6)}`;
 
-    async deleteArticle(id: string) {
-        return { id, deleted: true };
-    }
+        const memorial = await this.prisma.memorial.create({
+            data: {
+                slug,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                birthDate: data.birthDate ? new Date(data.birthDate) : null,
+                deathDate: data.deathDate ? new Date(data.deathDate) : null,
+                biography: data.biography,
+                photoUrl: data.photoUrl,
+                tier: data.isPremium ? 'PREMIUM' : 'BASIC',
+                isPublic: data.isActive !== false, // Default to true
+                ownerId: adminId,
+            }
+        });
 
-    // ===== MEMORIAL MANAGEMENT =====
-    // Note: Memorial model needs to be added to Prisma schema
-    async getMemorials(page = 1, limit = 20) {
-        // Stub implementation - returns empty until Memorial model is added to schema
-        return { memorials: [], total: 0, page, limit };
-    }
-
-    async createMemorial(data: any) {
         return {
-            id: `memorial_${Date.now()}`,
-            ...data,
-            createdAt: new Date(),
+            ...memorial,
+            isActive: memorial.isPublic,
+            isPremium: memorial.tier === 'PREMIUM',
             totalOfferings: 0,
-            totalCandles: 0,
         };
     }
 
     async updateMemorial(id: string, data: any) {
-        return { id, ...data };
+        const updateData: any = {};
+        if (data.firstName) updateData.firstName = data.firstName;
+        if (data.lastName) updateData.lastName = data.lastName;
+        if (data.birthDate) updateData.birthDate = new Date(data.birthDate);
+        if (data.deathDate) updateData.deathDate = new Date(data.deathDate);
+        if (data.biography !== undefined) updateData.biography = data.biography;
+        if (data.photoUrl !== undefined) updateData.photoUrl = data.photoUrl;
+        if (data.isPremium !== undefined) updateData.tier = data.isPremium ? 'PREMIUM' : 'BASIC';
+        if (data.isActive !== undefined) updateData.isPublic = data.isActive;
+
+        const memorial = await this.prisma.memorial.update({
+            where: { id },
+            data: updateData
+        });
+
+        return {
+            ...memorial,
+            isActive: memorial.isPublic,
+            isPremium: memorial.tier === 'PREMIUM',
+        };
     }
 
     async deleteMemorial(id: string) {
+        await this.prisma.memorial.delete({ where: { id } });
         return { id, deleted: true };
     }
 
@@ -320,6 +386,141 @@ export class AdminService {
     }
 
     // ===== REPORTS =====
+    // ===== REPORTS =====
+    async getReports(page = 1, limit = 20, status?: string) {
+        const skip = (page - 1) * limit;
+        const where: any = {};
+        if (status) where.status = status;
+
+        const [reports, total] = await Promise.all([
+            this.prisma.userReport.findMany({
+                where,
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    User_UserReport_reporterIdToUser: {
+                        select: { id: true, firstName: true, lastName: true, email: true }
+                    }
+                }
+            }),
+            this.prisma.userReport.count({ where })
+        ]);
+
+        return {
+            reports: reports.map(r => ({
+                id: r.id,
+                type: 'USER_REPORT',
+                reason: r.reason,
+                description: r.details,
+                status: r.status,
+                createdAt: r.createdAt,
+                reporter: {
+                    id: r.User_UserReport_reporterIdToUser?.id,
+                    name: `${r.User_UserReport_reporterIdToUser?.firstName || ''} ${r.User_UserReport_reporterIdToUser?.lastName || ''}`.trim(),
+                    email: r.User_UserReport_reporterIdToUser?.email
+                },
+                targetType: 'USER',
+                targetId: r.reportedUserId
+            })),
+            total,
+            page,
+            limit
+        };
+    }
+
+    async updateReport(id: string, action: 'resolve' | 'dismiss') {
+        const statusMap = {
+            'resolve': 'RESOLVED',
+            'dismiss': 'DISMISSED'
+        };
+
+        return this.prisma.userReport.update({
+            where: { id },
+            data: {
+                status: statusMap[action] as any, // Cast to match enum
+                resolvedAt: new Date()
+            }
+        });
+    }
+
+
+    // ===== ARTICLES CMS =====
+    async getArticles(page = 1, limit = 20, search?: string) {
+        const skip = (page - 1) * limit;
+        const where: any = {};
+
+        if (search) {
+            where.OR = [
+                { title: { contains: search, mode: 'insensitive' } },
+                { category: { contains: search, mode: 'insensitive' } }
+            ];
+        }
+
+        const [articles, total] = await Promise.all([
+            this.prisma.article.findMany({
+                where,
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    author: {
+                        select: { firstName: true, lastName: true }
+                    }
+                }
+            }),
+            this.prisma.article.count({ where })
+        ]);
+
+        return { articles, total, page, limit };
+    }
+
+    async getArticle(id: string) {
+        return this.prisma.article.findUnique({
+            where: { id },
+            include: { author: { select: { firstName: true, lastName: true } } }
+        });
+    }
+
+    async createArticle(data: any, authorId: string) {
+        // Generate unique slug
+        let slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        slug = `${slug}-${Date.now().toString().slice(-6)}`;
+
+        return this.prisma.article.create({
+            data: {
+                title: data.title,
+                slug,
+                content: data.content,
+                excerpt: data.excerpt,
+                category: data.category,
+                coverImage: data.coverImage,
+                isPublished: data.isPublished || false,
+                publishedAt: data.isPublished ? new Date() : null,
+                authorId
+            }
+        });
+    }
+
+    async updateArticle(id: string, data: any) {
+        return this.prisma.article.update({
+            where: { id },
+            data: {
+                title: data.title,
+                content: data.content,
+                excerpt: data.excerpt,
+                category: data.category,
+                coverImage: data.coverImage,
+                isPublished: data.isPublished,
+                publishedAt: data.isPublished ? new Date() : undefined
+            }
+        });
+    }
+
+    async deleteArticle(id: string) {
+        return this.prisma.article.delete({ where: { id } });
+    }
+
     async getUserReports(startDate?: string, endDate?: string) {
         const where: any = {};
         if (startDate && endDate) {
@@ -364,9 +565,77 @@ export class AdminService {
     }
 
     async getRevenueReports(startDate?: string, endDate?: string) {
-        // Stub implementation - returns empty transactions
-        // Would need actual payment data to populate
-        return { transactions: [] };
+        // Calculate date range (default to last 30 days)
+        const end = endDate ? new Date(endDate) : new Date();
+        const start = startDate ? new Date(startDate) : new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        // Fetch completed purchase events
+        const events = await this.prisma.purchaseEvent.findMany({
+            where: {
+                status: 'COMPLETED',
+                purchasedAt: {
+                    gte: start,
+                    lte: end
+                }
+            },
+            orderBy: { purchasedAt: 'desc' },
+            include: {
+                User: {
+                    select: {
+                        firstName: true,
+                        lastName: true,
+                        email: true
+                    }
+                }
+            }
+        });
+
+        // 1. Calculate Total Revenue
+        const totalRevenue = events.reduce((sum, e) => sum + (e.amount || 0), 0);
+
+        // 2. Aggregate by Date (for charts)
+        const revenueByDateMap = new Map<string, number>();
+        // Initialize all dates in range with 0
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            revenueByDateMap.set(d.toISOString().split('T')[0], 0);
+        }
+
+        events.forEach(e => {
+            const date = e.purchasedAt.toISOString().split('T')[0];
+            const current = revenueByDateMap.get(date) || 0;
+            revenueByDateMap.set(date, current + (e.amount || 0));
+        });
+
+        const revenueByDate = Array.from(revenueByDateMap.entries())
+            .map(([date, amount]) => ({ date, amount }))
+            .sort((a, b) => a.date.localeCompare(b.date));
+
+        // 3. Aggregate by Product Type
+        const revenueByTypeMap = new Map<string, number>();
+        events.forEach(e => {
+            const type = e.productType || 'unknown';
+            const current = revenueByTypeMap.get(type) || 0;
+            revenueByTypeMap.set(type, current + (e.amount || 0));
+        });
+
+        const revenueByType = Array.from(revenueByTypeMap.entries())
+            .map(([type, amount]) => ({ type, amount }));
+
+        return {
+            totalRevenue,
+            transactionCount: events.length,
+            averageOrderValue: events.length ? Math.round(totalRevenue / events.length) : 0,
+            revenueByDate,
+            revenueByType,
+            recentTransactions: events.slice(0, 10).map(e => ({
+                id: e.id,
+                user: `${e.User?.firstName || ''} ${e.User?.lastName || ''}`.trim() || e.User?.email || 'Unknown',
+                amount: e.amount || 0,
+                status: e.status,
+                date: e.purchasedAt,
+                product: e.productId
+            }))
+        };
     }
 
     // ===== ABANDONED CART MANAGEMENT =====

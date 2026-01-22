@@ -56,7 +56,7 @@ export function FloatingPrayerButton({
     if (!enabled || isDismissed || !isVisible) return null;
 
     return (
-        <div className="fixed bottom-24 right-6 z-50 flex flex-col items-end gap-2 md:hidden">
+        <div className="fixed bottom-24 right-6 z-[60] flex flex-col items-end gap-2 md:hidden">
             {/* Dismiss button */}
             <button
                 onClick={handleDismiss}

@@ -22,9 +22,9 @@ class QuickAccessBar extends StatelessWidget {
       gradient: LinearGradient(colors: [Color(0xFFF59E0B), Color(0xFFEF4444)]),
     ),
     const _QuickAction(
-      icon: LucideIcons.mapPin,
-      label: 'Mass Finder',
-      route: '/churches',
+      icon: LucideIcons.hand, // Praying hand
+      label: 'Pray',
+      route: '/prayers', // Redirect to prayers page
       gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFFA855F7)]),
     ),
     const _QuickAction(

@@ -63,68 +63,90 @@ class LegalContent {
   static const String terms = '''
 # Terms of Service
 
-*Last Updated: January 18, 2026*
+*Last Updated: January 22, 2026*
 
 ## 1. Acceptance of Terms
 By accessing or using MyPrayerTower ("the App"), you agree to be bound by these Terms of Service.
 
-## 2. Description of Service
-MyPrayerTower provides a digital platform for Catholic prayer, including virtual candles, prayer requests, and spiritual tools.
+## 2. Nature of Our Services
+**MyPrayerTower is a privately-owned technology company based in Mumbai, India.** We have been serving the global Catholic community since 2018.
 
-## 3. User Accounts
-- You are responsible for maintaining the confidentiality of your account.
-- You notify us immediately of any unauthorized use.
+**We are NOT:**
+- A registered charity or tax-exempt organization
+- A parish, diocese, or canonical entity of the Catholic Church
+- Affiliated with the Vatican or any specific diocese
+- A religious institution that administers sacraments
 
-## 4. Virtual Goods & Donations
-- Donations for "Virtual Candles" or "Mass Offerings" are final and non-refundable.
-- These are voluntary contributions to support the ministry.
+We operate as an **intermediary service provider**, connecting Catholic faithful with spiritual resources and partner churches.
 
-## 5. User Content
-- You grant us a license to display prayer requests you post publicly ("Prayer Wall").
-- We reserve the right to remove content that violates our community standards (e.g., hate speech, disrespect).
+## 3. No Guarantee of Spiritual Outcomes
+We facilitate spiritual services with sincerity. However, we make **no representations or warranties** regarding the spiritual efficacy of any prayer, Mass, candle, or spiritual bouquet. We cannot guarantee answers to prayers or miraculous interventions.
 
-## 6. Biometric Features
-- The App uses device-native biometric authentication (Fingerprint/Face ID).
-- We do **not** store your biometric data. It remains securely on your device.
+## 4. Description of Service
+MyPrayerTower provides a digital platform for Catholic prayer, including virtual candles, Mass offering coordination with partner churches, prayer requests, and spiritual tools.
 
-## 7. App Widgets
-- The App provides home screen widgets for convenience.
-- Recent readings/prayers are cached locally for widget functionality.
+## 5. Virtual Goods & Service Fees
+- Payments for "Virtual Candles" or "Mass Offerings" are **service fees**, not charitable donations.
+- These are NOT tax-deductible.
+- Mass offerings are forwarded to partner churches; scheduling is at clergy's discretion.
+- We strive for Mass fulfillment within 90 days or offer refund/alternatives.
 
-## 8. Updates
+## 6. User Content
+- You grant us a license to display prayer requests you post publicly.
+- We reserve the right to remove content that violates Catholic values or our guidelines.
+
+## 7. Biometric Features
+- The App uses device-native biometric authentication.
+- We do **not** store your biometric data. It remains on your device.
+
+## 8. Governing Law
+These Terms are governed by the laws of India. Disputes are subject to the courts in Mumbai, Maharashtra, India.
+
+## 9. Updates
 We may update these terms at any time. Continued use implies acceptance.
 ''';
 
   static const String privacy = '''
 # Privacy Policy
 
-*Last Updated: January 18, 2026*
+*Last Updated: January 22, 2026*
 
-## 1. Information We Collect
+## 1. About MyPrayerTower
+MyPrayerTower is a Catholic service provider based in Mumbai, India. We are NOT a registered charity.
+
+## 2. Information We Collect
 - **Account Data**: Email, Name (via Supabase Auth).
 - **User Content**: Prayer requests, journal entries, memorials.
 - **Usage Data**: Anonymous analytics to improve app performance.
 
-## 2. Secure Data Storage
-- **Prayer Journal**: Encrypted locally using Hive and your device's secure storage.
-- **Biometrics**: We do not access or store raw biometric data. We only receive a "success/failure" signal from your device.
+## 3. Secure Data Storage
+- **Prayer Journal**: Encrypted locally using your device's secure storage.
+- **Biometrics**: We do not access or store biometric data.
 
-## 3. Location Data
-- **Parish Finder**: We ask for permission to access your location to find nearby churches.
-- Approximate location is processed ephemeral and not stored on our servers.
+## 4. How Your Service Fees Are Used
+When you pay for services:
+- **50%** - Platform Development & Maintenance
+- **30%** - Partner Church Stipends
+- **20%** - Operations & Support
 
-## 4. Ads & Analytics
+**Important:** Payments to MyPrayerTower are **not tax-deductible** as charitable contributions.
+
+## 5. Location Data
+- Used to find nearby churches.
+- Not stored on our servers.
+
+## 6. Ads & Analytics
 - We use AdMob and Google Analytics.
-- See Google's Privacy Policy for data handling regarding advertising IDs.
+- See Google's Privacy Policy for details.
 
-## 5. Third-Party Services
-- **PayPal**: Payment processing.
+## 7. Third-Party Services
+- **PayPal / Google Play**: Payment processing.
 - **Supabase**: Backend database and authentication.
 
-## 6. Your Rights
-- You may request deletion of your account and data at any time via App Settings.
+## 8. Your Rights
+You may request deletion of your account and data at any time.
 
-## 7. Contact
-For privacy concerns, contact: privacy@myprayertower.com
+## 9. Contact
+For privacy concerns: privacy@myprayertower.com
 ''';
 }

@@ -8,7 +8,7 @@ final memorialRepositoryProvider = Provider<MemorialRepository>((ref) {
 });
 
 class MemorialRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  SupabaseClient get _client => Supabase.instance.client;
 
   // Sample memorial data for fallback
   static List<Memorial> _sampleMemorials() {

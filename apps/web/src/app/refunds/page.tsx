@@ -61,7 +61,7 @@ export default function RefundsPage() {
 
                             {/* Mass Offerings */}
                             <div className="border-l-4 border-blue-500 pl-4">
-                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Mass Offerings</h3>
+                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Mass Offering Stipends</h3>
                                 <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
                                     <li>• <strong>Single Mass:</strong> $10</li>
                                     <li>• <strong>Novena of Masses:</strong> $75</li>
@@ -69,17 +69,21 @@ export default function RefundsPage() {
                                     <li>• <strong>Perpetual Enrollment:</strong> $100</li>
                                 </ul>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
-                                    Mass offerings can be refunded before the Mass is offered. Once scheduled, refunds are not possible.
+                                    Mass requests forwarded to partner churches cannot be refunded. If we are unable to arrange for a Mass to be celebrated within 90 days, we will contact you to offer a full refund or alternative arrangement.
                                 </p>
                             </div>
 
-                            {/* Donations */}
+                            {/* Platform Support Contributions */}
                             <div className="border-l-4 border-green-500 pl-4">
-                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Donations</h3>
-                                <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                    Donations are voluntary contributions and are generally non-refundable.
-                                    If you made a donation in error, please contact us within 7 days.
+                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Platform Support Contributions</h3>
+                                <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
+                                    Voluntary contributions to support MyPrayerTower&apos;s operations. These are <strong>NOT tax-deductible charitable donations</strong> as we are not a registered charity in any jurisdiction.
                                 </p>
+                                <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
+                                    <li>• <strong>One-Time Contributions:</strong> Generally non-refundable</li>
+                                    <li>• <strong>Made in Error:</strong> Contact us within 7 days for consideration</li>
+                                    <li>• <strong>Recurring Contributions:</strong> Can be cancelled at any time; future payments will stop, but past contributions are non-refundable</li>
+                                </ul>
                             </div>
 
                             {/* Spiritual Bouquets */}
@@ -105,7 +109,7 @@ export default function RefundsPage() {
                             </li>
                             <li className="flex items-start gap-2">
                                 <Clock className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
-                                <span><strong>Recurring donations</strong> can be cancelled at any time. Future payments will stop, but past donations are non-refundable.</span>
+                                <span><strong>Recurring contributions</strong> can be cancelled at any time. Future payments will stop, but past contributions are non-refundable.</span>
                             </li>
                             <li className="flex items-start gap-2">
                                 <Clock className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
