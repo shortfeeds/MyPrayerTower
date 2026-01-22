@@ -117,7 +117,7 @@ export default function DMCAPage() {
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Related Policies</h3>
                         <div className="flex flex-wrap gap-4">
                             <Link href="/terms" className="text-primary-600 hover:underline">Terms of Service</Link>
-                            <Link href="/privacy" className="text-primary-600 hover:underline">Privacy Policy</Link>
+                            <Link href="/privacy-policy" className="text-primary-600 hover:underline">Privacy Policy</Link>
                             <Link href="/guidelines" className="text-primary-600 hover:underline">Community Guidelines</Link>
                         </div>
                     </section>

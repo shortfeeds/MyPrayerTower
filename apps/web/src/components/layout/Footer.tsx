@@ -186,7 +186,7 @@ export function Footer() {
                                 <li><Link href="/how-we-work" className="hover:text-gold-400 transition-colors">How We Work</Link></li>
                                 <li><Link href="/contact" className="hover:text-gold-400 transition-colors">Contact Us</Link></li>
                                 <li><Link href="/partners" className="hover:text-gold-400 transition-colors">Partners</Link></li>
-                                <li><Link href="/privacy" className="hover:text-gold-400 transition-colors text-gray-500">Privacy Policy</Link></li>
+                                <li><Link href="/privacy-policy" className="hover:text-gold-400 transition-colors text-gray-500">Privacy Policy</Link></li>
                             </ul>
 
                             <div className="mt-8 pt-4 border-t border-gray-800/50">
@@ -208,7 +208,7 @@ export function Footer() {
                             <p>© {currentYear} MyPrayerTower. All rights reserved.</p>
                         </div>
                         <div className="flex gap-6 mt-4 md:mt-0">
-                            <Link href="/privacy" className="hover:text-gray-400 transition-colors">Privacy</Link>
+                            <Link href="/privacy-policy" className="hover:text-gray-400 transition-colors">Privacy</Link>
                             <Link href="/terms" className="hover:text-gray-400 transition-colors">Terms</Link>
                             <Link href="/contributions" className="hover:text-gray-400 transition-colors">Contributions</Link>
                             <Link href="/refunds" className="hover:text-gray-400 transition-colors">Refunds</Link>
@@ -275,7 +275,7 @@ export function Footer() {
 
                     {/* Legal Links */}
                     <div className="flex justify-center gap-4 mt-6 text-xs text-gray-500">
-                        <Link href="/privacy" className="hover:text-gray-300">Privacy</Link>
+                        <Link href="/privacy-policy" className="hover:text-gray-300">Privacy</Link>
                         <Link href="/terms" className="hover:text-gray-300">Terms</Link>
                         <Link href="/sitemap.xml" className="hover:text-gray-300">Sitemap</Link>
                     </div>

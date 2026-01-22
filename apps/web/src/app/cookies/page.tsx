@@ -155,7 +155,7 @@ export default function CookiePolicyPage() {
                     <section className="pt-6 border-t border-gray-200 dark:border-gray-700">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Related Policies</h3>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/privacy" className="text-primary-600 hover:underline">Privacy Policy</Link>
+                            <Link href="/privacy-policy" className="text-primary-600 hover:underline">Privacy Policy</Link>
                             <Link href="/terms" className="text-primary-600 hover:underline">Terms of Service</Link>
                         </div>
                     </section>
