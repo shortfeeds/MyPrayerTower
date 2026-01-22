@@ -33,7 +33,7 @@ export function CookieConsent() {
                     <p>
                         We use cookies to enhance your spiritual journey and improve our website.
                         By continuing, you agree to our{' '}
-                        <Link href="/privacy-policy" className="text-stone-900 underline hover:text-stone-700">
+                        <Link href="/privacy" className="text-stone-900 underline hover:text-stone-700">
                             Privacy Policy
                         </Link>.
                     </p>

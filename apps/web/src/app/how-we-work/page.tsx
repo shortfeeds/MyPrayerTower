@@ -175,7 +175,7 @@ export default function HowWeWorkPage() {
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <Link href="/terms" className="text-primary-600 hover:underline">Terms of Service</Link>
-                            <Link href="/privacy-policy" className="text-primary-600 hover:underline">Privacy Policy</Link>
+                            <Link href="/privacy" className="text-primary-600 hover:underline">Privacy Policy</Link>
                             <Link href="/refunds" className="text-primary-600 hover:underline">Refund Policy</Link>
                             <Link href="/contact" className="text-primary-600 hover:underline">Contact Us</Link>
                         </div>
