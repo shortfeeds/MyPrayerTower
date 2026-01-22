@@ -576,7 +576,8 @@ model Article {
   excerpt       String?       @db.Text
   category      String
   status        ArticleStatus @default(DRAFT)
-  author        String
+  authorId      String
+  author        User          @relation(fields: [authorId], references: [id])
   featuredImage String?
   views         Int           @default(0)
   createdAt     DateTime      @default(now())
@@ -585,6 +586,7 @@ model Article {
   @@index([slug])
   @@index([category])
   @@index([status])
+  @@index([authorId])
 }
 
 enum ArticleStatus {
