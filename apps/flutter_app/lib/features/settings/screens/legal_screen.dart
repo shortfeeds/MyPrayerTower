@@ -148,5 +148,8 @@ You may request deletion of your account and data at any time.
 
 ## 9. Contact
 For privacy concerns: privacy@myprayertower.com
+
+For the full and most up-to-date policy, please visit:
+[https://www.myprayertower.com/privacy](https://www.myprayertower.com/privacy)
 ''';
 }
