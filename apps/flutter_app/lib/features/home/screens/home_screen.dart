@@ -19,7 +19,7 @@ import '../widgets/quick_access_bar.dart';
 import '../widgets/trending_prayers.dart';
 
 import '../widgets/prayer_wall_preview.dart';
-import '../widgets/premium_feature_card.dart';
+
 import '../widgets/premium_home_header.dart';
 
 class HomeScreen extends ConsumerWidget {
