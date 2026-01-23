@@ -155,44 +155,44 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // 8. Explore Grid (Premium Cards)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: AppTheme.gold500.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          LucideIcons.compass,
-                          size: 16,
-                          color: AppTheme.gold500,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Explore',
-                        style: GoogleFonts.merriweather(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _buildCategorizedFeatures(context),
-                ],
-              ),
-            ),
-          ),
+          // 8. Explore Grid (Removed for cleaner UI)
+          // SliverToBoxAdapter(
+          //   child: Padding(
+          //     padding: const EdgeInsets.symmetric(horizontal: 20),
+          //     child: Column(
+          //       crossAxisAlignment: CrossAxisAlignment.start,
+          //       children: [
+          //         Row(
+          //           children: [
+          //             Container(
+          //               padding: const EdgeInsets.all(6),
+          //               decoration: BoxDecoration(
+          //                 color: AppTheme.gold500.withValues(alpha: 0.15),
+          //                 borderRadius: BorderRadius.circular(8),
+          //               ),
+          //               child: const Icon(
+          //                 LucideIcons.compass,
+          //                 size: 16,
+          //                 color: AppTheme.gold500,
+          //               ),
+          //             ),
+          //             const SizedBox(width: 10),
+          //             Text(
+          //               'Explore',
+          //               style: GoogleFonts.merriweather(
+          //                 fontSize: 18,
+          //                 fontWeight: FontWeight.bold,
+          //                 color: Colors.white,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //         const SizedBox(height: 16),
+          //         _buildCategorizedFeatures(context),
+          //       ],
+          //     ),
+          //   ),
+          // ),
 
           // 9. Prayer Wall Preview
           SliverToBoxAdapter(
