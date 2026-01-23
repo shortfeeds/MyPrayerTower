@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import '../../../core/api/api_client.dart';
+import '../models/ad_config.dart';
+import '../repositories/ad_repository.dart';
 
 class AdService {
   final Ref ref;
   final bool useAdMob = true;
-  Map<String, dynamic> _settings = {};
 
   AdService(this.ref);
 
@@ -16,68 +16,80 @@ class AdService {
   static const _interstitialCooldown = Duration(minutes: 10);
 
   Future<void> initialize() async {
-    // Fetch settings from API
-    try {
-      final dio = ref.read(dioProvider);
-      final response = await dio.get('/public/settings');
-      if (response.statusCode == 200 && response.data != null) {
-        _settings = response.data;
-        debugPrint('Ad settings loaded: $_settings');
-      }
-    } catch (e) {
-      debugPrint('Failed to load ad settings: $e');
-    }
-
     if (useAdMob && !kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       await MobileAds.instance.initialize();
     }
   }
 
-  String get bannerAdUnitId {
-    if (Platform.isAndroid) {
-      return _settings['bannerAdUnitIdAndroid'] ??
-          'ca-app-pub-1009360672921924/8257353171';
-    } else if (Platform.isIOS) {
-      return _settings['bannerAdUnitIdiOS'] ??
-          'ca-app-pub-3940256099942544/2934735716';
-    }
-    return '';
+  /// Fetch ad configuration for a specific placement
+  /// Returns AdConfig which determines if we show an Offline Ad or Google Ad
+  Future<AdConfig?> getAdConfig({
+    required String page,
+    required String position,
+  }) async {
+    return ref
+        .read(adRepositoryProvider)
+        .fetchAd(page: page, position: position);
   }
 
-  String get nativeAdUnitId {
-    if (Platform.isAndroid) {
-      return _settings['nativeAdUnitIdAndroid'] ??
-          'ca-app-pub-1009360672921924/9865948318';
-    } else if (Platform.isIOS) {
-      return _settings['nativeAdUnitIdiOS'] ??
-          'ca-app-pub-3940256099942544/3986624511';
-    }
-    return '';
+  /// Track impression for offline ads
+  Future<void> trackImpression(String adId) async {
+    await ref.read(adRepositoryProvider).trackImpression(adId);
   }
 
-  String get rewardedAdUnitId {
-    if (Platform.isAndroid) {
-      return _settings['rewardedAdUnitIdAndroid'] ??
-          'ca-app-pub-1009360672921924/1561928795';
-    } else if (Platform.isIOS) {
-      return _settings['rewardedAdUnitIdiOS'] ??
-          'ca-app-pub-3940256099942544/1712485313';
-    }
-    return '';
+  /// Track click for offline ads
+  Future<void> trackClick(String adId) async {
+    await ref.read(adRepositoryProvider).trackClick(adId);
   }
 
-  String get interstitialAdUnitId {
+  // --- AdMob Helpers ---
+
+  String _getAdMobUnitId(AdConfig? config, String adType) {
+    // 1. Try config-specific ID from API (Targeted AdMob)
+    if (config != null && config.adSource == AdSource.google) {
+      if (Platform.isAndroid && config.androidAdUnitId != null) {
+        return config.androidAdUnitId!;
+      }
+      if (Platform.isIOS && config.iosAdUnitId != null) {
+        return config.iosAdUnitId!;
+      }
+    }
+
+    // 2. Fallback to default IDs (House inventory)
+    return _getDefaultAdUnitId(adType);
+  }
+
+  String _getDefaultAdUnitId(String adType) {
+    // Replace these with your actual global fallback IDs
+    // Currently using Test IDs
     if (Platform.isAndroid) {
-      return _settings['interstitialAdUnitIdAndroid'] ??
-          'ca-app-pub-1009360672921924/8169723267';
+      switch (adType) {
+        case 'banner':
+          return 'ca-app-pub-3940256099942544/6300978111';
+        case 'native':
+          return 'ca-app-pub-3940256099942544/2247696110';
+        case 'interstitial':
+          return 'ca-app-pub-3940256099942544/1033173712';
+        case 'rewarded':
+          return 'ca-app-pub-3940256099942544/5224354917';
+      }
     } else if (Platform.isIOS) {
-      return _settings['interstitialAdUnitIdiOS'] ??
-          'ca-app-pub-3940256099942544/4411468910';
+      switch (adType) {
+        case 'banner':
+          return 'ca-app-pub-3940256099942544/2934735716';
+        case 'native':
+          return 'ca-app-pub-3940256099942544/3986624511';
+        case 'interstitial':
+          return 'ca-app-pub-3940256099942544/4411468910';
+        case 'rewarded':
+          return 'ca-app-pub-3940256099942544/1712485313';
+      }
     }
     return '';
   }
 
   BannerAd? createBannerAd({
+    AdConfig? config,
     required Function() onAdLoaded,
     Function(LoadAdError)? onAdFailed,
   }) {
@@ -86,11 +98,38 @@ class AdService {
     }
 
     return BannerAd(
-      adUnitId: bannerAdUnitId,
+      adUnitId: _getAdMobUnitId(config, 'banner'),
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (_) => onAdLoaded(),
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          debugPrint('Ad failed to load: $error');
+          if (onAdFailed != null) onAdFailed(error);
+        },
+      ),
+    );
+  }
+
+  /// Load a native ad with config
+  NativeAd? createNativeAd({
+    AdConfig? config,
+    Map<String, Object>? customOptions,
+    required Function(Ad) onAdLoaded,
+    Function(LoadAdError)? onAdFailed,
+  }) {
+    if (!useAdMob || kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
+      return null;
+    }
+
+    return NativeAd(
+      adUnitId: _getAdMobUnitId(config, 'native'),
+      factoryId:
+          'listTile', // Ensure you have this factory in Android/iOS native code
+      request: const AdRequest(),
+      listener: NativeAdListener(
+        onAdLoaded: onAdLoaded,
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
           debugPrint('Ad failed to load: $error');
@@ -111,7 +150,7 @@ class AdService {
     }
 
     await RewardedAd.load(
-      adUnitId: rewardedAdUnitId,
+      adUnitId: _getDefaultAdUnitId('rewarded'),
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: onAdLoaded,
@@ -143,7 +182,7 @@ class AdService {
     }
 
     await InterstitialAd.load(
-      adUnitId: interstitialAdUnitId,
+      adUnitId: _getDefaultAdUnitId('interstitial'),
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {

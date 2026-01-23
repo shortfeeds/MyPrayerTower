@@ -532,6 +532,7 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
         const SizedBox(height: 8),
         TextField(
           onChanged: (v) => setState(() => _intentionFor = v),
+          style: GoogleFonts.inter(color: Colors.grey.shade900),
           decoration: _inputDecoration('e.g., John Smith'),
         ),
         const SizedBox(height: 20),
@@ -595,6 +596,7 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
         TextField(
           onChanged: (v) => setState(() => _specialIntention = v),
           maxLines: 3,
+          style: GoogleFonts.inter(color: Colors.grey.shade900),
           decoration: _inputDecoration('Any specific intention or notes...'),
         ),
         const SizedBox(height: 20),
@@ -610,6 +612,7 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
         const SizedBox(height: 8),
         TextField(
           onChanged: (v) => setState(() => _offeredBy = v),
+          style: GoogleFonts.inter(color: Colors.grey.shade900),
           decoration: _inputDecoration('Your name (appears on Mass card)'),
         ),
         const SizedBox(height: 24),
@@ -760,17 +763,20 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
                 const SizedBox(height: 12),
                 TextField(
                   onChanged: (v) => setState(() => _recipientName = v),
+                  style: GoogleFonts.inter(color: Colors.grey.shade900),
                   decoration: _inputDecoration("Recipient's name"),
                 ),
                 const SizedBox(height: 8),
                 TextField(
                   onChanged: (v) => setState(() => _recipientEmail = v),
+                  style: GoogleFonts.inter(color: Colors.grey.shade900),
                   decoration: _inputDecoration("Recipient's email"),
                 ),
                 const SizedBox(height: 8),
                 TextField(
                   onChanged: (v) => setState(() => _giftMessage = v),
                   maxLines: 2,
+                  style: GoogleFonts.inter(color: Colors.grey.shade900),
                   decoration: _inputDecoration('Personal message...'),
                 ),
               ],
@@ -846,17 +852,20 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
               const SizedBox(height: 16),
               TextField(
                 onChanged: (v) => setState(() => _name = v),
+                style: GoogleFonts.inter(color: Colors.grey.shade900),
                 decoration: _inputDecoration('Your full name *'),
               ),
               const SizedBox(height: 12),
               TextField(
                 onChanged: (v) => setState(() => _email = v),
+                style: GoogleFonts.inter(color: Colors.grey.shade900),
                 decoration: _inputDecoration('your@email.com *'),
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 12),
               TextField(
                 onChanged: (v) => setState(() => _phone = v),
+                style: GoogleFonts.inter(color: Colors.grey.shade900),
                 decoration: _inputDecoration('Phone (optional)'),
                 keyboardType: TextInputType.phone,
               ),

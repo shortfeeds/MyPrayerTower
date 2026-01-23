@@ -19,6 +19,9 @@ interface Advertisement {
     clicks: number;
     startDate: string | null;
     endDate: string | null;
+    platforms: string[];
+    androidAdUnitId: string;
+    iosAdUnitId: string;
     createdAt: string;
 }
 
@@ -42,7 +45,10 @@ export default function AdminAdsPage() {
         priority: 0,
         isActive: true,
         startDate: '',
-        endDate: ''
+        endDate: '',
+        platforms: ['web', 'android', 'ios'],
+        androidAdUnitId: '',
+        iosAdUnitId: ''
     });
 
     useEffect(() => {
@@ -118,7 +124,10 @@ export default function AdminAdsPage() {
             priority: 0,
             isActive: true,
             startDate: '',
-            endDate: ''
+            endDate: '',
+            platforms: ['web', 'android', 'ios'],
+            androidAdUnitId: '',
+            iosAdUnitId: ''
         });
     };
 
@@ -136,7 +145,10 @@ export default function AdminAdsPage() {
             priority: ad.priority || 0,
             isActive: ad.isActive,
             startDate: ad.startDate || '',
-            endDate: ad.endDate || ''
+            endDate: ad.endDate || '',
+            platforms: (ad as any).platforms || ['web', 'android', 'ios'],
+            androidAdUnitId: (ad as any).androidAdUnitId || '',
+            iosAdUnitId: (ad as any).iosAdUnitId || ''
         });
         setShowForm(true);
     };
@@ -301,6 +313,13 @@ export default function AdminAdsPage() {
                                                     </a>
                                                 )}
                                             </div>
+                                            <div className="flex gap-1 mt-1">
+                                                {(ad as any).platforms?.map((p: string) => (
+                                                    <span key={p} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded uppercase">
+                                                        {p}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
@@ -441,22 +460,69 @@ export default function AdminAdsPage() {
 
                                 {/* Conditional Fields based on Ad Source */}
                                 {formData.adSource === 'GOOGLE' ? (
-                                    <div className="col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Google Ad Unit ID <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.googleAdUnitId}
-                                            onChange={(e) => setFormData({ ...formData, googleAdUnitId: e.target.value })}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-                                            placeholder="ca-app-pub-XXXXXXXX/YYYYYYYY or slot ID like 1234567890"
-                                            required
-                                        />
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            For mobile: Use AdMob Unit ID • For web: Use AdSense Slot ID
-                                        </p>
-                                    </div>
+                                    <>
+                                        <div className="col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Google Ad Unit ID <span className="text-red-500">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={formData.googleAdUnitId}
+                                                onChange={(e) => setFormData({ ...formData, googleAdUnitId: e.target.value })}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono"
+                                                placeholder="ca-app-pub-XXXXXXXX/YYYYYYYY or slot ID like 1234567890"
+                                                required
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                For web: Use AdSense Slot ID
+                                            </p>
+                                        </div>
+                                        <div className="col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Android Unit ID
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={formData.androidAdUnitId}
+                                                onChange={(e) => setFormData({ ...formData, androidAdUnitId: e.target.value })}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono"
+                                                placeholder="ca-app-pub-..."
+                                            />
+                                        </div>
+                                        <div className="col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                iOS Unit ID
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={formData.iosAdUnitId}
+                                                onChange={(e) => setFormData({ ...formData, iosAdUnitId: e.target.value })}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono"
+                                                placeholder="ca-app-pub-..."
+                                            />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Target Platforms</label>
+                                            <div className="flex gap-4">
+                                                {['web', 'android', 'ios'].map(p => (
+                                                    <label key={p} className="flex items-center gap-2 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={formData.platforms.includes(p)}
+                                                            onChange={(e) => {
+                                                                const newPlatforms = e.target.checked
+                                                                    ? [...formData.platforms, p]
+                                                                    : formData.platforms.filter(pl => pl !== p);
+                                                                setFormData({ ...formData, platforms: newPlatforms });
+                                                            }}
+                                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                        />
+                                                        <span className="capitalize">{p}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
                                 ) : (
                                     <>
                                         <div className="col-span-2">
@@ -492,6 +558,27 @@ export default function AdminAdsPage() {
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                 placeholder="Descriptive text for the ad"
                                             />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Target Platforms</label>
+                                            <div className="flex gap-4">
+                                                {['web', 'android', 'ios'].map(p => (
+                                                    <label key={p} className="flex items-center gap-2 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={formData.platforms.includes(p)}
+                                                            onChange={(e) => {
+                                                                const newPlatforms = e.target.checked
+                                                                    ? [...formData.platforms, p]
+                                                                    : formData.platforms.filter(pl => pl !== p);
+                                                                setFormData({ ...formData, platforms: newPlatforms });
+                                                            }}
+                                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                        />
+                                                        <span className="capitalize">{p}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
                                         </div>
                                     </>
                                 )}

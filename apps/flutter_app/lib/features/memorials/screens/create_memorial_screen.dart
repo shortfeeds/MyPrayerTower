@@ -98,7 +98,7 @@ class _CreateMemorialScreenState extends ConsumerState<CreateMemorialScreen> {
         iconTheme: const IconThemeData(color: Colors.black87),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
         child: Form(
           key: _formKey,
           child: Column(
@@ -117,6 +117,7 @@ class _CreateMemorialScreenState extends ConsumerState<CreateMemorialScreen> {
                 children: [
                   Expanded(
                     child: TextFormField(
+                      style: GoogleFonts.inter(color: Colors.black87),
                       decoration: const InputDecoration(
                         labelText: 'First Name',
                         border: OutlineInputBorder(),
@@ -130,6 +131,7 @@ class _CreateMemorialScreenState extends ConsumerState<CreateMemorialScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: TextFormField(
+                      style: GoogleFonts.inter(color: Colors.black87),
                       decoration: const InputDecoration(
                         labelText: 'Last Name',
                         border: OutlineInputBorder(),
@@ -189,6 +191,7 @@ class _CreateMemorialScreenState extends ConsumerState<CreateMemorialScreen> {
               ),
               const SizedBox(height: 8),
               TextFormField(
+                style: GoogleFonts.inter(color: Colors.black87),
                 decoration: const InputDecoration(
                   labelText: 'Short Bio (appears in list)',
                   border: OutlineInputBorder(),
@@ -202,6 +205,7 @@ class _CreateMemorialScreenState extends ConsumerState<CreateMemorialScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                style: GoogleFonts.inter(color: Colors.black87),
                 decoration: const InputDecoration(
                   labelText: 'Full Biography',
                   border: OutlineInputBorder(),

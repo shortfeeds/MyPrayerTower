@@ -190,7 +190,10 @@ class _SummaScreenState extends State<SummaScreen> {
                                           : '4';
                                       final url =
                                           'https://www.newadvent.org/summa/$partNum${q.number.toString().padLeft(3, '0')}.htm';
-                                      launchUrl(Uri.parse(url));
+                                      launchUrl(
+                                        Uri.parse(url),
+                                        mode: LaunchMode.inAppWebView,
+                                      );
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.all(16),
@@ -237,6 +240,7 @@ class _SummaScreenState extends State<SummaScreen> {
                                         Uri.parse(
                                           'https://www.newadvent.org/summa/$partNum.htm',
                                         ),
+                                        mode: LaunchMode.inAppWebView,
                                       );
                                     },
                                     icon: const Icon(

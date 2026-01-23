@@ -67,6 +67,15 @@ class OfferingsScreen extends StatelessWidget {
       gradient: LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFF472B6)]),
       route: '/bouquets',
     ),
+    _OfferingItem(
+      title: 'Platform Support',
+      subtitle: 'Sustain our mission',
+      description: 'Contribute to the maintenance of this digital sanctuary.',
+      price: 'Voluntary',
+      icon: LucideIcons.heartHandshake,
+      gradient: LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF38BDF8)]),
+      route: '/donations',
+    ),
   ];
 
   @override
@@ -142,7 +151,7 @@ class OfferingsScreen extends StatelessWidget {
           ),
 
           // Bottom padding for nav bar
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          const SliverToBoxAdapter(child: SizedBox(height: 120)),
         ],
       ),
     );

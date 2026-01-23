@@ -7,6 +7,7 @@ import '../widgets/visual_rosary_beads.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../ads/services/ad_service.dart';
 
 class RosaryScreen extends ConsumerStatefulWidget {
   const RosaryScreen({super.key});
@@ -405,6 +406,20 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
               FloatingActionButton(
                 onPressed: () {
                   if (_currentBeadIndex < _totalBeads) {
+                    // Check if current step is Glory Be (End of decade)
+                    // Logic: 0-4 (Intro), 5-15 (Decade 1), 16-26 (Decade 2)...
+                    // Glory Be is at index: 5, 16, 27, 38, 49
+                    bool isGloryBe = (_currentBeadIndex - 5) % 11 == 0;
+
+                    if (isGloryBe && _currentBeadIndex >= 5) {
+                      ref
+                          .read(adServiceProvider)
+                          .loadInterstitialAd(
+                            onAdLoaded: (ad) => ad.show(),
+                            onAdFailed: (_) {},
+                          );
+                    }
+
                     setState(() => _currentBeadIndex++);
                   } else {
                     // Complete

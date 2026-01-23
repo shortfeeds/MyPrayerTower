@@ -16,6 +16,8 @@ class HomeWidgetService {
     required String content,
     String? subtext,
   }) async {
+    if (kIsWeb) return; // HomeWidget is not supported on Web
+
     try {
       // Save data to shared storage
       await HomeWidget.saveWidgetData<String>('widget_title', title);

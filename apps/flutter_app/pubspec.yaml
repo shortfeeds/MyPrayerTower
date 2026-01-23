@@ -50,6 +50,7 @@ dependencies:
   url_launcher: ^6.3.2
   share_plus: ^10.0.2
   connectivity_plus: ^6.0.5
+  visibility_detector: ^0.4.0+2
   # Code Generation
   freezed_annotation: ^2.4.1
   json_annotation: ^4.9.0

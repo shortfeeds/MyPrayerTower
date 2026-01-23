@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../models/saint_model.dart';
 import '../../../widgets/app_bar_menu_button.dart';
+import '../../ads/widgets/native_ad_widget.dart';
 
 const List<String> monthsShort = [
   'Jan',
@@ -441,14 +442,29 @@ class _SaintsScreenState extends ConsumerState<SaintsScreen> {
                     child: ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _saints.length,
+                      itemCount: _saints.length + (_saints.length ~/ 8),
                       separatorBuilder: (_, __) =>
                           Divider(height: 1, color: Colors.grey.shade100),
-                      itemBuilder: (context, index) => _SaintTile(
-                        saint: _saints[index],
-                        onTap: () =>
-                            context.push('/saints/${_saints[index].slug}'),
-                      ),
+                      itemBuilder: (context, index) {
+                        // Calculate actual data index
+                        final int itemIndex = index - (index ~/ 9);
+
+                        // Show Ad every 9th item (indices 8, 17, 26...)
+                        if ((index + 1) % 9 == 0) {
+                          return const NativeAdListItem();
+                        }
+
+                        if (itemIndex >= _saints.length) {
+                          return const SizedBox();
+                        }
+
+                        return _SaintTile(
+                          saint: _saints[itemIndex],
+                          onTap: () => context.push(
+                            '/saints/${_saints[itemIndex].slug}',
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),

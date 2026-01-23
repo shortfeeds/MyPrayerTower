@@ -1,8 +1,12 @@
+import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/billing/billing_service.dart';
 
 import '../../../core/providers/scaffold_key_provider.dart';
@@ -11,6 +15,7 @@ import '../widgets/premium_candle_widget.dart';
 import '../repositories/candle_repository.dart';
 
 import '../models/candle_model.dart';
+import '../../ads/widgets/smart_ad_banner.dart';
 
 // Duration options moved to LightCandleScreen
 
@@ -24,6 +29,7 @@ class CandlesScreen extends ConsumerStatefulWidget {
 class _CandlesScreenState extends ConsumerState<CandlesScreen> {
   List<Candle> _candles = [];
   int _peoplePraying = 24567;
+  static const _baseCandleCount = 3127;
 
   @override
   void initState() {
@@ -57,11 +63,17 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
   }
 
   void _sortCandles() {
-    // Sort logic matching web app: Premium > Standard > Basic > Free
-    const tierOrder = {'premium': 0, 'standard': 1, 'basic': 2, 'free': 3};
+    // Sort logic matching web app: Divine > Marian > Altar > Devotion > Free
+    const tierOrder = {
+      'divine': 0,
+      'marian': 1,
+      'altar': 2,
+      'devotion': 3,
+      'free': 4,
+    };
     _candles.sort((a, b) {
-      final tierA = tierOrder[a.tier] ?? 3;
-      final tierB = tierOrder[b.tier] ?? 3;
+      final tierA = tierOrder[a.tier] ?? 4;
+      final tierB = tierOrder[b.tier] ?? 4;
       return tierA.compareTo(tierB);
     });
   }
@@ -81,132 +93,168 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
 
   int get _totalPrayers => _candles.fold(0, (sum, c) => sum + c.prayerCount);
 
-  List<Candle> get _premiumCandles =>
-      _candles.where((c) => c.tier == 'premium').toList();
+  List<Candle> get _premiumCandles => _candles
+      .where((c) => ['divine', 'marian', 'altar'].contains(c.tier))
+      .toList();
   List<Candle> get _standardCandles =>
-      _candles.where((c) => c.tier == 'standard').toList();
-  List<Candle> get _basicCandles =>
-      _candles.where((c) => c.tier == 'basic').toList();
+      _candles.where((c) => c.tier == 'devotion').toList();
   List<Candle> get _freeCandles =>
       _candles.where((c) => c.tier == 'free').toList();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0f172a), // Solid dark navy (no image)
+      backgroundColor: AppTheme.deepSpace,
       body: Stack(
         children: [
-          // Main Content
+          // 1. Ambient Background
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment(0, -0.2),
+                  radius: 1.2,
+                  colors: [Color(0xFF1E293B), AppTheme.deepSpace],
+                ),
+              ),
+            ),
+          ),
+
+          // 2. Particle Effects
+          ...List.generate(20, (index) => _buildParticle(index)),
+
+          // 3. Main Content
           CustomScrollView(
+            physics: const BouncingScrollPhysics(),
             slivers: [
-              // Gradient Header (Transparent to show altar, just branding)
+              // Header
               SliverToBoxAdapter(
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
                     child: Column(
                       children: [
-                        // Back button row
                         Row(
                           children: [
                             IconButton(
-                              icon: const Icon(
-                                LucideIcons.menu,
-                                color: Colors.white,
-                              ),
                               onPressed: () => ref
                                   .read(scaffoldKeyProvider)
                                   .currentState
                                   ?.openDrawer(),
+                              icon: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  LucideIcons.menu,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
                             ),
                             const Spacer(),
                             IconButton(
-                              icon: const Icon(
-                                LucideIcons.refreshCcw,
-                                color: Colors.white70,
-                              ),
                               onPressed: () => ref
                                   .read(billingServiceProvider)
                                   .restorePurchases(),
-                              tooltip: 'Restore Purchases',
+                              icon: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  LucideIcons.refreshCcw,
+                                  color: Colors.white70,
+                                  size: 20,
+                                ),
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 16),
-                        // Title
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              LucideIcons.flame,
-                              color: Colors.amber,
-                              size: 32,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Virtual Prayer Candles',
-                              style: GoogleFonts.merriweather(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                shadows: [
-                                  Shadow(
-                                    offset: const Offset(0, 2),
-                                    blurRadius: 4,
-                                    color: Colors.black.withValues(alpha: 0.5),
-                                  ),
-                                ],
+                        Text(
+                          'Virtual Prayer Candles',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.playfairDisplay(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                color: AppTheme.gold500.withValues(alpha: 0.5),
+                                blurRadius: 15,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Light a candle for your intentions and join thousands praying together.',
                           style: GoogleFonts.inter(
                             fontSize: 14,
-                            color: Colors.white.withValues(alpha: 0.9),
-                            shadows: [
-                              Shadow(
-                                offset: const Offset(0, 1),
-                                blurRadius: 2,
-                                color: Colors.black.withValues(alpha: 0.5),
-                              ),
-                            ],
+                            color: AppTheme.textSecondary,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 20),
-                        // Light Candle Button
-                        ElevatedButton(
-                          onPressed: _showLightCandleSheet,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber.shade600,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+                        const SizedBox(height: 24),
+                        // Premium CTA Button
+                        SizedBox(
+                          height: 56,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [AppTheme.gold400, AppTheme.gold600],
+                              ),
+                              borderRadius: BorderRadius.circular(28),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.gold500.withValues(
+                                    alpha: 0.4,
+                                  ),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            elevation: 8,
-                            shadowColor: Colors.amber.shade900,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text('🕯️', style: TextStyle(fontSize: 20)),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Light Your Candle',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                            child: ElevatedButton(
+                              onPressed: _showLightCandleSheet,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(28),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 40,
                                 ),
                               ),
-                            ],
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    LucideIcons.flame,
+                                    color: Color(0xFF78350F),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'Light My Candle',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF78350F),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
+                        ).animate().scale(
+                          delay: 400.ms,
+                          duration: 600.ms,
+                          curve: Curves.elasticOut,
                         ),
                       ],
                     ),
@@ -214,105 +262,153 @@ class _CandlesScreenState extends ConsumerState<CandlesScreen> {
                 ),
               ),
 
-              // Stats Bar
+              // Glassmorphic Stats Bar
               SliverToBoxAdapter(
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(24),
                     border: Border.all(
                       color: Colors.white.withValues(alpha: 0.1),
                     ),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildStat(
-                        LucideIcons.flame,
-                        'Active Candles',
-                        '${_candles.length}',
-                        Colors.amber,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildStat(
+                            LucideIcons.flame,
+                            'Active',
+                            '${_baseCandleCount + _candles.length}',
+                            AppTheme.gold500,
+                          ),
+                          _buildStat(
+                            LucideIcons.heart,
+                            'Prayers',
+                            _formatNumber(_totalPrayers),
+                            AppTheme.error,
+                          ),
+                          _buildStat(
+                            LucideIcons.users,
+                            'Praying',
+                            _formatNumber(_peoplePraying),
+                            AppTheme.info,
+                          ),
+                        ],
                       ),
-                      _buildStat(
-                        LucideIcons.heart,
-                        'Total Prayers',
-                        _formatNumber(_totalPrayers),
-                        Colors.pink,
-                      ),
-                      _buildStat(
-                        LucideIcons.users,
-                        'People Praying',
-                        _formatNumber(_peoplePraying),
-                        Colors.blue,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
 
-              // Premium Candles Section
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+              // Candle Sections
               if (_candles.isNotEmpty) ...[
                 _buildCandleSection(
-                  title: 'Premium Candles',
+                  title: 'Featured Memorials',
                   icon: LucideIcons.crown,
-                  iconColor: Colors.amber,
+                  iconColor: AppTheme.gold500,
                   badge: 'MOST PRAYERS',
                   candles: _premiumCandles,
                   crossAxisCount: 3,
                 ),
-
                 _buildCandleSection(
-                  title: 'Standard Candles',
-                  icon: LucideIcons.star,
-                  iconColor: Colors.blue.shade400,
+                  title: 'Standard Devotions',
+                  icon: LucideIcons.sparkles,
+                  iconColor: Colors.blue.shade300,
                   candles: _standardCandles,
                   crossAxisCount: 3,
                 ),
-
                 _buildCandleSection(
-                  title: 'Community Candles',
+                  title: 'Community Intentions',
                   icon: LucideIcons.flame,
-                  iconColor: Colors.grey,
-                  candles: [..._basicCandles, ..._freeCandles],
+                  iconColor: AppTheme.textMuted,
+                  candles: _freeCandles,
                   crossAxisCount: 4,
                   isCompact: true,
                 ),
               ] else ...[
                 // Empty State
                 SliverToBoxAdapter(
-                  child: Container(
-                    height: 300,
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          LucideIcons.flame,
-                          size: 48,
-                          color: Colors.white.withValues(alpha: 0.3),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Be the first to light a candle',
-                          style: GoogleFonts.merriweather(
-                            fontSize: 18,
-                            color: Colors.white.withValues(alpha: 0.7),
-                            fontStyle: FontStyle.italic,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 60),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            LucideIcons.flame,
+                            size: 48,
+                            color: Colors.white12,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          Text(
+                            'Be the first to light a candle',
+                            style: GoogleFonts.playfairDisplay(
+                              fontSize: 18,
+                              color: AppTheme.textMuted,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ],
 
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: SmartAdBanner(page: 'candles', position: 'bottom'),
+                ),
+              ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 120)),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildParticle(int index) {
+    final random = Random(index);
+    final size = random.nextDouble() * 3 + 1;
+    final duration = 3000 + random.nextInt(3000);
+
+    return Positioned(
+      left: random.nextDouble() * 500, // Reasonable width
+      top: random.nextDouble() * 800, // Reasonable height
+      child:
+          Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  color: AppTheme.gold400.withValues(alpha: 0.3),
+                  shape: BoxShape.circle,
+                  boxShadow: const [
+                    BoxShadow(color: AppTheme.gold500, blurRadius: 4),
+                  ],
+                ),
+              )
+              .animate(onPlay: (c) => c.repeat())
+              .moveY(
+                begin: 0,
+                end: -50 - random.nextDouble() * 50,
+                duration: duration.ms,
+              )
+              .fadeIn(duration: (duration * 0.2).ms)
+              .fadeOut(
+                delay: (duration * 0.8).ms,
+                duration: (duration * 0.2).ms,
+              ),
     );
   }
 

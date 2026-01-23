@@ -167,7 +167,8 @@ class _DocumentCard extends StatelessWidget {
     return PremiumGlassCard(
       padding: EdgeInsets.zero,
       child: InkWell(
-        onTap: () => launchUrl(Uri.parse(document.url)),
+        onTap: () =>
+            launchUrl(Uri.parse(document.url), mode: LaunchMode.inAppWebView),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),

@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../../core/theme/app_theme.dart';
 import '../data/ten_commandments.dart';
+import '../../ads/services/ad_service.dart';
 
 /// Provider for tracking checked items
 final confessionChecksProvider =
@@ -210,6 +211,14 @@ class _ConfessionGuideScreenState extends ConsumerState<ConfessionGuideScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('All checks cleared')),
               );
+
+              // Show Interstitial Ad upon completion
+              ref
+                  .read(adServiceProvider)
+                  .loadInterstitialAd(
+                    onAdLoaded: (ad) => ad.show(),
+                    onAdFailed: (_) {},
+                  );
             },
             child: Text('Clear', style: GoogleFonts.inter(color: Colors.red)),
           ),

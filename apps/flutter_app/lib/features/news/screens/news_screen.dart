@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../ads/widgets/native_ad_widget.dart';
 
 class NewsSource {
   final String name;
@@ -93,14 +94,23 @@ class NewsScreen extends ConsumerWidget {
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: _sources.length,
+              itemCount: _sources.length + 1, // +1 for Ad
               separatorBuilder: (context, index) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
-                final source = _sources[index];
+                // Insert Ad at index 3
+                if (index == 3) {
+                  return const NativeAdListItem();
+                }
+
+                // Adjust index for data source
+                final int dataIndex = index > 3 ? index - 1 : index;
+                if (dataIndex >= _sources.length) return const SizedBox();
+
+                final source = _sources[dataIndex];
                 return InkWell(
                   onTap: () => launchUrl(
                     Uri.parse(source.url),
-                    mode: LaunchMode.externalApplication,
+                    mode: LaunchMode.inAppWebView,
                   ),
                   borderRadius: BorderRadius.circular(16),
                   child: Container(
@@ -210,7 +220,7 @@ class NewsScreen extends ConsumerWidget {
                             label: Text('${s.name} RSS'),
                             onPressed: () => launchUrl(
                               Uri.parse(s.feed),
-                              mode: LaunchMode.externalApplication,
+                              mode: LaunchMode.inAppWebView,
                             ),
                             backgroundColor: Colors.white,
                             labelStyle: TextStyle(

@@ -85,7 +85,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
       backgroundColor: AppTheme.sacredNavy950,
       appBar: AppBar(
         title: Text(
-          'Support Our Mission',
+          'Contribute',
           style: GoogleFonts.merriweather(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.transparent,
@@ -141,7 +141,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
         children: [
           // Header
           Text(
-            'Make a Difference',
+            'Support the Platform',
             style: GoogleFonts.merriweather(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -151,7 +151,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
           ).animate().fadeIn(),
           const SizedBox(height: 8),
           Text(
-            'Your generosity helps us spread the faith',
+            'Your contributions help maintain this service',
             style: GoogleFonts.inter(
               fontSize: 14,
               color: AppTheme.textSecondary,
@@ -350,7 +350,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'MyPrayerTower is completely free to use. Your voluntary support helps us grow.',
+                    'MyPrayerTower is a privately-owned technology service. Contributions are service fees that support platform operations and are not tax-deductible.',
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       color: Colors.white,
@@ -383,7 +383,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
                 const SizedBox(width: 8),
                 Text(
                   _selectedAmount > 0
-                      ? 'Donate \$${_totalAmount.toStringAsFixed(2)}'
+                      ? 'Contribute \$${_totalAmount.toStringAsFixed(2)}'
                       : 'Select Amount',
                   style: GoogleFonts.inter(
                     color: Colors.black,
@@ -408,6 +408,19 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'MyPrayerTower is an intermediary service provider and not a registered charity, church, or religious institution. Payments are voluntary service fees for platform maintenance and development, not charitable donations.',
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                color: Colors.white38,
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
           const SizedBox(height: 140), // Increased clearance for bottom nav bar
         ],
       ),
@@ -423,7 +436,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Become a Partner',
+            'Become a Supporter',
             style: GoogleFonts.merriweather(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -605,14 +618,14 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
       ref: ref,
       amount: _totalAmount,
       currency: 'USD',
-      description: 'Donation to MyPrayerTower',
-      itemName: 'Donation',
+      description: 'Platform Support Contribution',
+      itemName: 'Platform Contribution',
       itemIcon: '💝',
       onSuccess: (id) {
         _paymentSuccessful = true; // Mark as successful
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Donation successful! ID: $id'),
+            content: Text('Contribution successful! ID: $id'),
             backgroundColor: Colors.green,
           ),
         );

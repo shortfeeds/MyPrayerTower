@@ -33,7 +33,7 @@ void main() {
       const ProviderScope(child: MaterialApp(home: MemorialsScreen())),
     );
     expect(find.text('Memorials'), findsOneWidget);
-    expect(find.text('Remember Those We Love'), findsOneWidget);
+    expect(find.text('Visit a Memorial of Remembrance'), findsOneWidget);
 
     // 4. Achievements Screen
     await tester.pumpWidget(

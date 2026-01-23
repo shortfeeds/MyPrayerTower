@@ -109,7 +109,11 @@ class _ChantScreenState extends State<ChantScreen> {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading audio: $e'),
+            content: Text(
+              e.toString().contains('WebAudioError')
+                  ? 'Audio temporarily unavailable. Please try again later.'
+                  : 'Error loading audio. Please check your connection.',
+            ),
             backgroundColor: Colors.red,
           ),
         );

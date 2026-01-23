@@ -86,7 +86,8 @@ class _EncyclicalCard extends StatelessWidget {
         side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
       ),
       child: InkWell(
-        onTap: () => launchUrl(Uri.parse(encyclical.url)),
+        onTap: () =>
+            launchUrl(Uri.parse(encyclical.url), mode: LaunchMode.inAppWebView),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),

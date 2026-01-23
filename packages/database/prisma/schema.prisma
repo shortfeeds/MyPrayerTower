@@ -787,9 +787,14 @@ model SponsoredContent {
 
   // Ad source configuration (Google AdMob/AdSense vs Offline Sponsor)
   adSource        AdSource  @default(OFFLINE)
-  googleAdUnitId  String?   // Google AdMob/AdSense unit ID
+  googleAdUnitId  String?   // Google AdSense unit ID (web fallback)
   priority        Int       @default(0) // Higher priority shown first
   targetPages     String[]  // Multiple pages targeting
+  
+  // Multi-platform support
+  platforms       String[]  @default(["web"]) // ["web", "android", "ios", "all"]
+  androidAdUnitId String?   // AdMob unit ID for Android
+  iosAdUnitId     String?   // AdMob unit ID for iOS
 
   @@index([placement, isActive])
   @@index([startDate, endDate])

@@ -8,6 +8,7 @@ import '../repositories/churches_repository.dart';
 import '../models/church_model.dart';
 import '../../../core/constants/sacred_copy.dart';
 import '../../../widgets/app_bar_menu_button.dart';
+import '../../ads/widgets/native_ad_widget.dart';
 
 /// Church type labels matching web app
 const Map<String, String> churchTypeLabels = {
@@ -316,26 +317,42 @@ class _ChurchesScreenState extends ConsumerState<ChurchesScreen> {
               : SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      if (index >= _churches.length) {
-                        return _hasMore
-                            ? const Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              )
-                            : null;
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _ChurchCard(
-                          church: _churches[index],
-                          onTap: () =>
-                              context.push('/churches/${_churches[index].id}'),
-                        ),
-                      );
-                    }, childCount: _churches.length + (_hasMore ? 1 : 0)),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        // Calculate actual data index
+                        final int itemIndex = index - (index ~/ 9);
+
+                        // Show Ad every 9th item (indices 8, 17, 26...)
+                        if ((index + 1) % 9 == 0) {
+                          return const NativeAdListItem();
+                        }
+
+                        if (itemIndex >= _churches.length) {
+                          return _hasMore
+                              ? const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                )
+                              : null;
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _ChurchCard(
+                            church: _churches[itemIndex],
+                            onTap: () => context.push(
+                              '/churches/${_churches[itemIndex].id}',
+                            ),
+                          ),
+                        );
+                      },
+                      childCount:
+                          _churches.length +
+                          (_churches.length ~/ 8) +
+                          (_hasMore ? 1 : 0),
+                    ),
                   ),
                 ),
 
@@ -772,7 +789,10 @@ class _ChurchCard extends StatelessWidget {
                   if (church.website != null && church.website!.isNotEmpty) ...[
                     const SizedBox(width: 16),
                     GestureDetector(
-                      onTap: () => launchUrl(Uri.parse(church.website!)),
+                      onTap: () => launchUrl(
+                        Uri.parse(church.website!),
+                        mode: LaunchMode.inAppWebView,
+                      ),
                       child: Row(
                         children: [
                           Icon(

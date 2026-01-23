@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../ads/widgets/rewarded_ad_widget.dart';
 
 class CertificatesScreen extends StatelessWidget {
   const CertificatesScreen({super.key});
@@ -51,7 +52,48 @@ class CertificatesScreen extends StatelessWidget {
               childAspectRatio: 0.8,
               children: [
                 _buildEmptySlot(),
-                _buildEmptySlot(),
+                // Special Ad-Unlocked Certificate
+                RewardedAdUnlock(
+                  title: 'Prayer Guardian',
+                  description: 'Unlock this special certificate',
+                  previewContent: 'CERTIFICATE OF\nPRAYER GUARDIANSHIP',
+                  fullContentBuilder: (context) => Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppTheme.gold500),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          LucideIcons.shieldCheck,
+                          color: AppTheme.gold500,
+                          size: 48,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'GUARDIAN',
+                          style: GoogleFonts.merriweather(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          'UNLOCKED',
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: AppTheme.gold400,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
                 _buildEmptySlot(),
                 _buildEmptySlot(),
               ].animate(interval: 100.ms).fadeIn().scale(),

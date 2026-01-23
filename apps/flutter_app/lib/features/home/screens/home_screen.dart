@@ -37,6 +37,14 @@ class HomeScreen extends ConsumerWidget {
           // 2. Live Stats Bar
           const SliverToBoxAdapter(child: LiveStatsBar()),
 
+          // Top Ad Banner
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: SmartAdBanner(page: 'home', position: 'top'),
+            ),
+          ),
+
           // 3. Quick Access Bar
           SliverToBoxAdapter(
             child: Padding(
@@ -499,20 +507,6 @@ class HomeScreen extends ConsumerWidget {
         '/bible',
       ),
       _FeatureItem(
-        LucideIcons.bot,
-        'AI Guide',
-        'Ask Questions',
-        Colors.purpleAccent.shade400,
-        '/ai-companion',
-      ),
-      _FeatureItem(
-        LucideIcons.listChecks,
-        'Plans',
-        'Reading Plans',
-        Colors.blueAccent.shade400,
-        '/reading-plans',
-      ),
-      _FeatureItem(
         LucideIcons.user,
         'Saints',
         'Holy Lives',
@@ -678,7 +672,7 @@ class HomeScreen extends ConsumerWidget {
       ),
       _FeatureItem(
         LucideIcons.gift,
-        'Donate',
+        'Contribute',
         'Support Us',
         AppTheme.gold500,
         '/donate',

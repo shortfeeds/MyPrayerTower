@@ -8,6 +8,9 @@ import '../models/prayer_request_model.dart';
 import '../repositories/prayer_wall_repository.dart';
 import '../widgets/prayer_request_card.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../ads/widgets/native_ad_widget.dart';
+// ignore: unused_import
+import '../../ads/services/ad_service.dart';
 
 class PrayerWallScreen extends ConsumerStatefulWidget {
   const PrayerWallScreen({super.key});
@@ -130,7 +133,7 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
                 ),
               ),
             ),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
+          const SliverPadding(padding: EdgeInsets.only(bottom: 150)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -335,11 +338,21 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
       padding: const EdgeInsets.all(16),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
+          // Calculate actual data index
+          final int itemIndex = index - (index ~/ 6);
+
+          // Show Ad every 6th item (indices 5, 11, 17...)
+          if ((index + 1) % 6 == 0) {
+            return const NativeAdListItem();
+          }
+
+          if (itemIndex >= _prayers.length) return null;
+
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
-            child: PrayerRequestCard(request: _prayers[index]),
+            child: PrayerRequestCard(request: _prayers[itemIndex]),
           );
-        }, childCount: _prayers.length),
+        }, childCount: _prayers.length + (_prayers.length ~/ 5)),
       ),
     );
   }
@@ -389,8 +402,10 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
                 if (!isAnonymous) ...[
                   TextField(
                     controller: nameController,
+                    style: const TextStyle(color: AppTheme.sacredNavy900),
                     decoration: InputDecoration(
                       labelText: 'Your Name',
+                      labelStyle: TextStyle(color: Colors.grey.shade700),
                       filled: true,
                       fillColor: Colors.grey.shade50,
                       border: OutlineInputBorder(
@@ -403,8 +418,10 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
                 TextField(
                   controller: controller,
                   maxLines: 4,
+                  style: const TextStyle(color: AppTheme.sacredNavy900),
                   decoration: InputDecoration(
                     labelText: 'How can we pray for you?',
+                    labelStyle: TextStyle(color: Colors.grey.shade700),
                     alignLabelWithHint: true,
                     filled: true,
                     fillColor: Colors.grey.shade50,
@@ -416,8 +433,14 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: selectedCategory,
+                  style: const TextStyle(
+                    color: AppTheme.sacredNavy900,
+                    fontSize: 16,
+                  ),
+                  dropdownColor: Colors.white,
                   decoration: InputDecoration(
                     labelText: 'Category',
+                    labelStyle: TextStyle(color: Colors.grey.shade700),
                     filled: true,
                     fillColor: Colors.grey.shade50,
                     border: OutlineInputBorder(
@@ -436,7 +459,10 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
                   activeColor: AppTheme.gold500,
                   title: Text(
                     'Post Anonymously',
-                    style: GoogleFonts.inter(fontSize: 14),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: AppTheme.sacredNavy900,
+                    ),
                   ),
                   controlAffinity: ListTileControlAffinity.leading,
                   onChanged: (v) => setDialogState(() => isAnonymous = v!),
@@ -481,6 +507,21 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
                     ),
                   );
                   _loadPrayers(refresh: true);
+
+                  // Show Interstitial Ad (Simulated logic for now)
+                  if (context.mounted) {
+                    ref
+                        .read(adServiceProvider)
+                        .loadInterstitialAd(
+                          onAdLoaded: (ad) {
+                            ad.show();
+                          },
+                          onAdFailed: (error) {
+                            // Silently fail or log
+                            debugPrint('Interstitial failed: $error');
+                          },
+                        );
+                  }
                 } else if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

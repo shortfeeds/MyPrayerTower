@@ -1,9 +1,23 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+
 /// API Configuration Constants
 class ApiConstants {
   ApiConstants._();
 
   /// Base URL for the MyPrayerTower API
-  static const String baseUrl = 'https://myprayertower.com/api';
+  /// Base URL for the MyPrayerTower API
+  static String get baseUrl {
+    if (kDebugMode) {
+      // For Android Emulator, use 10.0.2.2
+      // For iOS Simulator and Web, use localhost
+      if (!kIsWeb && Platform.isAndroid) {
+        return 'http://10.0.2.2:3005/api';
+      }
+      return 'http://localhost:3005/api';
+    }
+    return 'https://myprayertower.com/api';
+  }
 
   /// Connection timeout in milliseconds
   static const int connectionTimeout = 30000;

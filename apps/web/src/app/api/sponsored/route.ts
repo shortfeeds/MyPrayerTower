@@ -31,6 +31,15 @@ export async function GET(request: NextRequest) {
             whereClause.placement = placement;
         }
 
+        // Platform filtering
+        const platform = searchParams.get('platform');
+        if (platform) {
+            whereClause.platforms = { has: platform };
+        } else {
+            // Default to web if no platform specified (backward compatibility)
+            whereClause.platforms = { has: 'web' };
+        }
+
         // Find all active sponsored content, sorted by priority then impressions
         const contents = await db.sponsoredContent.findMany({
             where: whereClause,
@@ -50,6 +59,8 @@ export async function GET(request: NextRequest) {
                 placement: true,
                 adSource: true,
                 googleAdUnitId: true,
+                androidAdUnitId: true,
+                iosAdUnitId: true,
                 priority: true,
             },
         });
@@ -64,6 +75,8 @@ export async function GET(request: NextRequest) {
                 linkUrl: content.linkUrl || '',
                 altText: content.description || content.title,
                 googleAdUnitId: (content as any).googleAdUnitId || '',
+                androidAdUnitId: (content as any).androidAdUnitId || '',
+                iosAdUnitId: (content as any).iosAdUnitId || '',
                 position: parts[1] || 'sidebar',
                 priority: (content as any).priority || 0,
             };
@@ -88,6 +101,7 @@ export async function GET(request: NextRequest) {
         console.error('Error fetching sponsored content:', error);
         return NextResponse.json({
             error: 'Failed to fetch sponsored content',
+            details: error.message,
             ads: [],
             content: null
         }, { status: 500 });

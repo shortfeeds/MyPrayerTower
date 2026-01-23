@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../ads/widgets/smart_ad_banner.dart';
 import '../../../core/theme/app_theme.dart';
 import '../repositories/bible_repository.dart';
 
@@ -254,6 +255,7 @@ class _BibleChapterScreenState extends ConsumerState<BibleChapterScreen> {
                 ),
               ),
             ),
+            if (!_isImmersiveMode) const SafeAdBanner(page: 'bible_reading'),
           ],
         ),
       ),
@@ -508,6 +510,20 @@ class _BibleChapterScreenState extends ConsumerState<BibleChapterScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SafeAdBanner extends StatelessWidget {
+  final String page;
+  const SafeAdBanner({super.key, required this.page});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.black,
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      child: SmartAdBanner(page: page, position: 'bottom'),
     );
   }
 }

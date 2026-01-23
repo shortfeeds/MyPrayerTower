@@ -378,8 +378,7 @@ class _ResourceButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
-      onPressed: () =>
-          launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
+      onPressed: () => launchUrl(Uri.parse(url), mode: LaunchMode.inAppWebView),
       icon: const Icon(LucideIcons.externalLink, size: 14),
       label: Text(label),
       style: OutlinedButton.styleFrom(

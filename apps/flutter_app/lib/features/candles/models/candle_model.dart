@@ -26,13 +26,28 @@ class Candle with _$Candle {
   String get tier {
     switch (duration) {
       case 'THIRTY_DAYS':
-        return 'premium';
+        return 'divine';
+      case 'FOURTEEN_DAYS':
+        return 'marian';
       case 'SEVEN_DAYS':
-        return 'standard';
+        return 'altar';
       case 'THREE_DAYS':
-        return 'basic';
+        return 'devotion';
       default:
         return 'free';
+    }
+  }
+
+  String get tierLabel {
+    switch (tier) {
+      case 'divine':
+      case 'marian':
+      case 'altar':
+        return 'Premium';
+      case 'devotion':
+        return 'Standard';
+      default:
+        return 'Free';
     }
   }
 

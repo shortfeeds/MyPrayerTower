@@ -140,7 +140,7 @@ class _BibleScreenState extends ConsumerState<BibleScreen>
 
   Widget _buildBookList(List<_BibleBook> books) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
       itemCount: books.length,
       itemBuilder: (context, index) {
         final book = books[index];

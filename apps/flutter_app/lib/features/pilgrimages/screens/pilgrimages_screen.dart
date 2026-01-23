@@ -182,8 +182,10 @@ class PilgrimagesScreen extends ConsumerWidget {
                             SizedBox(
                               width: double.infinity,
                               child: OutlinedButton.icon(
-                                onPressed: () =>
-                                    launchUrl(Uri.parse(site.virtualTourUrl!)),
+                                onPressed: () => launchUrl(
+                                  Uri.parse(site.virtualTourUrl!),
+                                  mode: LaunchMode.inAppWebView,
+                                ),
                                 icon: const Icon(
                                   LucideIcons.externalLink,
                                   size: 16,

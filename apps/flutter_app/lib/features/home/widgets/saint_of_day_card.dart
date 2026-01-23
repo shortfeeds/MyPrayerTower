@@ -78,7 +78,7 @@ class SaintOfDayCard extends ConsumerWidget {
                 padding: const EdgeInsets.all(16), // Reduced from 20
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     // Header with badge
                     Row(

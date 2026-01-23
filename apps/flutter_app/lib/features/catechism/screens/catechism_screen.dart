@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../widgets/app_bar_menu_button.dart';
 import '../../library/screens/web_document_screen.dart';
+import '../../ads/widgets/rewarded_ad_widget.dart';
 
 /// Catechism of the Catholic Church screen
 class CatechismScreen extends ConsumerStatefulWidget {
@@ -285,8 +286,69 @@ class _CatechismScreenState extends ConsumerState<CatechismScreen> {
   }
 
   void _openSection(_CatechismSection section) {
-    // Open in internal Web Document Viewer
-    // For now, point to the main index as we don't have deep links in our model yet
+    // Check if this section belongs to Part 3 or 4 (Premium)
+    bool isPremium = false;
+    for (int i = 2; i < _parts.length; i++) {
+      if (_parts[i].sections.contains(section)) {
+        isPremium = true;
+        break;
+      }
+    }
+
+    if (isPremium) {
+      showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          backgroundColor: AppTheme.sacredNavy900,
+          title: Text(
+            'Unlock Premium Content',
+            style: GoogleFonts.merriweather(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            'Watch a short video to access this section of the Catechism.',
+            style: GoogleFonts.inter(color: Colors.white70),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                Navigator.pop(dialogContext);
+                final service = ref.read(rewardedAdServiceProvider);
+                final rewarded = await service.showAd(
+                  onRewarded: () => _navigateToSection(section),
+                );
+
+                if (!mounted) return;
+
+                if (!rewarded) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Ad was not completed')),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.gold500,
+                foregroundColor: Colors.black,
+              ),
+              icon: const Icon(LucideIcons.playCircle, size: 16),
+              label: const Text('Watch Ad'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    _navigateToSection(section);
+  }
+
+  void _navigateToSection(_CatechismSection section) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => WebDocumentScreen(

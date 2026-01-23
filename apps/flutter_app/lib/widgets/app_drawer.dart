@@ -608,7 +608,7 @@ class _SocialIcon extends StatelessWidget {
       onTap: () async {
         final uri = Uri.parse(url);
         if (await canLaunchUrl(uri)) {
-          await launchUrl(uri);
+          await launchUrl(uri, mode: LaunchMode.inAppWebView);
         }
       },
       borderRadius: BorderRadius.circular(10),
