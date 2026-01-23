@@ -18,7 +18,7 @@ interface IndexNowSubmission {
  * when content is created or updated.
  */
 export async function submitToIndexNow({ url, urlList }: IndexNowSubmission) {
-    const host = 'myprayertower.com';
+    const host = 'www.myprayertower.com';
 
     try {
         const payload = {
@@ -54,14 +54,19 @@ export async function submitToIndexNow({ url, urlList }: IndexNowSubmission) {
  * Helper to submit single URL
  */
 export async function submitUrlToIndexNow(url: string) {
-    return submitToIndexNow({ url: `https://myprayertower.com${url}` });
+    // Ensure URL starts with /
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return submitToIndexNow({ url: `https://www.myprayertower.com${path}` });
 }
 
 /**
  * Helper to submit multiple URLs
  */
 export async function submitUrlsToIndexNow(urls: string[]) {
-    const fullUrls = urls.map(u => `https://myprayertower.com${u}`);
+    const fullUrls = urls.map(u => {
+        const path = u.startsWith('/') ? u : `/${u}`;
+        return `https://www.myprayertower.com${path}`;
+    });
     return submitToIndexNow({ urlList: fullUrls });
 }
 
