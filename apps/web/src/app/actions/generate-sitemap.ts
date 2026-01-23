@@ -2,8 +2,9 @@
 
 import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { NOVENAS } from '@/lib/novenas';
 
-const BASE_URL = 'https://myprayertower.com';
+const BASE_URL = 'https://www.myprayertower.com';
 const CHUNK_SIZE = 5000;
 
 export async function generateSitemapAction() {
@@ -66,7 +67,19 @@ export async function generateSitemapAction() {
   </url>`;
         });
 
-        // 4. Prayers
+        // 4. Novenas (Static)
+        NOVENAS.forEach(n => {
+            xml += `
+  <url>
+    <loc>${BASE_URL}/novenas/${n.id}</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+        });
+
+        /*
+        // Prayer model not found in schema currently - skipping
         const prayers = await db.prayer.findMany({
             where: { slug: { not: null } },
             select: { slug: true }
@@ -80,6 +93,7 @@ export async function generateSitemapAction() {
     <priority>0.7</priority>
   </url>`;
         });
+        */
 
         // 5. Memorials
         const memorials = await db.memorial.findMany({
@@ -108,7 +122,7 @@ export async function generateSitemapAction() {
 
         console.log('Sitemap generated and saved to DB.');
         revalidatePath('/sitemap.xml');
-        return { success: true, count: staticRoutes.length + churchCount + saints.length + prayers.length + memorials.length };
+        return { success: true, count: staticRoutes.length + churchCount + saints.length + NOVENAS.length + memorials.length };
 
     } catch (error) {
         console.error('Failed to generate sitemap:', error);
