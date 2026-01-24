@@ -47,6 +47,7 @@ class ReadingsScreen extends StatelessWidget {
               'Matthew 2:1-12',
               'When Jesus was born in Bethlehem of Judea, in the days of King Herod...',
             ),
+            const SizedBox(height: 120),
           ],
         ),
       ),

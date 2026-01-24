@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -7,21 +8,31 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/premium_glass_card.dart';
 import '../../../core/widgets/premium_scaffold.dart';
+import '../providers/progress_provider.dart';
 
-class JourneyScreen extends StatelessWidget {
+class JourneyScreen extends ConsumerWidget {
   const JourneyScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final progress = ref.watch(progressProvider);
+    final milestones = progress.milestones;
+
     return PremiumScaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppTheme.gold500,
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Add Milestone coming soon!')),
-          );
-        },
-        child: const Icon(LucideIcons.plus, color: Colors.black),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: FloatingActionButton(
+          backgroundColor: AppTheme.gold500,
+          onPressed: () {
+            ref
+                .read(progressProvider.notifier)
+                .addMilestone(
+                  'New Grace',
+                  'A personal milestone in your journey.',
+                );
+          },
+          child: const Icon(LucideIcons.plus, color: Colors.black),
+        ),
       ),
       body: CustomScrollView(
         slivers: [
@@ -52,23 +63,35 @@ class JourneyScreen extends StatelessWidget {
             ),
           ),
 
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                _buildTimelineItem(
-                  year: DateTime.now().year.toString(),
-                  title: 'Journey Begun',
-                  description: 'Welcome to your spiritual journey.',
-                  icon: LucideIcons.footprints,
-                  color: AppTheme.gold500,
-                  isLast: true,
-                ).animate(delay: 100.ms).fadeIn().slideX(),
-
-                const SizedBox(height: 50),
-              ]),
+          if (milestones.isEmpty)
+            SliverFillRemaining(
+              child: Center(
+                child: Text(
+                  'Your journey is just beginning...',
+                  style: GoogleFonts.inter(color: Colors.white38),
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.all(24),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final milestone = milestones[index];
+                  return _buildTimelineItem(
+                    year: milestone.date.year.toString(),
+                    dayMonth: '${milestone.date.day}/${milestone.date.month}',
+                    title: milestone.title,
+                    description: milestone.description,
+                    icon: milestone.type == 'milestone'
+                        ? LucideIcons.footprints
+                        : LucideIcons.medal,
+                    color: index == 0 ? AppTheme.gold500 : Colors.white24,
+                    isLast: index == milestones.length - 1,
+                  ).animate(delay: (100 * index).ms).fadeIn().slideX();
+                }, childCount: milestones.length),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -76,6 +99,7 @@ class JourneyScreen extends StatelessWidget {
 
   Widget _buildTimelineItem({
     required String year,
+    required String dayMonth,
     required String title,
     required String description,
     required IconData icon,
@@ -90,8 +114,8 @@ class JourneyScreen extends StatelessWidget {
           Column(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: AppTheme.sacredNavy800,
                   shape: BoxShape.circle,
@@ -100,30 +124,39 @@ class JourneyScreen extends StatelessWidget {
                     width: 2,
                   ),
                   boxShadow: [
-                    BoxShadow(
-                      color: color.withValues(alpha: 0.2),
-                      blurRadius: 10,
-                    ),
+                    if (color == AppTheme.gold500)
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.2),
+                        blurRadius: 10,
+                      ),
                   ],
                 ),
                 child: Center(
-                  child: Text(
-                    year,
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        dayMonth,
+                        style: GoogleFonts.inter(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white60,
+                        ),
+                      ),
+                      Text(
+                        year,
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
               if (!isLast)
-                Expanded(
-                  child: Container(
-                    width: 2,
-                    color: color.withValues(alpha: 0.2),
-                  ),
-                ),
+                Expanded(child: Container(width: 1, color: Colors.white12)),
             ],
           ),
           const SizedBox(width: 16),
@@ -131,7 +164,7 @@ class JourneyScreen extends StatelessWidget {
           // Content
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: const EdgeInsets.only(bottom: 32),
               child: PremiumGlassCard(
                 padding: const EdgeInsets.all(16),
                 child: Row(
@@ -152,14 +185,16 @@ class JourneyScreen extends StatelessWidget {
                           Text(
                             description,
                             style: GoogleFonts.inter(
-                              fontSize: 14,
+                              fontSize: 13,
                               color: Colors.white70,
+                              height: 1.4,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    Icon(icon, color: color, size: 24),
+                    const SizedBox(width: 12),
+                    Icon(icon, color: color, size: 20),
                   ],
                 ),
               ),

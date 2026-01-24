@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/premium_glass_card.dart';
 import '../../../core/widgets/shiny_button.dart';
 import '../../../core/widgets/premium_scaffold.dart';
+import '../providers/progress_provider.dart';
 
-class YearInReviewScreen extends StatelessWidget {
+class YearInReviewScreen extends ConsumerWidget {
   const YearInReviewScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final progress = ref.watch(progressProvider);
+
     return PremiumScaffold(
       body: CustomScrollView(
         slivers: [
@@ -31,7 +34,7 @@ class YearInReviewScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                '2025 Wrapped',
+                '${DateTime.now().year} Wrapped',
                 style: GoogleFonts.merriweather(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -47,7 +50,7 @@ class YearInReviewScreen extends StatelessWidget {
           ),
 
           SliverPadding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(24),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 _buildIntroCard().animate().fadeIn().slideY(begin: 0.1, end: 0),
@@ -58,8 +61,8 @@ class YearInReviewScreen extends StatelessWidget {
                     Expanded(
                       child: _buildStatCard(
                         title: 'Prayers',
-                        value: '1,248',
-                        subtitle: 'Top 5% of users',
+                        value: progress.totalPrayers.toString(),
+                        subtitle: 'Times encountered God',
                         icon: LucideIcons.heart,
                         color: Colors.amber,
                       ).animate(delay: 100.ms).fadeIn().slideX(),
@@ -67,9 +70,9 @@ class YearInReviewScreen extends StatelessWidget {
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildStatCard(
-                        title: 'Hours',
-                        value: '142',
-                        subtitle: 'Time in prayer',
+                        title: 'Minutes',
+                        value: progress.focusMinutes.toString(),
+                        subtitle: 'Spiritual focus time',
                         icon: LucideIcons.clock,
                         color: Colors.blue,
                       ).animate(delay: 200.ms).fadeIn().slideX(),
@@ -78,18 +81,40 @@ class YearInReviewScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                _buildTopPrayerCard().animate(delay: 300.ms).fadeIn().slideY(),
-                const SizedBox(height: 16),
+                _buildStreakCard(
+                  progress.dailyStreak,
+                ).animate(delay: 400.ms).fadeIn().slideY(),
+                const SizedBox(height: 24),
 
-                _buildStreakCard().animate(delay: 400.ms).fadeIn().slideY(),
-                const SizedBox(height: 16),
+                Text(
+                  'LATEST MILESTONE',
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white24,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (progress.milestones.isNotEmpty)
+                  _buildMilestonePreview(progress.milestones.first)
+                else
+                  Text(
+                    'No milestones yet. Keep praying!',
+                    style: GoogleFonts.inter(
+                      color: Colors.white38,
+                      fontSize: 13,
+                    ),
+                  ),
+
+                const SizedBox(height: 32),
 
                 ShinyButton(
                   label: 'Share My Year',
                   icon: LucideIcons.share2,
                   onPressed: () {
                     Share.share(
-                      'Check out my 2025 Spiritual Year in Review on MyPrayerTower! 1,248 Prayers and 142 Hours of Grace. #MyPrayerTower',
+                      'Check out my ${DateTime.now().year} Spiritual Year in Review on MyPrayerTower! ${progress.totalPrayers} Prayers and ${progress.focusMinutes} Minutes of Grace. #MyPrayerTower',
                     );
                   },
                   color: AppTheme.gold500,
@@ -109,14 +134,10 @@ class YearInReviewScreen extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const Icon(
-            LucideIcons.partyPopper,
-            size: 48,
-            color: AppTheme.gold500,
-          ),
+          const Icon(LucideIcons.sparkles, size: 48, color: AppTheme.gold500),
           const SizedBox(height: 16),
           Text(
-            'What a Year of Grace!',
+            'A Journey of Grace',
             style: GoogleFonts.merriweather(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -126,9 +147,9 @@ class YearInReviewScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'You have grown closer to God through daily prayer and sacraments. Here is a look back at your spiritual journey.',
+            'Reflect on the moments you dedicated to silence, prayer, and growth this year.',
             style: GoogleFonts.inter(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.white70,
               height: 1.5,
             ),
@@ -151,19 +172,12 @@ class YearInReviewScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
+          Icon(icon, color: color.withValues(alpha: 0.8), size: 20),
           const SizedBox(height: 16),
           Text(
             value,
             style: GoogleFonts.outfit(
-              fontSize: 32,
+              fontSize: 28,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -171,7 +185,7 @@ class YearInReviewScreen extends StatelessWidget {
           Text(
             title,
             style: GoogleFonts.inter(
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
               color: Colors.white70,
             ),
@@ -179,14 +193,14 @@ class YearInReviewScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: GoogleFonts.inter(fontSize: 10, color: Colors.white38),
+            style: GoogleFonts.inter(fontSize: 9, color: Colors.white38),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTopPrayerCard() {
+  Widget _buildStreakCard(int streak) {
     return PremiumGlassCard(
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -196,51 +210,7 @@ class YearInReviewScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Most Prayed',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1,
-                    color: AppTheme.gold500,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'The Holy Rosary',
-                  style: GoogleFonts.merriweather(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  'Prayed 156 times',
-                  style: GoogleFonts.inter(fontSize: 14, color: Colors.white70),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            LucideIcons.crown,
-            size: 48,
-            color: AppTheme.gold500.withValues(alpha: 0.2),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStreakCard() {
-    return PremiumGlassCard(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Longest Streak',
+                  'Current Streak',
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -250,7 +220,7 @@ class YearInReviewScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '42 Days',
+                  '$streak Days',
                   style: GoogleFonts.merriweather(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -258,8 +228,8 @@ class YearInReviewScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Oct 12 - Nov 23',
-                  style: GoogleFonts.inter(fontSize: 14, color: Colors.white70),
+                  'Consistency is the key to peace.',
+                  style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
                 ),
               ],
             ),
@@ -268,6 +238,37 @@ class YearInReviewScreen extends StatelessWidget {
             LucideIcons.flame,
             size: 48,
             color: Colors.deepOrange.withValues(alpha: 0.5),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMilestonePreview(Milestone milestone) {
+    return PremiumGlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          const Icon(LucideIcons.medal, color: AppTheme.gold500, size: 24),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  milestone.title,
+                  style: GoogleFonts.merriweather(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  milestone.description,
+                  style: GoogleFonts.inter(fontSize: 12, color: Colors.white60),
+                ),
+              ],
+            ),
           ),
         ],
       ),

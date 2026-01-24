@@ -32,7 +32,22 @@ export function LanguageSwitcher({ id = 'google_translate_element' }: LanguageSw
     useEffect(() => {
         setMounted(true);
 
-        // Load Google Translate script
+        // Define global callback BEFORE loading script to ensure it's available
+        if (!window.googleTranslateElementInit) {
+            window.googleTranslateElementInit = () => {
+                // Initialize hidden translate element on the global ID
+                if (window.google && window.google.translate) {
+                    new window.google.translate.TranslateElement({
+                        pageLanguage: 'en',
+                        includedLanguages: CATHOLIC_LANGUAGES.map(l => l.code).join(','),
+                        layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+                        autoDisplay: false,
+                    }, 'google_translate_element');
+                }
+            };
+        }
+
+        // Load Google Translate script if not already loaded
         const scriptId = 'google-translate-script';
         if (!document.getElementById(scriptId)) {
             const script = document.createElement('script');
@@ -40,19 +55,6 @@ export function LanguageSwitcher({ id = 'google_translate_element' }: LanguageSw
             script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
             script.async = true;
             document.body.appendChild(script);
-        }
-
-        // Define global callback
-        if (!window.googleTranslateElementInit) {
-            window.googleTranslateElementInit = () => {
-                // Initialize hidden translate element
-                new window.google.translate.TranslateElement({
-                    pageLanguage: 'en',
-                    includedLanguages: CATHOLIC_LANGUAGES.map(l => l.code).join(','),
-                    layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-                    autoDisplay: false,
-                }, 'google_translate_hidden');
-            };
         }
 
         // Close dropdown when clicking outside
@@ -70,6 +72,7 @@ export function LanguageSwitcher({ id = 'google_translate_element' }: LanguageSw
         setIsOpen(false);
 
         // Trigger Google Translate
+        // We look for the Select element created by Google Translate
         const selectElement = document.querySelector('.goog-te-combo') as HTMLSelectElement;
         if (selectElement) {
             selectElement.value = langCode;
@@ -83,10 +86,7 @@ export function LanguageSwitcher({ id = 'google_translate_element' }: LanguageSw
 
     return (
         <div className="relative" ref={dropdownRef}>
-            {/* Hidden Google Translate Element */}
-            <div id="google_translate_hidden" className="hidden absolute" />
-
-            {/* Icon Button */}
+            {/* Icon Button using exact same styling */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-1.5 p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-all"

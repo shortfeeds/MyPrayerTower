@@ -10,6 +10,8 @@ import '../../../core/widgets/premium_glass_card.dart';
 import '../../../core/widgets/shiny_button.dart';
 import '../../../core/widgets/premium_scaffold.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../tracking/providers/progress_provider.dart';
+import '../../../core/services/data_reset_service.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -18,6 +20,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final user = authState.value;
+    final progress = ref.watch(progressProvider);
 
     if (authState.isLoading) {
       return const PremiumScaffold(
@@ -120,7 +123,7 @@ class ProfileScreen extends ConsumerWidget {
                   children: [
                     _StatItem(
                       icon: LucideIcons.flame,
-                      value: '${user.streakCount}',
+                      value: '${progress.dailyStreak}',
                       label: 'Day Streak',
                       color: AppTheme.gold500,
                     ),
@@ -129,9 +132,9 @@ class ProfileScreen extends ConsumerWidget {
                       height: 40,
                       color: Colors.white.withValues(alpha: 0.1),
                     ),
-                    const _StatItem(
+                    _StatItem(
                       icon: LucideIcons.heart,
-                      value: '127',
+                      value: '${progress.totalPrayers}',
                       label: 'Prayers',
                       color: Colors.pink,
                     ),
@@ -140,11 +143,11 @@ class ProfileScreen extends ConsumerWidget {
                       height: 40,
                       color: Colors.white.withValues(alpha: 0.1),
                     ),
-                    const _StatItem(
-                      icon: LucideIcons.trophy,
-                      value: '3',
-                      label: 'Badges',
-                      color: Colors.amber,
+                    _StatItem(
+                      icon: LucideIcons.timer,
+                      value: '${progress.focusMinutes}',
+                      label: 'Minutes',
+                      color: Colors.indigoAccent,
                     ),
                   ],
                 ),
@@ -235,12 +238,27 @@ class ProfileScreen extends ConsumerWidget {
                       context.go('/login');
                     },
                   ),
+                  _MenuItem(
+                    icon: LucideIcons.rotateCcw,
+                    title: 'Reset Local Data',
+                    subtitle: 'Wipe all records for a fresh start',
+                    color: Colors.orange,
+                    onTap: () => _showResetDataDialog(context, ref),
+                  ),
+                  _MenuItem(
+                    icon: LucideIcons.trash2,
+                    title: 'Delete Account',
+                    subtitle: 'Permanently remove your data',
+                    color: AppTheme.error,
+                    isDestructive: true,
+                    onTap: () => _showDeleteAccountDialog(context, ref),
+                  ),
                 ].animate(interval: 50.ms).fadeIn().slideX(begin: 0.1, end: 0),
               ),
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          const SliverToBoxAdapter(child: SizedBox(height: 120)),
         ],
       ),
     );
@@ -399,6 +417,107 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ],
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showResetDataDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.sacredNavy900,
+        title: Text(
+          'Reset All Data?',
+          style: GoogleFonts.merriweather(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'This will clear all your locally saved prayers, journals, and progress. It is perfect for starting a "Clean Slate" journey.',
+          style: GoogleFonts.inter(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await DataResetService.resetAllData();
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Data reset to nil. Restart app for best effect.',
+                  ),
+                ),
+              );
+            },
+            child: Text(
+              'Reset',
+              style: GoogleFonts.inter(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.sacredNavy900,
+        title: Text(
+          'Delete Account?',
+          style: GoogleFonts.merriweather(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'This action cannot be undone. All your prayers, candles, and history will be permanently erased.',
+          style: GoogleFonts.inter(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Close dialog
+              try {
+                await ref.read(authProvider.notifier).deleteAccount();
+                if (!context.mounted) return;
+
+                context.go('/login');
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Account deleted successfully')),
+                );
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error deleting account: $e')),
+                  );
+                }
+              }
+            },
+            child: Text(
+              'Delete',
+              style: GoogleFonts.inter(
+                color: AppTheme.error,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],

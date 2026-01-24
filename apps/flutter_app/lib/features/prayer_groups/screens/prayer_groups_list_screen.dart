@@ -13,12 +13,15 @@ class PrayerGroupsListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('My Prayer Groups')),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          context.push('/groups/create');
-        },
-        label: const Text('Create Group'),
-        icon: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            context.push('/groups/create');
+          },
+          label: const Text('Create Group'),
+          icon: const Icon(Icons.add),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -28,23 +31,25 @@ class PrayerGroupsListScreen extends ConsumerWidget {
           data: (groups) {
             if (groups.isEmpty) {
               return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.group_off, size: 64, color: Colors.grey),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'No groups yet',
-                      style: TextStyle(fontSize: 18, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 8),
-                    FilledButton(
-                      onPressed: () {
-                        context.push('/groups/create');
-                      },
-                      child: const Text('Create a Family Group'),
-                    ),
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.group_off, size: 64, color: Colors.grey),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'No groups yet',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 8),
+                      FilledButton(
+                        onPressed: () {
+                          context.push('/groups/create');
+                        },
+                        child: const Text('Create a Family Group'),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }
@@ -58,7 +63,12 @@ class PrayerGroupsListScreen extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) => Center(child: Text('Error: $err')),
+          error: (err, stack) => Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Text('Error: $err', textAlign: TextAlign.center),
+            ),
+          ),
         ),
       ),
     );

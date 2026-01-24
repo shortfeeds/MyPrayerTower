@@ -12,11 +12,9 @@ import '../../ads/widgets/smart_ad_banner.dart';
 
 import '../widgets/daily_reading_card.dart';
 import '../widgets/saint_of_day_card.dart';
-import '../widgets/live_stats_bar.dart';
-// import '../widgets/verse_of_the_day.dart'; // Replaced
-import '../widgets/home_banners.dart';
 import '../widgets/quick_access_bar.dart';
 import '../widgets/trending_prayers.dart';
+import '../widgets/home_features_grid.dart'; // Added
 
 import '../widgets/prayer_wall_preview.dart';
 
@@ -34,17 +32,6 @@ class HomeScreen extends ConsumerWidget {
           // 1. Immersive Header (Pinned)
           const PremiumHomeHeader(),
 
-          // 2. Live Stats Bar
-          const SliverToBoxAdapter(child: LiveStatsBar()),
-
-          // Top Ad Banner
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: SmartAdBanner(page: 'home', position: 'top'),
-            ),
-          ),
-
           // 3. Quick Access Bar
           SliverToBoxAdapter(
             child: Padding(
@@ -53,7 +40,7 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Quick Actions",
+                    "Sacred Pathways",
                     style: GoogleFonts.merriweather(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -63,17 +50,6 @@ class HomeScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   const QuickAccessBar(),
                 ],
-              ),
-            ),
-          ),
-
-          // 4. Featured Banners (Carousel) - Replaces Verse of the Day
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.only(top: 24),
-              child: FadeInSlideUp(
-                delay: Duration(milliseconds: 100),
-                child: HomeBannerCarousel(),
               ),
             ),
           ),
@@ -89,7 +65,7 @@ class HomeScreen extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Today's Highlights",
+                        "Grace for Today",
                         style: GoogleFonts.merriweather(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -249,6 +225,14 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
+          // 8. Explore Grid (All Features)
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: HomeFeaturesGrid(),
+            ),
+          ),
+
           // Smart Ad Banner
           const SliverToBoxAdapter(
             child: Padding(
@@ -345,5 +329,4 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
-
-
+}

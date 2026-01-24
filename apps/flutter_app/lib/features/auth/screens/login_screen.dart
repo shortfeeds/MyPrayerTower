@@ -306,7 +306,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   // Note about guest access
                   Text(
-                    'No account needed to pray, donate, or light candles',
+                    'No account needed to pray, contribute, or light candles',
                     style: GoogleFonts.inter(
                       color: AppTheme.textMuted,
                       fontSize: 12,

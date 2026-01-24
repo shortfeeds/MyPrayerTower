@@ -74,6 +74,7 @@ export const SACRED_COPY = {
 
     // My Prayer Corner (Dashboard)
     prayerCorner: {
+        prayerCorner: "My Prayer Corner",
         remembered: "Remembered Intentions",
         holding: "Prayers You Hold",
         answered: "Answered in Prayer"

@@ -126,7 +126,7 @@ class _DonationSheetState extends ConsumerState<DonationSheet> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Processing ${_isMonthly ? "Monthly" : "One-time"} donation...',
+                      'Processing ${_isMonthly ? "Monthly" : "One-time"} contribution...',
                     ),
                     backgroundColor: AppTheme.gold500,
                   ),
@@ -145,7 +145,7 @@ class _DonationSheetState extends ConsumerState<DonationSheet> {
                   Icon(LucideIcons.heart, color: Colors.black, size: 20),
                   SizedBox(width: 8),
                   Text(
-                    'Donate Now',
+                    'Contribute Now',
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,

@@ -170,14 +170,63 @@ class _PremiumFloatingNavBar extends ConsumerWidget {
     final flags = ref.watch(featureFlagsProvider);
     final items = _getVisibleItems(flags);
     final selectedIndex = _getSelectedIndex(context, items);
+    final itemWidth = (MediaQuery.of(context).size.width - 32) / items.length;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(32),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          height: 70,
-          decoration: AppTheme.floatingNavDecoration,
+    return Stack(
+      children: [
+        // Premium Glass Container
+        ClipRRect(
+          borderRadius: BorderRadius.circular(32),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppTheme.sacredNavy900.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.4),
+                    blurRadius: 24,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+
+        // Sliding Indicator
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.elasticOut,
+          left: selectedIndex * itemWidth + (itemWidth - 64) / 2,
+          top: 10,
+          child: Container(
+            width: 64,
+            height: 52,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.gold500.withValues(alpha: 0.15),
+                  AppTheme.gold500.withValues(alpha: 0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        ),
+
+        // Nav Items Row
+        SizedBox(
+          height: 72,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(items.length, (index) {
@@ -195,7 +244,7 @@ class _PremiumFloatingNavBar extends ConsumerWidget {
             }),
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -263,54 +312,52 @@ class _PremiumNavButtonState extends State<_PremiumNavButton>
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOutCubic,
-              padding: EdgeInsets.symmetric(
-                horizontal: widget.isActive ? 20 : 0,
-                vertical: 6,
-              ),
-              decoration: widget.isActive
-                  ? BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFFFD700), // Bright Gold
-                          Color(0xFFF59E0B), // Amber 500
+              padding: const EdgeInsets.all(8),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Icon Glow
+                  if (widget.isActive)
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.gold500.withValues(alpha: 0.3),
+                            blurRadius: 15,
+                            spreadRadius: 2,
+                          ),
                         ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFFD700).withValues(alpha: 0.4),
-                          blurRadius: 12,
-                          spreadRadius: 1,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    )
-                  : BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
                     ),
-              child: Icon(
-                widget.icon,
-                color: widget.isActive
-                    ? const Color(0xFF1E1B4B) // Sacred Navy for contrast
-                    : Colors.white.withValues(alpha: 0.5),
-                size: 24,
+                  Icon(
+                    widget.icon,
+                    color: widget.isActive
+                        ? AppTheme.gold500
+                        : Colors.white.withValues(alpha: 0.4),
+                    size: 22,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 4),
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 200),
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                fontWeight: widget.isActive ? FontWeight.bold : FontWeight.w500,
-                color: widget.isActive
-                    ? const Color(0xFFFFD700) // Gold text for active
-                    : Colors.white.withValues(alpha: 0.5),
-                letterSpacing: 0.3,
+            AnimatedOpacity(
+              duration: const Duration(milliseconds: 300),
+              opacity: widget.isActive ? 1.0 : 0.0,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: widget.isActive ? 14 : 0,
+                child: Text(
+                  widget.label,
+                  style: GoogleFonts.inter(
+                    color: AppTheme.gold500,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
               ),
-              child: Text(widget.label),
             ),
           ],
         ),

@@ -8,6 +8,7 @@ import '../features/offerings/screens/offerings_screen.dart';
 import '../features/prayers/screens/prayers_screen.dart';
 import '../features/prayers/screens/prayer_detail_screen.dart';
 import '../features/prayers/screens/prayer_list_screen.dart';
+import '../features/prayers/models/prayer_model.dart';
 import '../features/prayer_wall/screens/prayer_wall_screen.dart';
 import '../features/rosary/screens/rosary_screen.dart';
 import '../features/readings/screens/readings_screen.dart';
@@ -52,7 +53,9 @@ import '../features/glossary/screens/glossary_screen.dart';
 
 // Phase 2 New Features
 import '../features/memorials/screens/memorials_screen.dart';
+import '../features/hymns/models/hymn_model.dart';
 import '../features/hymns/screens/hymns_screen.dart';
+import '../features/hymns/screens/hymn_detail_screen.dart';
 import '../features/news/screens/news_screen.dart';
 import '../features/achievements/screens/achievements_screen.dart';
 
@@ -81,18 +84,16 @@ import '../features/tracking/screens/journey_screen.dart';
 import '../features/confession/screens/confession_guide_screen.dart';
 import '../features/novena_tracker/screens/novena_tracker_screen.dart';
 import '../features/stations/screens/stations_of_the_cross_screen.dart';
-import '../features/ai_companion/screens/ai_companion_screen.dart';
 import '../features/journal/screens/prayer_journal_screen.dart';
 import '../features/focus_mode/screens/focus_mode_screen.dart';
 import '../features/live_mass/screens/live_mass_screen.dart';
 import '../features/reading_plans/screens/reading_plans_screen.dart';
 import '../features/divine_office/screens/divine_office_screen.dart';
 
-import '../features/prayer_partners/screens/prayer_partners_list_screen.dart';
 import '../features/prayer_partners/screens/invite_partner_screen.dart';
-import '../features/prayer_groups/screens/prayer_groups_list_screen.dart';
 import '../features/prayer_groups/screens/create_group_screen.dart';
 import '../features/prayer_groups/screens/group_detail_screen.dart';
+import '../features/prayer_groups/screens/community_dashboard_screen.dart';
 
 import '../widgets/main_scaffold.dart';
 
@@ -175,11 +176,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/stations-of-the-cross',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: StationsOfTheCrossScreen()),
-          ),
-          GoRoute(
-            path: '/ai-companion',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: AiCompanionScreen()),
           ),
           GoRoute(
             path: '/prayer-journal',
@@ -356,6 +352,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                 const NoTransitionPage(child: HymnsScreen()),
           ),
           GoRoute(
+            path: '/hymn-detail',
+            builder: (context, state) {
+              final hymn = state.extra as Hymn;
+              return HymnDetailScreen(hymn: hymn);
+            },
+          ),
+          GoRoute(
             path: '/news',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: NewsScreen()),
@@ -369,8 +372,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           // Phase 3 Routes
           GoRoute(
             path: '/groups',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: PrayerGroupsListScreen()),
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: CommunityDashboardScreen(initialIndex: 0),
+            ),
             routes: [
               GoRoute(
                 path: 'create',
@@ -424,7 +428,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/chant',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ChantScreen()),
+                const NoTransitionPage(child: ChantLibraryScreen()),
           ),
           GoRoute(
             path: '/testimonies',
@@ -445,8 +449,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/prayer-partners',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: PrayerPartnersListScreen()),
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: CommunityDashboardScreen(initialIndex: 2),
+            ),
             routes: [
               GoRoute(
                 path: 'invite',
@@ -471,7 +476,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final idString = state.pathParameters['id']!;
           final id = int.tryParse(idString) ?? 0;
-          return PrayerDetailScreen(prayerId: id);
+          final extra = state.extra as Prayer?;
+          return PrayerDetailScreen(prayerId: id, prayerExtra: extra);
         },
       ),
       GoRoute(

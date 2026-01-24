@@ -85,22 +85,16 @@ function LoggedOutHomePage() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up mb-16 delay-200 px-4 sm:px-0">
                         <Link
                             href="/prayer-wall"
-                            className="inline-flex items-center justify-center w-full sm:w-auto px-6 md:px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/20 group"
+                            className="inline-flex items-center justify-center w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/20 group"
                         >
                             Start Praying
                             <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <Link
                             href="/candles"
-                            className="inline-flex items-center justify-center w-full sm:w-auto px-6 md:px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-medium text-lg rounded-full transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30"
+                            className="inline-flex items-center justify-center w-full sm:w-auto px-10 py-4 bg-white/5 hover:bg-white/10 text-white font-medium text-lg rounded-full transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30"
                         >
                             Light a Candle
-                        </Link>
-                        <Link
-                            href="/memorials"
-                            className="inline-flex items-center justify-center w-full sm:w-auto px-6 md:px-8 py-4 bg-gradient-to-r from-rose-500/80 to-rose-600/80 hover:from-rose-500 hover:to-rose-600 text-white font-medium text-lg rounded-full transition-all duration-300 border border-rose-400/30 shadow-lg"
-                        >
-                            Eternal Memorials
                         </Link>
                     </div>
 
@@ -157,6 +151,13 @@ function LoggedOutHomePage() {
 
             {/* App Download */}
             <AppDownloadBanner />
+
+            {/* Closing Benediction */}
+            <div className="py-12 text-center">
+                <p className="font-serif text-xl italic text-neutral-400 font-light">
+                    "May peace remain with you."
+                </p>
+            </div>
         </div>
     );
 }

@@ -17,8 +17,8 @@ final nearbyChurchesProvider = FutureProvider.autoDispose<List<Church>>((
 
   final repository = ref.watch(churchesRepositoryProvider);
   return repository.getNearbyChurches(
-    latitude: position.latitude,
-    longitude: position.longitude,
+    lat: position.latitude,
+    lng: position.longitude,
   );
 });
 

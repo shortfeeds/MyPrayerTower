@@ -1,0 +1,6 @@
+Analyzing flutter_app...                                        
+
+  error - The property 'shade800' can't be accessed on the type 'MaterialColor' in a constant expression - lib\features\home\widgets\home_features_grid.dart:105:13 - const_eval_property_access
+  error - The property 'shade400' can't be accessed on the type 'MaterialColor' in a constant expression - lib\features\home\widgets\home_features_grid.dart:117:13 - const_eval_property_access
+
+2 issues found. (ran in 11.9s)

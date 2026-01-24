@@ -650,7 +650,7 @@ class _SearchDialogState extends ConsumerState<_SearchDialog> {
                         ),
                         onTap: () {
                           Navigator.pop(context);
-                          context.push('/prayer/${prayer.id}');
+                          context.push('/prayer/${prayer.id}', extra: prayer);
                         },
                       );
                     },

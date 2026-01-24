@@ -109,31 +109,28 @@ class _AiCompanionScreenState extends State<AiCompanionScreen> {
               ),
             ),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Guardian Angel',
-                  style: GoogleFonts.playfairDisplay(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 18,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Guardian Angel',
+                    style: GoogleFonts.playfairDisplay(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'I am your spiritual companion. How may I help you today?',
-                  style: GoogleFonts.inter(fontSize: 14, color: Colors.white70),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  'AI Spiritual Companion',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: AppTheme.textMuted,
+                  Text(
+                    'AI Spiritual Companion',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: AppTheme.textMuted,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -236,6 +233,7 @@ class _AiCompanionScreenState extends State<AiCompanionScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 100),
         ],
       ),
     );

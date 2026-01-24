@@ -1,0 +1,7 @@
+Analyzing flutter_app...                                        
+
+  error - Too many positional arguments: 0 expected, but 1 found - lib\features\home\widgets\premium_home_header.dart:38:7 - extra_positional_arguments_could_be_named
+warning - The declaration '_buildGlassBadge' isn't referenced - lib\features\home\widgets\premium_home_header.dart:192:10 - unused_element
+   info - Use 'const' with the constructor to improve performance - lib\features\saints\screens\saint_detail_screen.dart:293:16 - prefer_const_constructors
+
+3 issues found. (ran in 7.9s)

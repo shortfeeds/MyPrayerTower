@@ -5,6 +5,7 @@ import { useState, useCallback } from 'react';
 import { ChevronLeft, Cross, Heart, Calendar, Users, Check, Loader2, Info, Sparkles, ShieldCheck } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SACRED_COPY } from '@/lib/sacred-copy';
 
 const PayPalCheckout = dynamic(
     () => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout),
@@ -23,7 +24,7 @@ interface MassType {
     name: string;
     description: string;
     price: number; // in cents
-    popular?: boolean;
+    // popular?: boolean; // Removed for reverence
     color: string;
     icon: any;
     features: string[];
@@ -35,7 +36,7 @@ const massTypes: MassType[] = [
         name: 'Single Mass',
         description: 'One Holy Mass offered for your intention',
         price: 1000,
-        popular: true,
+        // popular: true, // Removed for reverence
         color: 'from-blue-500 to-indigo-600',
         icon: Cross,
         features: ['Personal Intention', 'Scheduled Date', 'Digital Card']
@@ -93,6 +94,10 @@ export default function MassOfferingsPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [hasSuccess, setHasSuccess] = useState(false);
 
+    // Sacred Pause State
+    const [isSacredPausing, setIsSacredPausing] = useState(false);
+    const [stillnessStage, setStillnessStage] = useState<'lifting' | 'offered'>('lifting');
+
     const handleSubmit = async () => {
         if (!selectedMass) return;
         if (selectedMass.price > 0 && !showPayPal) {
@@ -104,16 +109,32 @@ export default function MassOfferingsPage() {
 
     const processOrder = useCallback(async () => {
         setIsSubmitting(true);
+        setIsSacredPausing(true);
+        setStillnessStage('lifting');
+
         try {
+            // SACRED PAUSE: Reflective delay before API call
+            await new Promise(resolve => setTimeout(resolve, 2500));
+
             // Here you would typically call your backend API
-            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate delay
+            // For now, we simulate the completion
+
+            // SACRED PAUSE: Assurance stage
+            setStillnessStage('offered');
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
             setHasSuccess(true);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
             console.error('Mass offering error:', error);
+            setIsSacredPausing(false); // Only clear on error, success keeps it until transition? 
+            // Actually, hasSuccess replaces the form, so overlay unmounts along with form container parent if not careful,
+            // but the overlay is INSIDE the form motion.div.
+            // If hasSuccess becomes true, the AnimatePresence switches to "success" view.
             alert('Something went wrong. Please try again.');
         } finally {
             setIsSubmitting(false);
+            // We don't clear isSacredPausing here if success, because the view switches.
         }
     }, []);
 
@@ -188,11 +209,7 @@ export default function MassOfferingsPage() {
                                                         <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${mass.color} opacity-10 group-hover:opacity-20 transition-opacity`} />
                                                         <div className={`relative bg-white rounded-[20px] p-6 h-full border-2 transition-colors ${selectedMass?.id === mass.id ? 'border-transparent' : 'border-slate-100'
                                                             }`}>
-                                                            {mass.popular && (
-                                                                <span className="absolute top-4 right-4 px-3 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] font-bold uppercase tracking-wider rounded-full shadow-md">
-                                                                    Popular
-                                                                </span>
-                                                            )}
+                                                            {/* Popular badge removed for reverence */}
                                                             <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${mass.color} flex items-center justify-center text-white shadow-lg mb-4`}>
                                                                 <mass.icon className="w-6 h-6" />
                                                             </div>
@@ -226,6 +243,22 @@ export default function MassOfferingsPage() {
                                                 >
                                                     Continue
                                                 </button>
+                                            </div>
+
+                                            {/* Humble Process Steps - Added for Refinement */}
+                                            <div className="mt-16 pt-12 border-t border-gray-100">
+                                                <h3 className="text-center font-serif font-bold text-gray-900 mb-8">How it Works</h3>
+                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                                    {SACRED_COPY.massOfferings.process.map((p, i) => (
+                                                        <div key={i} className="flex flex-col items-center text-center">
+                                                            <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-serif font-bold mb-3">
+                                                                {p.step}
+                                                            </div>
+                                                            <h4 className="font-semibold text-gray-900 text-sm mb-1">{p.label}</h4>
+                                                            <p className="text-xs text-gray-500 max-w-[120px]">{p.description}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </motion.div>
                                     )}
@@ -402,6 +435,43 @@ export default function MassOfferingsPage() {
 
                                 </div>
                             </div>
+
+                            {/* Sacred Pause Overlay */}
+                            {isSacredPausing && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="absolute inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-md"
+                                >
+                                    <div className="text-center p-6">
+                                        {stillnessStage === 'lifting' ? (
+                                            <>
+                                                <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mb-6 animate-pulse mx-auto">
+                                                    <Heart className="w-8 h-8 text-indigo-600" />
+                                                </div>
+                                                <h3 className="text-2xl font-serif font-bold text-gray-900 mb-2">
+                                                    Receiving your offering...
+                                                </h3>
+                                                <p className="text-gray-500 font-medium">
+                                                    Entrusting your intention to the Lord.
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-6 scale-110 transition-transform mx-auto">
+                                                    <Check className="w-8 h-8 text-green-600" />
+                                                </div>
+                                                <h3 className="text-2xl font-serif font-bold text-gray-900 mb-2">
+                                                    Offering Received
+                                                </h3>
+                                                <p className="text-gray-500 font-medium">
+                                                    Your Mass intention has been recorded.
+                                                </p>
+                                            </>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            )}
                         </motion.div>
                     ) : (
                         <motion.div

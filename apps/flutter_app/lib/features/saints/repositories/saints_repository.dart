@@ -12,6 +12,28 @@ class SaintsRepository {
 
   SaintsRepository(this._supabase);
 
+  Future<Saint> getSaintBySlug(String slug) async {
+    try {
+      final data = await _supabase
+          .from('Saint')
+          .select()
+          .eq('slug', slug)
+          .maybeSingle();
+
+      if (data != null) {
+        return Saint.fromJson(data);
+      }
+
+      // Fallback to mocks
+      return _getMockSaints().firstWhere(
+        (s) => s.slug == slug,
+        orElse: () => _getMockSaint(),
+      );
+    } catch (e) {
+      return _getMockSaint();
+    }
+  }
+
   Future<Saint> getSaintOfTheDay({DateTime? date}) async {
     final now = date ?? DateTime.now();
     final month = now.month;

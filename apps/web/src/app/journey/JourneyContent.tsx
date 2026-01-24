@@ -1,29 +1,28 @@
 'use client';
 
 import { useState } from 'react';
-import { PrayerAnalyticsDashboard } from '@/components/analytics/PrayerAnalyticsDashboard';
-import { PrayerStreaks } from '@/components/gamification/PrayerStreaks';
-import { DailyChallenges } from '@/components/gamification/DailyChallenges';
 import { ConfessionReminder } from '@/components/spiritual/ConfessionReminder';
 import { BibleReadingTracker } from '@/components/bible/BibleReadingTracker';
 import { PrayerIntentionsJournal } from '@/components/spiritual/PrayerIntentionsJournal';
-import { AchievementSystem } from '@/components/gamification/AchievementSystem';
+// import { AchievementSystem } from '@/components/gamification/AchievementSystem'; // Removed for reverence
 import { PrayerReminderScheduler } from '@/components/settings/PrayerReminderScheduler';
 import { SavedPrayersList } from '@/components/spiritual/SavedPrayersList';
 import { ActiveCandlesList } from '@/components/spiritual/ActiveCandlesList';
-import { BarChart3, Target, Heart, Book, Trophy, Bell, Bookmark, Flame, Church, Gift, ChevronRight } from 'lucide-react';
+import { BarChart3, Target, Heart, Book, Trophy, Bell, Bookmark, Flame, Church, Gift, ChevronRight, Home, ScrollText } from 'lucide-react';
 import Link from 'next/link';
+import { SACRED_COPY } from '@/lib/sacred-copy';
 
 type TabId = 'overview' | 'intentions' | 'saved' | 'offerings' | 'challenges' | 'bible' | 'achievements' | 'reminders';
 
+
 const TABS: { id: TabId; label: string; icon: any }[] = [
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
+    { id: 'overview', label: 'Sanctuary', icon: Home },
     { id: 'intentions', label: 'Intentions', icon: Heart },
-    { id: 'saved', label: 'Saved', icon: Bookmark },
+    { id: 'saved', label: SACRED_COPY.prayerCorner.holding, icon: Bookmark },
     { id: 'offerings', label: 'Offerings', icon: Flame },
-    { id: 'challenges', label: 'Challenges', icon: Target },
-    { id: 'bible', label: 'Bible', icon: Book },
-    { id: 'achievements', label: 'Achievements', icon: Trophy },
+    // { id: 'challenges', label: 'Challenges', icon: Target }, // Removed
+    { id: 'bible', label: 'Scripture', icon: Book },
+    // { id: 'achievements', label: 'Achievements', icon: Trophy }, // Removed
     { id: 'reminders', label: 'Reminders', icon: Bell },
 ];
 
@@ -41,8 +40,8 @@ export default function JourneyContent({ initialStats }: { initialStats: UserPra
             <div className="bg-gradient-to-r from-sacred-600 to-sacred-700 text-white py-8">
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto">
-                        <h1 className="text-3xl font-bold mb-2">My Prayer Corner</h1>
-                        <p className="text-sacred-100">Your personal spiritual space to track prayer life and grow in faith</p>
+                        <h1 className="text-3xl font-serif font-bold mb-2">{SACRED_COPY.prayerCorner.prayerCorner}</h1>
+                        <p className="text-sacred-100 font-light italic">Your personal sanctuary for reflection and peace.</p>
                     </div>
                 </div>
             </div>
@@ -77,26 +76,37 @@ export default function JourneyContent({ initialStats }: { initialStats: UserPra
             <div className="container mx-auto px-4 py-8">
                 <div className="max-w-6xl mx-auto">
                     {activeTab === 'overview' && (
-                        <div className="space-y-8">
-                            {/* Prayer Stats */}
-                            <PrayerAnalyticsDashboard stats={initialStats} />
+                        <div className="space-y-8 animate-in fade-in duration-500">
+                            <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-100 dark:border-gray-800 text-center">
+                                <h2 className="text-2xl font-serif text-gray-800 dark:text-gray-200 mb-4">Welcome to your quiet space</h2>
+                                <p className="text-gray-500 max-w-lg mx-auto mb-8">
+                                    "Be still and know that I am God."
+                                </p>
+                                <div className="grid md:grid-cols-2 gap-6 text-left">
+                                    <ConfessionReminder />
+                                    <div className="bg-amber-50/50 rounded-2xl p-6 border border-amber-100">
+                                        <h3 className="font-bold text-amber-900 mb-2 flex items-center gap-2">
+                                            <ScrollText className="w-5 h-5" />
+                                            Daily Reflection
+                                        </h3>
+                                        <p className="text-amber-800/80 text-sm italic">
+                                            Take a moment to pause before you begin your day.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
 
-                            {/* Streaks */}
-                            <div className="grid lg:grid-cols-2 gap-6">
-                                <PrayerStreaks
-                                    streak={initialStats?.currentStreak || 0}
-                                    longestStreak={initialStats?.longestStreak || 0}
-                                    totalPrayers={initialStats?.totalPrayers || 0}
-                                    prayedToday={(initialStats?.todayPrayers || 0) > 0}
-                                />
-                                <ConfessionReminder />
+                            {/* Simple Journal Preview - removed props for compatibility */}
+                            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
+                                <h3 className="font-bold text-gray-900 mb-4">Your Recent Prayers</h3>
+                                <PrayerIntentionsJournal />
                             </div>
                         </div>
                     )}
 
-                    {activeTab === 'challenges' && (
+                    {/* {activeTab === 'challenges' && (
                         <DailyChallenges />
-                    )}
+                    )} */}
 
                     {activeTab === 'intentions' && (
                         <PrayerIntentionsJournal />
@@ -106,9 +116,9 @@ export default function JourneyContent({ initialStats }: { initialStats: UserPra
                         <BibleReadingTracker />
                     )}
 
-                    {activeTab === 'achievements' && (
+                    {/* {activeTab === 'achievements' && (
                         <AchievementSystem />
-                    )}
+                    )} */}
 
                     {activeTab === 'saved' && (
                         <SavedPrayersList />

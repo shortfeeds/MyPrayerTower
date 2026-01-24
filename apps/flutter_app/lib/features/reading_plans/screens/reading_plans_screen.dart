@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// Reading Plan Model
@@ -13,6 +14,7 @@ class ReadingPlan {
   final int totalDays;
   final IconData icon;
   final Color color;
+  final String difficulty; // Beginner, Intermediate, Advanced
 
   const ReadingPlan({
     required this.id,
@@ -21,6 +23,7 @@ class ReadingPlan {
     required this.totalDays,
     required this.icon,
     required this.color,
+    this.difficulty = 'Intermediate',
   });
 }
 
@@ -34,6 +37,7 @@ const List<ReadingPlan> availablePlans = [
     totalDays: 365,
     icon: LucideIcons.bookOpen,
     color: Colors.blue,
+    difficulty: 'Advanced',
   ),
   ReadingPlan(
     id: 'catechism-year',
@@ -42,6 +46,7 @@ const List<ReadingPlan> availablePlans = [
     totalDays: 365,
     icon: LucideIcons.graduationCap,
     color: Colors.purple,
+    difficulty: 'Advanced',
   ),
   ReadingPlan(
     id: 'gospels-90',
@@ -50,6 +55,7 @@ const List<ReadingPlan> availablePlans = [
     totalDays: 90,
     icon: LucideIcons.cross,
     color: Colors.red,
+    difficulty: 'Intermediate',
   ),
   ReadingPlan(
     id: 'psalms-30',
@@ -58,6 +64,7 @@ const List<ReadingPlan> availablePlans = [
     totalDays: 30,
     icon: LucideIcons.music,
     color: Colors.amber,
+    difficulty: 'Beginner',
   ),
   ReadingPlan(
     id: 'advent',
@@ -66,6 +73,7 @@ const List<ReadingPlan> availablePlans = [
     totalDays: 25,
     icon: LucideIcons.gift,
     color: Colors.green,
+    difficulty: 'Beginner',
   ),
   ReadingPlan(
     id: 'lent',
@@ -74,6 +82,7 @@ const List<ReadingPlan> availablePlans = [
     totalDays: 40,
     icon: LucideIcons.sunrise,
     color: Colors.deepPurple,
+    difficulty: 'Intermediate',
   ),
 ];
 
@@ -111,14 +120,6 @@ class PlanProgressNotifier extends StateNotifier<Map<String, int>> {
     await box.put(planId, current + 1);
     state = {...state, planId: current + 1};
   }
-
-  Future<void> resetPlan(String planId) async {
-    final box = await Hive.openBox<int>(_boxName);
-    await box.delete(planId);
-    state = Map.from(state)..remove(planId);
-  }
-
-  int getProgress(String planId) => state[planId] ?? 0;
 }
 
 /// Reading Plans Screen
@@ -136,238 +137,403 @@ class ReadingPlansScreen extends ConsumerWidget {
         .toList();
 
     return Scaffold(
-      backgroundColor: AppTheme.deepSpace,
-      appBar: AppBar(
-        backgroundColor: AppTheme.darkBg,
-        title: Text(
-          'Reading Plans',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.royalPurple900.withValues(alpha: 0.6),
-                  AppTheme.sacredNavy900.withValues(alpha: 0.8),
+      backgroundColor: const Color(0xFF0F172A), // Slate 900
+      body: CustomScrollView(
+        slivers: [
+          // Premium Hero Header
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 200,
+            backgroundColor: AppTheme.sacredNavy900,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppTheme.sacredNavy900,
+                          AppTheme.sacredNavy800,
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: -50,
+                    top: -20,
+                    child: Icon(
+                      LucideIcons.bookOpen,
+                      size: 250,
+                      color: Colors.white.withValues(alpha: 0.03),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 24,
+                    left: 20,
+                    right: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.gold500.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: AppTheme.gold500.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                LucideIcons.flame,
+                                size: 14,
+                                color: AppTheme.gold500,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '3 Day Streak!',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.gold500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ).animate().fadeIn().slideX(begin: -0.2),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Study Plans',
+                          style: GoogleFonts.merriweather(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ).animate().fadeIn().slideY(begin: 0.2),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Deepen your faith through structured daily reading.',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: Colors.white70,
+                          ),
+                        ).animate().fadeIn().slideY(begin: 0.2, delay: 100.ms),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              borderRadius: BorderRadius.circular(16),
             ),
-            child: Column(
-              children: [
-                const Icon(
-                  LucideIcons.bookOpen,
-                  size: 48,
-                  color: AppTheme.gold400,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Grow in Scripture',
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+          ),
+
+          // Active Plans Section
+          if (activePlans.isNotEmpty) ...[
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+              sliver: SliverToBoxAdapter(
+                child: Text(
+                  'IN PROGRESS',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white54,
+                    letterSpacing: 1.5,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Choose a reading plan and commit to daily Scripture study.',
-                  style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
-                  textAlign: TextAlign.center,
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) =>
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _ActivePlanCard(
+                          plan: activePlans[index],
+                          currentDay: progress[activePlans[index].id] ?? 0,
+                          onMarkComplete: () {
+                            ref
+                                .read(planProgressProvider.notifier)
+                                .markDayComplete(activePlans[index].id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Day Complete! Great job.'),
+                                backgroundColor: Colors.green,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          },
+                        ),
+                      ).animate().fadeIn().slideX(
+                        begin: 0.1,
+                        delay: (index * 100).ms,
+                      ),
+                  childCount: activePlans.length,
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Active Plans
-          if (activePlans.isNotEmpty) ...[
-            Text(
-              'ACTIVE PLANS',
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.textMuted,
-                letterSpacing: 1.5,
               ),
             ),
-            const SizedBox(height: 12),
-            ...activePlans.map(
-              (plan) => _PlanCard(
-                plan: plan,
-                currentDay: progress[plan.id] ?? 0,
-                isActive: true,
-                onAction: () {
-                  ref
-                      .read(planProgressProvider.notifier)
-                      .markDayComplete(plan.id);
-                },
-              ),
-            ),
-            const SizedBox(height: 24),
           ],
 
-          // Available Plans
-          Text(
-            'AVAILABLE PLANS',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textMuted,
-              letterSpacing: 1.5,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ...inactivePlans.map(
-            (plan) => _PlanCard(
-              plan: plan,
-              currentDay: 0,
-              isActive: false,
-              onAction: () {
-                ref.read(planProgressProvider.notifier).startPlan(plan.id);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Started ${plan.name}!')),
-                );
-              },
+          // Available Plans Header
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+            sliver: SliverToBoxAdapter(
+              child: Text(
+                'BROWSE LIBRARY',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white54,
+                  letterSpacing: 1.5,
+                ),
+              ),
             ),
           ),
 
-          const SizedBox(height: 80),
+          // Available Plans Grid
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.75, // Taller cards
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => _AvailablePlanCard(
+                  plan: inactivePlans[index],
+                  onStart: () {
+                    ref
+                        .read(planProgressProvider.notifier)
+                        .startPlan(inactivePlans[index].id);
+                  },
+                ).animate().scale(delay: (index * 50).ms),
+                childCount: inactivePlans.length,
+              ),
+            ),
+          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: 80)),
         ],
       ),
     );
   }
 }
 
-class _PlanCard extends StatelessWidget {
+class _ActivePlanCard extends StatelessWidget {
   final ReadingPlan plan;
   final int currentDay;
-  final bool isActive;
-  final VoidCallback onAction;
+  final VoidCallback onMarkComplete;
 
-  const _PlanCard({
+  const _ActivePlanCard({
     required this.plan,
     required this.currentDay,
-    required this.isActive,
-    required this.onAction,
+    required this.onMarkComplete,
   });
 
   @override
   Widget build(BuildContext context) {
-    final progress = currentDay / plan.totalDays;
+    final double percent = (currentDay / plan.totalDays).clamp(0.0, 1.0);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.darkCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isActive ? plan.color.withValues(alpha: 0.5) : Colors.white12,
+        gradient: const LinearGradient(
+          colors: [
+            AppTheme.sacredNavy800,
+            Color(0xFF1E293B), // Slate 800
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26, // equivalent to .withValues(alpha: 0.2)
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () {
+            // Future: Navigate to detail view
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                // Progress Circle
+                SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CircularProgressIndicator(
+                        value: percent,
+                        strokeWidth: 6,
+                        backgroundColor: Colors.white10,
+                        valueColor: AlwaysStoppedAnimation<Color>(plan.color),
+                      ),
+                      Center(
+                        child: Text(
+                          '${(percent * 100).toInt()}%',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        plan.name,
+                        style: GoogleFonts.merriweather(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Day $currentDay of ${plan.totalDays}',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Action Button
+                      SizedBox(
+                        height: 32,
+                        child: ElevatedButton(
+                          onPressed: onMarkComplete,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: plan.color,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            elevation: 0,
+                            textStyle: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
+                          ),
+                          child: const Text('Complete Day'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AvailablePlanCard extends StatelessWidget {
+  final ReadingPlan plan;
+  final VoidCallback onStart;
+
+  const _AvailablePlanCard({required this.plan, required this.onStart});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B), // Slate 800
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
+          // Icon Header
+          Container(
+            height: 80,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: plan.color.withValues(alpha: 0.1),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+            ),
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: plan.color.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(plan.icon, color: plan.color, size: 22),
+                child: Icon(plan.icon, size: 32, color: plan.color),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      plan.name,
-                      style: GoogleFonts.playfairDisplay(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+            ),
+          ),
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    plan.name,
+                    style: GoogleFonts.merriweather(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                    Text(
-                      '${plan.totalDays} days',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: AppTheme.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isActive)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  decoration: BoxDecoration(
-                    color: plan.color.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'Day $currentDay',
+                  const SizedBox(height: 4),
+                  Text(
+                    '${plan.totalDays} Days • ${plan.difficulty}',
                     style: GoogleFonts.inter(
                       fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: plan.color,
+                      color: Colors.white54,
                     ),
                   ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            plan.description,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              color: Colors.white70,
-              height: 1.4,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (isActive) ...[
-            const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: progress,
-                backgroundColor: Colors.white12,
-                valueColor: AlwaysStoppedAnimation<Color>(plan.color),
-                minHeight: 6,
+                  const Spacer(),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: onStart,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: plan.color,
+                        side: BorderSide(
+                          color: plan.color.withValues(alpha: 0.5),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 0),
+                      ),
+                      child: const Text('Start Plan'),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 12),
-          ] else
-            const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: onAction,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isActive ? plan.color : AppTheme.darkCard,
-                foregroundColor: isActive ? Colors.white : plan.color,
-                side: isActive ? null : BorderSide(color: plan.color),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: Text(isActive ? 'Mark Day Complete' : 'Start Plan'),
             ),
           ),
         ],

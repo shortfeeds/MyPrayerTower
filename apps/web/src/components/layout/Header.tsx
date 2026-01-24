@@ -109,29 +109,20 @@ export function Header() {
         { href: '/prayer-wall', label: 'Prayer Wall', icon: Users, description: 'Community intentions' },
         { href: '/novenas', label: 'Novenas', icon: Sparkles, description: '9-day prayer devotions' },
         { href: '/stations', label: 'Stations of the Cross', icon: MapPin, description: 'Way of the Cross' },
-        { href: '/chaplets', label: 'Chaplets', icon: Star, description: 'Divine Mercy & more' },
         { href: '/examen', label: 'Daily Examen', icon: BookOpen, description: 'Ignatian reflection' },
     ];
 
-    // 2. OFFER (Active Charity/Devotion)
+    // 2. OFFER (Active Charity/Devotion + Memorials)
     const offerLinks = [
         { href: '/candles', label: 'Light a Candle', icon: Flame, description: 'Virtual intentions' },
         { href: '/mass-offerings', label: 'Request a Mass', icon: Gift, description: 'Have a Mass offered' },
+        { href: '/memorials', label: 'Eternal Memorials', icon: Star, description: 'Honor loved ones' },
         { href: '/bouquets', label: 'Spiritual Bouquets', icon: BookOpen, description: 'Send spiritual gifts' },
-        { href: '/contributions', label: 'Contributions', icon: CreditCard, description: 'Support our mission' },
     ];
 
-    // 3. REMEMBER (Eternal Memorials)
-    const rememberLinks = [
-        { href: '/memorials', label: 'Eternal Memorials', icon: Heart, description: 'Honor loved ones' },
-        { href: '/memorials/create', label: 'Create Memorial', icon: Star, description: 'Create a lasting tribute' },
-        { href: '/anniversaries', label: 'Anniversaries', icon: Calendar, description: 'Remembering dates' },
-        { href: '/candles', label: 'Memorial Candles', icon: Flame, description: 'Light for the departed' },
-    ];
-
-    // 4. DISCOVER (Learn & Locate Combined)
-    const discoverLinks = [
-        { href: '/churches', label: 'Find a Church', icon: MapPin, description: 'Mass, Confession, Adoration' },
+    // 3. LEARN (Resources & Discovery)
+    const learnLinks = [
+        { href: '/churches', label: 'Find a Church', icon: MapPin, description: 'Mass & Confession' },
         { href: '/saints', label: 'Saints & Feasts', icon: User, description: 'Lives of the Holy Ones' },
         { href: '/bible', label: 'Bible', icon: Book, description: 'Sacred Scriptures' },
         { href: '/catechism', label: 'Catechism', icon: BookOpen, description: 'Church teachings' },
@@ -152,6 +143,9 @@ export function Header() {
                     : 'bg-sacred-800/90 backdrop-blur-md py-4'
                     }`}
             >
+                {/* Global Google Translate Element (Hidden) */}
+                <div id="google_translate_element" className="hidden absolute" />
+
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between">
                         {/* Logo */}
@@ -181,7 +175,7 @@ export function Header() {
                             {/* 1. PRAY - PRIMARY ACTION (Enhanced Prominence) */}
                             <div className="relative" ref={prayRef}>
                                 <button
-                                    onClick={() => { setPrayOpen(!prayOpen); setOfferOpen(false); setLearnOpen(false); setLocateOpen(false); }}
+                                    onClick={() => { setPrayOpen(!prayOpen); setOfferOpen(false); setLearnOpen(false); }}
                                     className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${prayOpen
                                         ? 'bg-white text-sacred-900 shadow-lg scale-105'
                                         : 'bg-white/20 text-white hover:bg-white/30 hover:scale-105 shadow-md'
@@ -216,7 +210,7 @@ export function Header() {
                             {/* 2. OFFER */}
                             <div className="relative" ref={offerRef}>
                                 <button
-                                    onClick={() => { setOfferOpen(!offerOpen); setPrayOpen(false); setLearnOpen(false); setLocateOpen(false); }}
+                                    onClick={() => { setOfferOpen(!offerOpen); setPrayOpen(false); setLearnOpen(false); }}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${offerOpen
                                         ? 'bg-white text-sacred-900 shadow-md'
                                         : 'text-white hover:bg-white/20'
@@ -248,22 +242,22 @@ export function Header() {
                                 )}
                             </div>
 
-                            {/* 3. REMEMBER */}
+                            {/* 3. LEARN */}
                             <div className="relative" ref={learnRef}>
                                 <button
-                                    onClick={() => { setLearnOpen(!learnOpen); setPrayOpen(false); setOfferOpen(false); setLocateOpen(false); }}
+                                    onClick={() => { setLearnOpen(!learnOpen); setPrayOpen(false); setOfferOpen(false); }}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${learnOpen
                                         ? 'bg-white text-sacred-900 shadow-md'
-                                        : 'text-white hover:bg-white/20'
+                                        : 'text-white/80 hover:bg-white/10 hover:text-white'
                                         }`}
                                 >
-                                    <Star className={`w-4 h-4 ${learnOpen ? 'text-gold-600' : ''}`} />
-                                    Remember
+                                    <BookOpen className={`w-4 h-4 ${learnOpen ? 'text-gold-600' : ''}`} />
+                                    Learn
                                     <ChevronDown className={`w-3 h-3 transition-transform ${learnOpen ? 'rotate-180' : ''}`} />
                                 </button>
                                 {learnOpen && (
                                     <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50 p-2 grid gap-1">
-                                        {rememberLinks.map((link) => (
+                                        {learnLinks.map((link) => (
                                             <Link
                                                 key={link.href}
                                                 href={link.href}
@@ -271,41 +265,6 @@ export function Header() {
                                                 className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
                                             >
                                                 <div className="p-2 rounded-md bg-blue-100 text-blue-600">
-                                                    <link.icon className="w-4 h-4" />
-                                                </div>
-                                                <div>
-                                                    <div className="font-semibold text-gray-900 text-sm">{link.label}</div>
-                                                    <div className="text-xs text-gray-500 line-clamp-1">{link.description}</div>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* 4. DISCOVER */}
-                            <div className="relative" ref={locateRef}>
-                                <button
-                                    onClick={() => { setLocateOpen(!locateOpen); setPrayOpen(false); setOfferOpen(false); setLearnOpen(false); }}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${locateOpen
-                                        ? 'bg-white text-sacred-900 shadow-md'
-                                        : 'text-white hover:bg-white/20'
-                                        }`}
-                                >
-                                    <Compass className={`w-4 h-4 ${locateOpen ? 'text-gold-600' : ''}`} />
-                                    Discover
-                                    <ChevronDown className={`w-3 h-3 transition-transform ${locateOpen ? 'rotate-180' : ''}`} />
-                                </button>
-                                {locateOpen && (
-                                    <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50 p-2 grid gap-1">
-                                        {discoverLinks.map((link) => (
-                                            <Link
-                                                key={link.href}
-                                                href={link.href}
-                                                onClick={() => setLocateOpen(false)}
-                                                className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-                                            >
-                                                <div className="p-2 rounded-md bg-emerald-100 text-emerald-600">
                                                     <link.icon className="w-4 h-4" />
                                                 </div>
                                                 <div>
@@ -514,7 +473,7 @@ export function Header() {
                             )}
                         </div>
 
-                        {/* 3. REMEMBER */}
+                        {/* 3. LEARN */}
                         <div className="rounded-xl overflow-hidden">
                             <button
                                 onClick={() => setLearnOpen(!learnOpen)}
@@ -525,49 +484,15 @@ export function Header() {
                             >
                                 <div className="flex items-center gap-3">
                                     <div className={`p-2 rounded-lg ${learnOpen ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
-                                        <Star className="w-5 h-5" />
+                                        <BookOpen className="w-5 h-5" />
                                     </div>
-                                    Remember
+                                    Learn
                                 </div>
                                 <ChevronDown className={`w-5 h-5 transition-transform ${learnOpen ? 'rotate-180' : ''}`} />
                             </button>
                             {learnOpen && (
                                 <div className="ml-6 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-4 py-2">
-                                    {rememberLinks.map((link) => (
-                                        <Link
-                                            key={link.href}
-                                            href={link.href}
-                                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                                            onClick={() => setIsMenuOpen(false)}
-                                        >
-                                            <link.icon className="w-4 h-4" />
-                                            <div>{link.label}</div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* 4. DISCOVER */}
-                        <div className="rounded-xl overflow-hidden">
-                            <button
-                                onClick={() => setLocateOpen(!locateOpen)}
-                                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors ${locateOpen
-                                    ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 font-semibold'
-                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                    }`}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={`p-2 rounded-lg ${locateOpen ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
-                                        <Compass className="w-5 h-5" />
-                                    </div>
-                                    Discover
-                                </div>
-                                <ChevronDown className={`w-5 h-5 transition-transform ${locateOpen ? 'rotate-180' : ''}`} />
-                            </button>
-                            {locateOpen && (
-                                <div className="ml-6 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-4 py-2">
-                                    {discoverLinks.map((link) => (
+                                    {learnLinks.map((link) => (
                                         <Link
                                             key={link.href}
                                             href={link.href}

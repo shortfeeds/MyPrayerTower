@@ -83,6 +83,15 @@ class AuthRepository {
     await _storage.clearToken();
   }
 
+  Future<void> deleteAccount() async {
+    try {
+      await _dio.delete(ApiConstants.userEndpoint);
+      await _storage.clearToken();
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
   Future<Map<String, dynamic>> updateStreak() async {
     try {
       final response = await _dio.post(

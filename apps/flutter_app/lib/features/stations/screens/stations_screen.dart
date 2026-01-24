@@ -267,7 +267,7 @@ class _StationsScreenState extends ConsumerState<StationsScreen> {
         },
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

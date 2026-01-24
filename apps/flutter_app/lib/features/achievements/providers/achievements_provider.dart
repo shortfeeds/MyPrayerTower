@@ -11,7 +11,6 @@ class UserStats {
   final int longestStreak;
   final int totalPrayers;
   final int prayedFor;
-  final int rank;
   final List<String> earnedBadges;
   final DateTime? lastPrayerDate;
 
@@ -23,7 +22,6 @@ class UserStats {
     this.longestStreak = 0,
     this.totalPrayers = 0,
     this.prayedFor = 0,
-    this.rank = 0,
     this.earnedBadges = const [],
     this.lastPrayerDate,
   });
@@ -36,7 +34,6 @@ class UserStats {
     'longestStreak': longestStreak,
     'totalPrayers': totalPrayers,
     'prayedFor': prayedFor,
-    'rank': rank,
     'earnedBadges': earnedBadges,
     'lastPrayerDate': lastPrayerDate?.toIso8601String(),
   };
@@ -49,7 +46,6 @@ class UserStats {
     longestStreak: json['longestStreak'] ?? 0,
     totalPrayers: json['totalPrayers'] ?? 0,
     prayedFor: json['prayedFor'] ?? 0,
-    rank: json['rank'] ?? 0,
     earnedBadges: List<String>.from(json['earnedBadges'] ?? []),
     lastPrayerDate: json['lastPrayerDate'] != null
         ? DateTime.parse(json['lastPrayerDate'])
@@ -64,7 +60,6 @@ class UserStats {
     int? longestStreak,
     int? totalPrayers,
     int? prayedFor,
-    int? rank,
     List<String>? earnedBadges,
     DateTime? lastPrayerDate,
   }) {
@@ -76,7 +71,6 @@ class UserStats {
       longestStreak: longestStreak ?? this.longestStreak,
       totalPrayers: totalPrayers ?? this.totalPrayers,
       prayedFor: prayedFor ?? this.prayedFor,
-      rank: rank ?? this.rank,
       earnedBadges: earnedBadges ?? this.earnedBadges,
       lastPrayerDate: lastPrayerDate ?? this.lastPrayerDate,
     );

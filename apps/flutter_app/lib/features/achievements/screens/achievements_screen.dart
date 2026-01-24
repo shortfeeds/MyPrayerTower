@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/premium_glass_card.dart';
+import '../../../core/widgets/premium_scaffold.dart';
 import '../providers/achievements_provider.dart';
 
 class Badge {
   final String id;
   final String name;
-  final String icon; // Emoji character
+  final IconData icon;
   final String description;
 
   const Badge({
@@ -18,104 +23,61 @@ class Badge {
   });
 }
 
-class LeaderboardUser {
-  final int rank;
-  final String name;
-  final int streak;
-  final int level;
-  final String? badge;
-
-  const LeaderboardUser({
-    required this.rank,
-    required this.name,
-    required this.streak,
-    required this.level,
-    this.badge,
-  });
-}
-
 const List<Badge> _allBadges = [
   Badge(
     id: 'first_prayer',
     name: 'First Prayer',
-    icon: '🙏',
+    icon: LucideIcons.heart,
     description: 'Submit your first prayer',
   ),
   Badge(
     id: 'devoted',
     name: 'Devoted',
-    icon: '✨',
+    icon: LucideIcons.sparkles,
     description: 'Submit 10 prayers',
   ),
   Badge(
     id: 'faithful',
     name: 'Faithful',
-    icon: '🕯️',
+    icon: LucideIcons.flame,
     description: 'Submit 50 prayers',
   ),
   Badge(
     id: 'prayer_warrior',
     name: 'Prayer Warrior',
-    icon: '⚔️',
+    icon: LucideIcons.shield,
     description: 'Submit 100 prayers',
   ),
   Badge(
     id: 'week_streak',
     name: 'Weekly Devotion',
-    icon: '🔥',
+    icon: LucideIcons.calendarDays,
     description: '7-day streak',
   ),
   Badge(
     id: 'month_streak',
     name: 'Monthly Devotion',
-    icon: '💎',
+    icon: LucideIcons.gem,
     description: '30-day streak',
   ),
   Badge(
     id: 'explorer',
     name: 'Explorer',
-    icon: '🗺️',
+    icon: LucideIcons.map,
     description: 'Save 5 churches',
   ),
   Badge(
     id: 'helper',
     name: 'Helper',
-    icon: '🤝',
+    icon: LucideIcons.users,
     description: 'Pray for 10 others',
   ),
   Badge(
     id: 'intercessor',
     name: 'Intercessor',
-    icon: '🌟',
+    icon: LucideIcons.star,
     description: 'Pray for 100 others',
   ),
-];
-
-// Mock leaderboard for now
-const List<LeaderboardUser> _leaderboard = [
-  LeaderboardUser(
-    rank: 1,
-    name: 'Maria S.',
-    streak: 156,
-    level: 24,
-    badge: '👑',
-  ),
-  LeaderboardUser(
-    rank: 2,
-    name: 'John D.',
-    streak: 134,
-    level: 21,
-    badge: '🥈',
-  ),
-  LeaderboardUser(
-    rank: 3,
-    name: 'Sarah M.',
-    streak: 98,
-    level: 18,
-    badge: '🥉',
-  ),
-  LeaderboardUser(rank: 4, name: 'Peter L.', streak: 87, level: 16),
-  LeaderboardUser(rank: 5, name: 'Anna K.', streak: 72, level: 14),
 ];
 
 class AchievementsScreen extends ConsumerStatefulWidget {
@@ -143,409 +105,217 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Watch real user stats
     final userStats = ref.watch(userStatsProvider);
     final progressPercent = (userStats.xp / userStats.xpToNext).clamp(0.0, 1.0);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: Text(
-          'Your Achievements',
-          style: GoogleFonts.merriweather(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
+    return PremiumScaffold(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 240.0,
+            floating: false,
+            pinned: true,
+            backgroundColor: AppTheme.sacredNavy900,
+            leading: IconButton(
+              icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
             ),
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          // Header Stats
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text(
+                'My Spiritual Growth',
+                style: GoogleFonts.merriweather(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 56,
-                                height: 56,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Colors.amber, Colors.orange],
-                                  ),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.2,
-                                      ),
-                                      blurRadius: 8,
-                                    ),
-                                  ],
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  '${userStats.level}',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Level ${userStats.level}',
-                                    style: GoogleFonts.inter(
-                                      color: Colors.purple.shade100,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Prayer Champion',
-                                    style: GoogleFonts.merriweather(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                'Global Rank',
-                                style: GoogleFonts.inter(
-                                  color: Colors.purple.shade100,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              Text(
-                                '#${userStats.rank > 0 ? userStats.rank : "--"}',
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ],
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: AppTheme.primaryGradient,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 40),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppTheme.gold500, width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.gold500.withValues(alpha: 0.2),
+                            blurRadius: 20,
+                            spreadRadius: 5,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      // XP Bar
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${userStats.xp} XP',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
-                          Text(
-                            '${userStats.xpToNext} XP',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: progressPercent,
-                          backgroundColor: Colors.white24,
-                          valueColor: const AlwaysStoppedAnimation(
-                            Colors.amber,
-                          ),
-                          minHeight: 8,
+                      child: Text(
+                        '${userStats.level}',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.gold500,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'SPIRITUAL LEVEL',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white60,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  // XP Progress
+                  PremiumGlassCard(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Soul Progress',
+                              style: GoogleFonts.inter(
+                                color: Colors.white70,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '${userStats.xp} / ${userStats.xpToNext} XP',
+                              style: GoogleFonts.inter(
+                                color: AppTheme.gold500,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: progressPercent,
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.05,
+                            ),
+                            valueColor: const AlwaysStoppedAnimation(
+                              AppTheme.gold500,
+                            ),
+                            minHeight: 8,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${userStats.xpToNext - userStats.xp} XP to Level ${userStats.level + 1}',
+                          style: GoogleFonts.inter(
+                            color: Colors.white38,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Stats Overview
+                  Row(
+                    children: [
+                      _StatItem(
+                        icon: LucideIcons.flame,
+                        value: userStats.currentStreak.toString(),
+                        label: 'Streak',
+                        color: Colors.orange,
+                      ),
+                      const SizedBox(width: 12),
+                      _StatItem(
+                        icon: LucideIcons.heart,
+                        value: userStats.totalPrayers.toString(),
+                        label: 'Prayers',
+                        color: Colors.pink,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _StatItem(
+                        icon: LucideIcons.users,
+                        value: userStats.prayedFor.toString(),
+                        label: 'Intercessions',
+                        color: Colors.blue,
+                      ),
+                      const SizedBox(width: 12),
+                      _StatItem(
+                        icon: LucideIcons.trendingUp,
+                        value: userStats.longestStreak.toString(),
+                        label: 'Best Streak',
+                        color: Colors.green,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Badges Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Text(
-                        '${userStats.xpToNext - userStats.xp} XP to Level ${userStats.level + 1}',
-                        style: TextStyle(
-                          color: Colors.purple.shade100,
-                          fontSize: 12,
+                        'Heavenly Badges',
+                        style: GoogleFonts.merriweather(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        '${userStats.earnedBadges.length} / ${_allBadges.length}',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: AppTheme.gold500,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
+                  const SizedBox(height: 16),
 
-          // Stats Grid - Overlapping
-          Transform.translate(
-            offset: const Offset(0, -20),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  _StatCard(
-                    icon: LucideIcons.flame,
-                    value: userStats.currentStreak,
-                    label: 'Streak',
-                    countLabel: 'days',
-                    color: Colors.orange,
+                  // Badges Grid
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.85,
+                        ),
+                    itemCount: _allBadges.length,
+                    itemBuilder: (context, index) {
+                      final badge = _allBadges[index];
+                      final earned = userStats.earnedBadges.contains(badge.id);
+
+                      return _BadgeCard(badge: badge, earned: earned);
+                    },
                   ),
-                  const SizedBox(width: 8),
-                  _StatCard(
-                    icon: LucideIcons.trendingUp,
-                    value: userStats.longestStreak,
-                    label: 'Best',
-                    countLabel: 'days',
-                    color: Colors.green,
-                  ),
-                  const SizedBox(width: 8),
-                  _StatCard(
-                    icon: LucideIcons.target,
-                    value: userStats.totalPrayers,
-                    label: 'Prayers',
-                    color: Colors.blue,
-                  ),
-                  const SizedBox(width: 8),
-                  _StatCard(
-                    icon: LucideIcons.star,
-                    value: userStats.prayedFor,
-                    label: 'Helped',
-                    color: Colors.purple,
-                  ),
+                  const SizedBox(height: 40),
                 ],
               ),
-            ),
-          ),
-
-          // Tabs
-          TabBar(
-            controller: _tabController,
-            labelColor: Colors.purple.shade700,
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: Colors.purple.shade700,
-            tabs: const [
-              Tab(text: 'Badges', icon: Icon(LucideIcons.medal)),
-              Tab(text: 'Leaderboard', icon: Icon(LucideIcons.trophy)),
-            ],
-          ),
-
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                // Badges Tab
-                GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: 0.8,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemCount: _allBadges.length,
-                  itemBuilder: (context, index) {
-                    final badge = _allBadges[index];
-                    final earned = userStats.earnedBadges.contains(badge.id);
-
-                    return Opacity(
-                      opacity: earned ? 1.0 : 0.5,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade200),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              badge.icon,
-                              style: const TextStyle(fontSize: 32),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              badge.name,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1E293B),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            if (earned)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.green.shade50,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  'Earned',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.green.shade700,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-
-                // Leaderboard Tab (Mock for now)
-                ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _leaderboard.length,
-                  itemBuilder: (context, index) {
-                    final user = _leaderboard[index];
-                    final isTop3 = index < 3;
-
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.shade200),
-                        gradient: isTop3
-                            ? LinearGradient(
-                                colors: [
-                                  Colors.amber.shade50.withValues(alpha: 0.5),
-                                  Colors.white,
-                                ],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              )
-                            : null,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: index == 0
-                                  ? Colors.amber
-                                  : index == 1
-                                  ? Colors.grey.shade400
-                                  : index == 2
-                                  ? Colors.orange.shade400
-                                  : Colors.grey.shade100,
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              user.badge ?? '${user.rank}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: index < 3
-                                    ? Colors.white
-                                    : Colors.grey.shade600,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  user.name,
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF1E293B),
-                                  ),
-                                ),
-                                Text(
-                                  'Level ${user.level}',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              const Icon(
-                                LucideIcons.flame,
-                                size: 16,
-                                color: Colors.orange,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${user.streak}',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.orange.shade700,
-                                ),
-                              ),
-                              const Text(
-                                ' days',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ],
             ),
           ),
         ],
@@ -554,61 +324,99 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
   }
 }
 
-class _StatCard extends StatelessWidget {
+class _StatItem extends StatelessWidget {
   final IconData icon;
-  final dynamic value;
+  final String value;
   final String label;
-  final String? countLabel;
-  final MaterialColor color;
+  final Color color;
 
-  const _StatCard({
+  const _StatItem({
     required this.icon,
     required this.value,
     required this.label,
-    this.countLabel,
     required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+      child: PremiumGlassCard(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         child: Column(
           children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(height: 4),
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 12),
             Text(
-              '$value',
-              style: GoogleFonts.inter(
-                fontSize: 16,
+              value,
+              style: GoogleFonts.cinzel(
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF1E293B),
+                color: Colors.white,
               ),
             ),
+            const SizedBox(height: 4),
             Text(
-              countLabel ?? label,
+              label.toUpperCase(),
               style: GoogleFonts.inter(
                 fontSize: 10,
-                color: const Color(0xFF64748B),
+                color: Colors.white38,
+                letterSpacing: 1,
+                fontWeight: FontWeight.bold,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+class _BadgeCard extends StatelessWidget {
+  final Badge badge;
+  final bool earned;
+
+  const _BadgeCard({required this.badge, required this.earned});
+
+  @override
+  Widget build(BuildContext context) {
+    return PremiumGlassCard(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                badge.icon,
+                size: 32,
+                color: earned
+                    ? AppTheme.gold500
+                    : Colors.white.withValues(alpha: 0.05),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                badge.name,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: earned ? FontWeight.bold : FontWeight.normal,
+                  color: earned ? Colors.white : Colors.white24,
+                ),
+              ),
+              if (!earned)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Icon(
+                    LucideIcons.lock,
+                    size: 10,
+                    color: Colors.white.withValues(alpha: 0.1),
+                  ),
+                ),
+            ],
+          ),
+        )
+        .animate(target: earned ? 1 : 0)
+        .shimmer(
+          duration: 2.seconds,
+          color: AppTheme.gold500.withValues(alpha: 0.3),
+        );
   }
 }

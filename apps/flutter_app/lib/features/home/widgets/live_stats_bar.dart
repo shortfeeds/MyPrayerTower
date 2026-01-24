@@ -179,7 +179,7 @@ class _LiveStatsBarState extends ConsumerState<LiveStatsBar>
             _StatItem(
               icon: LucideIcons.users,
               value: _formatNumber(_usersOnline),
-              label: 'Online',
+              label: 'Praying Now',
               color: AppTheme.info,
             ),
             const SizedBox(width: 16),

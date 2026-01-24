@@ -1,4 +1,4 @@
-import { MapPin, Search, Calendar, Heart, Shield, Globe } from 'lucide-react';
+import { MapPin, Search, Calendar, Heart, Shield, Globe, BookOpen, Flame, Star, Sparkles, Book, User, ScrollText } from 'lucide-react';
 
 export default function FeaturesPage() {
     return (
@@ -8,7 +8,7 @@ export default function FeaturesPage() {
                 <div className="container mx-auto px-4">
                     <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">Features Overview</h1>
                     <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-                        Powerful tools designed to connect the Catholic world.
+                        A comprehensive suite of spiritual tools designed for the modern Catholic life.
                     </p>
                 </div>
             </section>
@@ -16,17 +16,9 @@ export default function FeaturesPage() {
             {/* Feature Grid */}
             <div className="container mx-auto px-4 py-16">
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {/* Church Finder */}
-                    <div className="card-premium p-8">
-                        <div className="w-12 h-12 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center mb-6">
-                            <MapPin className="w-6 h-6" />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3">Advanced Church Finder</h3>
-                        <p className="text-gray-600">
-                            More than just a map. Filter by Mass times, language, rite (Roman, Byzantine, etc.), and confession availability.
-                        </p>
-                    </div>
-
+                    
+                    {/* --- PRAYER & DEVOTION --- */}
+                    
                     {/* Prayer Wall */}
                     <div className="card-premium p-8">
                         <div className="w-12 h-12 bg-gold-100 text-gold-600 rounded-xl flex items-center justify-center mb-6">
@@ -38,25 +30,38 @@ export default function FeaturesPage() {
                         </p>
                     </div>
 
-                    {/* Parish Management */}
+                    {/* Rosary */}
                     <div className="card-premium p-8">
-                        <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6">
-                            <Shield className="w-6 h-6" />
+                        <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center mb-6">
+                            <Sparkles className="w-6 h-6" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3">Parish Dashboard</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Holy Rosary</h3>
                         <p className="text-gray-600">
-                            Claim your church listing to update Mass times, manage events, and communicate directly with your parishioners.
+                            Interactive beads and guided meditations for all mysteries (Joyful, Sorrowful, Glorious, Luminous).
                         </p>
                     </div>
 
-                    {/* Smart Search */}
+                    {/* Novenas & Stations */}
+                    <div className="card-premium p-8">
+                        <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6">
+                            <ScrollText className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Novenas & Stations</h3>
+                        <p className="text-gray-600">
+                            Track 9-day novenas with reminders, and walk the Stations of the Cross with beautiful reflections.
+                        </p>
+                    </div>
+
+                    {/* --- SCRIPTURE & STUDY --- */}
+
+                    {/* Bible & Readings */}
                     <div className="card-premium p-8">
                         <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-                            <Search className="w-6 h-6" />
+                            <Book className="w-6 h-6" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3">Smart Search</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Bible & Daily Readings</h3>
                         <p className="text-gray-600">
-                            Find specific prayers, saints, or feast days instantly with our comprehensive Catholic database search.
+                            Read the full Catholic Bible and follow the daily Mass readings, Gospel, and Psalms.
                         </p>
                     </div>
 
@@ -67,7 +72,77 @@ export default function FeaturesPage() {
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 mb-3">Liturgical Calendar</h3>
                         <p className="text-gray-600">
-                            Stay in sync with the Church seasons. Automated daily readings, feast days, and fasting reminders.
+                            Stay in sync with the Church seasons. Automated feast days, fasting reminders, and saint celebrations.
+                        </p>
+                    </div>
+
+                    {/* Catechism & Library */}
+                    <div className="card-premium p-8">
+                        <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center mb-6">
+                            <BookOpen className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Library & Catechism</h3>
+                        <p className="text-gray-600">
+                            Access the Catechism of the Catholic Church, encyclicals, and a vast library of prayers.
+                        </p>
+                    </div>
+
+                     {/* --- SACRAMENTAL LIFE --- */}
+
+                    {/* Church Finder */}
+                    <div className="card-premium p-8">
+                        <div className="w-12 h-12 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center mb-6">
+                            <MapPin className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Church Finder</h3>
+                        <p className="text-gray-600">
+                            Find nearby Masses, Confession times, and Adoration. Filter by rite and language.
+                        </p>
+                    </div>
+
+                    {/* Candles */}
+                    <div className="card-premium p-8">
+                        <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
+                            <Flame className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Light a Candle</h3>
+                        <p className="text-gray-600">
+                            Light a virtual candle for your intentions. A tangible way to offer prayer from anywhere.
+                        </p>
+                    </div>
+
+                    {/* Confession Guide */}
+                    <div className="card-premium p-8">
+                        <div className="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center mb-6">
+                            <Shield className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Confession Guide</h3>
+                        <p className="text-gray-600">
+                            Step-by-step preparation with Examination of Conscience based on the Ten Commandments.
+                        </p>
+                    </div>
+
+                     {/* --- COMMUNITY & GIVING --- */}
+
+                    {/* Memorials */}
+                    <div className="card-premium p-8">
+                        <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mb-6">
+                            <Star className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Eternal Memorials</h3>
+                        <p className="text-gray-600">
+                            Create lasting digital tributes for your departed loved ones and request prayers for their souls.
+                        </p>
+                    </div>
+
+                    {/* Parish Dashboard */}
+                    <div className="card-premium p-8">
+                        <div className="w-12 h-12 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center mb-6">
+                            <User className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Parish Dashboard</h3>
+                        <p className="text-gray-600">
+                            For parishes to manage Mass times, events, and communicate with their flock.
                         </p>
                     </div>
 
@@ -76,11 +151,12 @@ export default function FeaturesPage() {
                         <div className="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mb-6">
                             <Globe className="w-6 h-6" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3">Multi-Language Support</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Multi-Language</h3>
                         <p className="text-gray-600">
-                            Access tailored content in English, Spanish, French, Portuguese, and more (coming soon).
+                            Fully localized content in English, Spanish, French, Portuguese, and more.
                         </p>
                     </div>
+
                 </div>
             </div>
         </div>

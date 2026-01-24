@@ -6,58 +6,59 @@ class AppTheme {
   // SACRED GLOW PALETTE (New Premium Theme)
   // ---------------------------------------------------------------------------
 
-  // Deep, rich backgrounds (Midnight Blue to Void)
-  static const Color voidBlack = Color(0xFF020408);
-  static const Color deepSpace = Color(0xFF050B14);
-  static const Color sacredNavy950 = Color(0xFF080F1A); // Original base
-  static const Color sacredNavy900 = Color(0xFF0D1A2E); // Surface
+  // Deep, rich backgrounds (Cathedral at Midnight)
+  static const Color voidBlack = Color(0xFF0F0518); // Deep Purple Black
+  static const Color deepSpace = Color(0xFF13091C); // Dark Royal Purple Base
+  static const Color sacredNavy950 = deepSpace; // Map legacy to new base
+  static const Color sacredNavy900 = Color(
+    0xFF1E102E,
+  ); // Slightly lighter purple surface
 
-  // Vibrant Accents (Electric Gold & Royal Purple)
-  static const Color gold600 = Color(0xFFB48E2D);
-  static const Color gold500 = Color(0xFFFFD700); // Brighter Gold
-  static const Color gold400 = Color(0xFFFFE57F);
-  static const Color gold300 = Color(0xFFFFF1C2);
+  // Vibrant Accents (Candlelight & Incense)
+  static const Color gold600 = Color(0xFFFFB300); // Warm Amber
+  static const Color gold500 = Color(0xFFFFCA28); // Candlelight Gold
+  static const Color gold400 = Color(0xFFFFE082); // Soft Light
+  static const Color gold300 = Color(0xFFFFF8E1);
 
-  static const Color royalPurple900 = Color(0xFF1E1035);
-  static const Color royalPurple700 = Color(0xFF4C1D95);
-  static const Color royalPurple500 = Color(0xFF8B5CF6);
-  static const Color royalPurple400 = Color(0xFFA78BFA);
+  // Spiritual Purples
+  static const Color royalPurple900 = Color(0xFF2D1B4E);
+  static const Color royalPurple700 = Color(0xFF4527A0);
+  static const Color royalPurple500 = Color(0xFF7C4DFF);
+  static const Color royalPurple400 = Color(0xFFB388FF);
 
   // Text Colors
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(
-    0xFFE2E8F0,
-  ); // Brighter for better visibility
-  static const Color textMuted = Color(0xFF94A3B8); // Increased brightness
+  static const Color textPrimary = Color(0xFFFDFBF7); // Off-white cream
+  static const Color textSecondary = Color(0xFFD1C4E9); // Soft lavendar grey
+  static const Color textMuted = Color(0xFF9575CD); // Muted purple
 
   // Functional
-  static const Color error = Color(0xFFFF453A);
-  static const Color success = Color(0xFF32D74B);
-  static const Color info = Color(0xFF0A84FF);
+  static const Color error = Color(0xFFCF6679);
+  static const Color success = Color(0xFF81C784);
+  static const Color info = Color(0xFF64B5F6);
 
   // ---------------------------------------------------------------------------
   // LEGACY ALIASES
   // ---------------------------------------------------------------------------
-  static const Color sacredNavy800 = Color(0xFF11223B);
-  static const Color sacredNavy700 = Color(0xFF152A47);
-  static const Color sacredNavy600 = Color(0xFF1A3354);
-  static const Color sacredNavy500 = Color(0xFF1E3A5F);
-  static const Color sacredNavy50 = Color(0xFFF8FAFC);
+  static const Color sacredNavy800 = Color(0xFF25163A);
+  static const Color sacredNavy700 = Color(0xFF2D1B4E);
+  static const Color sacredNavy600 = Color(0xFF38205D);
+  static const Color sacredNavy500 = royalPurple700;
+  static const Color sacredNavy50 = Color(0xFFF3E5F5); // Very light purple
   static const Color gold100 = gold300;
-  static const Color cream50 = Color(0xFFFDFBF7);
-  static const Color primaryBlue = royalPurple500; // Shift to purple as primary
+  static const Color cream50 = Color(0xFFFFFDE7);
+  static const Color primaryBlue = royalPurple500;
   static const Color darkBg = deepSpace;
   static const Color darkSurface = sacredNavy900;
   static const Color darkCard = sacredNavy900;
-  static const Color darkBorder = sacredNavy700;
-  static const Color primaryDark = sacredNavy900;
+  static const Color darkBorder = royalPurple900;
+  static const Color primaryDark = deepSpace;
   static const Color accentGold = gold500;
   static const Color accentAmber = gold400;
   static const Color warning = gold400;
 
   // Missing colors
-  static const Color flameOrange = Color(0xFFFF9500);
-  static const Color sacredRed = Color(0xFFFF3B30);
+  static const Color flameOrange = Color(0xFFFF6D00);
+  static const Color sacredRed = Color(0xFFD32F2F);
   static const Color cardBackground = sacredNavy900;
   static const Color sacredPurple = royalPurple500;
   static const Color sacredGold = gold500;
@@ -67,7 +68,7 @@ class AppTheme {
   // ---------------------------------------------------------------------------
 
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [royalPurple700, Color(0xFF2E1065)],
+    colors: [royalPurple700, royalPurple900],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -79,7 +80,7 @@ class AppTheme {
   );
 
   static const LinearGradient sacredGradient = LinearGradient(
-    colors: [deepSpace, sacredNavy950],
+    colors: [deepSpace, Color(0xFF0F0518)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
@@ -103,13 +104,13 @@ class AppTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: deepSpace,
       primaryColor: royalPurple700,
-      fontFamily: GoogleFonts.outfit().fontFamily, // Modern, geometric sans
+      fontFamily: GoogleFonts.outfit().fontFamily,
       colorScheme: const ColorScheme.dark(
         primary: gold500,
         secondary: royalPurple500,
         surface: sacredNavy900,
         error: error,
-        onPrimary: sacredNavy900,
+        onPrimary: deepSpace,
         onSecondary: Colors.white,
         onSurface: textPrimary,
         onError: Colors.white,

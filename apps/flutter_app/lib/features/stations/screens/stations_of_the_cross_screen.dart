@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/premium_glass_card.dart';
+import '../../../core/widgets/shiny_button.dart';
 import '../data/stations_data.dart';
 
-/// Stations of the Cross Screen - Interactive walkthrough
+/// Stations of the Cross Screen - Immersive Pilgrimage
 class StationsOfTheCrossScreen extends StatefulWidget {
   const StationsOfTheCrossScreen({super.key});
 
@@ -23,6 +26,20 @@ class _StationsOfTheCrossScreenState extends State<StationsOfTheCrossScreen> {
     super.dispose();
   }
 
+  void _nextPage() {
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
+  void _prevPage() {
+    _pageController.previousPage(
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final totalPages =
@@ -30,126 +47,171 @@ class _StationsOfTheCrossScreenState extends State<StationsOfTheCrossScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.deepSpace,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: AppTheme.darkBg,
-        title: Text(
-          'Stations of the Cross',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppTheme.sacredNavy900.withValues(alpha: 0.9),
+                Colors.transparent,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
+        ),
+        leading: IconButton(
+          icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Center(
-              child: Text(
-                '${_currentPage + 1} / $totalPages',
-                style: GoogleFonts.inter(
-                  color: AppTheme.gold400,
-                  fontWeight: FontWeight.w600,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black38,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white12),
+                ),
+                child: Text(
+                  _currentPage == 0
+                      ? 'Intro'
+                      : _currentPage == totalPages - 1
+                      ? 'Closing'
+                      : 'Station $_currentPage',
+                  style: GoogleFonts.inter(
+                    color: AppTheme.gold400,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Progress bar
-          LinearProgressIndicator(
-            value: (_currentPage + 1) / totalPages,
-            backgroundColor: Colors.white10,
-            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.gold500),
-          ),
-
-          // Page View
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: (page) => setState(() => _currentPage = page),
-              itemCount: totalPages,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return _buildIntroPage();
-                } else if (index == totalPages - 1) {
-                  return _buildClosingPage();
-                } else {
-                  return _buildStationPage(stationsOfTheCross[index - 1]);
-                }
-              },
+          // Ambient Background
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: 1.5,
+                  colors: [AppTheme.sacredNavy900, Colors.black],
+                ),
+              ),
             ),
           ),
 
-          // Navigation buttons
-          _buildNavigationButtons(totalPages),
+          // Content
+          Column(
+            children: [
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (page) => setState(() => _currentPage = page),
+                  itemCount: totalPages,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return _buildIntroPage();
+                    } else if (index == totalPages - 1) {
+                      return _buildClosingPage();
+                    } else {
+                      return _buildStationPage(stationsOfTheCross[index - 1]);
+                    }
+                  },
+                ),
+              ),
+
+              // Navigation & Progress
+              _buildBottomControls(totalPages),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildNavigationButtons(int totalPages) {
+  Widget _buildBottomControls(int totalPages) {
+    final progress = (_currentPage + 1) / totalPages;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
       decoration: BoxDecoration(
-        color: AppTheme.darkCard,
-        border: Border(
-          top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
         ),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (_currentPage > 0)
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  _pageController.previousPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                },
-                icon: const Icon(LucideIcons.chevronLeft),
-                label: const Text('Previous'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white70,
-                  side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-              ),
+          // Subtle Progress Indicator
+          ClipRRect(
+            borderRadius: BorderRadius.circular(2),
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.white10,
+              valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.gold500),
+              minHeight: 2,
             ),
-          if (_currentPage > 0 && _currentPage < totalPages - 1)
-            const SizedBox(width: 12),
-          if (_currentPage < totalPages - 1)
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  _pageController.nextPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                },
-                icon: const Icon(LucideIcons.chevronRight),
-                label: Text(_currentPage == 0 ? 'Begin' : 'Next Station'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.gold500,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+          ),
+          const SizedBox(height: 24),
+
+          // Buttons
+          Row(
+            children: [
+              if (_currentPage > 0) ...[
+                TextButton.icon(
+                  onPressed: _prevPage,
+                  icon: const Icon(
+                    LucideIcons.arrowLeft,
+                    color: Colors.white70,
+                  ),
+                  label: Text(
+                    'Back',
+                    style: GoogleFonts.inter(color: Colors.white70),
+                  ),
                 ),
-              ),
-            ),
-          if (_currentPage == totalPages - 1)
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(LucideIcons.check),
-                label: const Text('Finish'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                const Spacer(),
+              ],
+
+              if (_currentPage == 0)
+                Expanded(
+                  child: ShinyButton(
+                    label: 'Begin Pilgrimage',
+                    icon: LucideIcons.footprints,
+                    onPressed: _nextPage,
+                  ),
+                )
+              else if (_currentPage == totalPages - 1)
+                Expanded(
+                  child: ShinyButton(
+                    label: 'Finish',
+                    icon: LucideIcons.check,
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                )
+              else
+                ShinyButton(
+                  label: 'Next Station',
+                  icon: LucideIcons.arrowRight,
+                  onPressed: _nextPage,
+                  isLarge: true,
                 ),
-              ),
-            ),
+            ],
+          ),
         ],
       ),
     );
@@ -157,64 +219,66 @@ class _StationsOfTheCrossScreenState extends State<StationsOfTheCrossScreen> {
 
   Widget _buildIntroPage() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 100),
       child: Column(
         children: [
-          const SizedBox(height: 40),
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [Colors.purple.shade900, AppTheme.sacredNavy900],
-              ),
-            ),
-            child: const Icon(
-              LucideIcons.cross,
-              size: 64,
-              color: AppTheme.gold400,
-            ),
-          ),
+          const Icon(
+            LucideIcons.cross,
+            size: 80,
+            color: AppTheme.gold500,
+          ).animate().fadeIn(duration: 800.ms).scale(),
           const SizedBox(height: 32),
           Text(
             'The Way of the Cross',
+            textAlign: TextAlign.center,
             style: GoogleFonts.playfairDisplay(
-              fontSize: 28,
+              fontSize: 36,
               fontWeight: FontWeight.bold,
               color: Colors.white,
+              shadows: [
+                Shadow(
+                  color: AppTheme.gold500.withValues(alpha: 0.5),
+                  blurRadius: 20,
+                ),
+              ],
             ),
-            textAlign: TextAlign.center,
-          ),
+          ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.2, end: 0),
           const SizedBox(height: 16),
           Text(
-            'A devotion honoring the Passion of Jesus Christ, tracing His path from condemnation to burial.',
-            style: GoogleFonts.inter(
-              fontSize: 15,
-              color: Colors.white70,
-              height: 1.6,
-            ),
+            'A spiritual pilgrimage of prayer and meditation.',
             textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 32),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppTheme.darkCard,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppTheme.gold500.withValues(alpha: 0.3),
-              ),
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              color: Colors.white70,
+              letterSpacing: 0.5,
             ),
-            child: Text(
-              stationsOpeningPrayer,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: Colors.white,
-                height: 1.7,
-              ),
-              textAlign: TextAlign.center,
+          ).animate().fadeIn(delay: 500.ms),
+          const SizedBox(height: 48),
+          PremiumGlassCard(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                Text(
+                  'Opening Prayer',
+                  style: GoogleFonts.merriweather(
+                    fontSize: 18,
+                    color: AppTheme.gold400,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  stationsOpeningPrayer,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 15,
+                    color: Colors.white,
+                    height: 1.8,
+                  ),
+                ),
+              ],
             ),
-          ),
+          ).animate().fadeIn(delay: 700.ms).slideY(begin: 0.1, end: 0),
         ],
       ),
     );
@@ -222,75 +286,69 @@ class _StationsOfTheCrossScreenState extends State<StationsOfTheCrossScreen> {
 
   Widget _buildStationPage(Station station) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 100, 24, 40),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.red.shade900.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.red.shade700),
-              ),
-              child: Text(
-                'STATION ${station.number}',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.red.shade300,
-                  letterSpacing: 2,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              station.title,
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 24),
+          // Station Number Badge
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: AppTheme.gold500.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppTheme.gold500.withValues(alpha: 0.3),
+              color: Colors.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.white24),
+            ),
+            child: Text(
+              'STATION ${toRoman(station.number)}',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.white70,
+                letterSpacing: 2,
               ),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          ).animate().fadeIn(),
+          const SizedBox(height: 24),
+
+          // Title
+          Text(
+            station.title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ).animate().fadeIn(delay: 200.ms),
+          const SizedBox(height: 32),
+
+          // Scripture Card
+          PremiumGlassCard(
+            padding: const EdgeInsets.all(20),
+            color: Colors.white.withValues(alpha: 0.03),
+            child: Column(
               children: [
                 const Icon(
                   LucideIcons.bookOpen,
-                  color: AppTheme.gold400,
+                  color: AppTheme.gold500,
                   size: 20,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    station.scripture,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontStyle: FontStyle.italic,
-                      color: AppTheme.gold400,
-                      height: 1.5,
-                    ),
+                const SizedBox(height: 12),
+                Text(
+                  station.scripture,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.merriweather(
+                    fontSize: 15,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.white,
+                    height: 1.6,
                   ),
                 ),
               ],
             ),
-          ),
+          ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1, end: 0),
           const SizedBox(height: 24),
+
+          // Meditation
           Text(
             'MEDITATION',
             style: GoogleFonts.inter(
@@ -299,55 +357,46 @@ class _StationsOfTheCrossScreenState extends State<StationsOfTheCrossScreen> {
               color: AppTheme.textMuted,
               letterSpacing: 1.5,
             ),
-          ),
-          const SizedBox(height: 8),
+          ).animate().fadeIn(delay: 600.ms),
+          const SizedBox(height: 12),
           Text(
             station.meditation,
+            textAlign: TextAlign.center,
             style: GoogleFonts.inter(
-              fontSize: 15,
-              color: Colors.white,
+              fontSize: 16,
+              color: Colors.white.withValues(alpha: 0.9),
               height: 1.7,
             ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'PRAYER',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textMuted,
-              letterSpacing: 1.5,
+          ).animate().fadeIn(delay: 700.ms),
+          const SizedBox(height: 32),
+
+          // Prayer Card
+          PremiumGlassCard(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                Text(
+                  'PRAYER',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.gold400,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  station.prayer,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.merriweather(
+                    fontSize: 15,
+                    color: Colors.white,
+                    height: 1.8,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppTheme.darkCard,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              station.prayer,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: Colors.white70,
-                height: 1.6,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              '℣ We adore You, O Christ, and we praise You.\n'
-              '℟ Because by Your holy Cross You have redeemed the world.',
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                color: Colors.red.shade300,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+          ).animate().fadeIn(delay: 900.ms).slideY(begin: 0.1, end: 0),
         ],
       ),
     );
@@ -355,80 +404,62 @@ class _StationsOfTheCrossScreenState extends State<StationsOfTheCrossScreen> {
 
   Widget _buildClosingPage() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 100),
       child: Column(
         children: [
-          const SizedBox(height: 40),
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [Colors.amber.shade800, Colors.orange.shade900],
-              ),
-            ),
-            child: const Icon(LucideIcons.sun, size: 64, color: Colors.white),
-          ),
+          const Icon(
+            LucideIcons.sun,
+            size: 80,
+            color: AppTheme.gold500,
+          ).animate().fadeIn().scale(),
           const SizedBox(height: 32),
           Text(
-            'Closing Prayer',
+            'Your Journey is Complete',
+            textAlign: TextAlign.center,
             style: GoogleFonts.playfairDisplay(
-              fontSize: 28,
+              fontSize: 32,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppTheme.darkCard,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppTheme.gold500.withValues(alpha: 0.3),
-              ),
-            ),
-            child: Text(
-              stationsClosingPrayer,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: Colors.white,
-                height: 1.7,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 32),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
-            ),
-            child: Row(
+          ).animate().fadeIn(delay: 300.ms),
+          const SizedBox(height: 48),
+          PremiumGlassCard(
+            padding: const EdgeInsets.all(24),
+            child: Column(
               children: [
-                const Icon(
-                  LucideIcons.checkCircle,
-                  color: Colors.green,
-                  size: 24,
+                Text(
+                  'Closing Prayer',
+                  style: GoogleFonts.merriweather(
+                    fontSize: 18,
+                    color: AppTheme.gold400,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'You have completed the Stations of the Cross. May this devotion bring you closer to Christ.',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: Colors.green.shade300,
-                    ),
+                const SizedBox(height: 16),
+                Text(
+                  stationsClosingPrayer,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 15,
+                    color: Colors.white,
+                    height: 1.8,
                   ),
                 ),
               ],
             ),
-          ),
+          ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1, end: 0),
         ],
       ),
     );
+  }
+
+  String toRoman(int number) {
+    if (number < 1) return "";
+    if (number >= 10) return "X${toRoman(number - 10)}";
+    if (number >= 9) return "IX${toRoman(number - 9)}";
+    if (number >= 5) return "V${toRoman(number - 5)}";
+    if (number >= 4) return "IV${toRoman(number - 4)}";
+    if (number >= 1) return "I${toRoman(number - 1)}";
+    return "";
   }
 }

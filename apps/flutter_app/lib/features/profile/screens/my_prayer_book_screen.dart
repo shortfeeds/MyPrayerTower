@@ -52,7 +52,7 @@ class MyPrayerBookScreen extends ConsumerWidget {
                 if (prayers.isEmpty) return _buildEmptyState();
 
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                   itemCount: prayers.length,
                   itemBuilder: (context, index) {
                     final prayer = prayers[index];

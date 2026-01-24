@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/premium_glass_card.dart';
 import '../data/novenas_data.dart';
 import '../models/novena_model.dart';
 import 'novena_prayer_screen.dart';
@@ -82,7 +84,8 @@ class NovenaProgressNotifier
       startDate: current.startDate,
       completedDays: [...current.completedDays, DateTime.now()],
       reminderEnabled: current.reminderEnabled,
-      isCompleted: current.completedDays.length >= 8,
+      isCompleted:
+          current.completedDays.length >= 8, // 0-indexed count vs day 9
     );
     state = {...state, novenaId: updated};
     await _saveToHive(novenaId, updated);
@@ -97,7 +100,6 @@ class NovenaProgressNotifier
   NovenaProgress? getProgress(String novenaId) => state[novenaId];
 }
 
-/// Novena Tracker Screen
 class NovenaTrackerScreen extends ConsumerStatefulWidget {
   const NovenaTrackerScreen({super.key});
 
@@ -129,7 +131,6 @@ class _NovenaTrackerScreenState extends ConsumerState<NovenaTrackerScreen> {
 
       if (_selectedCategory == 'All') return true;
       if (_selectedCategory == 'Popular') {
-        // First 5 in the list are typically popular
         return allNovenas.indexOf(n) < 5;
       }
       if (_selectedCategory == 'Marian') {
@@ -147,7 +148,6 @@ class _NovenaTrackerScreenState extends ConsumerState<NovenaTrackerScreen> {
             !n.name.contains('Our Lady') &&
             allNovenas.indexOf(n) >= 5;
       }
-
       return true;
     }).toList();
   }
@@ -162,43 +162,68 @@ class _NovenaTrackerScreenState extends ConsumerState<NovenaTrackerScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.deepSpace,
-      appBar: AppBar(
-        backgroundColor: AppTheme.darkBg,
-        title: Text(
-          'Novena Tracker',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
       body: CustomScrollView(
         slivers: [
-          // Header & Search
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                _buildHeaderCard(),
-                _buildSearchBar(),
-                _buildCategoryTabs(),
-              ],
+          SliverAppBar(
+            expandedHeight: 120,
+            floating: true,
+            pinned: true,
+            backgroundColor: AppTheme.sacredNavy900,
+            leading: IconButton(
+              icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text(
+                'Novena Tracker',
+                style: GoogleFonts.merriweather(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Colors.white,
+                  shadows: const [Shadow(color: Colors.black45, blurRadius: 4)],
+                ),
+              ),
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppTheme.sacredNavy900, AppTheme.deepSpace],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
             ),
           ),
 
-          // Active Novenas (Only show if no search filter)
+          // Search & Filter
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  _buildSearchBar(),
+                  const SizedBox(height: 16),
+                  _buildCategoryTabs(),
+                ],
+              ),
+            ),
+          ),
+
+          // Active Novenas Section
           if (activeNovenas.isNotEmpty &&
               _searchQuery.isEmpty &&
               _selectedCategory == 'All') ...[
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                 child: Text(
-                  'ACTIVE NOVENAS',
+                  'ACTIVE PRAYERS',
                   style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.textMuted,
-                    letterSpacing: 1.5,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white54,
+                    letterSpacing: 2,
                   ),
                 ),
               ),
@@ -212,60 +237,53 @@ class _NovenaTrackerScreenState extends ConsumerState<NovenaTrackerScreen> {
                     (n) => n.id == progress.novenaId,
                     orElse: () => allNovenas.first,
                   );
-                  return _ActiveNovenaCard(
-                    definition: definition,
-                    progress: progress,
-                    onMarkComplete: () {
-                      ref
-                          .read(novenaProgressProvider.notifier)
-                          .markDayComplete(progress.novenaId);
-                    },
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _ActiveNovenaCard(
+                      definition: definition,
+                      progress: progress,
+                      onMarkComplete: () {
+                        ref
+                            .read(novenaProgressProvider.notifier)
+                            .markDayComplete(progress.novenaId);
+                      },
+                    ),
                   );
                 }, childCount: activeNovenas.length),
               ),
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
 
-          // Filtered Novenas List
+          // Available Novenas Grid
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-              child: Row(
-                children: [
-                  Text(
-                    'AVAILABLE NOVENAS (${filteredNovenas.length})',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: AppTheme.textMuted,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Text(
+                'AVAILABLE NOVENAS (${filteredNovenas.length})',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white54,
+                  letterSpacing: 2,
+                ),
               ),
             ),
           ),
 
-          if (filteredNovenas.isEmpty)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Center(
-                  child: Text(
-                    'No novenas found.',
-                    style: GoogleFonts.inter(color: Colors.grey),
-                  ),
-                ),
-              ),
-            ),
-
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverList(
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.85,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
               delegate: SliverChildBuilderDelegate((context, index) {
                 final novena = filteredNovenas[index];
                 final isActive = progressMap.containsKey(novena.id);
-                return _NovenaListTile(
+                return _NovenaGridCard(
                   novena: novena,
                   isActive: isActive,
                   onStart: () {
@@ -275,53 +293,16 @@ class _NovenaTrackerScreenState extends ConsumerState<NovenaTrackerScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Started ${novena.name}! Day 1/9'),
+                        backgroundColor: novena.color,
                       ),
                     );
                   },
-                );
+                ).animate(delay: (50 * index).ms).fadeIn().slideY(begin: 0.1);
               }, childCount: filteredNovenas.length),
             ),
           ),
 
-          // Bottom padding
-          const SliverToBoxAdapter(child: SizedBox(height: 120)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeaderCard() {
-    if (_searchQuery.isNotEmpty) return const SizedBox.shrink();
-    return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.royalPurple900.withValues(alpha: 0.6),
-            AppTheme.sacredNavy900.withValues(alpha: 0.8),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          const Icon(LucideIcons.flame, size: 40, color: AppTheme.gold400),
-          const SizedBox(height: 12),
-          Text(
-            '9 Days of Prayer',
-            style: GoogleFonts.playfairDisplay(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Choose a novena and commit to 9 consecutive days of prayer.',
-            style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
-            textAlign: TextAlign.center,
-          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
     );
@@ -329,19 +310,18 @@ class _NovenaTrackerScreenState extends ConsumerState<NovenaTrackerScreen> {
 
   Widget _buildSearchBar() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: AppTheme.darkCard,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white10),
       ),
       child: TextField(
         controller: _searchController,
         style: GoogleFonts.inter(color: Colors.white),
         decoration: InputDecoration(
-          hintText: 'Search novenas...',
-          hintStyle: GoogleFonts.inter(color: Colors.grey),
-          prefixIcon: const Icon(LucideIcons.search, color: Colors.grey),
+          hintText: 'Search for intercession...',
+          hintStyle: GoogleFonts.inter(color: Colors.white30),
+          prefixIcon: const Icon(LucideIcons.search, color: Colors.white30),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
@@ -349,7 +329,11 @@ class _NovenaTrackerScreenState extends ConsumerState<NovenaTrackerScreen> {
           ),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-                  icon: const Icon(LucideIcons.x, size: 16, color: Colors.grey),
+                  icon: const Icon(
+                    LucideIcons.x,
+                    size: 16,
+                    color: Colors.white30,
+                  ),
                   onPressed: () {
                     _searchController.clear();
                     setState(() => _searchQuery = '');
@@ -365,30 +349,27 @@ class _NovenaTrackerScreenState extends ConsumerState<NovenaTrackerScreen> {
   Widget _buildCategoryTabs() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: _categories.map((cat) {
           final isSelected = _selectedCategory == cat;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
+            child: ChoiceChip(
               label: Text(cat),
               selected: isSelected,
               onSelected: (selected) {
-                setState(() => _selectedCategory = cat);
+                if (selected) setState(() => _selectedCategory = cat);
               },
-              backgroundColor: AppTheme.darkCard,
               selectedColor: AppTheme.gold500,
-              checkmarkColor: AppTheme.sacredNavy900,
+              backgroundColor: Colors.white.withValues(alpha: 0.05),
               labelStyle: GoogleFonts.inter(
-                color: isSelected ? AppTheme.sacredNavy900 : Colors.white70,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                fontSize: 13,
+                color: isSelected ? Colors.black : Colors.white70,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
-                  color: isSelected ? AppTheme.gold500 : Colors.white10,
+                  color: isSelected ? AppTheme.gold500 : Colors.white12,
                 ),
               ),
             ),
@@ -399,7 +380,6 @@ class _NovenaTrackerScreenState extends ConsumerState<NovenaTrackerScreen> {
   }
 }
 
-/// Active Novena Progress Card
 class _ActiveNovenaCard extends StatelessWidget {
   final NovenaDefinition definition;
   final NovenaProgress progress;
@@ -414,122 +394,112 @@ class _ActiveNovenaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final daysCompleted = progress.completedDays.length;
-    final color = definition.color;
-    // final canMarkToday = progress.canMarkToday && daysCompleted < 9; // Unused in new design
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [color.withValues(alpha: 0.15), AppTheme.darkCard],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
+    return PremiumGlassCard(
+      padding: EdgeInsets.zero,
+      color: definition.color.withValues(alpha: 0.1),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: definition.color.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    LucideIcons.flame,
+                    color: definition.color,
+                    size: 24,
+                  ),
                 ),
-                child: Icon(LucideIcons.flame, color: color, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      definition.name,
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      'Day ${daysCompleted + 1} of 9',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: color,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Progress dots
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(9, (i) {
-              final isCompleted = i < daysCompleted;
-              final isCurrent = i == daysCompleted;
-              return Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: isCompleted
-                      ? color
-                      : (isCurrent
-                            ? color.withValues(alpha: 0.3)
-                            : Colors.white10),
-                  shape: BoxShape.circle,
-                  border: isCurrent ? Border.all(color: color, width: 2) : null,
-                ),
-                child: Center(
-                  child: isCompleted
-                      ? const Icon(
-                          LucideIcons.check,
-                          size: 14,
-                          color: Colors.black,
-                        )
-                      : Text(
-                          '${i + 1}',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: isCurrent ? color : Colors.white38,
-                          ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        definition.name,
+                        style: GoogleFonts.merriweather(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
+                      ),
+                      Text(
+                        'Day ${daysCompleted + 1} of 9',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: AppTheme.gold400,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              );
-            }),
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
 
-          // Pray Now Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => NovenaPrayerScreen(
-                      novena: definition,
-                      dayNumber: daysCompleted + 1,
+          // Progress Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: List.generate(9, (index) {
+                final isCompleted = index < daysCompleted;
+                final isCurrent = index == daysCompleted;
+                return Expanded(
+                  child: Container(
+                    height: 4,
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    decoration: BoxDecoration(
+                      color: isCompleted
+                          ? definition.color
+                          : (isCurrent
+                                ? definition.color.withValues(alpha: 0.5)
+                                : Colors.white10),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 );
-              },
-              icon: const Icon(LucideIcons.bookOpen, size: 18),
-              label: Text('Pray Day ${daysCompleted + 1}'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: color,
-                foregroundColor:
-                    Colors.white, // Text color on colorful background
-                padding: const EdgeInsets.symmetric(vertical: 12),
+              }),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Action Button
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => NovenaPrayerScreen(
+                    novena: definition,
+                    dayNumber: daysCompleted + 1,
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: const BoxDecoration(
+                border: Border(top: BorderSide(color: Colors.white10)),
+              ),
+              child: Center(
+                child: Text(
+                  'CONTINUE PRAYER',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1,
+                  ),
+                ),
               ),
             ),
           ),
@@ -539,13 +509,12 @@ class _ActiveNovenaCard extends StatelessWidget {
   }
 }
 
-/// Novena List Tile
-class _NovenaListTile extends StatelessWidget {
+class _NovenaGridCard extends StatelessWidget {
   final NovenaDefinition novena;
   final bool isActive;
   final VoidCallback onStart;
 
-  const _NovenaListTile({
+  const _NovenaGridCard({
     required this.novena,
     required this.isActive,
     required this.onStart,
@@ -553,43 +522,47 @@ class _NovenaListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: AppTheme.darkCard,
-        borderRadius: BorderRadius.circular(12),
-        border: isActive
-            ? Border.all(color: novena.color.withValues(alpha: 0.5))
-            : null,
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: novena.color.withValues(alpha: 0.15),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(LucideIcons.sparkles, color: novena.color, size: 20),
-        ),
-        title: Text(
-          novena.name,
-          style: GoogleFonts.inter(
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-            fontSize: 14,
-          ),
-        ),
-        subtitle: Text(
-          novena.patronOf,
-          style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textMuted),
-        ),
-        trailing: isActive
-            ? Container(
+    return GestureDetector(
+      onTap: isActive ? null : onStart,
+      child: PremiumGlassCard(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: novena.color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(LucideIcons.sparkles, color: novena.color, size: 28),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              novena.name,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.merriweather(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              novena.patronOf,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(fontSize: 11, color: Colors.white54),
+            ),
+            const Spacer(),
+            if (isActive)
+              Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: novena.color.withValues(alpha: 0.2),
+                  color: AppTheme.gold500,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -597,14 +570,21 @@ class _NovenaListTile extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: novena.color,
+                    color: Colors.black,
                   ),
                 ),
               )
-            : IconButton(
-                icon: Icon(LucideIcons.play, color: novena.color),
-                onPressed: onStart,
+            else
+              Text(
+                'Start Novena',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: novena.color,
+                ),
               ),
+          ],
+        ),
       ),
     );
   }

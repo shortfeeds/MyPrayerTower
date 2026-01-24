@@ -37,11 +37,6 @@ dependencies:
   audioplayers: ^6.5.1
 
   
-  # Maps & Location - REMOVED to reduce app size
-  # google_maps_flutter: ^2.9.0
-  # geolocator: ^12.0.0
-  # geocoding: ^3.0.0
-  
   # Payments (Google Play Billing)
   in_app_purchase: ^3.2.0
   
@@ -67,7 +62,7 @@ dependencies:
   http: ^1.6.0
 
 
-  # webview_flutter_web: ^0.2.3+4
+  webview_flutter_web: ^0.2.3+4
   # flutter_paypal_payment: ^1.0.8
   timeago: ^3.7.1
   

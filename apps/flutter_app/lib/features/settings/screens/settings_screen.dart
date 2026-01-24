@@ -216,6 +216,7 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () {},
             ),
           ]),
+          const SizedBox(height: 120),
         ],
       ),
     );

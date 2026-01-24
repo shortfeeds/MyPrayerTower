@@ -62,7 +62,7 @@ class _ParishFinderScreenState extends ConsumerState<ParishFinderScreen> {
       'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}',
     );
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+      await launchUrl(uri, mode: LaunchMode.inAppWebView);
     }
   }
 

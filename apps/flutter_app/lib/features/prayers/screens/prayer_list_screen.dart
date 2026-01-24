@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../ads/widgets/smart_ad_banner.dart';
-import '../providers/prayers_provider.dart';
+import '../../../core/widgets/premium_glass_card.dart';
+import '../../../core/widgets/premium_scaffold.dart';
+import '../models/prayer_model.dart';
+import '../repositories/prayers_repository.dart';
 
-class PrayerListScreen extends ConsumerWidget {
+class PrayerListScreen extends ConsumerStatefulWidget {
   final String categoryId;
   final String categoryName;
 
@@ -18,166 +20,229 @@ class PrayerListScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final prayersAsync = ref.watch(prayersProvider(categoryId));
+  ConsumerState<PrayerListScreen> createState() => _PrayerListScreenState();
+}
 
-    return Scaffold(
-      backgroundColor: AppTheme.deepSpace,
-      appBar: AppBar(
-        title: Text(
-          categoryName,
-          style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: AppTheme.darkBg,
-        centerTitle: true,
-      ),
-      body: prayersAsync.when(
-        data: (prayers) {
-          if (prayers.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    LucideIcons.bookOpen,
-                    size: 48,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No prayers found',
-                    style: GoogleFonts.inter(color: Colors.grey),
-                  ),
-                ],
-              ),
-            );
+class _PrayerListScreenState extends ConsumerState<PrayerListScreen> {
+  final ScrollController _scrollController = ScrollController();
+  List<Prayer> _prayers = [];
+  bool _isLoading = false;
+  int _currentPage = 1;
+  bool _hasMore = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrayers();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _loadPrayers({bool refresh = false}) async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+      if (refresh) {
+        _currentPage = 1;
+        _prayers = [];
+        _hasMore = true;
+      }
+    });
+
+    try {
+      final newPrayers = await ref
+          .read(prayersRepositoryProvider)
+          .getPrayers(category: widget.categoryId, page: _currentPage);
+
+      if (mounted) {
+        setState(() {
+          if (refresh) {
+            _prayers = newPrayers;
+          } else {
+            _prayers.addAll(newPrayers);
           }
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: prayers.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final prayer = prayers[index];
-                    return _PrayerCard(
-                      title: prayer.title,
-                      preview: prayer.content,
-                      category: categoryName,
-                      onTap: () => context.push('/prayer/${prayer.id}'),
-                    );
-                  },
+          _hasMore = newPrayers.length >= 20;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (!_hasMore || _isLoading) return;
+    _currentPage++;
+    await _loadPrayers();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PremiumScaffold(
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            backgroundColor: AppTheme.sacredNavy950,
+            leading: IconButton(
+              icon: const Icon(LucideIcons.arrowLeft, color: Colors.white),
+              onPressed: () => context.pop(),
+            ),
+            expandedHeight: 120,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                widget.categoryName,
+                style: GoogleFonts.playfairDisplay(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SmartAdBanner(page: 'prayer_list', position: 'bottom'),
-              const SizedBox(height: 120), // Footer spacing
-            ],
-          );
-        },
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppTheme.gold500),
-        ),
-        error: (e, s) => Center(child: Text('Error: $e')),
+              centerTitle: true,
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppTheme.sacredNavy950, AppTheme.royalPurple900],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          if (_prayers.isEmpty && !_isLoading)
+            SliverFillRemaining(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      LucideIcons.bookOpen,
+                      size: 48,
+                      color: Colors.white24,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No prayers found',
+                      style: GoogleFonts.inter(color: Colors.white38),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  if (index == _prayers.length) {
+                    return _isLoading
+                        ? const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(20),
+                              child: CircularProgressIndicator(
+                                color: AppTheme.gold500,
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink();
+                  }
+
+                  final prayer = _prayers[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _PrayerCard(
+                      prayer: prayer,
+                      onTap: () =>
+                          context.push('/prayer/${prayer.id}', extra: prayer),
+                    ),
+                  );
+                }, childCount: _prayers.length + 1),
+              ),
+            ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+        ],
       ),
     );
   }
 }
 
 class _PrayerCard extends StatelessWidget {
-  final String title;
-  final String preview;
-  final String category;
+  final Prayer prayer;
   final VoidCallback onTap;
 
-  const _PrayerCard({
-    required this.title,
-    required this.preview,
-    required this.category,
-    required this.onTap,
-  });
+  const _PrayerCard({required this.prayer, required this.onTap});
 
   IconData _getIcon() {
-    if (category.contains('Morning')) return LucideIcons.sun;
-    if (category.contains('Evening')) return LucideIcons.moon;
-    if (category.contains('Mary') || category.contains('Marian')) {
-      return LucideIcons.star;
-    }
-    if (category.contains('Heal')) return LucideIcons.heart;
-    if (category.contains('Family')) return LucideIcons.users;
-    if (category.contains('Saint')) return LucideIcons.user;
+    final cat = prayer.category.toLowerCase();
+    if (cat.contains('morning')) return LucideIcons.sun;
+    if (cat.contains('evening')) return LucideIcons.moon;
+    if (cat.contains('marian')) return LucideIcons.star;
+    if (cat.contains('healing')) return LucideIcons.heart;
+    if (cat.contains('family')) return LucideIcons.users;
+    if (cat.contains('saints')) return LucideIcons.user;
     return LucideIcons.bookOpen;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.darkCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return PremiumGlassCard(
+      onTap: onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.gold500.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(_getIcon(), color: AppTheme.gold500, size: 24),
           ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.gold500.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(_getIcon(), color: AppTheme.gold500, size: 24),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: GoogleFonts.playfairDisplay(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        preview,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: AppTheme.textMuted,
-                          height: 1.5,
-                        ),
-                      ),
-                    ],
+                Text(
+                  prayer.title,
+                  style: GoogleFonts.merriweather(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
-                const Icon(
-                  LucideIcons.chevronRight,
-                  color: Colors.white24,
-                  size: 20,
+                const SizedBox(height: 6),
+                Text(
+                  prayer.content,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: Colors.white60,
+                    height: 1.5,
+                  ),
                 ),
               ],
             ),
           ),
-        ),
+          const Icon(LucideIcons.chevronRight, color: Colors.white24, size: 16),
+        ],
       ),
     );
   }

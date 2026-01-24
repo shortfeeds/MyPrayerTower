@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:ui';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/sacred_copy.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -21,39 +22,42 @@ class PremiumHomeHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final streak = authState.value?.streakCount ?? 0;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final user = ref.watch(authProvider).value;
+    final userName = user?.name.split(' ').first ?? 'Pilgrim';
 
     return SliverAppBar(
       expandedHeight: 280.0,
+      collapsedHeight: kToolbarHeight + 10,
       floating: false,
       pinned: true,
       backgroundColor: AppTheme.sacredNavy950,
       elevation: 0,
-      leadingWidth: 60,
-      leading: const Padding(
-        padding: EdgeInsets.only(left: 8.0),
-        child: AppBarMenuButton(iconColor: Colors.white, showBackground: true),
-      ),
-      actions: [
-        // Streak Badge
-        Padding(
-          padding: const EdgeInsets.only(right: 12.0),
-          child: _buildGlassBadge(
-            context,
-            icon: LucideIcons.flame,
-            label: '$streak Days',
-            color: AppTheme.gold500,
-            onTap: () => _showStreakDialog(context, streak),
+      // Custom Leading for Menu
+      leadingWidth: 70,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 20.0, top: 12.0, bottom: 12.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.1),
+              width: 1,
+            ),
+          ),
+          child: const AppBarMenuButton(
+            iconColor: Colors.white,
+            showBackground: false,
+            size: 20,
           ),
         ),
-        // Profile Avatar
+      ),
+      // Profile Action
+      actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 16.0),
+          padding: const EdgeInsets.only(right: 20.0, top: 12.0, bottom: 12.0),
           child: GestureDetector(
             onTap: () {
-              final user = ref.read(authProvider).value;
               if (user != null) {
                 context.push('/profile');
               } else {
@@ -61,27 +65,34 @@ class PremiumHomeHeader extends ConsumerWidget {
               }
             },
             child: Container(
-              width: 38,
-              height: 38,
+              width: 44,
+              height: 44,
+              padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppTheme.sacredNavy800,
-                border: Border.all(
-                  color: AppTheme.gold500.withValues(alpha: 0.5),
-                  width: 1.5,
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.gold500,
+                    AppTheme.gold500.withValues(alpha: 0.1),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
-              child: const Icon(
-                LucideIcons.user,
-                color: Colors.white,
-                size: 20,
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppTheme.sacredNavy950,
+                ),
+                child: ClipOval(
+                  child: user?.avatarUrl != null
+                      ? Image.network(user!.avatarUrl!, fit: BoxFit.cover)
+                      : const Icon(
+                          LucideIcons.user,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                ),
               ),
             ),
           ),
@@ -92,66 +103,38 @@ class PremiumHomeHeader extends ConsumerWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // Premium Background Image (Darker, more sacred feel)
-            Image.network(
-              'https://images.unsplash.com/photo-1548625361-ec8f95149833?q=80&w=2070&auto=format&fit=crop', // Cathedral Interior/Altar
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) =>
-                  Container(color: AppTheme.sacredNavy950),
-            ),
+            // 1. Professional Gradient Background
+            const _ProfessionalBackground(),
 
-            // Heavy Gradient Overlay for legibility
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.sacredNavy950.withValues(alpha: 0.8),
-                    AppTheme.sacredNavy900.withValues(alpha: 0.5),
-                    AppTheme.sacredNavy950,
-                  ],
-                  stops: const [0.0, 0.5, 1.0],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
-
-            // Decorative Elements (Subtle)
-            Positioned(
-              top: -50,
-              right: -50,
-              child: _buildGlowingOrb(AppTheme.gold500, 300, 0.1),
-            ),
-
-            // Content
+            // 2. Content Layer
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24.0,
-                  vertical: 24.0,
+                  vertical: 16.0,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Enhanced Date Badge
+                    // Date Badge
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
+                        horizontal: 12,
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(30),
+                        color: AppTheme.gold500.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.15),
+                          color: AppTheme.gold500.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(
-                            LucideIcons.calendarDays,
+                            LucideIcons.calendar,
                             size: 14,
                             color: AppTheme.gold400,
                           ),
@@ -160,9 +143,51 @@ class PremiumHomeHeader extends ConsumerWidget {
                             _getFormattedDate().toUpperCase(),
                             style: GoogleFonts.inter(
                               fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white.withValues(alpha: 0.9),
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.gold100,
                               letterSpacing: 1.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Greeting Block
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      duration: const Duration(milliseconds: 800),
+                      curve: Curves.easeOutCubic,
+                      builder: (context, value, child) {
+                        return Opacity(
+                          opacity: value,
+                          child: Transform.translate(
+                            offset: Offset(0, 20 * (1 - value)),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getGreeting(),
+                            style: GoogleFonts.playfairDisplay(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white.withValues(alpha: 0.9),
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            userName,
+                            style: GoogleFonts.playfairDisplay(
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: -0.5,
+                              height: 1.1,
                             ),
                           ),
                         ],
@@ -170,33 +195,17 @@ class PremiumHomeHeader extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Elegant Greeting
+                    // Welcome Subtitle (Clean & Professional)
                     Text(
-                      _getGreeting(),
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: -0.5,
-                        height: 1.1,
+                      SacredCopy.welcome.homepage,
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white.withValues(alpha: 0.7),
+                        height: 1.5,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Welcome Message with improved typography
-                    SizedBox(
-                      width: screenWidth * 0.8, // Limit width for readability
-                      child: Text(
-                        SacredCopy.welcome.homepage,
-                        style: GoogleFonts.inter(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.white.withValues(alpha: 0.9),
-                          height: 1.5,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -204,134 +213,6 @@ class PremiumHomeHeader extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildGlassBadge(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 38,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: AppTheme.sacredNavy900.withValues(alpha: 0.8),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 16, color: color),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGlowingOrb(Color color, double size, double opacity) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [
-            color.withValues(alpha: opacity),
-            color.withValues(alpha: 0.0),
-          ],
-          stops: const [0.0, 0.7],
-        ),
-      ),
-    );
-  }
-
-  void _showStreakDialog(BuildContext context, int streak) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.sacredNavy900,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Row(
-          children: [
-            const Icon(LucideIcons.flame, color: AppTheme.gold500),
-            const SizedBox(width: 8),
-            Text(
-              'Prayer Streak',
-              style: GoogleFonts.merriweather(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppTheme.gold500.withValues(alpha: 0.1),
-                border: Border.all(color: AppTheme.gold500, width: 2),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    '$streak',
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.gold500,
-                    ),
-                  ),
-                  Text(
-                    'DAYS',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.5,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Consistency is key to spiritual growth. Keep going!',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: Colors.white70, height: 1.5),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Close',
-              style: GoogleFonts.inter(
-                color: AppTheme.gold500,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -362,5 +243,100 @@ class PremiumHomeHeader extends ConsumerWidget {
       'Sunday',
     ];
     return '${weekDays[now.weekday - 1]}, ${now.day} ${months[now.month - 1]}';
+  }
+}
+
+class _ProfessionalBackground extends StatelessWidget {
+  const _ProfessionalBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // 1. Solid Deep Navy Base
+        Container(color: AppTheme.sacredNavy950),
+
+        // 2. Sophisticated Gradient Mesh
+        // Top Right Glow (Subtle)
+        Positioned(
+          top: -200,
+          right: -100,
+          child: Container(
+            width: 500,
+            height: 500,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  const Color(0xFF1E3A8A).withValues(alpha: 0.3), // Dark Blue
+                  Colors.transparent,
+                ],
+                stops: const [0.0, 0.7],
+              ),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
+              child: const SizedBox(),
+            ),
+          ),
+        ),
+
+        // Bottom Left Glow (Subtle)
+        Positioned(
+          bottom: -150,
+          left: -100,
+          child: Container(
+            width: 400,
+            height: 400,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  const Color(0xFF581C87).withValues(alpha: 0.2), // Deep Purple
+                  Colors.transparent,
+                ],
+                stops: const [0.0, 0.7],
+              ),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
+              child: const SizedBox(),
+            ),
+          ),
+        ),
+
+        // 3. Noise Texture (Extremely Subtle mostly for removing banding)
+        Opacity(
+          opacity: 0.03,
+          child: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(
+                  'https://www.transparenttextures.com/patterns/stardust.png',
+                ), // Fallback/Placeholder path, realistically use asset or code-gen noise
+                repeat: ImageRepeat.repeat,
+              ),
+            ),
+          ),
+        ),
+
+        // 4. Vignette for focus
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0.3),
+                Colors.transparent,
+                Colors.black.withValues(alpha: 0.4),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

@@ -19,8 +19,11 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
   Timer? _timer;
 
   final List<Widget> _banners = const [
-    _DailyChallengeBanner(),
-    _LiturgicalSeasonBanner(),
+    _ImageBanner(assetPath: 'assets/images/mpt_banner1.png', route: '/rosary'),
+    _ImageBanner(
+      assetPath: 'assets/images/mpt_banner2.png',
+      route: '/readings',
+    ),
     _CommunitySpotlightBanner(),
     _PremiumSupportBanner(),
   ];
@@ -95,161 +98,6 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
 }
 
 // --- Individual Banners ---
-
-class _DailyChallengeBanner extends StatelessWidget {
-  const _DailyChallengeBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: PremiumGlassCard(
-        padding: EdgeInsets.zero,
-        onTap: () => context.push('/rosary'), // Example route
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: LinearGradient(
-              colors: [
-                Colors.orange.shade900.withValues(alpha: 0.8),
-                Colors.deepOrange.shade800.withValues(alpha: 0.6),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            border: Border.all(color: Colors.orange.withValues(alpha: 0.4)),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.black26,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.orange.shade300),
-                ),
-                child: const Icon(
-                  LucideIcons.flame,
-                  color: Colors.orange,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Daily Challenge',
-                      style: GoogleFonts.inter(
-                        color: Colors.orange.shade100,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Join 1.2k others in the Rosary',
-                      style: GoogleFonts.merriweather(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        height: 1.2,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(LucideIcons.chevronRight, color: Colors.white54),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LiturgicalSeasonBanner extends StatelessWidget {
-  const _LiturgicalSeasonBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: PremiumGlassCard(
-        padding: EdgeInsets.zero,
-        onTap: () => context.push('/readings'),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: LinearGradient(
-              colors: [
-                Colors.green.shade900.withValues(alpha: 0.8),
-                Colors.teal.shade900.withValues(alpha: 0.6),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            border: Border.all(color: Colors.green.withValues(alpha: 0.4)),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade500,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'Ordinary Time',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Walking with Christ',
-                      style: GoogleFonts.merriweather(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'Week 2 • Wednesday',
-                      style: GoogleFonts.inter(
-                        color: Colors.green.shade100,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(LucideIcons.leaf, color: Colors.green.shade300, size: 48),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _CommunitySpotlightBanner extends StatelessWidget {
   const _CommunitySpotlightBanner();
@@ -419,6 +267,34 @@ class _PremiumSupportBanner extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ImageBanner extends StatelessWidget {
+  final String assetPath;
+  final String route;
+
+  const _ImageBanner({required this.assetPath, required this.route});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: PremiumGlassCard(
+        padding: EdgeInsets.zero,
+        onTap: () => context.push(route),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppTheme.gold500.withValues(alpha: 0.3)),
+            image: DecorationImage(
+              image: AssetImage(assetPath),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),

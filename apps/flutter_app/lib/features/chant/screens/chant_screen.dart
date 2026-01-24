@@ -1,188 +1,50 @@
-import 'package:audioplayers/audioplayers.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/premium_glass_card.dart';
+import '../providers/chant_provider.dart';
+import '../models/chant_model.dart';
+import 'chant_player_screen.dart'; // Will be created next
 
-class ChantScreen extends StatefulWidget {
-  const ChantScreen({super.key});
-
-  @override
-  State<ChantScreen> createState() => _ChantScreenState();
-}
-
-class _ChantScreenState extends State<ChantScreen> {
-  // Playlist data
-  final List<Map<String, dynamic>> _chants = [
-    {
-      'title': 'Salve Regina',
-      'duration': '3:45',
-      'url': 'https://archive.org/download/gregorianchants/03-SalveRegina.mp3',
-      'tone': 'Solemn Tone',
-    },
-    {
-      'title': 'Pange Lingua',
-      'duration': '4:20',
-      'url': 'https://archive.org/download/gregorianchants/09-PangeLingua.mp3',
-      'tone': 'Corpus Christi',
-    },
-    {
-      'title': 'Kyrie (Missa De Angelis)',
-      'duration': '2:30',
-      'url': 'https://archive.org/download/gregorianchants/01-KyrieXI.mp3',
-      'tone': 'Mass VIII',
-    },
-    {
-      'title': 'Asperges Me',
-      'duration': '3:10',
-      'url': 'https://archive.org/download/gregorianchants/13-AspergesMe.mp3',
-      'tone': 'Sprinkling Rite',
-    },
-  ];
-
-  late AudioPlayer _audioPlayer;
-  bool _isPlaying = false;
-  Duration _duration = Duration.zero;
-  Duration _position = Duration.zero;
-  int _currentIndex = 0;
-  bool _isLoading = false;
+class ChantLibraryScreen extends ConsumerWidget {
+  const ChantLibraryScreen({super.key});
 
   @override
-  void initState() {
-    super.initState();
-    _audioPlayer = AudioPlayer();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chantState = ref.watch(chantProvider);
+    final playlist = chantState.playlist;
 
-    // Listen to state changes
-    _audioPlayer.onPlayerStateChanged.listen((state) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = state == PlayerState.playing;
-        });
+    // Group by category
+    final Map<String, List<Chant>> categories = {};
+    for (var chant in playlist) {
+      if (!categories.containsKey(chant.category)) {
+        categories[chant.category] = [];
       }
-    });
-
-    // Listen to position changes
-    _audioPlayer.onPositionChanged.listen((newPosition) {
-      if (mounted) {
-        setState(() => _position = newPosition);
-      }
-    });
-
-    // Listen to duration changes
-    _audioPlayer.onDurationChanged.listen((newDuration) {
-      if (mounted) {
-        setState(() => _duration = newDuration);
-      }
-    });
-
-    // Listen to completion
-    _audioPlayer.onPlayerComplete.listen((event) {
-      _playNext();
-    });
-
-    // Init first track but don't play automatically
-    _setSource(0, autoPlay: false);
-  }
-
-  Future<void> _setSource(int index, {bool autoPlay = true}) async {
-    try {
-      if (mounted) setState(() => _isLoading = true);
-      await _audioPlayer.setSourceUrl(_chants[index]['url']);
-      if (mounted) {
-        setState(() {
-          _currentIndex = index;
-          _position = Duration.zero;
-        });
-      }
-      if (autoPlay) {
-        await _audioPlayer.resume();
-      } else {
-        setState(() => _isLoading = false);
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              e.toString().contains('WebAudioError')
-                  ? 'Audio temporarily unavailable. Please try again later.'
-                  : 'Error loading audio. Please check your connection.',
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      categories[chant.category]!.add(chant);
     }
-  }
 
-  Future<void> _togglePlay() async {
-    if (_isPlaying) {
-      await _audioPlayer.pause();
-    } else {
-      await _audioPlayer.resume();
-    }
-  }
-
-  void _playNext() {
-    int nextIndex = (_currentIndex + 1) % _chants.length;
-    _setSource(nextIndex);
-  }
-
-  void _playPrevious() {
-    int prevIndex = (_currentIndex - 1);
-    if (prevIndex < 0) prevIndex = _chants.length - 1;
-    _setSource(prevIndex);
-  }
-
-  void _playTrack(int index) {
-    if (_currentIndex == index && _isPlaying) {
-      _togglePlay(); // Pause if same track
-    } else {
-      _setSource(index);
-    }
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
-  String _formatDuration(Duration d) {
-    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.deepSpace,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 200.0,
+            expandedHeight: 240.0,
             floating: false,
             pinned: true,
             backgroundColor: AppTheme.sacredNavy900,
-            leading: IconButton(
-              icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
-              onPressed: () => context.pop(),
-            ),
+            foregroundColor: Colors.white,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
                 'Gregorian Chant',
                 style: GoogleFonts.merriweather(
                   fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                  fontSize: 18,
                   color: Colors.white,
+                  shadows: const [Shadow(color: Colors.black45, blurRadius: 4)],
                 ),
               ),
               background: Stack(
@@ -202,217 +64,231 @@ class _ChantScreenState extends State<ChantScreen> {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, AppTheme.deepSpace],
+                        colors: [Colors.black26, AppTheme.deepSpace],
                       ),
                     ),
                   ),
+                  Positioned(
+                    bottom: 60,
+                    left: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.gold500,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'DAILY FEATURED',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Salve Regina',
+                          style: GoogleFonts.merriweather(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
+              ),
+            ),
+          ),
+
+          // Categories Horizontal Scroll
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 140,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.all(16),
+                children: categories.keys.map((category) {
+                  return _CategoryCard(category: category);
+                }).toList(),
               ),
             ),
           ),
 
           SliverPadding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
             sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                _buildNowPlayingCard(),
-                const SizedBox(height: 24),
-                Text(
-                  'Library',
-                  style: GoogleFonts.merriweather(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final chant = playlist[index];
+                final isPlaying = chantState.currentChant?.id == chant.id;
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _ChantTile(
+                    chant: chant,
+                    isPlaying: isPlaying,
+                    onTap: () {
+                      ref.read(chantProvider.notifier).playChant(chant);
+                      _openPlayer(context);
+                    },
                   ),
-                ),
-                const SizedBox(height: 12),
-                ..._chants.asMap().entries.map((entry) {
-                  return _buildChantItem(
-                    index: entry.key,
-                    data: entry.value,
-                    isPlaying: _currentIndex == entry.key && _isPlaying,
-                    isActive: _currentIndex == entry.key,
-                  ).animate(delay: (100 * entry.key).ms).fadeIn().slideX();
-                }),
-                const SizedBox(height: 100),
-              ]),
+                );
+              }, childCount: playlist.length),
             ),
           ),
         ],
       ),
+      floatingActionButton: chantState.currentChant != null
+          ? FloatingActionButton.extended(
+              onPressed: () => _openPlayer(context),
+              backgroundColor: AppTheme.sacredNavy800,
+              foregroundColor: AppTheme.gold500,
+              icon: Icon(
+                chantState.isPlaying
+                    ? LucideIcons.barChart2
+                    : LucideIcons.music,
+              ),
+              label: const Text('Now Playing'),
+            )
+          : null,
     );
   }
 
-  Widget _buildNowPlayingCard() {
-    final currentChant = _chants[_currentIndex];
+  void _openPlayer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const ChantPlayerScreen(),
+    );
+  }
+}
 
-    return PremiumGlassCard(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        children: [
-          const Icon(LucideIcons.music, size: 48, color: AppTheme.gold500),
-          const SizedBox(height: 16),
-          Text(
-            currentChant['title'],
+class _CategoryCard extends StatelessWidget {
+  final String category;
+  const _CategoryCard({required this.category});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 140,
+      margin: const EdgeInsets.only(right: 12),
+      decoration: BoxDecoration(
+        color: AppTheme.sacredNavy800,
+        borderRadius: BorderRadius.circular(12),
+        image: const DecorationImage(
+          image: NetworkImage(
+            'https://images.unsplash.com/photo-1507643179173-39db74c23f28?q=80&w=1000&auto=format&fit=crop',
+          ), // Abstract elegant bg
+          fit: BoxFit.cover,
+          opacity: 0.4,
+        ),
+        border: Border.all(color: Colors.white10),
+      ),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            category,
             textAlign: TextAlign.center,
             style: GoogleFonts.merriweather(
-              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
+              fontSize: 14,
             ),
           ),
-          Text(
-            currentChant['tone'],
-            style: GoogleFonts.inter(fontSize: 14, color: Colors.white70),
-          ),
-          const SizedBox(height: 24),
-
-          // Progress bar
-          SliderTheme(
-            data: SliderThemeData(
-              trackHeight: 2,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
-              activeTrackColor: AppTheme.gold500,
-              inactiveTrackColor: Colors.white24,
-              thumbColor: Colors.white,
-              overlayColor: AppTheme.gold500.withValues(alpha: 0.2),
-            ),
-            child: Slider(
-              value: _position.inSeconds.toDouble(),
-              max: _duration.inSeconds.toDouble() > 0
-                  ? _duration.inSeconds.toDouble()
-                  : 1.0,
-              onChanged: (value) async {
-                final position = Duration(seconds: value.toInt());
-                await _audioPlayer.seek(position);
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _formatDuration(_position),
-                  style: const TextStyle(color: Colors.white54, fontSize: 10),
-                ),
-                Text(
-                  _formatDuration(_duration),
-                  style: const TextStyle(color: Colors.white54, fontSize: 10),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(LucideIcons.skipBack, color: Colors.white),
-                onPressed: _playPrevious,
-              ),
-              const SizedBox(width: 16),
-              GestureDetector(
-                onTap: _togglePlay,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.gold500,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.gold500.withValues(alpha: 0.4),
-                        blurRadius: 16,
-                      ),
-                    ],
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.black,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Icon(
-                          _isPlaying ? LucideIcons.pause : LucideIcons.play,
-                          color: Colors.black,
-                          size: 28,
-                        ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              IconButton(
-                icon: const Icon(LucideIcons.skipForward, color: Colors.white),
-                onPressed: _playNext,
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
+}
 
-  Widget _buildChantItem({
-    required int index,
-    required Map<String, dynamic> data,
-    required bool isPlaying, // Actually playing
-    required bool isActive, // Selected but maybe paused
-  }) {
+class _ChantTile extends StatelessWidget {
+  final Chant chant;
+  final bool isPlaying;
+  final VoidCallback onTap;
+
+  const _ChantTile({
+    required this.chant,
+    required this.isPlaying,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _playTrack(index),
+      onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        height: 80,
         decoration: BoxDecoration(
-          color: isActive
+          color: isPlaying
               ? AppTheme.gold500.withValues(alpha: 0.1)
-              : Colors.white.withValues(alpha: 0.05),
+              : AppTheme.sacredNavy800,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isActive
-                ? AppTheme.gold500.withValues(alpha: 0.3)
-                : Colors.white.withValues(alpha: 0.05),
+            color: isPlaying
+                ? AppTheme.gold500.withValues(alpha: 0.5)
+                : Colors.transparent,
           ),
         ),
         child: Row(
           children: [
-            Icon(
-              isActive && isPlaying
-                  ? LucideIcons.barChart2
-                  : LucideIcons.playCircle,
-              color: isActive ? AppTheme.gold500 : Colors.white54,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    data['title'],
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-                      color: isActive ? Colors.white : Colors.white70,
-                    ),
-                  ),
-                  Text(
-                    data['tone'],
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: Colors.white38,
-                    ),
-                  ),
-                ],
+            ClipRRect(
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(12),
+              ),
+              child: CachedNetworkImage(
+                imageUrl: chant.coverUrl,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
               ),
             ),
-            Text(
-              data['duration'],
-              style: GoogleFonts.inter(fontSize: 14, color: Colors.white38),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      chant.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.merriweather(
+                        color: isPlaying ? AppTheme.gold500 : Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      chant.category,
+                      style: GoogleFonts.inter(
+                        color: Colors.white54,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: isPlaying
+                  ? const Icon(LucideIcons.barChart2, color: AppTheme.gold500)
+                  : const Icon(LucideIcons.playCircle, color: Colors.white30),
             ),
           ],
         ),

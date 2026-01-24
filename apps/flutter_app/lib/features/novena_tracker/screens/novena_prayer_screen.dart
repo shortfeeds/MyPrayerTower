@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../models/novena_model.dart';
 import 'novena_tracker_screen.dart';
+import '../../tracking/providers/progress_provider.dart';
+import '../../../core/widgets/sacred_pause_overlay.dart';
 
 /// Screen to display the full prayer for a specific day of the novena
 class NovenaPrayerScreen extends ConsumerWidget {
@@ -130,19 +132,27 @@ class NovenaPrayerScreen extends ConsumerWidget {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
-                          onPressed: () {
+                          onPressed: () async {
+                            // Update Novena Progress
                             ref
                                 .read(novenaProgressProvider.notifier)
                                 .markDayComplete(novena.id);
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  '✓ Day $dayNumber completed! Keep up your devotion.',
-                                ),
-                                backgroundColor: Colors.green.shade700,
-                              ),
+
+                            // Update Global Spiritual Progress
+                            ref.read(progressProvider.notifier).addPrayer();
+
+                            // Trigger Sacred Pause
+                            await SacredPauseOverlay.show(
+                              context,
+                              message: 'Preserving your devotion...',
+                              subtitle:
+                                  'Day $dayNumber of ${novena.name} offered.',
+                              icon: LucideIcons.flame,
                             );
+
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
                           },
                           icon: const Icon(LucideIcons.checkCircle),
                           label: Text(

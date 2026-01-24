@@ -23,11 +23,20 @@ export interface Prayer {
     isAnswered: boolean;
     country?: string;
     status?: 'PENDING' | 'APPROVED' | 'REJECTED' | 'ON_HOLD' | 'ARCHIVED';
+    userId?: string;
 }
 
 const categories = ['All', 'Health', 'Family', 'Work', 'Finances', 'Relationships', 'Grief', 'Thanksgiving', 'Spiritual', 'World', 'Other'];
 
 // ... (Keep SAMPLE_PRAYERS and COUNTRIES) ...
+
+const SACRED_COPY = {
+    prayers: {
+        submitting: "Lifting your prayer...",
+        stillness: "Pause and offer this intention to the Lord.",
+        assurance: "Your prayer has been received."
+    }
+};
 
 // Sample prayers with realistic data - older requests have higher prayer counts
 const SAMPLE_PRAYERS: Prayer[] = [
@@ -100,6 +109,8 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
     // Stillness State
     const [isPrayingId, setIsPrayingId] = useState<string | null>(null);
 
+    const [stillnessStage, setStillnessStage] = useState<'lifting' | 'offered'>('lifting');
+
     // Load saved prayers from local storage on mount
     useEffect(() => {
         const saved = localStorage.getItem('mpt-saved-prayers');
@@ -154,8 +165,24 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
     const handlePray = async (prayerId: string) => {
         if (prayedIds.has(prayerId)) return;
 
-        // Find the prayer for the modal
         const prayer = prayers.find(p => p.id === prayerId);
+        if (prayer) {
+            triggerSacredMoment('prayer');
+        }
+
+        // 1. SACRED PAUSE - Start
+        setIsPrayingId(prayerId);
+        setStillnessStage('lifting');
+
+        // Wait... (The Sacred Pause)
+        await new Promise(resolve => setTimeout(resolve, 2500));
+
+        // 2. ASSURANCE
+        setStillnessStage('offered');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // 3. COMPLETE
+        setIsPrayingId(null);
 
         // Immediately update UI
         setPrayedIds(prev => new Set(Array.from(prev).concat([prayerId])));
@@ -165,12 +192,8 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
             )
         );
 
-        // Show sacred completion modal
+        // Show sacred completion modal (optional post-flow)
         setPrayerCompleteOpen(true);
-
-        if (prayer) {
-            triggerSacredMoment('prayer');
-        }
 
         // Only call API for non-sample prayers
         if (!prayerId.startsWith('sample-') && !prayerId.startsWith('s-')) {
@@ -261,17 +284,37 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
-
-
         const formData = new FormData(e.currentTarget);
-        const result = await submitPrayerRequest(null, formData);
 
-        setIsSubmitting(false);
-        if (result.success) {
-            setShowSubmitModal(false);
-            window.location.reload();
-        } else {
-            alert(result.message);
+        // 1. SACRED PAUSE - Start
+        setIsPrayingId('submitting');
+        setStillnessStage('lifting');
+
+        // Wait at least 2.5s for the pause, and also run the API call
+        const minWait = new Promise(resolve => setTimeout(resolve, 2500));
+        const apiCall = submitPrayerRequest(null, formData);
+
+        try {
+            const [_, result] = await Promise.all([minWait, apiCall]);
+
+            if (result.success) {
+                // 2. ASSURANCE
+                setStillnessStage('offered');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                setIsPrayingId(null);
+                setShowSubmitModal(false);
+                window.location.reload();
+            } else {
+                setIsPrayingId(null);
+                setIsSubmitting(false);
+                alert(result.message);
+            }
+        } catch (error) {
+            console.error(error);
+            setIsPrayingId(null);
+            setIsSubmitting(false);
+            alert("An error occurred. Please try again.");
         }
     };
 
@@ -387,7 +430,7 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
                                 <p className="text-gray-500">Be the first to share a prayer in this category.</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {filteredPrayers.map((prayer, index) => (
                                     <div
                                         key={prayer.id}
@@ -412,21 +455,21 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
 
                                         {/* Meta */}
                                         <div className="mt-auto">
-                                            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mb-4 border-t border-gray-50 pt-3">
-                                                <span className="font-semibold text-gray-700">
+                                            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400 font-light mb-4 border-t border-gray-50 pt-3">
+                                                <span className="font-semibold text-gray-600">
                                                     {prayer.user ? `${prayer.user.firstName} ${prayer.user.lastName?.charAt(0)}.` : 'Anonymous'}
                                                 </span>
                                                 {prayer.country && (
                                                     <>
-                                                        <span>•</span>
+                                                        <span className="opacity-50">•</span>
                                                         <span className="flex items-center gap-1">
-                                                            <Globe className="w-3 h-3" />
+                                                            <Globe className="w-3 h-3 opacity-70" />
                                                             {prayer.country}
                                                         </span>
                                                     </>
                                                 )}
-                                                <span>•</span>
-                                                <span className="px-2 py-0.5 bg-sacred-100 text-sacred-700 rounded-full text-xs font-medium">
+                                                <span className="opacity-50">•</span>
+                                                <span className="px-2 py-0.5 bg-sacred-50 text-sacred-600 rounded-full text-[10px] font-medium tracking-wide border border-sacred-100">
                                                     {prayer.category}
                                                 </span>
                                                 <span className="ml-auto flex items-center gap-1 text-gray-300 text-[10px]">
@@ -459,7 +502,7 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
                                                             🙏 <span>Pray</span>
                                                         </>
                                                     )}
-                                                    <span className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] ${prayedIds.has(prayer.id) ? 'bg-green-200' : 'bg-white/20 text-white/70'
+                                                    <span className={`ml-1 px-1.5 py-0.5 rounded-full text-[9px] opacity-80 ${prayedIds.has(prayer.id) ? 'bg-green-200' : 'bg-black/10'
                                                         }`}>
                                                         {prayer.prayerCount}
                                                     </span>

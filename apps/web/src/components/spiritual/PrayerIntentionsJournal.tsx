@@ -117,7 +117,7 @@ export function PrayerIntentionsJournal() {
                     className="flex items-center gap-2 px-4 py-2 bg-sacred-600 text-white rounded-lg font-medium hover:bg-sacred-700 transition-colors"
                 >
                     <Plus size={18} />
-                    Add Intention
+                    Entrust Intention
                 </button>
             </div>
 
@@ -149,7 +149,7 @@ export function PrayerIntentionsJournal() {
                     <textarea
                         value={newIntention}
                         onChange={(e) => setNewIntention(e.target.value)}
-                        placeholder="What would you like to pray for?"
+                        placeholder="What is on your heart?"
                         className="w-full p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-sacred-500 focus:border-sacred-500"
                         rows={3}
                     />
@@ -214,13 +214,13 @@ export function PrayerIntentionsJournal() {
                 {filteredIntentions.length === 0 ? (
                     <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                         <Heart size={48} className="mx-auto mb-4 opacity-30" />
-                        <p>No {filter !== 'all' ? filter : ''} intentions yet</p>
+                        <p>Your prayer journal is waiting.</p>
                         {filter === 'active' && (
                             <button
                                 onClick={() => setShowForm(true)}
                                 className="mt-4 text-sacred-600 hover:text-sacred-700 font-medium"
                             >
-                                Add your first intention
+                                Write your first intention
                             </button>
                         )}
                     </div>

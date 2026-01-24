@@ -1,11 +1,14 @@
+import 'dart:ui';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../models/candle_model.dart';
-// Still needed for screen navigation if any
+import '../../../core/theme/app_theme.dart';
 
 /// Rich, realistic candle widget matching web app premium design
+/// Updated with "Master Plan" Glassmorphism & Cinematic Effects
 class PremiumCandleWidget extends StatelessWidget {
   final Candle candle;
   final bool isCompact;
@@ -58,64 +61,65 @@ class PremiumCandleWidget extends StatelessWidget {
   };
 
   _TierConfig get _config => _tierConfigs[candle.tier] ?? _tierConfigs['free']!;
-  bool get _isPremium => candle.tierLabel == 'Premium';
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: _isPremium
-              ? [
-                  const Color(0xFF451A03).withValues(alpha: 0.4),
-                  const Color(0xFF0F172A).withValues(alpha: 0.6),
-                  const Color(0xFF0F172A).withValues(alpha: 0.8),
-                ]
-              : [
-                  const Color(0xFF1E293B).withValues(alpha: 0.6),
-                  const Color(0xFF0F172A).withValues(alpha: 0.8),
-                ],
+    // Master Plan: "Glassmorphic" Container
+    return InkWell(
+      onTap: onPray,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          // Glassmorphism 2.0: Subtle top-down gradient + blur simulation
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white.withValues(alpha: 0.08), // Light reflection at top
+              Colors.white.withValues(alpha: 0.02), // Fades to clear
+            ],
+          ),
+          // "Light Rim" border only at top
+          border: Border(
+            top: BorderSide(
+              color: Colors.white.withValues(alpha: 0.3),
+              width: 1,
+            ),
+            bottom: BorderSide.none,
+            left: BorderSide.none,
+            right: BorderSide.none,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _isPremium
-              ? Colors.amber.withValues(alpha: 0.5)
-              : Colors.white.withValues(alpha: 0.1),
-          width: _isPremium ? 1.5 : 1,
-        ),
-        boxShadow: _isPremium
-            ? [
-                BoxShadow(
-                  color: Colors.amber.withValues(alpha: 0.3),
-                  blurRadius: 16,
-                  spreadRadius: 2,
-                ),
-              ]
-            : null,
-      ),
-      child: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(isCompact ? 8 : 12),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // Frosted glass
+            child: Padding(
+              padding: const EdgeInsets.all(12),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Candle Assembly
-                  _buildCandleAssembly(),
-                  SizedBox(height: isCompact ? 4 : 8),
+                  // 1. The Living Flame (Centerpiece)
+                  _buildLivingCandle(),
 
-                  // User Name
+                  const SizedBox(height: 12),
+
+                  // 2. Metallic Typography
                   Text(
-                    candle.displayName,
-                    style: GoogleFonts.inter(
+                    candle.displayName.toUpperCase(),
+                    style: GoogleFonts.cinzel(
                       fontSize: isCompact ? 10 : 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: const Color(0xFFE2E8F0), // Silver
+                      letterSpacing: 1.0,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -123,321 +127,106 @@ class PremiumCandleWidget extends StatelessWidget {
                   ),
 
                   if (!isCompact) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Text(
                       '"${candle.intention}"',
                       style: GoogleFonts.inter(
-                        fontSize: 10,
-                        color: Colors.white70,
+                        fontSize: 11,
+                        color: Colors.white.withValues(
+                          alpha: 0.6,
+                        ), // Muted Spirit
                         fontStyle: FontStyle.italic,
+                        height: 1.4,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 4),
-                    // Time remaining
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize
-                          .min, // Fix: Prevent infinite width inside FittedBox
-                      children: [
-                        Icon(
-                          LucideIcons.clock,
-                          size: 10,
-                          color: Colors.grey[500],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${candle.remainingHours}h remaining',
-                          style: GoogleFonts.inter(
-                            fontSize: 9,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
 
-                  const SizedBox(height: 8),
+                    const SizedBox(height: 12),
 
-                  // Prayer Button
-                  _buildPrayerButton(),
-                ],
-              ),
-            ),
-          ),
-
-          // Premium Badge
-          if (_isPremium)
-            Positioned(
-              top: -2,
-              right: -2,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFFFBBF24),
-                      Color(0xFFF59E0B),
-                      Color(0xFFF97316),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withValues(alpha: 0.4),
-                      blurRadius: 8,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      LucideIcons.crown,
-                      size: 10,
-                      color: Color(0xFF78350F),
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      'FEATURED',
-                      style: GoogleFonts.inter(
-                        fontSize: 7,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF78350F),
+                    // 3. Minimalist Stats (No buttons, just data)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCandleAssembly() {
-    return Column(
-      children: [
-        // Realistic Flame Overlay (Positioned relatively)
-        RepaintBoundary(
-          child: SizedBox(
-            height: isCompact ? 40 : 60,
-            child: _buildRealisticFlame(),
-          ),
-        ),
-        // Web Image Asset
-        Transform.translate(
-          offset: Offset(
-            0,
-            isCompact ? -15 : -25,
-          ), // Overlap flame with wick area
-          child: Image.asset(
-            _config.image,
-            height: isCompact ? 80 : 140,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRealisticFlame() {
-    final config = _config;
-    final flameWidth = isCompact ? 12.0 : 18.0;
-    final flameHeight = isCompact ? 24.0 : 36.0;
-
-    return SizedBox(
-      height: flameHeight + 16,
-      width: flameWidth * 4,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          // Divine rays for premium
-          if (config.hasRays)
-            ...List.generate(8, (i) {
-              return Positioned(
-                bottom: flameHeight * 0.3,
-                child: Transform.rotate(
-                  angle: i * pi / 4,
-                  child: Container(
-                    width: 2,
-                    height: 20 + Random().nextDouble() * 10,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [
-                          Colors.amber.withValues(alpha: 0.6),
-                          Colors.transparent,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            LucideIcons.flame,
+                            size: 10,
+                            color: AppTheme.gold500,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            _formatCount(candle.prayerCount),
+                            style: GoogleFonts.outfit(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.gold400,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  ),
-                ),
-              );
-            }),
-
-          // Outer glow
-          Positioned(
-            bottom: 0,
-            child: Container(
-              width: flameWidth * 2.5,
-              height: flameWidth * 2.5,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: config.glowColor.withValues(
-                      alpha: _isPremium ? 0.6 : 0.4,
-                    ),
-                    blurRadius: isCompact ? 15 : 25,
-                    spreadRadius: isCompact ? 3 : 5,
-                  ),
+                  ],
                 ],
               ),
             ),
           ),
-
-          // Sparkles for premium
-          if (config.hasSparkles && !isCompact)
-            ...List.generate(6, (i) {
-              return Positioned(
-                left: Random().nextDouble() * 30 - 15,
-                bottom: Random().nextDouble() * 30,
-                child: Container(
-                  width: 3,
-                  height: 3,
-                  decoration: BoxDecoration(
-                    color: Colors.yellow[200],
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              );
-            }),
-
-          // Main flame
-          Positioned(
-            bottom: 0,
-            child: Container(
-              width: flameWidth,
-              height: flameHeight,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: config.flameColors,
-                ),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.elliptical(flameWidth / 2, flameHeight * 0.6),
-                  topRight: Radius.elliptical(
-                    flameWidth / 2,
-                    flameHeight * 0.6,
-                  ),
-                  bottomLeft: Radius.circular(flameWidth / 3),
-                  bottomRight: Radius.circular(flameWidth / 3),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: config.flameColors[1].withValues(alpha: 0.8),
-                    blurRadius: 15,
-                    spreadRadius: 3,
-                  ),
-                ],
-              ),
-              child: Center(
-                // White hot core
-                child: Container(
-                  width: flameWidth * 0.4,
-                  height: flameHeight * 0.5,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [Colors.yellow[100]!, Colors.white],
-                    ),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.elliptical(
-                        flameWidth * 0.2,
-                        flameHeight * 0.3,
-                      ),
-                      topRight: Radius.elliptical(
-                        flameWidth * 0.2,
-                        flameHeight * 0.3,
-                      ),
-                      bottomLeft: Radius.circular(flameWidth * 0.15),
-                      bottomRight: Radius.circular(flameWidth * 0.15),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
+    ).animate().scale(
+      duration: 400.ms,
+      curve: Curves.easeOutBack,
+      begin: const Offset(0.95, 0.95), // Subtle entrance pop
     );
   }
 
-  Widget _buildPrayerButton() {
-    return InkWell(
-      onTap: onPray,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: isCompact ? 6 : 10,
-          horizontal: 8,
-        ),
-        decoration: BoxDecoration(
-          gradient: _isPremium
-              ? LinearGradient(
-                  colors: [
-                    Colors.pink.withValues(alpha: 0.4),
-                    Colors.pink.shade400.withValues(alpha: 0.4),
-                  ],
-                )
-              : null,
-          color: _isPremium ? null : Colors.pink.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: _isPremium
-              ? [
-                  BoxShadow(
-                    color: Colors.pink.withValues(alpha: 0.2),
-                    blurRadius: 8,
-                  ),
-                ]
-              : null,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              LucideIcons.heart,
-              size: isCompact ? 10 : 14,
-              color: _isPremium ? Colors.pink[200] : Colors.pink[300],
-            ),
-            const SizedBox(width: 4),
-            Text(
-              _formatCount(candle.prayerCount),
-              style: GoogleFonts.inter(
-                fontSize: isCompact ? 9 : 11,
-                fontWeight: FontWeight.w600,
-                color: _isPremium ? Colors.pink[200] : Colors.pink[300],
-              ),
-            ),
-            if (!isCompact) ...[
-              const SizedBox(width: 2),
-              Text(
-                'prayers',
-                style: GoogleFonts.inter(
-                  fontSize: 10,
-                  color: _isPremium ? Colors.pink[200] : Colors.pink[300],
-                ),
-              ),
-            ],
-          ],
-        ),
+  Widget _buildLivingCandle() {
+    // "Breathing" Animation via Animate
+    return SizedBox(
+      height: isCompact ? 100 : 140,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          // Dynamic Glow (Back)
+          Positioned(
+            bottom: 40,
+            child:
+                Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _config.glowColor.withValues(alpha: 0.4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _config.glowColor.withValues(alpha: 0.2),
+                            blurRadius: 40,
+                            spreadRadius: 10,
+                          ),
+                        ],
+                      ),
+                    )
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .scale(
+                      begin: const Offset(0.9, 0.9),
+                      end: const Offset(1.2, 1.2),
+                      duration: (2000 + Random().nextInt(1000))
+                          .ms, // Randomized breathing
+                    ),
+          ),
+
+          // The Candle Asset
+          Image.asset(_config.image, fit: BoxFit.contain),
+        ],
       ),
     );
   }

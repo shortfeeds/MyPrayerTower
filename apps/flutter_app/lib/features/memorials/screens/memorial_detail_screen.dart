@@ -258,7 +258,7 @@ class _MemorialDetailScreenState extends ConsumerState<MemorialDetailScreen>
           children: [
             // Bio Tab
             SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -296,7 +296,7 @@ class _MemorialDetailScreenState extends ConsumerState<MemorialDetailScreen>
             memorial.offerings.isEmpty
                 ? const Center(child: Text('No tributes yet.'))
                 : ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                     itemCount: memorial.offerings.length,
                     itemBuilder: (context, index) {
                       final off = memorial.offerings[index];
@@ -317,19 +317,22 @@ class _MemorialDetailScreenState extends ConsumerState<MemorialDetailScreen>
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final result = await showDialog(
-            context: context,
-            builder: (_) => OfferingDialog(memorialId: widget.memorialId),
-          );
-          if (result == true) {
-            _loadMemorial();
-          }
-        },
-        label: const Text('Send Tribute'),
-        icon: const Icon(LucideIcons.gift),
-        backgroundColor: Colors.amber.shade700,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: FloatingActionButton.extended(
+          onPressed: () async {
+            final result = await showDialog(
+              context: context,
+              builder: (_) => OfferingDialog(memorialId: widget.memorialId),
+            );
+            if (result == true) {
+              _loadMemorial();
+            }
+          },
+          label: const Text('Send Tribute'),
+          icon: const Icon(LucideIcons.gift),
+          backgroundColor: Colors.amber.shade700,
+        ),
       ),
     );
   }

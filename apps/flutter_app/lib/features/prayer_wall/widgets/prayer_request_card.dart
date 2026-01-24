@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_theme.dart';
 import '../models/prayer_request_model.dart';
 import '../repositories/prayer_wall_repository.dart';
@@ -202,85 +203,78 @@ class _PrayerRequestCardState extends ConsumerState<PrayerRequestCard> {
           // Actions
           Row(
             children: [
-              // Pray Button
+              // Animated Pray Button
               InkWell(
-                onTap: _isPrayed || isArchived ? null : _handlePray,
-                borderRadius: BorderRadius.circular(99),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: _isPrayed
-                        ? null
-                        : const LinearGradient(
-                            colors: [AppTheme.gold400, AppTheme.gold500],
-                          ),
-                    color: _isPrayed ? Colors.green.shade50 : null,
+                    onTap: _isPrayed || isArchived ? null : _handlePray,
                     borderRadius: BorderRadius.circular(99),
-                    border: _isPrayed
-                        ? Border.all(color: Colors.green.shade100)
-                        : null,
-                    boxShadow: _isPrayed
-                        ? null
-                        : [
-                            BoxShadow(
-                              color: AppTheme.gold500.withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: _isPrayed
+                            ? null
+                            : AppTheme.goldGradient, // Use new gradient
+                        color: _isPrayed ? Colors.green.shade50 : null,
+                        borderRadius: BorderRadius.circular(99),
+                        border: _isPrayed
+                            ? Border.all(color: Colors.green.shade200)
+                            : Border.all(color: AppTheme.gold500),
+                        boxShadow: _isPrayed
+                            ? null
+                            : [
+                                BoxShadow(
+                                  color: AppTheme.gold500.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_isPrayed)
+                            Icon(
+                              LucideIcons.check,
+                              size: 16,
+                              color: Colors.green.shade700,
+                            ).animate().scale(curve: Curves.elasticOut)
+                          else
+                            const Icon(
+                                  LucideIcons
+                                      .heart, // Changed to Heart for more emotion
+                                  size: 16,
+                                  color: AppTheme.sacredNavy900,
+                                )
+                                .animate(onPlay: (c) => c.repeat(reverse: true))
+                                .scale(
+                                  begin: const Offset(1.0, 1.0),
+                                  end: const Offset(1.2, 1.2),
+                                  duration: 1000.ms,
+                                ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _isPrayed ? 'Prayed' : 'I Pray',
+                            style: GoogleFonts.outfit(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: _isPrayed
+                                  ? Colors.green.shade700
+                                  : AppTheme.sacredNavy900,
                             ),
-                          ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (_isPrayed)
-                        Icon(
-                          LucideIcons.check,
-                          size: 14,
-                          color: Colors.green.shade700,
-                        )
-                      else
-                        const Text('🙏', style: TextStyle(fontSize: 14)),
-                      const SizedBox(width: 6),
-                      Text(
-                        _isPrayed ? 'Prayed' : 'Pray',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: _isPrayed
-                              ? Colors.green.shade700
-                              : Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _isPrayed
-                              ? Colors.green.shade200
-                              : Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(99),
-                        ),
-                        child: Text(
-                          '${req.prayerCount + (_isPrayed ? 1 : 0)}',
-                          style: GoogleFonts.inter(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: _isPrayed
-                                ? Colors.green.shade800
-                                : Colors.white,
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
+                  )
+                  .animate(target: _isPrayed ? 1 : 0)
+                  .shimmer(
+                    duration: 600.ms,
+                    color: Colors.white.withValues(alpha: 0.5),
                   ),
-                ),
-              ),
               const Spacer(),
               // Secondary Actions
               _ControlIcon(

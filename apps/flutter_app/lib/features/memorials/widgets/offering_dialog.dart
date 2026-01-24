@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/widgets/sacred_pause_overlay.dart';
+import '../../../core/constants/sacred_copy.dart';
 
 import '../../../core/billing/billing_service.dart';
 import '../repositories/memorial_repository.dart';
@@ -28,7 +31,7 @@ class _OfferingDialogState extends ConsumerState<OfferingDialog> {
       'price': 2.0,
     },
     {'type': 'FLOWERS', 'label': 'Flowers', 'icon': '🌹', 'price': 5.0},
-    {'type': 'MASS', 'label': 'Holy Mass', 'icon': '✝️', 'price': 15.0},
+    {'type': 'MASS', 'label': 'Holy Mass', 'icon': '✝️', 'price': 10.0},
   ];
 
   Future<void> _handlePurchase() async {
@@ -63,13 +66,14 @@ class _OfferingDialogState extends ConsumerState<OfferingDialog> {
           );
 
       if (mounted) {
-        Navigator.pop(context, true); // Return true to trigger refresh
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Tribute sent successfully!'),
-            backgroundColor: Colors.green,
-          ),
+        // Trigger Sacred Pause
+        await SacredPauseOverlay.show(
+          context,
+          message: SacredCopy.system.processing,
+          subtitle: SacredCopy.prayerComplete.primary,
+          icon: LucideIcons.gift,
         );
+        if (mounted) Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {

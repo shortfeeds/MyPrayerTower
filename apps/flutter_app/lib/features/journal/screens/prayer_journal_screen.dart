@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/premium_glass_card.dart';
 
 /// Prayer Journal Entry Model
 class JournalEntry {
@@ -12,6 +15,7 @@ class JournalEntry {
   final String content;
   final DateTime createdAt;
   final String type; // gratitude, petition, reflection, answered
+  final String? mood; // joyful, anxious, peaceful, sad, hopeful
 
   JournalEntry({
     required this.id,
@@ -19,6 +23,7 @@ class JournalEntry {
     required this.content,
     required this.createdAt,
     required this.type,
+    this.mood,
   });
 
   Map<String, dynamic> toJson() => {
@@ -27,6 +32,7 @@ class JournalEntry {
     'content': content,
     'createdAt': createdAt.toIso8601String(),
     'type': type,
+    'mood': mood,
   };
 
   factory JournalEntry.fromJson(Map<String, dynamic> json) => JournalEntry(
@@ -35,6 +41,7 @@ class JournalEntry {
     content: json['content'],
     createdAt: DateTime.parse(json['createdAt']),
     type: json['type'],
+    mood: json['mood'],
   );
 }
 
@@ -83,38 +90,201 @@ class PrayerJournalScreen extends ConsumerStatefulWidget {
 }
 
 class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> {
+  String _searchQuery = '';
+  String _selectedFilter = 'all'; // all, gratitude, petition, etc.
+
   @override
   Widget build(BuildContext context) {
-    final entries = ref.watch(journalEntriesProvider);
+    final allEntries = ref.watch(journalEntriesProvider);
+
+    // Filtering logic
+    final filteredEntries = allEntries.where((entry) {
+      final matchesSearch =
+          entry.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          entry.content.toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesFilter =
+          _selectedFilter == 'all' || entry.type == _selectedFilter;
+      return matchesSearch && matchesFilter;
+    }).toList();
 
     return Scaffold(
       backgroundColor: AppTheme.deepSpace,
-      appBar: AppBar(
-        backgroundColor: AppTheme.darkBg,
-        title: Text(
-          'Prayer Journal',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      body: entries.isEmpty
-          ? _buildEmptyState()
-          : ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
-              itemCount: entries.length,
-              itemBuilder: (context, index) {
-                return _JournalEntryCard(
-                  entry: entries[index],
-                  onDelete: () {
-                    ref
-                        .read(journalEntriesProvider.notifier)
-                        .deleteEntry(entries[index].id);
-                  },
-                );
-              },
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          // Background Gradient
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppTheme.sacredNavy900, Colors.black],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
             ),
+          ),
+
+          SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                // Header
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                LucideIcons.chevronLeft,
+                                color: Colors.white70,
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                            Text(
+                              'Prayer Journal',
+                              style: GoogleFonts.merriweather(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 48), // Balance
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        // Search Bar
+                        TextField(
+                          onChanged: (val) =>
+                              setState(() => _searchQuery = val),
+                          style: GoogleFonts.inter(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: 'Search your prayers...',
+                            hintStyle: GoogleFonts.inter(color: Colors.white24),
+                            prefixIcon: const Icon(
+                              LucideIcons.search,
+                              color: Colors.white24,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white.withValues(alpha: 0.05),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 16,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Filter Chips
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              _FilterChip(
+                                label: 'All',
+                                isSelected: _selectedFilter == 'all',
+                                onTap: () =>
+                                    setState(() => _selectedFilter = 'all'),
+                              ),
+                              _FilterChip(
+                                label: 'Reflections',
+                                isSelected: _selectedFilter == 'reflection',
+                                onTap: () => setState(
+                                  () => _selectedFilter = 'reflection',
+                                ),
+                              ),
+                              _FilterChip(
+                                label: 'Gratitude',
+                                isSelected: _selectedFilter == 'gratitude',
+                                onTap: () => setState(
+                                  () => _selectedFilter = 'gratitude',
+                                ),
+                              ),
+                              _FilterChip(
+                                label: 'Petitions',
+                                isSelected: _selectedFilter == 'petition',
+                                onTap: () => setState(
+                                  () => _selectedFilter = 'petition',
+                                ),
+                              ),
+                              _FilterChip(
+                                label: 'Answered',
+                                isSelected: _selectedFilter == 'answered',
+                                onTap: () => setState(
+                                  () => _selectedFilter = 'answered',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Entries List
+                if (filteredEntries.isEmpty)
+                  SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 48),
+                        child: Column(
+                          children: [
+                            const Icon(
+                              LucideIcons.bookOpen,
+                              size: 48,
+                              color: Colors.white10,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              allEntries.isEmpty
+                                  ? 'Start your spiritual journey'
+                                  : 'No entries found',
+                              style: GoogleFonts.inter(color: Colors.white38),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final entry = filteredEntries[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child:
+                            _JournalEntryCard(
+                                  entry: entry,
+                                  onDelete: () {
+                                    ref
+                                        .read(journalEntriesProvider.notifier)
+                                        .deleteEntry(entry.id);
+                                  },
+                                )
+                                .animate(delay: (index * 50).ms)
+                                .fadeIn()
+                                .slideY(begin: 0.1),
+                      );
+                    }, childCount: filteredEntries.length),
+                  ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddEntryDialog(),
         backgroundColor: AppTheme.gold500,
@@ -125,206 +295,57 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            LucideIcons.book,
-            size: 64,
-            color: AppTheme.gold500.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Your journal is empty',
-            style: GoogleFonts.playfairDisplay(
-              fontSize: 20,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Start recording your spiritual journey',
-            style: GoogleFonts.inter(color: AppTheme.textMuted),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showAddEntryDialog() {
-    final titleController = TextEditingController();
-    final contentController = TextEditingController();
-    String selectedType = 'reflection';
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppTheme.darkCard,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Padding(
-          padding: EdgeInsets.fromLTRB(
-            20,
-            20,
-            20,
-            MediaQuery.of(context).viewInsets.bottom + 20,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'New Journal Entry',
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Type selection
-              Wrap(
-                spacing: 8,
-                children: [
-                  _TypeChip(
-                    'gratitude',
-                    'Gratitude',
-                    LucideIcons.heart,
-                    selectedType,
-                    (t) => setModalState(() => selectedType = t),
-                  ),
-                  _TypeChip(
-                    'petition',
-                    'Petition',
-                    LucideIcons.hand,
-                    selectedType,
-                    (t) => setModalState(() => selectedType = t),
-                  ),
-                  _TypeChip(
-                    'reflection',
-                    'Reflection',
-                    LucideIcons.edit3,
-                    selectedType,
-                    (t) => setModalState(() => selectedType = t),
-                  ),
-                  _TypeChip(
-                    'answered',
-                    'Answered',
-                    LucideIcons.sparkles,
-                    selectedType,
-                    (t) => setModalState(() => selectedType = t),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              TextField(
-                controller: titleController,
-                style: GoogleFonts.inter(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Title',
-                  hintStyle: GoogleFonts.inter(color: AppTheme.textMuted),
-                  filled: true,
-                  fillColor: AppTheme.deepSpace,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              TextField(
-                controller: contentController,
-                style: GoogleFonts.inter(color: Colors.white),
-                maxLines: 5,
-                decoration: InputDecoration(
-                  hintText: 'Write your thoughts...',
-                  hintStyle: GoogleFonts.inter(color: AppTheme.textMuted),
-                  filled: true,
-                  fillColor: AppTheme.deepSpace,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (titleController.text.isNotEmpty &&
-                        contentController.text.isNotEmpty) {
-                      ref
-                          .read(journalEntriesProvider.notifier)
-                          .addEntry(
-                            JournalEntry(
-                              id: DateTime.now().millisecondsSinceEpoch
-                                  .toString(),
-                              title: titleController.text,
-                              content: contentController.text,
-                              createdAt: DateTime.now(),
-                              type: selectedType,
-                            ),
-                          );
-                      Navigator.pop(context);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.gold500,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: const Text('Save Entry'),
-                ),
-              ),
-            ],
-          ),
-        ),
+      backgroundColor: Colors.transparent, // Transparent for custom UI
+      builder: (context) => _NewEntrySheet(
+        onSave: (entry) {
+          ref.read(journalEntriesProvider.notifier).addEntry(entry);
+        },
       ),
     );
   }
 }
 
-class _TypeChip extends StatelessWidget {
-  final String type;
+class _FilterChip extends StatelessWidget {
   final String label;
-  final IconData icon;
-  final String selected;
-  final Function(String) onTap;
+  final bool isSelected;
+  final VoidCallback onTap;
 
-  const _TypeChip(this.type, this.label, this.icon, this.selected, this.onTap);
+  const _FilterChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isSelected = type == selected;
-    return ChoiceChip(
-      label: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 14,
-            color: isSelected ? Colors.black : Colors.white70,
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? AppTheme.gold500
+                : Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected ? AppTheme.gold500 : Colors.white12,
+            ),
           ),
-          const SizedBox(width: 4),
-          Text(label),
-        ],
-      ),
-      selected: isSelected,
-      onSelected: (_) => onTap(type),
-      selectedColor: AppTheme.gold500,
-      backgroundColor: AppTheme.deepSpace,
-      labelStyle: GoogleFonts.inter(
-        color: isSelected ? Colors.black : Colors.white70,
-        fontSize: 12,
+          child: Text(
+            label,
+            style: GoogleFonts.inter(
+              color: isSelected ? Colors.black : Colors.white70,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              fontSize: 12,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -336,114 +357,398 @@ class _JournalEntryCard extends StatelessWidget {
 
   const _JournalEntryCard({required this.entry, required this.onDelete});
 
-  IconData get _typeIcon {
-    switch (entry.type) {
-      case 'gratitude':
-        return LucideIcons.heart;
-      case 'petition':
-        return LucideIcons.hand;
-      case 'answered':
-        return LucideIcons.sparkles;
-      default:
-        return LucideIcons.edit3;
-    }
-  }
-
   Color get _typeColor {
     switch (entry.type) {
       case 'gratitude':
-        return Colors.pink;
+        return Colors.pinkAccent;
       case 'petition':
-        return Colors.blue;
+        return Colors.blueAccent;
       case 'answered':
         return Colors.amber;
       default:
-        return Colors.purple;
+        return Colors.purpleAccent;
+    }
+  }
+
+  String get _moodEmoji {
+    switch (entry.mood) {
+      case 'joyful':
+        return '😊';
+      case 'peaceful':
+        return '😌';
+      case 'anxious':
+        return '😟';
+      case 'sad':
+        return '😢';
+      case 'hopeful':
+        return '🙏';
+      default:
+        return '✨';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.darkCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _typeColor.withValues(alpha: 0.3)),
-      ),
+    return PremiumGlassCard(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: _typeColor.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: _typeColor.withValues(alpha: 0.3)),
                 ),
-                child: Icon(_typeIcon, color: _typeColor, size: 16),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      entry.title,
-                      style: GoogleFonts.playfairDisplay(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      _formatDate(entry.createdAt),
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        color: AppTheme.textMuted,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  entry.type.toUpperCase(),
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: _typeColor,
+                    letterSpacing: 1,
+                  ),
                 ),
               ),
-              IconButton(
-                icon: const Icon(
-                  LucideIcons.trash2,
-                  color: Colors.red,
-                  size: 18,
-                ),
-                onPressed: onDelete,
-              ),
+              Text(_moodEmoji, style: const TextStyle(fontSize: 18)),
             ],
           ),
           const SizedBox(height: 12),
           Text(
+            entry.title,
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            DateFormat('MMMM d, y • h:mm a').format(entry.createdAt),
+            style: GoogleFonts.inter(fontSize: 11, color: Colors.white38),
+          ),
+          const SizedBox(height: 12),
+          Text(
             entry.content,
-            style: GoogleFonts.inter(color: Colors.white70, height: 1.5),
+            style: GoogleFonts.inter(
+              color: Colors.white70,
+              height: 1.6,
+              fontSize: 14,
+            ),
             maxLines: 4,
             overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Spacer(),
+              InkWell(
+                onTap: onDelete,
+                child: const Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(
+                    LucideIcons.trash2,
+                    size: 16,
+                    color: Colors.white24,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NewEntrySheet extends StatefulWidget {
+  final Function(JournalEntry) onSave;
+
+  const _NewEntrySheet({required this.onSave});
+
+  @override
+  State<_NewEntrySheet> createState() => _NewEntrySheetState();
+}
+
+class _NewEntrySheetState extends State<_NewEntrySheet> {
+  final _titleController = TextEditingController();
+  final _contentController = TextEditingController();
+  String _selectedType = 'reflection';
+  String _selectedMood = 'peaceful';
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: AppTheme.sacredNavy900,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          // Drag Handle
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 20),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white12,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              children: [
+                Text(
+                  'New Entry',
+                  style: GoogleFonts.merriweather(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Type Selector
+                Text('CATEGORY', style: _labelStyle),
+                const SizedBox(height: 12),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children:
+                        [
+                              _buildTypeOption(
+                                'Reflection',
+                                LucideIcons.edit3,
+                                'reflection',
+                              ),
+                              _buildTypeOption(
+                                'Gratitude',
+                                LucideIcons.heart,
+                                'gratitude',
+                              ),
+                              _buildTypeOption(
+                                'Petition',
+                                LucideIcons.hand,
+                                'petition',
+                              ),
+                              _buildTypeOption(
+                                'Answered',
+                                LucideIcons.sparkles,
+                                'answered',
+                              ),
+                            ]
+                            .map(
+                              (w) => Padding(
+                                padding: const EdgeInsets.only(right: 12),
+                                child: w,
+                              ),
+                            )
+                            .toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Mood Selector
+                Text('HOW ARE YOU FEELING?', style: _labelStyle),
+                const SizedBox(height: 12),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children:
+                        [
+                              _buildMoodOption('😊', 'Joyful', 'joyful'),
+                              _buildMoodOption('😌', 'Peaceful', 'peaceful'),
+                              _buildMoodOption('🙏', 'Hopeful', 'hopeful'),
+                              _buildMoodOption('😟', 'Anxious', 'anxious'),
+                              _buildMoodOption('😢', 'Sad', 'sad'),
+                            ]
+                            .map(
+                              (w) => Padding(
+                                padding: const EdgeInsets.only(right: 12),
+                                child: w,
+                              ),
+                            )
+                            .toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Title Input
+                TextField(
+                  controller: _titleController,
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Title your thoughts...',
+                    hintStyle: GoogleFonts.playfairDisplay(
+                      color: Colors.white24,
+                    ),
+                    border: InputBorder.none,
+                  ),
+                ),
+                const Divider(color: Colors.white10),
+
+                // Content Input
+                TextField(
+                  controller: _contentController,
+                  maxLines: 8,
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    color: Colors.white70,
+                    height: 1.6,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Start writing...',
+                    hintStyle: GoogleFonts.inter(color: Colors.white24),
+                    border: InputBorder.none,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom Bar
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              border: Border(top: BorderSide(color: Colors.white10)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'Cancel',
+                    style: GoogleFonts.inter(color: Colors.white54),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: _save,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.gold500,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: const Text('Save Entry'),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  String _formatDate(DateTime date) {
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  void _save() {
+    if (_titleController.text.isNotEmpty &&
+        _contentController.text.isNotEmpty) {
+      final entry = JournalEntry(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: _titleController.text,
+        content: _contentController.text,
+        createdAt: DateTime.now(),
+        type: _selectedType,
+        mood: _selectedMood,
+      );
+      widget.onSave(entry);
+      Navigator.pop(context);
+    }
   }
+
+  Widget _buildTypeOption(String label, IconData icon, String value) {
+    final isSelected = _selectedType == value;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedType = value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Colors.white
+              : Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? Colors.transparent : Colors.white12,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? Colors.black : Colors.white70,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                color: isSelected ? Colors.black : Colors.white70,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMoodOption(String emoji, String label, String value) {
+    final isSelected = _selectedMood == value;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedMood = value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppTheme.gold500.withValues(alpha: 0.2)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppTheme.gold500 : Colors.transparent,
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 24)),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                color: isSelected ? AppTheme.gold500 : Colors.white54,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static final _labelStyle = GoogleFonts.inter(
+    fontSize: 10,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 1.5,
+    color: Colors.white38,
+  );
 }

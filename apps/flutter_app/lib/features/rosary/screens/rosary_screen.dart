@@ -200,6 +200,7 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
               ),
             );
           }),
+          const SizedBox(height: 120),
         ],
       ),
     );
@@ -305,7 +306,7 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
             ),
           ),
 
-          const SizedBox(height: 100),
+          const SizedBox(height: 120),
         ],
       ),
     );
@@ -313,23 +314,39 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
 
   // New Interactive Mode State
   int _currentBeadIndex = 0;
-  final int _totalBeads = 53; // Simplified 5 decades
+  final int _totalBeads = 67; // 7 Intro + 5 * 12 Decades
 
   Widget _buildInteractivePrayer(_Mystery mystery) {
     // Current prayer logic
     String prayerName = 'Apostles Creed';
+    // Corrected Rosary Logic
+    String prayerName = '';
+
+    // Intro
     if (_currentBeadIndex == 0) {
       prayerName = 'Sign of the Cross';
     } else if (_currentBeadIndex == 1) {
       prayerName = 'Apostles Creed';
-    } else if (_currentBeadIndex < 5) {
+    } else if (_currentBeadIndex == 2) {
       prayerName = 'Our Father';
-    } else if ((_currentBeadIndex - 5) % 11 == 0) {
+    } else if (_currentBeadIndex >= 3 && _currentBeadIndex <= 5) {
+      prayerName = 'Hail Mary'; // Faith, Hope, Charity
+    } else if (_currentBeadIndex == 6) {
       prayerName = 'Glory Be';
-    } else if ((_currentBeadIndex - 5) % 11 == 1) {
-      prayerName = 'Our Father';
+
+      // Decades
     } else {
-      prayerName = 'Hail Mary';
+      // Offset by intro (7 steps: 0..6)
+      int decadeIndex = _currentBeadIndex - 7;
+      int stepInDecade = decadeIndex % 12; // 1 OF + 10 HM + 1 GB = 12
+
+      if (stepInDecade == 0) {
+        prayerName = 'Our Father';
+      } else if (stepInDecade >= 1 && stepInDecade <= 10) {
+        prayerName = 'Hail Mary';
+      } else {
+        prayerName = 'Glory Be'; // & Fatima Prayer
+      }
     }
 
     double progress = _currentBeadIndex / _totalBeads;
@@ -407,9 +424,10 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
                 onPressed: () {
                   if (_currentBeadIndex < _totalBeads) {
                     // Check if current step is Glory Be (End of decade)
-                    // Logic: 0-4 (Intro), 5-15 (Decade 1), 16-26 (Decade 2)...
-                    // Glory Be is at index: 5, 16, 27, 38, 49
-                    bool isGloryBe = (_currentBeadIndex - 5) % 11 == 0;
+                    // Decades start at index 7. Steps 18, 30, 42, 54, 66 are Glory Be
+                    bool isGloryBe =
+                        _currentBeadIndex >= 7 &&
+                        (_currentBeadIndex - 7) % 12 == 11;
 
                     if (isGloryBe && _currentBeadIndex >= 5) {
                       ref

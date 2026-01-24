@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../payments/widgets/smart_checkout_sheet.dart';
 import '../../../core/services/abandoned_cart_service.dart';
+import '../../../core/widgets/sacred_pause_overlay.dart';
+import '../../../core/constants/sacred_copy.dart';
 
 // Mass offering types
 class OfferingType {
@@ -52,7 +54,7 @@ const List<OfferingType> _offeringTypes = [
     priceInCents: 10000,
     description: 'Enrolled forever in daily Masses at our partner monasteries',
     isPopular: true,
-    badge: 'BEST VALUE',
+    badge: 'SPIRITUAL LEGACY',
   ),
   OfferingType(
     id: 'GREGORIAN',
@@ -354,7 +356,7 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
       children: [
         Center(
           child: Text(
-            'Choose Your Offering',
+            'Entrust Your Intention',
             style: GoogleFonts.merriweather(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -815,7 +817,7 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
       children: [
         Center(
           child: Text(
-            'Complete Your Request',
+            'Entrust Your Request',
             style: GoogleFonts.merriweather(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -885,7 +887,7 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Order Summary',
+                'Offering Summary',
                 style: GoogleFonts.inter(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -956,13 +958,12 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
                               'By: $_offeredBy',
                             );
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Mass offering submitted successfully!',
-                                ),
-                                backgroundColor: Colors.green,
-                              ),
+                            // Trigger Sacred Pause
+                            await SacredPauseOverlay.show(
+                              context,
+                              message: SacredCopy.system.processing,
+                              subtitle: SacredCopy.prayerComplete.primary,
+                              icon: LucideIcons.church,
                             );
 
                             if (mounted) {
@@ -1014,7 +1015,7 @@ class _MassOfferingScreenState extends ConsumerState<MassOfferingScreen> {
                       const Icon(LucideIcons.heart, size: 18),
                       const SizedBox(width: 8),
                       Text(
-                        'Request Mass - \$${(_calculateTotal() / 100).toStringAsFixed(2)}',
+                        'Entrust Mass - \$${(_calculateTotal() / 100).toStringAsFixed(2)}',
                         style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                       ),
                     ],

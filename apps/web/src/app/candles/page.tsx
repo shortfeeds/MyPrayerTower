@@ -404,89 +404,66 @@ export default function CandlesPage() {
             <div className="container mx-auto px-4 py-16 space-y-20">
                 <SmartAdSlot page="candles" position="top" />
 
-                {/* 30-Day Royal Section */}
-                {groupedCandles.royal.length > 0 && (
-                    <section>
-                        <div className="flex flex-col items-center justify-center gap-2 mb-10">
-                            <div className="flex items-center gap-4">
-                                <div className="h-px w-16 bg-gradient-to-r from-transparent to-amber-700" />
-                                <h2 className="text-2xl font-serif text-amber-500">🕊️ Divine Cathedral Candles</h2>
-                                <div className="h-px w-16 bg-gradient-to-l from-transparent to-amber-700" />
+                {/* Iterating all tiers relative to their importance/order */}
+                {Object.entries(TIER_CONFIG).sort((a, b) => {
+                    const order = ['30_days', '14_days', '7_days', '3_days', '1_day'];
+                    return order.indexOf(a[0]) - order.indexOf(b[0]);
+                }).map(([key, config]) => {
+                    // Map tiers to the grouping keys used in state
+                    let groupKey: keyof typeof groupedCandles | undefined;
+                    if (key === '30_days') groupKey = 'royal';
+                    else if (key === '14_days') groupKey = 'premium';
+                    else if (key === '7_days') groupKey = 'taper';
+                    else if (key === '3_days') groupKey = 'votive';
+                    else if (key === '1_day') groupKey = 'tealight';
+
+                    const candlesInTier = groupKey ? groupedCandles[groupKey] : [];
+
+                    return (
+                        <section key={key}>
+                            <div className="flex flex-col items-center justify-center gap-2 mb-10">
+                                <div className="flex items-center gap-4">
+                                    {key === '30_days' && <div className="h-px w-16 bg-gradient-to-r from-transparent to-amber-700" />}
+                                    <h2 className={`text-2xl font-serif ${config.color.includes('amber') ? 'text-amber-500' :
+                                        config.color.includes('blue') ? 'text-blue-300' :
+                                            config.color.includes('red') ? 'text-red-300' : 'text-neutral-400'
+                                        }`}>
+                                        {config.badge ? `${config.badge} ` : '🕯️ '}
+                                        {config.label} Candles
+                                    </h2>
+                                    {key === '30_days' && <div className="h-px w-16 bg-gradient-to-l from-transparent to-amber-700" />}
+                                </div>
+                                <p className="text-neutral-500 text-sm">
+                                    {config.spiritualMessage}
+                                </p>
                             </div>
-                            <p className="text-amber-400/60 text-sm">Angels carry your prayers to Heaven</p>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.royal.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
-                        </div>
-                        {groupedCandles.royal.length > 10 && (
-                            <p className="text-center text-amber-400/60 mt-4 text-sm">+ {groupedCandles.royal.length - 10} more candles burning</p>
-                        )}
-                    </section>
-                )}
 
-                {/* 14-Day Premium Section */}
-                {groupedCandles.premium.length > 0 && (
-                    <section>
-                        <div className="flex flex-col items-center justify-center gap-2 mb-10">
-                            <h2 className="text-2xl font-serif text-blue-300">✨ Blessed Marian Candles</h2>
-                            <p className="text-blue-400/60 text-sm">Under Our Lady of Guadalupe's protection</p>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.premium.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
-                        </div>
-                        {groupedCandles.premium.length > 10 && (
-                            <p className="text-center text-blue-400/60 mt-4 text-sm">+ {groupedCandles.premium.length - 10} more candles burning</p>
-                        )}
-                    </section>
-                )}
-
-                {/* 7-Day Taper Section */}
-                {groupedCandles.taper.length > 0 && (
-                    <section>
-                        <div className="flex flex-col items-center justify-center gap-2 mb-10">
-                            <h2 className="text-2xl font-serif text-amber-100/80">⛪ Sacred Altar Candles</h2>
-                            <p className="text-neutral-400 text-sm">Presented before the Lord at His altar</p>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.taper.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
-                        </div>
-                        {groupedCandles.taper.length > 10 && (
-                            <p className="text-center text-amber-100/60 mt-4 text-sm">+ {groupedCandles.taper.length - 10} more candles burning</p>
-                        )}
-                    </section>
-                )}
-
-                {/* 3-Day Devotion Section */}
-                {groupedCandles.votive.length > 0 && (
-                    <section>
-                        <div className="flex flex-col items-center justify-center gap-2 mb-10">
-                            <h2 className="text-2xl font-serif text-red-300">✞ Devotion Votive Candles</h2>
-                            <p className="text-red-400/60 text-sm">A sincere offering of faith</p>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.votive.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
-                        </div>
-                        {groupedCandles.votive.length > 10 && (
-                            <p className="text-center text-red-400/60 mt-4 text-sm">+ {groupedCandles.votive.length - 10} more candles burning</p>
-                        )}
-                    </section>
-                )}
-
-                {/* 1-Day Free Section */}
-                {groupedCandles.tealight.length > 0 && (
-                    <section>
-                        <div className="flex flex-col items-center justify-center gap-2 mb-10">
-                            <h2 className="text-2xl font-serif text-neutral-400">🕯️ Humble Prayer Candles</h2>
-                            <p className="text-neutral-500 text-sm">A simple prayer for today</p>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                            {groupedCandles.tealight.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
-                        </div>
-                        {groupedCandles.tealight.length > 10 && (
-                            <p className="text-center text-neutral-400/60 mt-4 text-sm">+ {groupedCandles.tealight.length - 10} more candles burning</p>
-                        )}
-                    </section>
-                )}
+                            {candlesInTier.length > 0 ? (
+                                <>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                                        {candlesInTier.slice(0, 10).map(c => <CandleCard key={c.id} candle={c} onPray={handlePrayForCandle} />)}
+                                    </div>
+                                    {candlesInTier.length > 10 && (
+                                        <p className="text-center text-neutral-600 mt-4 text-sm">+ {candlesInTier.length - 10} more candles burning</p>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-12 border border-dashed border-neutral-800 rounded-xl bg-neutral-900/50">
+                                    <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center mb-4 opacity-50">
+                                        <Flame className="w-8 h-8 text-neutral-600" />
+                                    </div>
+                                    <p className="text-neutral-400 font-medium mb-2">No {config.tierLabel.toLowerCase()} candles burning yet</p>
+                                    <button
+                                        onClick={() => setIsCreationModalOpen(true)}
+                                        className="text-sm text-amber-500 hover:text-amber-400 underline decoration-amber-500/30 underline-offset-4"
+                                    >
+                                        Be the first to light one
+                                    </button>
+                                </div>
+                            )}
+                        </section>
+                    );
+                })}
             </div>
 
             <CandleCreationModal

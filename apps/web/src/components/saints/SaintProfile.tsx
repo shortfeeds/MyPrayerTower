@@ -7,6 +7,8 @@ import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { SmartAdSlot } from '@/components/ads';
 import { PayPalCheckout } from '@/components/PayPalCheckout';
+import { motion, AnimatePresence } from 'framer-motion';
+import { SACRED_COPY } from '@/lib/sacred-copy';
 
 // ... imports
 
@@ -40,7 +42,29 @@ export function SaintProfile({ saint }: { saint: Saint }) {
     const [showMassModal, setShowMassModal] = useState(false);
     const [amount, setAmount] = useState(15);
     const [intention, setIntention] = useState(`In honor of ${saint.name}`);
-    const [textSizeIndex, setTextSizeIndex] = useState(1); // Default M
+
+    // const [textSizeIndex, setTextSizeIndex] = useState(1); // Removed for density reduction
+
+    // Sacred Pause State
+    const [isSacredPausing, setIsSacredPausing] = useState(false);
+    const [stillnessStage, setStillnessStage] = useState<'lifting' | 'offered'>('lifting');
+
+    const handleIntercession = async () => {
+        setIsSacredPausing(true);
+        setStillnessStage('lifting');
+
+        // 1. LIFTING (2.5s)
+        await new Promise(resolve => setTimeout(resolve, 2500));
+
+        // 2. OFFERED (2s)
+        setStillnessStage('offered');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // 3. Close
+        setIsSacredPausing(false);
+        // Optional: Scroll to prayer or show a gentle toast?
+        // For now, the experience concludes with the "Offered" state fading out.
+    };
 
     useEffect(() => {
         // Load saved preference
@@ -109,11 +133,11 @@ export function SaintProfile({ saint }: { saint: Saint }) {
                             {/* Actions */}
                             <div className="flex gap-3 flex-shrink-0">
                                 <button
-                                    onClick={() => setShowMassModal(true)}
-                                    className="px-6 py-3 bg-white text-amber-600 font-bold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+                                    onClick={handleIntercession}
+                                    className="px-6 py-3 bg-white text-amber-900 font-serif font-bold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
                                 >
-                                    <Heart className="w-5 h-5 fill-current" />
-                                    <span>Pray with {saint.name?.split(' ')[0]}</span>
+                                    <Heart className="w-5 h-5 fill-rose-500 text-rose-500" />
+                                    <span>{SACRED_COPY.saints.prayWith}</span>
                                 </button>
                                 <button
                                     onClick={() => setShowMassModal(true)}
@@ -150,26 +174,7 @@ export function SaintProfile({ saint }: { saint: Saint }) {
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
-                        {/* Text Size Controls */}
-                        <div className="flex items-center justify-end gap-2">
-                            <Type className="w-4 h-4 text-gray-500" />
-                            <span className="text-xs text-gray-500 mr-2">Text Size</span>
-                            <button
-                                onClick={() => handleTextSize(-1)}
-                                disabled={textSizeIndex === 0}
-                                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition-colors"
-                            >
-                                <Minus className="w-4 h-4" />
-                            </button>
-                            <span className="text-sm font-bold w-8 text-center">{TEXT_SIZES[textSizeIndex].label}</span>
-                            <button
-                                onClick={() => handleTextSize(1)}
-                                disabled={textSizeIndex === TEXT_SIZES.length - 1}
-                                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition-colors"
-                            >
-                                <Plus className="w-4 h-4" />
-                            </button>
-                        </div>
+                        {/* Text Size Controls Removed for Density Reduction */}
 
                         {/* Biography */}
                         {(saint.biography || saint.shortBio) && (
@@ -178,7 +183,7 @@ export function SaintProfile({ saint }: { saint: Saint }) {
                                     <BookOpen className="w-6 h-6 text-amber-500" />
                                     Biography
                                 </h2>
-                                <div className={`text-gray-700 whitespace-pre-line ${TEXT_SIZES[textSizeIndex].class}`}>
+                                <div className={`text-gray-700 whitespace-pre-line text-lg leading-relaxed`}>
                                     {saint.biography || saint.shortBio}
                                 </div>
                             </div>
@@ -187,7 +192,7 @@ export function SaintProfile({ saint }: { saint: Saint }) {
                         {/* Default Prayer */}
                         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-200/50">
                             <h2 className="text-2xl font-serif font-bold text-amber-800 mb-6">🙏 Prayer to {saint.name}</h2>
-                            <p className={`text-amber-900/80 italic ${TEXT_SIZES[textSizeIndex].class}`}>
+                            <p className="text-amber-900/80 italic text-lg leading-relaxed font-serif">
                                 O glorious {saint.name}, through your intercession may we grow in virtue and faith.
                                 Help us to follow your holy example and to lead lives worthy of our calling.
                                 Pray for us that we may persevere in our journey toward eternal life. Amen.
@@ -334,6 +339,46 @@ export function SaintProfile({ saint }: { saint: Saint }) {
                     </div>
                 </div>
             )}
+
+            {/* Sacred Pause Overlay */}
+            <AnimatePresence>
+                {isSacredPausing && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 backdrop-blur-md"
+                    >
+                        <div className="text-center p-8 max-w-md">
+                            {stillnessStage === 'lifting' ? (
+                                <div className="flex flex-col items-center">
+                                    <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mb-6 animate-pulse-slow">
+                                        <Heart className="w-10 h-10 text-rose-500 animate-pulse" />
+                                    </div>
+                                    <h3 className="text-3xl font-serif font-bold text-gray-900 mb-3">
+                                        {SACRED_COPY.saints.intercession}
+                                    </h3>
+                                    <p className="text-gray-500 font-medium">
+                                        Asking {saint.name} to pray with you...
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center">
+                                    <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mb-6 animate-scale-in">
+                                        <Crown className="w-10 h-10 text-amber-500" />
+                                    </div>
+                                    <h3 className="text-3xl font-serif font-bold text-gray-900 mb-3">
+                                        United in Prayer
+                                    </h3>
+                                    <p className="text-gray-500 font-medium">
+                                        Your intention is lifted up.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

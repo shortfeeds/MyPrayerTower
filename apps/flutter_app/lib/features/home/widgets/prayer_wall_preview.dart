@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -123,14 +124,21 @@ class PrayerWallPreview extends StatelessWidget {
                 )
                 .animate(delay: Duration(milliseconds: 100 * index))
                 .fadeIn()
-                .slideX(begin: 0.1);
+                .slideX(
+                  begin: 0.1,
+                  curve: Curves.easeOutQuad,
+                  duration: 600.ms,
+                );
           }),
 
           // Add Prayer Button
           Padding(
             padding: const EdgeInsets.all(12),
             child: GestureDetector(
-              onTap: () => context.push('/prayer-wall'),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                context.push('/prayer-wall');
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
@@ -165,6 +173,10 @@ class PrayerWallPreview extends StatelessWidget {
                 ),
               ),
             ),
+          ).animate().scale(
+            delay: 800.ms,
+            duration: 400.ms,
+            curve: Curves.easeOutBack,
           ),
         ],
       ),
@@ -172,10 +184,35 @@ class PrayerWallPreview extends StatelessWidget {
   }
 }
 
-class _PrayerRequestTile extends StatelessWidget {
+class _PrayerRequestTile extends StatefulWidget {
   final _PrayerRequest request;
 
   const _PrayerRequestTile({required this.request});
+
+  @override
+  State<_PrayerRequestTile> createState() => _PrayerRequestTileState();
+}
+
+class _PrayerRequestTileState extends State<_PrayerRequestTile> {
+  late bool _isPrayed;
+  late int _count;
+
+  @override
+  void initState() {
+    super.initState();
+    _isPrayed = false;
+    _count = widget.request.prayerCount;
+  }
+
+  void _handlePray() {
+    if (_isPrayed) return; // Prevent double taps for demo
+
+    HapticFeedback.mediumImpact();
+    setState(() {
+      _isPrayed = true;
+      _count++;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +231,7 @@ class _PrayerRequestTile extends StatelessWidget {
                 radius: 16,
                 backgroundColor: AppTheme.gold500.withValues(alpha: 0.2),
                 child: Text(
-                  request.name[0].toUpperCase(),
+                  widget.request.name[0].toUpperCase(),
                   style: GoogleFonts.inter(
                     color: AppTheme.gold500,
                     fontWeight: FontWeight.bold,
@@ -208,7 +245,7 @@ class _PrayerRequestTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      request.name,
+                      widget.request.name,
                       style: GoogleFonts.inter(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -216,7 +253,7 @@ class _PrayerRequestTile extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${request.category} • ${request.timeAgo}',
+                      '${widget.request.category} • ${widget.request.timeAgo}',
                       style: GoogleFonts.inter(
                         color: AppTheme.textMuted,
                         fontSize: 11,
@@ -225,37 +262,66 @@ class _PrayerRequestTile extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppTheme.sacredRed, Colors.pink.shade400],
+
+              // Interactive Pray Button
+              GestureDetector(
+                onTap: _handlePray,
+                child: AnimatedContainer(
+                  duration: 300.ms,
+                  curve: Curves.easeOutBack,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
                   ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    const Text('🙏', style: TextStyle(fontSize: 12)),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${request.prayerCount}',
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: _isPrayed
+                          ? [Colors.green.shade600, Colors.green.shade400]
+                          : [AppTheme.sacredRed, Colors.pink.shade400],
                     ),
-                  ],
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      if (_isPrayed)
+                        BoxShadow(
+                          color: Colors.green.withValues(alpha: 0.4),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      // Animate Icon Change
+                      Icon(
+                            _isPrayed ? LucideIcons.check : LucideIcons.heart,
+                            size: 12,
+                            color: Colors.white,
+                          )
+                          .animate(target: _isPrayed ? 1 : 0)
+                          .scale(duration: 300.ms, curve: Curves.elasticOut),
+
+                      const SizedBox(width: 4),
+
+                      // Animate Count Change
+                      Text(
+                            '$_count',
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          )
+                          .animate(key: ValueKey(_count))
+                          .scale(duration: 200.ms, curve: Curves.easeOutBack),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            '"${request.intention}"',
+            '"${widget.request.intention}"',
             style: GoogleFonts.inter(
               color: AppTheme.textSecondary,
               fontSize: 13,

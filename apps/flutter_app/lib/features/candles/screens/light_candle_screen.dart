@@ -14,7 +14,8 @@ import '../../../core/services/donation_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../models/candle_model.dart';
 import '../widgets/premium_candle_widget.dart';
-import '../../ads/widgets/rewarded_ad_widget.dart';
+import '../../../core/constants/sacred_copy.dart';
+import '../../../core/widgets/sacred_pause_overlay.dart';
 
 class LightCandleScreen extends ConsumerStatefulWidget {
   const LightCandleScreen({super.key});
@@ -45,18 +46,6 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
       'colors': [Colors.grey.shade200, Colors.grey.shade400],
     },
     {
-      'value': 'THREE_DAYS_AD',
-      'label': 'Sponsor Votive',
-      'daysLabel': '3 Days',
-      'price': 0.0,
-      'priceDisplay': 'Watch Ad',
-      'tier': 'ad_sponsored',
-      'spiritual': 'Supported by sponsors',
-      'image': 'assets/images/candles/humble.png',
-      'colors': [const Color(0xFF60A5FA), const Color(0xFF2563EB)],
-      'badge': 'FREE',
-    },
-    {
       'value': 'THREE_DAYS',
       'label': 'Devotion Votive',
       'daysLabel': '3 Days',
@@ -77,7 +66,7 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
       'spiritual': 'Presented before the Lord',
       'image': 'assets/images/candles/altar.png',
       'colors': [const Color(0xFFF59E0B), const Color(0xFFEA580C)],
-      'badge': 'POPULAR',
+      'badge': 'GATHERED IN FAITH',
     },
     {
       'value': 'FOURTEEN_DAYS',
@@ -89,7 +78,7 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
       'spiritual': 'Mary intercedes for you',
       'image': 'assets/images/candles/marian_glow.png',
       'colors': [const Color(0xFF60A5FA), const Color(0xFF2563EB)],
-      'badge': 'BEST VALUE',
+      'badge': 'MOTHER\'S CARE',
     },
     {
       'value': 'THIRTY_DAYS',
@@ -101,7 +90,7 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
       'spiritual': 'Perpetual light of grace',
       'image': 'assets/images/candles/divine.png',
       'colors': [const Color(0xFFFBBF24), const Color(0xFFB45309)],
-      'badge': 'MOST POWERFUL',
+      'badge': 'PERPETUAL LIGHT',
     },
   ];
 
@@ -147,30 +136,6 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      return;
-    }
-
-    // Handle Ad-Sponsored Tier
-    if (selectedTier['value'] == 'THREE_DAYS_AD') {
-      final service = ref.read(rewardedAdServiceProvider);
-      final success = await service.showAd(
-        onRewarded: () async {
-          // Proceed to light candle (treated as free backend-wise but tracked)
-          await _lightCandle();
-        },
-        onDismissed: () {
-          // Optional: Show message if ad closed without reward
-        },
-      );
-
-      if (!success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Watch full ad to light this candle'),
-            backgroundColor: AppTheme.error,
-          ),
-        );
-      }
       return;
     }
 
@@ -228,10 +193,12 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
       );
 
       if (mounted) {
-        await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => _buildSuccessDialog(),
+        // Trigger Sacred Pause
+        await SacredPauseOverlay.show(
+          context,
+          message: SacredCopy.system.processing,
+          subtitle: SacredCopy.prayerComplete.primary,
+          icon: LucideIcons.flame,
         );
         if (mounted) context.pop();
       }
@@ -249,56 +216,6 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
         setState(() => _isProcessing = false);
       }
     }
-  }
-
-  Widget _buildSuccessDialog() {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: AppTheme.glassDecoration.copyWith(
-          color: AppTheme.sacredNavy900.withValues(alpha: 0.9),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              LucideIcons.flame,
-              color: AppTheme.gold500,
-              size: 48,
-            ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
-            const SizedBox(height: 16),
-            Text(
-              'Candle Lit',
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Your prayer rises like incense before the Lord.',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: AppTheme.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.gold500,
-                foregroundColor: AppTheme.sacredNavy900,
-              ),
-              child: const Text('Amen'),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -555,7 +472,7 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
                 _buildTierSelector(),
                 const SizedBox(height: 24),
                 _buildActionButtons(),
-                const SizedBox(height: 20),
+                const SizedBox(height: 120),
               ],
             ),
           ),

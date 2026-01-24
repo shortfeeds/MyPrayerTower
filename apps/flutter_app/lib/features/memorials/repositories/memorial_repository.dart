@@ -118,7 +118,7 @@ class MemorialRepository {
             offerings:MemorialOffering(*),
             guestbook:MemorialGuestbook(*)
           ''')
-          .order('is_verified', ascending: false) // Verified/Premium first
+          .order('isVerified', ascending: false) // Verified/Premium first
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
 

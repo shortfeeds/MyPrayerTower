@@ -239,6 +239,7 @@ class NewsScreen extends ConsumerWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 120),
           ],
         ),
       ),

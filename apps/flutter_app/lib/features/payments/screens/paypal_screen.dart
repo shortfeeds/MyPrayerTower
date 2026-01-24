@@ -84,74 +84,39 @@ class _PayPalScreenState extends State<PayPalScreen> {
           'PayPal: Order created successfully, loading approval URL: ${urls['approval_url']}',
         );
 
-        if (!kIsWeb) {
-          _controller = WebViewController()
-            ..setJavaScriptMode(JavaScriptMode.unrestricted)
-            ..setNavigationDelegate(
-              NavigationDelegate(
-                onPageStarted: (url) =>
-                    debugPrint('PayPal: Page started loading: $url'),
-                onPageFinished: (url) {
-                  debugPrint('PayPal: Page finished loading: $url');
-                  // Aggressively hide "Cancel and return" link using Timer + CSS
-                  _controller.runJavaScript('''
-                    (function() {
-                      function hideFooter() {
-                          try {
-                              // 1. Hide by HREF (High confidence)
-                              const cancelLinks = document.querySelectorAll('a[href*="payment-cancelled"]');
-                              cancelLinks.forEach(link => {
-                                  link.style.display = 'none !important';
-                                  link.style.visibility = 'hidden !important';
-                                  link.style.opacity = '0 !important';
-                              });
-                              
-                              // 2. Hide by Text Content (Fallback)
-                              const allLinks = document.getElementsByTagName('a');
-                              for (let i = 0; i < allLinks.length; i++) {
-                                if (allLinks[i].textContent && allLinks[i].textContent.includes('Cancel and return')) {
-                                  allLinks[i].style.display = 'none !important';
-                                  allLinks[i].style.visibility = 'hidden !important';
-                                }
-                              }
-                          } catch(e) {}
-                      }
-                      
-                      // Run immediately
-                      hideFooter();
-                      
-                      // Run repeatedly to handle dynamic content loading
-                      setInterval(hideFooter, 500);
-                    })();
-                  ''');
-                },
-                onNavigationRequest: (NavigationRequest request) {
-                  debugPrint('PayPal: Navigation request to: ${request.url}');
-                  if (request.url.contains('payment-success') ||
-                      request.url.contains('return_url')) {
-                    debugPrint(
-                      'PayPal: Return URL detected, capturing order...',
-                    );
-                    final uri = Uri.parse(request.url);
-                    final token = uri.queryParameters['token'];
-                    if (token != null) {
-                      _captureOrder(token);
-                    }
-                    return NavigationDecision.prevent;
+        _controller = WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onPageStarted: (url) =>
+                  debugPrint('PayPal: Page started loading: $url'),
+              onPageFinished: (url) {
+                debugPrint('PayPal: Page finished loading: $url');
+              },
+              onNavigationRequest: (NavigationRequest request) {
+                debugPrint('PayPal: Navigation request to: ${request.url}');
+                if (request.url.contains('payment-success') ||
+                    request.url.contains('return_url')) {
+                  debugPrint('PayPal: Return URL detected, capturing order...');
+                  final uri = Uri.parse(request.url);
+                  final token = uri.queryParameters['token'];
+                  if (token != null) {
+                    _captureOrder(token);
                   }
-                  if (request.url.contains('payment-cancelled') ||
-                      request.url.contains('cancel_url')) {
-                    debugPrint('PayPal: Cancel URL detected');
-                    widget.onCancel();
-                    Navigator.of(context).pop();
-                    return NavigationDecision.prevent;
-                  }
-                  return NavigationDecision.navigate;
-                },
-              ),
-            )
-            ..loadRequest(Uri.parse(urls['approval_url']!));
-        }
+                  return NavigationDecision.prevent;
+                }
+                if (request.url.contains('payment-cancelled') ||
+                    request.url.contains('cancel_url')) {
+                  debugPrint('PayPal: Cancel URL detected');
+                  widget.onCancel();
+                  Navigator.of(context).pop();
+                  return NavigationDecision.prevent;
+                }
+                return NavigationDecision.navigate;
+              },
+            ),
+          )
+          ..loadRequest(Uri.parse(urls['approval_url']!));
 
         setState(() {
           checkoutUrl = urls['approval_url'];

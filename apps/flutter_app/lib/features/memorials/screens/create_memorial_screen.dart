@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../repositories/memorial_repository.dart';
+import '../../../core/widgets/sacred_pause_overlay.dart';
+import '../../../core/constants/sacred_copy.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class CreateMemorialScreen extends ConsumerStatefulWidget {
   const CreateMemorialScreen({super.key});
@@ -50,10 +52,14 @@ class _CreateMemorialScreenState extends ConsumerState<CreateMemorialScreen> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Memorial created successfully!')),
+        // Trigger Sacred Pause
+        await SacredPauseOverlay.show(
+          context,
+          message: SacredCopy.system.processing,
+          subtitle: 'Memorial created with love.',
+          icon: LucideIcons.heart,
         );
-        Navigator.pop(context);
+        if (mounted) Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {

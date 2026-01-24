@@ -6,3 +6,11 @@ final saintOfTheDayProvider = FutureProvider<Saint>((ref) async {
   final repository = ref.watch(saintsRepositoryProvider);
   return repository.getSaintOfTheDay();
 });
+
+final saintBySlugProvider = FutureProvider.family<Saint, String>((
+  ref,
+  slug,
+) async {
+  final repository = ref.watch(saintsRepositoryProvider);
+  return repository.getSaintBySlug(slug);
+});

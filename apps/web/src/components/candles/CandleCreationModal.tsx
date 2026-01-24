@@ -26,9 +26,9 @@ import { usePricing } from '@/contexts/PricingContext';
 const DEFAULT_DURATIONS = [
     { value: 'ONE_DAY', label: 'Humble Prayer', daysLabel: '1 Day', hours: 24, price: 0, priceDisplay: 'Free', tier: 'free', desc: 'A simple prayer for today', image: '/images/candles/humble.png', spiritual: 'A humble beginning', tierBadge: '' },
     { value: 'THREE_DAYS', label: 'Devotion Votive', daysLabel: '3 Days', hours: 72, price: 299, priceDisplay: '$2.99', tier: 'standard', desc: 'Sincere devotion with Cross', image: '/images/candles/devotion_glow.png', spiritual: '✞ Your faith grows stronger', tierBadge: '' },
-    { value: 'SEVEN_DAYS', label: 'Sacred Altar', daysLabel: '7 Days', hours: 168, price: 599, priceDisplay: '$5.99', tier: 'premium', desc: 'Carried to God\'s altar', image: '/images/candles/altar.png', spiritual: '⛪ Presented before the Lord', tierBadge: 'Popular' },
-    { value: 'FOURTEEN_DAYS', label: 'Blessed Marian', daysLabel: '14 Days', hours: 336, price: 999, priceDisplay: '$9.99', tier: 'premium', desc: 'Under Our Lady\'s protection', image: '/images/candles/marian_glow.png', spiritual: '✨ Mary intercedes for you', tierBadge: 'Best Value', bestValue: true },
-    { value: 'THIRTY_DAYS', label: 'Divine Cathedral', daysLabel: '30 Days', hours: 720, price: 1499, priceDisplay: '$14.99', tier: 'premium', desc: 'Angels carry your prayer to Heaven', image: '/images/candles/divine.png', spiritual: '🕊️ Your prayer ascends to Heaven', tierBadge: 'Most Powerful' },
+    { value: 'SEVEN_DAYS', label: 'Sacred Altar', daysLabel: '7 Days', hours: 168, price: 599, priceDisplay: '$5.99', tier: 'premium', desc: 'Carried to God\'s altar', image: '/images/candles/altar.png', spiritual: '⛪ Presented before the Lord', tierBadge: 'Week of Prayer' },
+    { value: 'FOURTEEN_DAYS', label: 'Blessed Marian', daysLabel: '14 Days', hours: 336, price: 999, priceDisplay: '$9.99', tier: 'premium', desc: 'Under Our Lady\'s protection', image: '/images/candles/marian_glow.png', spiritual: '✨ Mary intercedes for you', tierBadge: '' },
+    { value: 'THIRTY_DAYS', label: 'Divine Cathedral', daysLabel: '30 Days', hours: 720, price: 1499, priceDisplay: '$14.99', tier: 'premium', desc: 'A month of continuous prayer', image: '/images/candles/divine.png', spiritual: '🕊️ Your prayer ascends to Heaven', tierBadge: 'Month of Grace' },
 ];
 
 export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandleModalProps) {
@@ -44,6 +44,10 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
         email: '' // Optional for receipt
     });
     const [hasSuccess, setHasSuccess] = useState(false);
+
+    // Sacred Pause State
+    const [isSacredPausing, setIsSacredPausing] = useState(false);
+    const [stillnessStage, setStillnessStage] = useState<'lifting' | 'offered'>('lifting');
 
     const handleClose = () => {
         if (!hasSuccess && step > 1) {
@@ -86,21 +90,32 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
     const handleSubmit = async () => {
         if (selectedTier.price === 0) {
             // Free candle
-            setLoading(true);
+            // Sacred Pause Start
+            setIsSacredPausing(true);
+            setStillnessStage('lifting');
+
+            // Wait 2.5s
+            await new Promise(resolve => setTimeout(resolve, 2500));
+
             try {
+                // Call API
                 await lightVirtualCandle({
                     intention: formData.intention,
                     isAnonymous: formData.isAnonymous,
                     duration: formData.duration as any,
                     name: formData.isAnonymous ? 'Anonymous' : formData.name
                 });
+
+                // Show Offered
+                setStillnessStage('offered');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
                 setHasSuccess(true);
                 onSuccess();
                 onClose();
             } catch (err: any) {
+                setIsSacredPausing(false);
                 setError(err.message || 'Failed to light candle');
-            } finally {
-                setLoading(false);
             }
         } else {
             // Proceed to payment (PayPal component handles the rest)
@@ -109,7 +124,12 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
     };
 
     const handlePayPalSuccess = async (details: PayPalSuccessDetails) => {
-        setLoading(true);
+        // Sacred Pause Start (Post-Payment)
+        setIsSacredPausing(true);
+        setStillnessStage('lifting');
+
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
         try {
             await lightVirtualCandle({
                 intention: formData.intention,
@@ -118,13 +138,17 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                 name: formData.isAnonymous ? 'Anonymous' : formData.name,
                 paymentId: details.orderId
             });
+
+            // Show Offered
+            setStillnessStage('offered');
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
             setHasSuccess(true);
             onSuccess();
             onClose();
         } catch (err: any) {
+            setIsSacredPausing(false);
             setError(err.message || 'Failed to verify payment');
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -336,16 +360,41 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                             </motion.div>
                         )}
 
-                        {/* Loading Overlay */}
-                        {loading && (
-                            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-20">
+                        {/* Sacred Pause Overlay */}
+                        {isSacredPausing && (
+                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-md rounded-3xl animate-fade-in p-6">
                                 <div className="text-center">
-                                    <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                                    <h5 className="text-lg font-serif font-bold text-gray-900 mb-1">Lighting your candle...</h5>
-                                    <p className="text-gray-500 text-sm">May your prayer rise like incense.</p>
+                                    {stillnessStage === 'lifting' ? (
+                                        <>
+                                            <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-6 animate-pulse-slow mx-auto">
+                                                <Flame className="w-8 h-8 text-amber-600 animate-pulse" />
+                                            </div>
+                                            <h3 className="text-2xl font-serif font-bold text-gray-900 mb-2 animate-fade-in">
+                                                Lighting your candle...
+                                            </h3>
+                                            <p className="text-gray-500 font-medium animate-fade-in delay-75">
+                                                May your prayer rise like incense.
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-6 animate-scale-in mx-auto">
+                                                <CheckCircle className="w-8 h-8 text-green-600" />
+                                            </div>
+                                            <h3 className="text-2xl font-serif font-bold text-gray-900 mb-2 animate-fade-in">
+                                                Candle Lit
+                                            </h3>
+                                            <p className="text-gray-500 font-medium animate-fade-in delay-75">
+                                                Your intention shines in our chapel.
+                                            </p>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         )}
+
+                        {/* Old Loading Overlay (Deprecated)
+                        {loading && ( ... )} */}
                     </div>
                 </motion.div>
             </div>

@@ -3,32 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'dart:ui';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/premium_scaffold.dart';
+import '../../../core/widgets/premium_glass_card.dart';
 import '../repositories/churches_repository.dart';
 import '../models/church_model.dart';
-import '../../../core/constants/sacred_copy.dart';
-import '../../../widgets/app_bar_menu_button.dart';
 import '../../ads/widgets/native_ad_widget.dart';
-
-/// Church type labels matching web app
-const Map<String, String> churchTypeLabels = {
-  'PARISH': '⛪ Parish',
-  'CATHEDRAL': '🏛️ Cathedral',
-  'BASILICA': '🕌 Basilica',
-  'CHAPEL': '🕯️ Chapel',
-  'SHRINE': '✨ Shrine',
-  'MONASTERY': '🏔️ Monastery',
-  'ABBEY': '📿 Abbey',
-  'MISSION': '🌍 Mission',
-  'OTHER': '🏠 Other',
-};
-
-/// Format schedule JSON to displayable string
-String? formatSchedule(Map<String, dynamic>? schedule) {
-  if (schedule == null || schedule.isEmpty) return null;
-  final entries = schedule.entries.take(2).toList();
-  return entries.map((e) => '${e.key}: ${e.value}').join(' • ');
-}
 
 class ChurchesScreen extends ConsumerStatefulWidget {
   const ChurchesScreen({super.key});
@@ -39,12 +20,13 @@ class ChurchesScreen extends ConsumerStatefulWidget {
 
 class _ChurchesScreenState extends ConsumerState<ChurchesScreen> {
   final _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
   String _searchQuery = '';
-  bool _isLoading = false;
   List<Church> _churches = [];
+  bool _isLoading = false;
   int _currentPage = 1;
   bool _hasMore = true;
-  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -80,20 +62,26 @@ class _ChurchesScreenState extends ConsumerState<ChurchesScreen> {
     });
 
     try {
-      final churches = await ref
+      final newChurches = await ref
           .read(churchesRepositoryProvider)
           .getChurches(
             query: _searchQuery.isEmpty ? null : _searchQuery,
             page: _currentPage,
           );
 
-      setState(() {
-        _churches = refresh ? churches : [..._churches, ...churches];
-        _hasMore = churches.length >= 20;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          if (refresh) {
+            _churches = newChurches;
+          } else {
+            _churches.addAll(newChurches);
+          }
+          _hasMore = newChurches.length >= 20;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -103,765 +91,422 @@ class _ChurchesScreenState extends ConsumerState<ChurchesScreen> {
     await _loadChurches();
   }
 
-  void _onSearch(String query) {
+  void _onSearchChanged(String query) {
     setState(() => _searchQuery = query);
     _loadChurches(refresh: true);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC), // Slate-50
+    return PremiumScaffold(
       body: CustomScrollView(
         controller: _scrollController,
-        slivers: [
-          // Hero Section
-          SliverToBoxAdapter(
-            child: Container(
+        slivers: [_buildAppBar(), _buildSearchHeader(), _buildChurchList()],
+      ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return SliverAppBar(
+      expandedHeight: 180,
+      pinned: true,
+      backgroundColor: AppTheme.sacredNavy950,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Abstract Background
+            Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Color(0xFF1E293B),
-                    Color(0xFF0F172A),
-                    Color(0xFF020617),
-                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                ),
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: Column(
-                  children: [
-                    // App Bar Row
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        children: [
-                          const AppBarMenuButton(iconColor: Colors.white),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(
-                              LucideIcons.search,
-                              color: Colors.white70,
-                            ),
-                            onPressed: () => _showSearchSheet(),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Hero Content
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-                      child: Column(
-                        children: [
-                          // Badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.1),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  LucideIcons.globe,
-                                  size: 14,
-                                  color: Colors.white70,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  '8,500+ Catholic Churches',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          // Title
-                          Text(
-                            SacredCopy.churches.heroTitle,
-                            style: GoogleFonts.merriweather(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            SacredCopy.churches.heroSubtitle,
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              color: Colors.white60,
-                              height: 1.5,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 24),
-                          // Search Bar
-                          GestureDetector(
-                            onTap: _showSearchSheet,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.2),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    LucideIcons.search,
-                                    size: 20,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      _searchQuery.isEmpty
-                                          ? 'Search by name, city, or address...'
-                                          : _searchQuery,
-                                      style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        color: _searchQuery.isEmpty
-                                            ? Colors.grey.shade400
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                  if (_searchQuery.isNotEmpty)
-                                    GestureDetector(
-                                      onTap: () {
-                                        _searchController.clear();
-                                        _onSearch('');
-                                      },
-                                      child: Icon(
-                                        LucideIcons.x,
-                                        size: 18,
-                                        color: Colors.grey.shade400,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  colors: [AppTheme.sacredNavy950, AppTheme.royalPurple900],
                 ),
               ),
             ),
-          ),
-
-          // Results Header
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
+            // Pattern Overlay
+            const Opacity(
+              opacity: 0.1,
+              child: Center(
+                child: Icon(
+                  LucideIcons.church,
+                  size: 200,
+                  color: AppTheme.gold500,
+                ),
+              ),
+            ),
+            // Content
+            Positioned(
+              bottom: 60,
+              left: 0,
+              right: 0,
+              child: Column(
                 children: [
-                  Text(
-                    '${_churches.length} churches found',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: Colors.grey.shade600,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
                     ),
-                  ),
-                  const Spacer(),
-                  if (_searchQuery.isNotEmpty)
-                    TextButton.icon(
-                      onPressed: () => _onSearch(''),
-                      icon: const Icon(LucideIcons.x, size: 14),
-                      label: const Text('Clear'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.blue.shade600,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
                       ),
                     ),
+                    child: Text(
+                      '8,600+ LOCATIONS',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.gold500,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Find Your Sanctuary',
+                    style: GoogleFonts.merriweather(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
-
-          // Church Cards
-          _isLoading && _churches.isEmpty
-              ? const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              : _churches.isEmpty
-              ? SliverFillRemaining(child: _buildEmptyState())
-              : SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        // Calculate actual data index
-                        final int itemIndex = index - (index ~/ 9);
-
-                        // Show Ad every 9th item (indices 8, 17, 26...)
-                        if ((index + 1) % 9 == 0) {
-                          return const NativeAdListItem();
-                        }
-
-                        if (itemIndex >= _churches.length) {
-                          return _hasMore
-                              ? const Padding(
-                                  padding: EdgeInsets.all(16),
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                )
-                              : null;
-                        }
-
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _ChurchCard(
-                            church: _churches[itemIndex],
-                            onTap: () => context.push(
-                              '/churches/${_churches[itemIndex].id}',
-                            ),
-                          ),
-                        );
-                      },
-                      childCount:
-                          _churches.length +
-                          (_churches.length ~/ 8) +
-                          (_hasMore ? 1 : 0),
-                    ),
-                  ),
-                ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(LucideIcons.church, size: 48, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
-          Text(
-            'No Churches Found',
-            style: GoogleFonts.inter(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade800,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Try adjusting your search or check back later.',
-            style: GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade500),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          if (_searchQuery.isNotEmpty)
-            TextButton(
-              onPressed: () => _onSearch(''),
-              child: const Text('Clear Search'),
-            ),
-        ],
-      ),
-    );
-  }
-
-  void _showSearchSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 20,
-          right: 20,
-          top: 20,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _searchController,
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText: 'Search churches...',
-                prefixIcon: const Icon(LucideIcons.search),
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              onSubmitted: (value) {
-                Navigator.pop(context);
-                _onSearch(value);
-              },
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _onSearch(_searchController.text);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade600,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text('Search'),
-              ),
-            ),
-            const SizedBox(height: 20),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSearchHeader() {
+    return SliverToBoxAdapter(
+      child: Transform.translate(
+        offset: const Offset(0, -24),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.2),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: _onSearchChanged,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Search by name, city, or zip...',
+                    hintStyle: const TextStyle(color: Colors.white38),
+                    icon: const Icon(
+                      LucideIcons.search,
+                      color: AppTheme.gold500,
+                    ),
+                    border: InputBorder.none,
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(
+                              LucideIcons.x,
+                              color: Colors.white38,
+                              size: 18,
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                              _onSearchChanged('');
+                            },
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChurchList() {
+    if (_churches.isEmpty && !_isLoading) {
+      return SliverFillRemaining(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(LucideIcons.searchX, size: 48, color: Colors.white24),
+              const SizedBox(height: 16),
+              Text(
+                'No churches found',
+                style: GoogleFonts.inter(color: Colors.white38),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          if (index == _churches.length) {
+            return _isLoading
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: CircularProgressIndicator(color: AppTheme.gold500),
+                    ),
+                  )
+                : const SizedBox.shrink();
+          }
+
+          // Inject Ad every 10 items
+          if (index > 0 && index % 10 == 0) {
+            return const Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: NativeAdListItem(),
+            );
+          }
+
+          final church = _churches[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _PremiumChurchCard(
+              church: church,
+              onTap: () =>
+                  context.push('/churches/${church.id}', extra: church),
+            ),
+          );
+        }, childCount: _churches.length + 1),
       ),
     );
   }
 }
 
-class _ChurchCard extends StatelessWidget {
+class _PremiumChurchCard extends StatelessWidget {
   final Church church;
   final VoidCallback onTap;
 
-  const _ChurchCard({required this.church, required this.onTap});
+  const _PremiumChurchCard({required this.church, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final massInfo = formatSchedule(church.massSchedule);
-    final confessionInfo = formatSchedule(church.confessionSchedule);
-
-    return GestureDetector(
+    return PremiumGlassCard(
       onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Church Image/Icon
-                  Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF3B82F6), Color(0xFF6366F1)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
+      padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image / Header
+          SizedBox(
+            height: 140,
+            width: double.infinity,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (church.primaryImageUrl != null)
+                  Image.network(
+                    church.primaryImageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  )
+                else
+                  _buildPlaceholder(),
+
+                // Gradient Overlay
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent, Colors.black54],
                     ),
-                    child: church.primaryImageUrl != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              church.primaryImageUrl!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                LucideIcons.church,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                            ),
-                          )
-                        : const Icon(
-                            LucideIcons.church,
-                            color: Colors.white,
-                            size: 28,
-                          ),
                   ),
-                  const SizedBox(width: 14),
-                  // Church Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                church.name,
-                                style: GoogleFonts.inter(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey.shade900,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                ),
+
+                // Badges
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Row(
+                    children: [
+                      if (church.isVerified)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFF059669,
+                            ).withValues(alpha: 0.9),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(
+                                LucideIcons.shieldCheck,
+                                size: 10,
+                                color: Colors.white,
                               ),
-                            ),
-                            if (church.isVerified)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFFECFDF5),
-                                      Color(0xFFD1FAE5),
-                                    ], // emerald-50 to emerald-100
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: const Color(0xFFA7F3D0),
-                                  ), // emerald-200
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      LucideIcons.shieldCheck,
-                                      size: 12,
-                                      color: Color(0xFF047857),
-                                    ), // emerald-700
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'Verified',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
-                                        color: const Color(
-                                          0xFF047857,
-                                        ), // emerald-700
-                                      ),
-                                    ),
-                                  ],
+                              SizedBox(width: 4),
+                              Text(
+                                'VERIFIED',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                          ],
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(
-                              LucideIcons.mapPin,
-                              size: 14,
-                              color: Colors.grey.shade400,
+                    ],
+                  ),
+                ),
+
+                // Type Badge
+                Positioned(
+                  bottom: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white24),
+                    ),
+                    child: Text(
+                      church.type,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  church.name,
+                  style: GoogleFonts.merriweather(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(
+                      LucideIcons.mapPin,
+                      size: 14,
+                      color: Colors.white60,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        '${church.city}, ${church.state}',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                // Mass Time Preview
+                if (church.massSchedule != null)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          LucideIcons.clock,
+                          size: 12,
+                          color: AppTheme.gold500,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            _formatNextMass(church.massSchedule!),
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 11,
                             ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                [church.city, church.state, church.country]
-                                    .where((s) => s != null && s.isNotEmpty)
-                                    .join(', '),
-                                style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  color: Colors.grey.shade600,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
+              ],
             ),
-            // Schedule Info
-            if (massInfo != null || confessionInfo != null)
-              Container(
-                margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.shade100),
-                ),
-                child: Column(
-                  children: [
-                    if (massInfo != null)
-                      Row(
-                        children: [
-                          Icon(
-                            LucideIcons.clock,
-                            size: 14,
-                            color: Colors.amber.shade600,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Mass:',
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey.shade700,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              massInfo,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    if (confessionInfo != null) ...[
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(
-                            LucideIcons.heart,
-                            size: 14,
-                            color: Colors.purple.shade500,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Confession:',
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey.shade700,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              confessionInfo,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            // Tags Row
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 6,
-                children: [
-                  if (church.type.isNotEmpty)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Text(
-                        churchTypeLabels[church.type]?.replaceAll(
-                              RegExp(r'^[^\s]+\s'),
-                              '',
-                            ) ??
-                            church.type,
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ),
-                  if (church.denomination != null &&
-                      church.denomination!.isNotEmpty)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Text(
-                        church.denomination!,
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            // Footer Actions
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: Colors.grey.shade100)),
-              ),
-              child: Row(
-                children: [
-                  if (church.phone != null && church.phone!.isNotEmpty)
-                    GestureDetector(
-                      onTap: () => launchUrl(Uri.parse('tel:${church.phone}')),
-                      child: Row(
-                        children: [
-                          Icon(
-                            LucideIcons.phone,
-                            size: 14,
-                            color: Colors.grey.shade500,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Call',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  if (church.website != null && church.website!.isNotEmpty) ...[
-                    const SizedBox(width: 16),
-                    GestureDetector(
-                      onTap: () => launchUrl(
-                        Uri.parse(church.website!),
-                        mode: LaunchMode.inAppWebView,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            LucideIcons.globe,
-                            size: 14,
-                            color: Colors.grey.shade500,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Website',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  const Spacer(),
-                  if (church.latitude != null && church.longitude != null)
-                    GestureDetector(
-                      onTap: () => launchUrl(
-                        Uri.parse(
-                          'https://www.google.com/maps/dir/?api=1&destination=${church.latitude},${church.longitude}',
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            LucideIcons.mapPin,
-                            size: 14,
-                            color: Colors.grey.shade500,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Directions',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  const SizedBox(width: 12),
-                  Row(
-                    children: [
-                      Text(
-                        'View Details',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.blue.shade600,
-                        ),
-                      ),
-                      Icon(
-                        LucideIcons.chevronRight,
-                        size: 14,
-                        color: Colors.blue.shade600,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      color: AppTheme.sacredNavy800,
+      child: Center(
+        child: Icon(
+          LucideIcons.church,
+          size: 40,
+          color: Colors.white.withValues(alpha: 0.2),
         ),
       ),
     );
+  }
+
+  String _formatNextMass(Map<String, dynamic> schedule) {
+    // Simplified logic for demo
+    if (schedule.containsKey('Sunday')) return 'Sunday: ${schedule['Sunday']}';
+    if (schedule.containsKey('Daily')) return 'Daily: ${schedule['Daily']}';
+    return 'Check schedule';
   }
 }

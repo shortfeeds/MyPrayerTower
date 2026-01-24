@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/foundation.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// Native ad widget for seamless integration into content lists
@@ -24,7 +25,9 @@ class _NativeAdListItemState extends ConsumerState<NativeAdListItem> {
   @override
   void initState() {
     super.initState();
-    _loadAd();
+    if (!kIsWeb) {
+      _loadAd();
+    }
   }
 
   void _loadAd() {
@@ -33,7 +36,9 @@ class _NativeAdListItemState extends ConsumerState<NativeAdListItem> {
       factoryId: 'listTile', // Custom factory for native ads
       listener: NativeAdListener(
         onAdLoaded: (ad) {
-          setState(() => _isAdLoaded = true);
+          if (mounted) {
+            setState(() => _isAdLoaded = true);
+          }
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
@@ -118,7 +123,9 @@ class _NativeAdCardState extends ConsumerState<NativeAdCard> {
   @override
   void initState() {
     super.initState();
-    _loadAd();
+    if (!kIsWeb) {
+      _loadAd();
+    }
   }
 
   void _loadAd() {
@@ -127,7 +134,9 @@ class _NativeAdCardState extends ConsumerState<NativeAdCard> {
       factoryId: 'medium',
       listener: NativeAdListener(
         onAdLoaded: (ad) {
-          setState(() => _isAdLoaded = true);
+          if (mounted) {
+            setState(() => _isAdLoaded = true);
+          }
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();

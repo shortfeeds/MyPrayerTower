@@ -9,8 +9,9 @@ import '../repositories/prayer_wall_repository.dart';
 import '../widgets/prayer_request_card.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../ads/widgets/native_ad_widget.dart';
-// ignore: unused_import
 import '../../ads/services/ad_service.dart';
+import '../../../core/widgets/sacred_pause_overlay.dart';
+import '../../../core/constants/sacred_copy.dart';
 
 class PrayerWallScreen extends ConsumerStatefulWidget {
   const PrayerWallScreen({super.key});
@@ -136,15 +137,18 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
           const SliverPadding(padding: EdgeInsets.only(bottom: 150)),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddRequestDialog(context),
-        backgroundColor: AppTheme.gold500,
-        foregroundColor: AppTheme.sacredNavy900,
-        elevation: 4,
-        icon: const Icon(LucideIcons.plus),
-        label: Text(
-          'Request Prayer',
-          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: FloatingActionButton.extended(
+          onPressed: () => _showAddRequestDialog(context),
+          backgroundColor: AppTheme.gold500,
+          foregroundColor: AppTheme.sacredNavy900,
+          elevation: 4,
+          icon: const Icon(LucideIcons.plus),
+          label: Text(
+            SacredCopy.prayerWall.submitIntention,
+            style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
@@ -154,7 +158,7 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
     return SliverAppBar(
       backgroundColor: AppTheme.sacredNavy950,
       title: Text(
-        'Global Prayer Wall',
+        SacredCopy.prayerWall.heroTitle,
         style: GoogleFonts.merriweather(
           fontWeight: FontWeight.bold,
           color: Colors.white,
@@ -188,17 +192,14 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Colors.green,
-                      shape: BoxShape.circle,
-                    ),
+                  const Icon(
+                    LucideIcons.heart,
+                    size: 14,
+                    color: Colors.white70,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '${_prayers.length} prayers active',
+                    'United in Community Prayer',
                     style: GoogleFonts.inter(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
@@ -210,7 +211,7 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Share your intentions.\nLift each other up.',
+              SacredCopy.prayerWall.submitIntention,
               textAlign: TextAlign.center,
               style: GoogleFonts.merriweather(
                 fontSize: 28,
@@ -221,7 +222,7 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Join the global chorus of prayer. Together, we lift each other up to the Heavens.',
+              SacredCopy.prayerWall.heroSubtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 16,
@@ -498,28 +499,25 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
                     );
 
                 if (success == true && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text(
-                        'Prayer received! It will appear after moderation.',
-                      ),
-                      backgroundColor: Colors.green.shade600,
-                    ),
+                  // Trigger Sacred Pause
+                  await SacredPauseOverlay.show(
+                    context,
+                    message: SacredCopy.system.processing,
+                    subtitle: SacredCopy.prayerComplete.primary,
                   );
-                  _loadPrayers(refresh: true);
 
-                  // Show Interstitial Ad (Simulated logic for now)
+                  if (context.mounted) {
+                    _loadPrayers(refresh: true);
+                  }
+
+                  // Show Interstitial Ad AFTER pause
                   if (context.mounted) {
                     ref
                         .read(adServiceProvider)
                         .loadInterstitialAd(
-                          onAdLoaded: (ad) {
-                            ad.show();
-                          },
-                          onAdFailed: (error) {
-                            // Silently fail or log
-                            debugPrint('Interstitial failed: $error');
-                          },
+                          onAdLoaded: (ad) => ad.show(),
+                          onAdFailed: (error) =>
+                              debugPrint('Ad failed: $error'),
                         );
                   }
                 } else if (context.mounted) {
@@ -535,7 +533,7 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
                 backgroundColor: AppTheme.sacredNavy900,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Submit Prayer'),
+              child: Text(SacredCopy.prayerWall.submitIntention),
             ),
           ],
         ),

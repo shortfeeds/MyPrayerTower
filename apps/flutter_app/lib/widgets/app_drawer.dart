@@ -201,7 +201,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                           if (isFeatureEnabled(flags, 'donations_enabled'))
                             _DrawerItem(
                               icon: LucideIcons.heart,
-                              label: 'Donate',
+                              label: 'Contribute',
                               onTap: () => _navigate(context, '/donate'),
                             ),
                         ],

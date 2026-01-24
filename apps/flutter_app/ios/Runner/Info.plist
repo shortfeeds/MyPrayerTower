@@ -49,8 +49,7 @@
 	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>MyPrayerTower needs your location to find nearby parishes and Mass times.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>MyPrayerTower needs your location to find nearby parishes and Mass times.</string>
+
 	<key>NSFaceIDUsageDescription</key>
 	<string>Use Face ID for secure app access.</string>
 </dict>

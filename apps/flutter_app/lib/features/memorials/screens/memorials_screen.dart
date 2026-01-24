@@ -202,7 +202,7 @@ class _MemorialsScreenState extends ConsumerState<MemorialsScreen> {
         ],
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80),
+        padding: const EdgeInsets.only(bottom: 100),
         child: FloatingActionButton.extended(
           onPressed: () async {
             await Navigator.push(

@@ -1,231 +1,124 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/providers/supabase_provider.dart';
 import '../models/prayer_model.dart';
+import '../data/prayers_dataset.dart';
 
 final prayersRepositoryProvider = Provider<PrayersRepository>((ref) {
-  return PrayersRepository(ref.watch(supabaseProvider));
+  return PrayersRepository();
 });
 
 class PrayersRepository {
-  final SupabaseClient _supabase;
+  late final List<Prayer> _allPrayers;
 
-  PrayersRepository(this._supabase);
+  PrayersRepository() {
+    _allPrayers = PrayersDataset.getAllPrayers();
+  }
 
-  /// Fetch prayers with optional pagination
-  /// Set [limit] to -1 to fetch all prayers
+  /// Get prayers with pagination, category filter, and search
   Future<List<Prayer>> getPrayers({
+    String? query,
     String? category,
     int page = 1,
-    int limit = 50,
+    int limit = 20,
   }) async {
-    try {
-      var query = _supabase.from('Prayer').select();
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 300));
 
-      if (category != null && category != 'ALL') {
-        query = query.ilike('category', category);
-      }
+    var results = _allPrayers;
 
-      if (limit > 0) {
-        // Pagination
-        final from = (page - 1) * limit;
-        final to = from + limit - 1;
-        final data = await query.range(from, to).order('title');
-        return (data as List).map((json) => Prayer.fromJson(json)).toList();
-      } else {
-        // Fetch all
-        final data = await query.order('title').limit(10000);
-        return (data as List).map((json) => Prayer.fromJson(json)).toList();
-      }
-    } catch (e) {
-      // Return empty list on error
-      return [];
+    // Filter by category
+    if (category != null &&
+        category.isNotEmpty &&
+        category.toLowerCase() != 'all') {
+      results = results
+          .where((p) => p.category.toLowerCase() == category.toLowerCase())
+          .toList();
     }
+
+    // Filter by query (title or content)
+    if (query != null && query.isNotEmpty) {
+      final q = query.toLowerCase();
+      results = results.where((p) {
+        return p.title.toLowerCase().contains(q) ||
+            p.content.toLowerCase().contains(q);
+      }).toList();
+    }
+
+    // Pagination
+    final startIndex = (page - 1) * limit;
+    if (startIndex >= results.length) return [];
+
+    final endIndex = startIndex + limit;
+    return results.sublist(
+      startIndex,
+      endIndex > results.length ? results.length : endIndex,
+    );
   }
 
-  /// Fetch all distinct categories with prayer counts
-  Future<List<PrayerCategory>> getCategories() async {
-    try {
-      // Fetch all prayers to count by category
-      final data = await _supabase
-          .from('Prayer')
-          .select('category, category_label')
-          .limit(10000);
+  /// Get specific prayer by ID
+  Future<Prayer> getPrayerById(int id) async {
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 100));
 
-      // Group by category
-      final categoryMap = <String, PrayerCategory>{};
-      for (final row in data as List) {
-        final cat = row['category'] as String? ?? 'other';
-        final label = row['category_label'] as String? ?? cat;
-
-        if (categoryMap.containsKey(cat)) {
-          categoryMap[cat] = categoryMap[cat]!.copyWith(
-            count: categoryMap[cat]!.count + 1,
-          );
-        } else {
-          categoryMap[cat] = PrayerCategory(
-            id: cat,
-            name: label,
-            icon: _getCategoryIcon(cat),
-            count: 1,
-          );
-        }
-      }
-
-      // Sort by count (highest first)
-      final categories = categoryMap.values.toList()
-        ..sort((a, b) => b.count.compareTo(a.count));
-
-      return categories;
-    } catch (e) {
-      return [];
-    }
+    return _allPrayers.firstWhere(
+      (p) => p.id == id,
+      orElse: () => _allPrayers.first, // Fallback
+    );
   }
 
-  /// Fetch prayers by category with infinite scroll support
-  Future<List<Prayer>> getPrayersByCategory(
-    String categoryId, {
-    int page = 1,
-    int limit = 30,
-  }) async {
-    try {
-      final from = (page - 1) * limit;
-      final to = from + limit - 1;
-
-      final data = await _supabase
-          .from('Prayer')
-          .select()
-          .ilike('category', categoryId)
-          .order('title')
-          .range(from, to);
-
-      return (data as List).map((json) => Prayer.fromJson(json)).toList();
-    } catch (e) {
-      return [];
-    }
-  }
-
-  Future<Prayer?> getPrayerById(int id) async {
-    try {
-      final data = await _supabase
-          .from('Prayer')
-          .select()
-          .eq('id', id)
-          .single();
-      return Prayer.fromJson(data);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /// Fetch multiple prayers by their IDs
+  /// Get multiple prayers by IDs (for favorites/bookmarks)
   Future<List<Prayer>> getPrayersByIds(List<int> ids) async {
-    if (ids.isEmpty) return [];
-    try {
-      final data = await _supabase
-          .from('Prayer')
-          .select()
-          .filter('id', 'in', ids)
-          .order(
-            'title',
-          ); // Sort alphabetically? Or by added order? Alphabetically is standard.
-      return (data as List).map((json) => Prayer.fromJson(json)).toList();
-    } catch (e) {
-      return [];
-    }
+    await Future.delayed(const Duration(milliseconds: 300));
+    return _allPrayers.where((p) => ids.contains(p.id)).toList();
   }
 
-  /// Search prayers by title or content
-  Future<List<Prayer>> searchPrayers(String query) async {
-    if (query.isEmpty) return [];
+  /// Get categories with counts
+  Future<List<Map<String, dynamic>>> getCategories() async {
+    await Future.delayed(const Duration(milliseconds: 200));
 
-    try {
-      final data = await _supabase
-          .from('Prayer')
-          .select()
-          .or('title.ilike.%$query%,content.ilike.%$query%')
-          .limit(50);
+    final Map<String, int> counts = {};
+    final Map<String, String> labels = {};
 
-      return (data as List).map((json) => Prayer.fromJson(json)).toList();
-    } catch (e) {
-      return [];
+    for (var p in _allPrayers) {
+      counts[p.category] = (counts[p.category] ?? 0) + 1;
+      labels[p.category] = p.categoryLabel ?? p.category;
     }
+
+    return counts.keys
+        .map(
+          (key) => {
+            'id': key,
+            'name': labels[key],
+            'count': counts[key],
+            'icon': _getIconForCategory(key),
+          },
+        )
+        .toList();
   }
 
-  String _getCategoryIcon(String category) {
-    switch (category.toLowerCase()) {
+  String _getIconForCategory(String id) {
+    switch (id.toLowerCase()) {
       case 'morning':
-        return '🌅';
+        return '☀️';
       case 'evening':
         return '🌙';
-      case 'rosary':
-        return '📿';
-      case 'novenas':
-        return '🕯️';
-      case 'saints':
-        return '⭐';
+      case 'healing':
+        return '❤️‍🩹';
       case 'marian':
         return '🌹';
+      case 'saints':
+        return '🙏';
+      case 'family':
+        return '👨‍👩‍👧';
       case 'mass':
         return '⛪';
-      case 'confession':
-        return '🛐';
-      case 'divine-mercy':
-        return '❤️';
-      case 'stations':
-        return '✝️';
+      case 'litanies':
+        return '📜';
       case 'psalms':
         return '📖';
-      case 'litanies':
-        return '🙏';
-      case 'common':
-        return '📜';
-      case 'healing':
-        return '💚';
-      case 'thanksgiving':
-        return '🙌';
-      case 'protection':
-        return '🛡️';
-      case 'family':
-        return '👨‍👩‍👧‍👦';
-      case 'children':
-        return '👶';
-      case 'deceased':
-        return '🕊️';
-      case 'mental':
-        return '🧠';
-      case 'other':
+      case 'core':
+        return '✝️';
       default:
-        return '🙏';
+        return '✨';
     }
-  }
-}
-
-/// Category model for prayer categories
-class PrayerCategory {
-  final String id;
-  final String name;
-  final String icon;
-  final int count;
-
-  const PrayerCategory({
-    required this.id,
-    required this.name,
-    required this.icon,
-    required this.count,
-  });
-
-  PrayerCategory copyWith({
-    String? id,
-    String? name,
-    String? icon,
-    int? count,
-  }) {
-    return PrayerCategory(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      icon: icon ?? this.icon,
-      count: count ?? this.count,
-    );
   }
 }

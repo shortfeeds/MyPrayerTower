@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/ad_config.dart';
 import '../services/ad_service.dart';
 import 'offline_ad_banner.dart';
+import 'package:go_router/go_router.dart';
 
 class SmartAdBanner extends ConsumerStatefulWidget {
   final String page;
@@ -141,55 +142,73 @@ class _SmartAdBannerState extends ConsumerState<SmartAdBanner> {
   }
 
   Widget _buildHouseAd() {
-    return Container(
-      width: double.infinity,
-      height: widget.height ?? 60,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF1E293B),
-            Colors.amber.withValues(alpha: 0.1),
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
+    return GestureDetector(
+      onTap: () {
+        if (mounted) {
+          context.push('/light-candle');
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        height: widget.height ?? 60,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              const Color(0xFF1E293B),
+              Colors.amber.withValues(alpha: 0.1),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
         ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: Colors.amber.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.light_mode,
+                color: Colors.amber,
+                size: 20,
+              ),
             ),
-            child: const Icon(Icons.light_mode, color: Colors.amber, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Light a Virtual Candle',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Light a Virtual Candle',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  'Pray for your intentions',
-                  style: GoogleFonts.inter(fontSize: 12, color: Colors.white70),
-                ),
-              ],
+                  Text(
+                    'Pray for your intentions',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Icon(Icons.arrow_forward_ios, color: Colors.white38, size: 14),
-        ],
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white38,
+              size: 14,
+            ),
+          ],
+        ),
       ),
     );
   }
