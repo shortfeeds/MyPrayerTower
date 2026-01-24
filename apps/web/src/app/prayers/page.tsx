@@ -78,7 +78,12 @@ const PRAYER_PATHS = [
     }
 ];
 
-export default function PrayerLibraryPage() {
+import { getLibraryPrayers } from '@/app/actions/prayer-library';
+
+export default async function PrayerLibraryPage() {
+    // Determine page from searchParams if we were using them, for now fetch first 100 to show abundance
+    const { prayers: allPrayers, totalItems } = await getLibraryPrayers(1, 100);
+
     return (
         <div className="min-h-screen bg-[#faf9f6]">
             {/* Elegant Hero */}
@@ -181,6 +186,36 @@ export default function PrayerLibraryPage() {
                             <p className="text-stone-200">Walk the Via Dolorosa.</p>
                         </div>
                     </Link>
+                </div>
+
+                {/* Complete Prayer Listing */}
+                <div className="mb-24">
+                    <div className="flex items-center justify-between mb-8">
+                        <h2 className="font-serif text-3xl text-gray-900">
+                            Complete Treasury
+                            <span className="ml-3 text-lg font-sans text-gray-500 font-normal">({totalItems} prayers)</span>
+                        </h2>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {allPrayers.map((prayer) => (
+                            <Link
+                                key={prayer.id}
+                                href={`/prayers/${prayer.slug}`}
+                                className="group block p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100"
+                            >
+                                <div className="flex justify-between items-start mb-2">
+                                    <h3 className="font-bold text-gray-900 group-hover:text-gold-600 transition-colors line-clamp-1">
+                                        {prayer.title}
+                                    </h3>
+                                    <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">{prayer.category}</span>
+                                </div>
+                                <p className="text-sm text-gray-500 line-clamp-2">
+                                    {prayer.content}
+                                </p>
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

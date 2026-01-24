@@ -130,12 +130,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.6
         }));
 
+        // 5. Prayers Application (3900+ items)
+        const prayers = await db.prayer.findMany({
+            where: {
+                is_active: true,
+                slug: { not: null }
+            },
+            select: { slug: true }
+        });
+
+        const prayerRoutes = prayers.map(prayer => ({
+            url: `${baseUrl}/prayers/${prayer.slug}`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly' as const,
+            priority: 0.7
+        }));
+
         return [
             ...routes,
             ...churchRoutes,
             ...saintRoutes,
             ...novenaRoutes,
-            ...memorialRoutes
+            ...memorialRoutes,
+            ...prayerRoutes
         ];
 
     } catch (error) {
