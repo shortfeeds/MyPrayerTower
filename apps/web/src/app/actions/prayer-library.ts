@@ -66,3 +66,24 @@ export async function getAllPrayerSlugs() {
         return [];
     }
 }
+
+export async function getPrayerBySlug(slug: string) {
+    try {
+        const prayer = await db.prayer.findFirst({
+            where: {
+                slug: slug,
+                is_active: true
+            }
+        });
+
+        if (!prayer) return null;
+
+        return {
+            ...prayer,
+            id: prayer.id.toString(),
+        };
+    } catch (error) {
+        console.error('Error fetching prayer by slug:', error);
+        return null;
+    }
+}
