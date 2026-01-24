@@ -1,7 +1,7 @@
 name: myprayertower_app
 description: "MyPrayerTower - The All-in-One Catholic Services App"
 publish_to: 'none'
-version: 1.0.6+13
+version: 1.0.7+14
 
 environment:
   sdk: ^3.8.1

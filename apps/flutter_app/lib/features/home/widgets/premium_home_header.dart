@@ -48,7 +48,6 @@ class PremiumHomeHeader extends ConsumerWidget {
           child: const AppBarMenuButton(
             iconColor: Colors.white,
             showBackground: false,
-            size: 20,
           ),
         ),
       ),

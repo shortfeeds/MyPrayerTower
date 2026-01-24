@@ -320,7 +320,6 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
     // Current prayer logic
     String prayerName = 'Apostles Creed';
     // Corrected Rosary Logic
-    String prayerName = '';
 
     // Intro
     if (_currentBeadIndex == 0) {
