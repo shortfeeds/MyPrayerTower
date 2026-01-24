@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import {
-    Menu, X, Building2, Heart, BookOpen, User, Star, Search,
+    Menu, X, Building, Heart, BookOpen, User, Star, Search,
     ChevronDown, Sparkles, Book, Calendar, Facebook, Youtube,
     Moon, Sun, Compass, MapPin, Users, Home, LogOut, Settings,
     Flame, Gift, CreditCard
@@ -13,6 +13,7 @@ import { usePathname } from 'next/navigation';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { MegaMenu, PRAY_MENU, OFFER_MENU, LEARN_MENU } from './MegaMenu';
 
 
 
@@ -133,14 +134,12 @@ export function Header() {
     // 5. MY PRAYER CORNER (User) - Handled separately via auth check
 
     const isActive = (path: string) => pathname?.startsWith(path);
-    const isHome = pathname === '/';
-
     return (
         <>
             <header
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${mounted && (scrolled || !isHome)
-                    ? 'bg-sacred-800 dark:bg-gray-900 py-2 shadow-lg'
-                    : 'bg-sacred-800/90 backdrop-blur-md py-4'
+                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${mounted && scrolled
+                    ? 'bg-sacred-900/95 backdrop-blur-xl shadow-2xl shadow-black/20 py-2'
+                    : 'bg-sacred-900/95 backdrop-blur-xl shadow-xl shadow-black/10 py-3'
                     }`}
             >
                 {/* Global Google Translate Element (Hidden) */}
@@ -149,8 +148,8 @@ export function Header() {
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center gap-3 group">
-                            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg group-hover:shadow-gold-500/50 transition-all duration-300 transform group-hover:scale-105 relative">
+                        <Link href="/" className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-xl">
+                            <div className="w-10 h-10 rounded-xl overflow-hidden transition-all duration-500 transform group-hover:scale-110 relative">
                                 <Image
                                     src="/icon.png"
                                     alt="MyPrayerTower"
@@ -169,119 +168,62 @@ export function Header() {
                             </div>
                         </Link>
 
-                        {/* Desktop Nav */}
-                        <nav className="hidden lg:flex items-center gap-1 p-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+                        {/* Desktop Nav - Clean & Professional */}
+                        <nav className="hidden lg:flex items-center gap-1 p-1.5 bg-black/40 backdrop-blur-md rounded-full">
 
-                            {/* 1. PRAY - PRIMARY ACTION (Enhanced Prominence) */}
+                            {/* 1. PRAY */}
                             <div className="relative" ref={prayRef}>
                                 <button
                                     onClick={() => { setPrayOpen(!prayOpen); setOfferOpen(false); setLearnOpen(false); }}
-                                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${prayOpen
-                                        ? 'bg-white text-sacred-900 shadow-lg scale-105'
-                                        : 'bg-white/20 text-white hover:bg-white/30 hover:scale-105 shadow-md'
+                                    className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${prayOpen
+                                        ? 'bg-sacred-500 text-white'
+                                        : 'text-gray-300 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
-                                    <Sparkles className={`w-4 h-4 ${prayOpen ? 'text-gold-600' : 'text-gold-300'}`} />
+                                    <Sparkles className={`w-3.5 h-3.5 ${prayOpen ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
                                     Pray
-                                    <ChevronDown className={`w-3 h-3 transition-transform ${prayOpen ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${prayOpen ? 'rotate-180 opacity-100' : ''}`} />
                                 </button>
-                                {prayOpen && (
-                                    <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50 p-2 grid gap-1">
-                                        {prayLinks.map((link) => (
-                                            <Link
-                                                key={link.href}
-                                                href={link.href}
-                                                onClick={() => setPrayOpen(false)}
-                                                className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-                                            >
-                                                <div className="p-2 rounded-md bg-sacred-100 text-sacred-600">
-                                                    <link.icon className="w-4 h-4" />
-                                                </div>
-                                                <div>
-                                                    <div className="font-semibold text-gray-900 text-sm">{link.label}</div>
-                                                    <div className="text-xs text-gray-500 line-clamp-1">{link.description}</div>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
+                                <MegaMenu config={PRAY_MENU} isOpen={prayOpen} onClose={() => setPrayOpen(false)} />
                             </div>
 
                             {/* 2. OFFER */}
                             <div className="relative" ref={offerRef}>
                                 <button
                                     onClick={() => { setOfferOpen(!offerOpen); setPrayOpen(false); setLearnOpen(false); }}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${offerOpen
-                                        ? 'bg-white text-sacred-900 shadow-md'
-                                        : 'text-white hover:bg-white/20'
+                                    className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${offerOpen
+                                        ? 'bg-amber-600 text-white'
+                                        : 'text-gray-300 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
-                                    <Heart className={`w-4 h-4 ${offerOpen ? 'text-gold-600' : ''}`} />
+                                    <Heart className={`w-3.5 h-3.5 ${offerOpen ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
                                     Offer
-                                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${offerOpen ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${offerOpen ? 'rotate-180 opacity-100' : ''}`} />
                                 </button>
-                                {offerOpen && (
-                                    <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50 p-2 grid gap-1">
-                                        {offerLinks.map((link) => (
-                                            <Link
-                                                key={link.href}
-                                                href={link.href}
-                                                onClick={() => setOfferOpen(false)}
-                                                className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-                                            >
-                                                <div className="p-2 rounded-md bg-amber-100 text-amber-600">
-                                                    <link.icon className="w-4 h-4" />
-                                                </div>
-                                                <div>
-                                                    <div className="font-semibold text-gray-900 text-sm">{link.label}</div>
-                                                    <div className="text-xs text-gray-500 line-clamp-1">{link.description}</div>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
+                                <MegaMenu config={OFFER_MENU} isOpen={offerOpen} onClose={() => setOfferOpen(false)} />
                             </div>
 
                             {/* 3. LEARN */}
                             <div className="relative" ref={learnRef}>
                                 <button
                                     onClick={() => { setLearnOpen(!learnOpen); setPrayOpen(false); setOfferOpen(false); }}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${learnOpen
-                                        ? 'bg-white text-sacred-900 shadow-md'
-                                        : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                    className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${learnOpen
+                                        ? 'bg-blue-600 text-white'
+                                        : 'text-gray-300 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
-                                    <BookOpen className={`w-4 h-4 ${learnOpen ? 'text-gold-600' : ''}`} />
+                                    <BookOpen className={`w-3.5 h-3.5 ${learnOpen ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
                                     Learn
-                                    <ChevronDown className={`w-3 h-3 transition-transform ${learnOpen ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${learnOpen ? 'rotate-180 opacity-100' : ''}`} />
                                 </button>
-                                {learnOpen && (
-                                    <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up z-50 p-2 grid gap-1">
-                                        {learnLinks.map((link) => (
-                                            <Link
-                                                key={link.href}
-                                                href={link.href}
-                                                onClick={() => setLearnOpen(false)}
-                                                className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-                                            >
-                                                <div className="p-2 rounded-md bg-blue-100 text-blue-600">
-                                                    <link.icon className="w-4 h-4" />
-                                                </div>
-                                                <div>
-                                                    <div className="font-semibold text-gray-900 text-sm">{link.label}</div>
-                                                    <div className="text-xs text-gray-500 line-clamp-1">{link.description}</div>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
+                                <MegaMenu config={LEARN_MENU} isOpen={learnOpen} onClose={() => setLearnOpen(false)} />
                             </div>
                         </nav>
 
                         {isAuthenticated && (
                             <Link
                                 href="/journey"
-                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive('/journey')
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${isActive('/journey')
                                     ? 'bg-white text-sacred-900 shadow-md'
                                     : 'text-white hover:bg-white/20'
                                     }`}
@@ -296,11 +238,11 @@ export function Header() {
                         <div className="hidden lg:flex items-center gap-3">
                             <button
                                 onClick={() => setSearchOpen(true)}
-                                className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2"
+                                className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 focus:outline-none"
                                 aria-label="Search"
                             >
                                 <Search className="w-5 h-5" />
-                                <span className="hidden xl:inline text-xs bg-white/10 px-1.5 py-0.5 rounded border border-white/20 text-gray-400">⌘K</span>
+                                <span className="hidden xl:inline text-xs bg-white/5 px-1.5 py-0.5 rounded border border-white/10 text-gray-400">⌘K</span>
                             </button>
 
                             {/* Language Switcher */}
@@ -316,7 +258,7 @@ export function Header() {
                                         className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors"
                                     >
                                         <User className="w-4 h-4" />
-                                        <span className="text-sm font-medium">Dashboard</span>
+                                        <span className="text-sm font-medium">My Sanctuary</span>
                                     </Link>
                                 </div>
                             ) : (
@@ -324,15 +266,15 @@ export function Header() {
                                 <div className="flex items-center gap-3">
                                     <Link
                                         href="/login"
-                                        className="px-5 py-2 text-sm font-medium text-white border border-white/30 hover:bg-white/10 rounded-full transition-all"
+                                        className="px-5 py-2 text-sm font-medium text-white border border-white/30 hover:bg-white/10 hover:border-white/50 rounded-full transition-all focus:outline-none"
                                     >
                                         Sign In
                                     </Link>
                                     <Link
                                         href="/register"
-                                        className="px-5 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white text-sm font-bold rounded-full shadow-lg hover:shadow-gold-500/30 transition-all transform hover:-translate-y-0.5"
+                                        className="px-5 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white text-sm font-bold rounded-full shadow-lg hover:shadow-gold-500/30 transition-all transform hover:-translate-y-0.5 focus:outline-none"
                                     >
-                                        Join Now
+                                        Join
                                     </Link>
                                 </div>
                             )}
@@ -360,8 +302,8 @@ export function Header() {
             {/* Mobile Menu Panel */}
             <div className={`lg:hidden fixed top-0 right-0 h-full w-[85%] max-w-sm bg-white dark:bg-gray-900 z-50 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} shadow-2xl`}>
                 {/* Mobile Menu Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
-                    <Link href="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-white/5">
+                    <Link href="/" className="flex items-center gap-2 focus:outline-none" onClick={() => setIsMenuOpen(false)}>
                         <div className="w-9 h-9 bg-gradient-to-br from-gold-400 to-gold-600 rounded-lg flex items-center justify-center">
                             <span className="text-white font-serif font-bold">M</span>
                         </div>
@@ -385,7 +327,7 @@ export function Header() {
                                 className="w-full py-3.5 bg-gradient-to-r from-gold-500 to-gold-600 text-white text-center font-bold rounded-xl shadow-lg mb-4"
                                 onClick={() => setIsMenuOpen(false)}
                             >
-                                Start Praying Free
+                                Begin Your Journey
                             </Link>
                         )}
 
@@ -393,7 +335,7 @@ export function Header() {
                         {isAuthenticated && (
                             <Link
                                 href="/journey"
-                                className="flex items-center gap-3 px-4 py-3.5 bg-sacred-50 dark:bg-sacred-900/20 text-sacred-700 dark:text-sacred-300 rounded-xl font-semibold mb-2"
+                                className="flex items-center gap-3 px-4 py-3.5 bg-sacred-50 dark:bg-sacred-900/20 text-sacred-700 dark:text-sacred-300 rounded-xl font-semibold mb-2 focus:outline-none"
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 <div className="p-2 rounded-lg bg-sacred-100 dark:bg-sacred-800 text-sacred-600">

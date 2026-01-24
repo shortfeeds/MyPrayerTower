@@ -243,6 +243,16 @@ export default function CandlesPage() {
                         { id: 'sample-9', userName: 'Lisa T.', intention: 'For my father\'s surgery tomorrow', remainingHours: 58, prayerCount: 71, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
                         { id: 'sample-10', userName: 'Anonymous', intention: 'Strength to overcome addiction', remainingHours: 49, prayerCount: 56, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
                         { id: 'sample-11', userName: 'Robert H.', intention: 'For my daughter\'s safe delivery', remainingHours: 38, prayerCount: 92, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 's-v-new1', userName: 'Julia K.', intention: 'Guidance in my vocation', remainingHours: 70, prayerCount: 12, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 's-v-new2', userName: 'Anonymous', intention: 'Healing for my marriage', remainingHours: 68, prayerCount: 34, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 's-v-new3', userName: 'Marcus B.', intention: 'For peace in my home', remainingHours: 62, prayerCount: 22, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 's-v-new4', userName: 'Sarah J.', intention: 'Help with exams', remainingHours: 55, prayerCount: 15, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 's-v-new5', userName: 'Peter L.', intention: 'For my sick neighbor', remainingHours: 50, prayerCount: 41, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 's-v-new6', userName: 'Anonymous', intention: 'Forgiveness', remainingHours: 45, prayerCount: 28, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 's-v-new7', userName: 'David C.', intention: 'Financial help', remainingHours: 42, prayerCount: 33, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 's-v-new8', userName: 'Mary A.', intention: 'Protection for my kids', remainingHours: 40, prayerCount: 56, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 's-v-new9', userName: 'Anonymous', intention: 'Thanksgiving', remainingHours: 35, prayerCount: 19, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                        { id: 's-v-new10', userName: 'Thomas R.', intention: 'Safe travel', remainingHours: 30, prayerCount: 25, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
 
                         // 1-day Humble Prayer
                         { id: 'sample-12', userName: 'Grace L.', intention: 'Today\'s challenges at work', remainingHours: 18, prayerCount: 12, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
@@ -250,6 +260,16 @@ export default function CandlesPage() {
                         { id: 'sample-14', userName: 'Anonymous', intention: 'Gratitude for this beautiful day', remainingHours: 12, prayerCount: 19, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
                         { id: 'sample-15', userName: 'Patricia B.', intention: 'Peace in my heart', remainingHours: 8, prayerCount: 34, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
                         { id: 'sample-16', userName: 'James C.', intention: 'Help with an important decision', remainingHours: 6, prayerCount: 15, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 's-h-new1', userName: 'Anna K.', intention: 'Strength for today', remainingHours: 20, prayerCount: 8, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 's-h-new2', userName: 'Anonymous', intention: 'Mercy', remainingHours: 19, prayerCount: 12, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 's-h-new3', userName: 'Paul D.', intention: 'Healing for my friend', remainingHours: 17, prayerCount: 22, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 's-h-new4', userName: 'Anonymous', intention: 'Hope', remainingHours: 14, prayerCount: 9, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 's-h-new5', userName: 'Lucas M.', intention: 'Guidance', remainingHours: 11, prayerCount: 14, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 's-h-new6', userName: 'Anonymous', intention: 'Patience', remainingHours: 9, prayerCount: 18, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 's-h-new7', userName: 'Emma S.', intention: 'Joy', remainingHours: 7, prayerCount: 25, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 's-h-new8', userName: 'Anonymous', intention: 'Clarity', remainingHours: 5, prayerCount: 11, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 's-h-new9', userName: 'John F.', intention: 'Faith', remainingHours: 3, prayerCount: 30, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                        { id: 's-h-new10', userName: 'Anonymous', intention: 'Love', remainingHours: 1, prayerCount: 42, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
                     ];
                     setCandles(sampleCandles);
                 } else {
@@ -307,6 +327,16 @@ export default function CandlesPage() {
                     { id: 's-v8', userName: 'Sandra K.', intention: 'Healing', remainingHours: 30, prayerCount: 22, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
                     { id: 's-v9', userName: 'Tom W.', intention: 'New job', remainingHours: 25, prayerCount: 35, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
                     { id: 's-v10', userName: 'Laura B.', intention: 'Family peace', remainingHours: 20, prayerCount: 48, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 's-v-add1', userName: 'Chris M.', intention: 'Guidance', remainingHours: 19, prayerCount: 33, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 's-v-add2', userName: 'Anonymous', intention: 'Hope', remainingHours: 18, prayerCount: 21, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 's-v-add3', userName: 'Diana R.', intention: 'Strength', remainingHours: 17, prayerCount: 44, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 's-v-add4', userName: 'Anonymous', intention: 'Conversion', remainingHours: 16, prayerCount: 15, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 's-v-add5', userName: 'Eric T.', intention: 'Employment', remainingHours: 15, prayerCount: 52, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 's-v-add6', userName: 'Anonymous', intention: 'Healing', remainingHours: 14, prayerCount: 29, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 's-v-add7', userName: 'Fiona G.', intention: 'Faith', remainingHours: 13, prayerCount: 38, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 's-v-add8', userName: 'Anonymous', intention: 'Love', remainingHours: 12, prayerCount: 45, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 's-v-add9', userName: 'George H.', intention: 'Peace', remainingHours: 11, prayerCount: 17, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
+                    { id: 's-v-add10', userName: 'Anonymous', intention: 'Thanks', remainingHours: 10, prayerCount: 60, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
 
                     // Tealight (1 Day) - 10 items
                     { id: 's-tl1', userName: 'Grace L.', intention: 'Today\'s challenges', remainingHours: 18, prayerCount: 12, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
@@ -319,6 +349,16 @@ export default function CandlesPage() {
                     { id: 's-tl8', userName: 'Betty A.', intention: 'Love', remainingHours: 4, prayerCount: 25, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
                     { id: 's-tl9', userName: 'Daniel O.', intention: 'Faith', remainingHours: 2, prayerCount: 30, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
                     { id: 's-tl10', userName: 'Susan P.', intention: 'Mercy', remainingHours: 1, prayerCount: 40, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    { id: 's-tl-add1', userName: 'Henry K.', intention: 'Today', remainingHours: 23, prayerCount: 5, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    { id: 's-tl-add2', userName: 'Anonymous', intention: 'Help', remainingHours: 21, prayerCount: 9, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    { id: 's-tl-add3', userName: 'Iris V.', intention: 'Joy', remainingHours: 19, prayerCount: 12, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    { id: 's-tl-add4', userName: 'Anonymous', intention: 'Peace', remainingHours: 17, prayerCount: 7, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    { id: 's-tl-add5', userName: 'Jack D.', intention: 'Work', remainingHours: 15, prayerCount: 14, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    { id: 's-tl-add6', userName: 'Anonymous', intention: 'Family', remainingHours: 13, prayerCount: 19, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    { id: 's-tl-add7', userName: 'Kelly M.', intention: 'Health', remainingHours: 11, prayerCount: 22, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    { id: 's-tl-add8', userName: 'Anonymous', intention: 'Friends', remainingHours: 9, prayerCount: 16, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    { id: 's-tl-add9', userName: 'Leo N.', intention: 'School', remainingHours: 7, prayerCount: 33, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
+                    { id: 's-tl-add10', userName: 'Anonymous', intention: 'Life', remainingHours: 5, prayerCount: 28, tier: 'free', litAt: new Date().toISOString(), duration: 'ONE_DAY' },
                 ];
                 setCandles(sampleCandles);
             } finally {

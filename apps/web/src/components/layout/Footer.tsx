@@ -51,13 +51,13 @@ function NewsletterForm() {
 
     return (
         <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-            <h4 className="text-white font-bold text-sm mb-2">Newsletter</h4>
+            <h4 className="text-white font-bold text-sm mb-2">Spiritual Nourishment</h4>
             <form onSubmit={handleSubmit} className="flex gap-2">
                 <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Your email"
+                    placeholder="Receive daily grace..."
                     className="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold-500"
                 />
                 <button
@@ -108,6 +108,15 @@ export function Footer() {
                     <div className="absolute inset-0 bg-[url('/pattern.svg')] bg-repeat opacity-30" />
                 </div>
 
+                {/* Daily Dedication Banner */}
+                <div className="w-full bg-white/5 border-b border-white/5 backdrop-blur-sm relative z-20">
+                    <div className="container mx-auto px-6 py-3 flex items-center justify-center text-sm font-serif italic text-gold-400">
+                        <Star className="w-4 h-4 mr-2" />
+                        Today is dedicated to St. Francis de Sales, Patron of Writers.
+                        <Link href="/saints/st-francis-de-sales" className="ml-2 underline text-gold-200/50 hover:text-gold-200">Read more</Link>
+                    </div>
+                </div>
+
                 <div className="container mx-auto px-6 py-16 relative z-10">
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
                         {/* 1. Brand Identity */}
@@ -118,11 +127,11 @@ export function Footer() {
                                 </span>
                                 <span className="font-serif font-bold text-xl text-white tracking-tight">MyPrayerTower</span>
                             </Link>
-                            <p className="text-gray-400 text-sm leading-relaxed mb-2 max-w-sm">
-                                Your digital sanctuary for prayer, community, and spiritual growth. Serving the global Catholic community since 2018.
+                            <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-sm font-serif italic">
+                                "Where two or three are gathered in my name, there am I among them."
                             </p>
                             <p className="text-gray-500 text-[11px] mb-6 max-w-sm">
-                                A Catholic service provider connecting you with churches worldwide. Not a registered charity.
+                                A digital sanctuary connecting the global faithful.
                             </p>
                             <div className="flex gap-2">
                                 {socialLinks.map((s) => (
@@ -178,19 +187,19 @@ export function Footer() {
                             </ul>
                         </div>
 
-                        {/* 5. COMPANY */}
+                        {/* 5. MISSION */}
                         <div className="col-span-1">
-                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider border-b border-gray-800/50 pb-2 inline-block">Company</h4>
+                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-wider border-b border-gray-800/50 pb-2 inline-block">Our Mission</h4>
                             <ul className="space-y-3 text-sm">
                                 <li><Link href="/about" className="hover:text-gold-400 transition-colors">About Mission</Link></li>
-                                <li><Link href="/how-we-work" className="hover:text-gold-400 transition-colors">How We Work</Link></li>
+                                <li><Link href="/how-we-work" className="hover:text-gold-400 transition-colors">Pastoral Care</Link></li>
                                 <li><Link href="/contact" className="hover:text-gold-400 transition-colors">Contact Us</Link></li>
                                 <li><Link href="/partners" className="hover:text-gold-400 transition-colors">Partners</Link></li>
                                 <li><Link href="/privacy" className="hover:text-gold-400 transition-colors text-gray-500">Privacy Policy</Link></li>
                             </ul>
 
                             <div className="mt-8 pt-4 border-t border-gray-800/50">
-                                <h5 className="font-bold text-gray-500 mb-3 uppercase text-[10px] tracking-wider">Get the App</h5>
+                                <h5 className="font-bold text-gray-500 mb-3 uppercase text-[10px] tracking-wider">Carry with you</h5>
                                 <div className="flex flex-col gap-2">
                                     <AppStoreButton store="apple" />
                                     <AppStoreButton store="google" />

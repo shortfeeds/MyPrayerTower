@@ -1,7 +1,13 @@
-import { Book, Heart, Sun, Moon, Calendar, ChevronRight, Sparkles, Anchor, Feather, Flame } from 'lucide-react';
+import { getLibraryPrayers, getPrayerCategories } from '@/app/actions/prayer-library';
+import { PrayerSearch, PrayerFilter, Pagination } from '@/components/library/LibraryControls';
 import Link from 'next/link';
+import { Book, Heart, Sun, Moon, Calendar, ChevronRight, Sparkles, Anchor, Feather, Flame } from 'lucide-react';
 
-// Mock data for Suggested Section
+interface Props {
+    searchParams: { [key: string]: string | string[] | undefined };
+}
+
+// Fixed Suggested Section for Top of Page (preserved style)
 const SUGGESTED_TODAY = [
     {
         title: "Morning Offering",
@@ -26,63 +32,18 @@ const SUGGESTED_TODAY = [
     }
 ];
 
-// Prayer Paths (formerly Categories) with pastoral names
-const PRAYER_PATHS = [
-    {
-        name: "Healing & Comfort",
-        description: "Prayers for physical and spiritual healing.",
-        icon: Heart,
-        count: 12,
-        href: "/prayers/healing",
-        color: "from-rose-500 to-pink-600"
-    },
-    {
-        name: "Peace & Anxiety",
-        description: "Find calm in the storm.",
-        icon: Anchor, // or CloudRain
-        count: 8,
-        href: "/prayers/peace",
-        color: "from-sky-500 to-blue-600"
-    },
-    {
-        name: "Gratitude & Praise",
-        description: "Give thanks for His blessings.",
-        icon: Sparkles,
-        count: 15,
-        href: "/prayers/thanksgiving",
-        color: "from-amber-400 to-orange-500"
-    },
-    {
-        name: "Grief & Loss",
-        description: "Prayers for the departed and those who mourn.",
-        icon: Feather,
-        count: 6,
-        href: "/prayers/grief",
-        color: "from-slate-500 to-gray-600"
-    },
-    {
-        name: "Strength & Courage",
-        description: "For times of trial and difficulty.",
-        icon: Flame,
-        count: 10,
-        href: "/prayers/strength",
-        color: "from-red-500 to-rose-600"
-    },
-    {
-        name: "Daily Devotions",
-        description: "Essential prayers for every day.",
-        icon: Calendar,
-        count: 24,
-        href: "/prayers/daily",
-        color: "from-emerald-500 to-green-600"
-    }
-];
+export default async function PrayerLibraryPage({ searchParams }: Props) {
+    const page = typeof searchParams.page === 'string' ? Number(searchParams.page) : 1;
+    const search = typeof searchParams.q === 'string' ? searchParams.q : undefined;
+    const category = typeof searchParams.category === 'string' ? searchParams.category : undefined;
 
-import { getLibraryPrayers } from '@/app/actions/prayer-library';
+    // Fetch Data Parallel
+    const [libraryData, categories] = await Promise.all([
+        getLibraryPrayers(page, 20, search, category),
+        getPrayerCategories()
+    ]);
 
-export default async function PrayerLibraryPage() {
-    // Determine page from searchParams if we were using them, for now fetch first 100 to show abundance
-    const { prayers: allPrayers, totalItems } = await getLibraryPrayers(1, 100);
+    const { prayers, totalPages, totalItems } = libraryData;
 
     return (
         <div className="min-h-screen bg-[#faf9f6]">
@@ -98,125 +59,114 @@ export default async function PrayerLibraryPage() {
                     <h1 className="font-serif text-5xl md:text-6xl font-bold mb-6 tracking-tight">
                         Prayer Library
                     </h1>
-                    <p className="text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
+                    <p className="text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed mb-8">
                         Draw from the deep wells of tradition. Find words for every season of the soul.
                     </p>
+
+                    {/* Search Component inside Hero */}
+                    <PrayerSearch />
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 -mt-12 relative z-20">
-                {/* Suggested for Today */}
-                <div className="bg-white rounded-3xl shadow-xl p-8 mb-16">
-                    <h2 className="font-serif text-2xl text-gray-900 mb-8 flex items-center gap-3">
-                        <Sun className="w-6 h-6 text-gold-500" />
-                        Suggested for Today
+            <div className="container mx-auto px-4 py-12">
+
+                {/* Only show 'Suggested' on home view (no search/filter) */}
+                {!search && !category && page === 1 && (
+                    <div className="-mt-20 relative z-20 mb-16">
+                        <div className="bg-white rounded-3xl shadow-xl p-8">
+                            <h2 className="font-serif text-2xl text-gray-900 mb-8 flex items-center gap-3">
+                                <Sun className="w-6 h-6 text-gold-500" />
+                                Suggested for Today
+                            </h2>
+                            <div className="grid md:grid-cols-3 gap-6">
+                                {SUGGESTED_TODAY.map((item) => (
+                                    <Link
+                                        key={item.title}
+                                        href={item.href}
+                                        className="group flex items-start gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100"
+                                    >
+                                        <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center flex-shrink-0`}>
+                                            <item.icon className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-gray-900 mb-1 group-hover:text-sacred-600 transition-colors">
+                                                {item.title}
+                                            </h3>
+                                            <p className="text-sm text-gray-500 leading-relaxed">
+                                                {item.description}
+                                            </p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Filters */}
+                <PrayerFilter categories={categories} />
+
+                {/* Results Header */}
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="font-serif text-3xl text-gray-900">
+                        {search
+                            ? `Search Results for "${search}"`
+                            : category && category !== 'All'
+                                ? `${category} Prayers`
+                                : 'Complete Treasury'
+                        }
+                        <span className="ml-3 text-lg font-sans text-gray-500 font-normal">
+                            ({totalItems} prayers)
+                        </span>
                     </h2>
-
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {SUGGESTED_TODAY.map((item) => (
-                            <Link
-                                key={item.title}
-                                href={item.href}
-                                className="group flex items-start gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100"
-                            >
-                                <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center flex-shrink-0`}>
-                                    <item.icon className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900 mb-1 group-hover:text-sacred-600 transition-colors">
-                                        {item.title}
-                                    </h3>
-                                    <p className="text-sm text-gray-500 leading-relaxed">
-                                        {item.description}
-                                    </p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
                 </div>
 
-                {/* Prayer Paths */}
-                <div className="mb-20">
-                    <h2 className="font-serif text-3xl text-gray-900 text-center mb-12">Prayer Paths</h2>
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {PRAYER_PATHS.map((path) => (
-                            <Link
-                                key={path.name}
-                                href={path.href}
-                                className="group relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 p-8 hover:-translate-y-1"
-                            >
-                                <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${path.color} opacity-5 rounded-bl-full group-hover:opacity-10 transition-opacity`} />
-
-                                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${path.color} flex items-center justify-center text-white shadow-lg mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                                    <path.icon className="w-7 h-7" />
-                                </div>
-
-                                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-sacred-600 transition-colors">
-                                    {path.name}
-                                </h3>
-                                <p className="text-gray-500 leading-relaxed mb-6">
-                                    {path.description}
-                                </p>
-
-                                <div className="flex items-center text-sm font-medium text-gray-400 group-hover:text-sacred-600 transition-colors">
-                                    <span>Explore Collection</span>
-                                    <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Common Devotions */}
-                <div className="grid md:grid-cols-2 gap-8 mb-20">
-                    <Link href="/rosary" className="relative h-64 rounded-3xl overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-rose-900 to-rose-700"></div>
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                        <div className="absolute bottom-0 left-0 p-8">
-                            <h3 className="text-3xl font-serif font-bold text-white mb-2">Holy Rosary</h3>
-                            <p className="text-rose-100">Meditate on the mysteries of Christ.</p>
-                        </div>
-                    </Link>
-                    <Link href="/stations" className="relative h-64 rounded-3xl overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-stone-800 to-stone-600"></div>
-                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors"></div>
-                        <div className="absolute bottom-0 left-0 p-8">
-                            <h3 className="text-3xl font-serif font-bold text-white mb-2">Stations of the Cross</h3>
-                            <p className="text-stone-200">Walk the Via Dolorosa.</p>
-                        </div>
-                    </Link>
-                </div>
-
-                {/* Complete Prayer Listing */}
-                <div className="mb-24">
-                    <div className="flex items-center justify-between mb-8">
-                        <h2 className="font-serif text-3xl text-gray-900">
-                            Complete Treasury
-                            <span className="ml-3 text-lg font-sans text-gray-500 font-normal">({totalItems} prayers)</span>
-                        </h2>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-4">
-                        {allPrayers.map((prayer) => (
+                {/* Prayer Grid */}
+                {prayers.length > 0 ? (
+                    <div className="grid md:grid-cols-2 gap-4 mb-8">
+                        {prayers.map((prayer) => (
                             <Link
                                 key={prayer.id}
                                 href={`/prayers/${prayer.slug}`}
-                                className="group block p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100"
+                                className="group block p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-gold-200"
                             >
                                 <div className="flex justify-between items-start mb-2">
-                                    <h3 className="font-bold text-gray-900 group-hover:text-gold-600 transition-colors line-clamp-1">
+                                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-gold-600 transition-colors line-clamp-1">
                                         {prayer.title}
                                     </h3>
-                                    <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">{prayer.category}</span>
+                                    {prayer.category && (
+                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-500 px-2 py-1 rounded-md group-hover:bg-gold-50 group-hover:text-gold-600 transition-colors">
+                                            {prayer.category}
+                                        </span>
+                                    )}
                                 </div>
-                                <p className="text-sm text-gray-500 line-clamp-2">
+                                <p className="text-sm text-gray-500 line-clamp-3 leading-relaxed">
                                     {prayer.content}
                                 </p>
+                                <div className="mt-4 flex items-center text-xs font-medium text-gold-500 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                                    Read Prayer <ChevronRight className="w-3 h-3 ml-1" />
+                                </div>
                             </Link>
                         ))}
                     </div>
-                </div>
+                ) : (
+                    <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                            <Book className="w-6 h-6 text-gray-300" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-1">No prayers found</h3>
+                        <p className="text-gray-500">Try adjusting your search or category filter.</p>
+                        {(search || category) && (
+                            <Link href="/prayers" className="inline-block mt-4 text-gold-600 font-medium hover:underline">
+                                Clear Filters
+                            </Link>
+                        )}
+                    </div>
+                )}
+
+                {/* Pagination */}
+                <Pagination currentPage={page} totalPages={totalPages} />
+
             </div>
         </div>
     );

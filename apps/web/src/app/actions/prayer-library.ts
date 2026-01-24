@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db';
 
-export async function getLibraryPrayers(page = 1, limit = 20, search?: string) {
+export async function getLibraryPrayers(page = 1, limit = 20, search?: string, category?: string) {
     try {
         const skip = (page - 1) * limit;
 
@@ -15,6 +15,10 @@ export async function getLibraryPrayers(page = 1, limit = 20, search?: string) {
                 { title: { contains: search, mode: 'insensitive' } },
                 { content: { contains: search, mode: 'insensitive' } },
             ];
+        }
+
+        if (category && category !== 'All') {
+            where.category = category;
         }
 
         const [prayers, total] = await Promise.all([
@@ -63,6 +67,32 @@ export async function getAllPrayerSlugs() {
             .map(p => p.slug as string);
     } catch (error) {
         console.error('Error fetching prayer slugs:', error);
+        return [];
+    }
+}
+
+export async function getPrayerCategories() {
+    try {
+        const categories = await db.prayer.groupBy({
+            by: ['category'],
+            where: { is_active: true },
+            _count: {
+                category: true
+            },
+            orderBy: {
+                category: 'asc'
+            }
+        });
+
+        return categories
+            .map(c => ({
+                name: c.category,
+                count: c._count.category
+            }))
+            .filter(c => c.name); // Filter out empty categories
+
+    } catch (error) {
+        console.error('Error fetching categories:', error);
         return [];
     }
 }

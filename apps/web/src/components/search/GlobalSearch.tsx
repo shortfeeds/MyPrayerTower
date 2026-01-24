@@ -177,7 +177,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search prayers, saints, churches..."
+                        placeholder="Seek prayers, saints, or wisdom..."
                         className="flex-1 bg-transparent text-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none"
                     />
                     <div className="flex items-center gap-2">

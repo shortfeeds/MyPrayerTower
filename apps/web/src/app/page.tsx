@@ -14,6 +14,7 @@ import { AppDownloadBanner } from '@/components/home/PromotionalBanner';
 import { PersonalizedHome } from '@/components/dashboard/PersonalizedHome';
 import { MemorialsBanner } from '@/components/home/MemorialsBanner';
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay } from '@/app/actions/home';
+import { WelcomeGreeting } from '@/components/home/WelcomeGreeting';
 
 async function AsyncDailyFocus() {
     try {
@@ -66,12 +67,19 @@ function LoggedOutHomePage() {
                     <ParticleBackground count={3} opacity={0.2} />
                 </div>
 
-                <div className="container mx-auto px-4 relative z-10 pt-20 md:pt-28 text-center">
-                    {/* Mission-Driven Headline */}
-                    <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight animate-fade-in-up tracking-tight drop-shadow-2xl">
+
+
+                <div className="container mx-auto px-4 relative z-10 pt-32 md:pt-40 text-center">
+                    {/* Time-Aware Greeting (Subtle) */}
+                    <div className="mb-8">
+                        <WelcomeGreeting />
+                    </div>
+
+                    {/* Mission-Driven Headline (Hero) */}
+                    <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium mb-8 leading-[1.1] animate-fade-in-up tracking-tight drop-shadow-2xl text-white">
                         A global Catholic community
                         <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-gold-300 to-gold-100">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-200 via-gold-400 to-gold-200 font-bold">
                             united in prayer.
                         </span>
                     </h1>
