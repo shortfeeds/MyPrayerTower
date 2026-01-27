@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { BookOpen, Users, CircleDot, Church, Heart, ChevronRight, Plane, ShieldCheck } from 'lucide-react';
+import { BookOpen, Users, CircleDot, Church, Heart, ChevronRight, Plane, ShieldCheck, Gift } from 'lucide-react';
 
 const FEATURES = [
     {
@@ -85,6 +85,33 @@ const FEATURES = [
         href: '/confession',
         color: 'from-indigo-700 to-sacred-800',
         bg: 'bg-indigo-50'
+    },
+    {
+        id: 'bible',
+        icon: BookOpen,
+        title: 'Holy Bible',
+        description: 'Read and study the Sacred Scriptures.',
+        href: '/bible',
+        color: 'from-amber-700 to-yellow-600',
+        bg: 'bg-amber-50'
+    },
+    {
+        id: 'catechism',
+        icon: BookOpen,
+        title: 'Catechism',
+        description: 'The definitive guide to Catholic teaching.',
+        href: '/catechism',
+        color: 'from-blue-600 to-cyan-600',
+        bg: 'bg-blue-50'
+    },
+    {
+        id: 'mass',
+        icon: Gift,
+        title: 'Request a Mass',
+        description: 'Have a Mass said for your intentions.',
+        href: '/mass-offerings',
+        color: 'from-gold-500 to-amber-500',
+        bg: 'bg-gold-50'
     }
 ];
 

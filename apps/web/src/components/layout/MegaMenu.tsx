@@ -5,6 +5,7 @@ import {
     Flame, Gift, Star, User, Search, Sun, Moon, Building, Clock, ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // === CONFIGURATION ===
 
@@ -130,10 +131,6 @@ export const LEARN_MENU = {
     ]
 };
 
-// === COMPONENTS ===
-
-import { motion, AnimatePresence } from 'framer-motion';
-
 interface MegaMenuProps {
     config: typeof PRAY_MENU;
     isOpen: boolean;
@@ -178,117 +175,122 @@ export function MegaMenu({ config, isOpen, onClose }: MegaMenuProps) {
                         onClick={onClose}
                     />
 
+                    {/* Full-width container handling centering */}
                     <motion.div
                         initial={{ opacity: 0, y: 10, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.98 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute top-full left-1/2 -translate-x-1/2 w-[95vw] max-w-[1100px] bg-[#0A0A0A] backdrop-blur-2xl rounded-3xl shadow-[0_40px_80px_rgba(0,0,0,0.7)] border border-white/10 overflow-hidden z-50 flex isolate ring-1 ring-white/10"
+                        className="absolute top-full left-0 w-full flex justify-center z-50 pt-2 pointer-events-none"
                     >
-                        {/* Noise Texture Overlay */}
-                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-[-1]" style={{ backgroundImage: 'url("/noise.png")' }}></div>
+                        {/* The Actual Menu Card */}
+                        <div className="bg-[#0A0A0A] backdrop-blur-2xl rounded-3xl shadow-[0_40px_80px_rgba(0,0,0,0.7)] border border-white/10 overflow-hidden flex isolate ring-1 ring-white/10 pointer-events-auto w-[95%] max-w-[1100px] relative">
 
-                        {/* Featured Sidebar */}
-                        <div className={`w-1/4 p-8 border-r border-white/5 bg-gradient-to-b ${theme.bg.replace('/10', '/5')} to-transparent relative overflow-hidden group`}>
-                            {/* Subtle Glow Behind */}
-                            <div className={`absolute -top-20 -left-20 w-64 h-64 ${theme.bg.replace('/10', '/20')} rounded-full blur-[100px] opacity-40 group-hover:opacity-60 transition-opacity duration-700`}></div>
+                            {/* Noise Texture Overlay */}
+                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-[-1]" style={{ backgroundImage: 'url("/noise.svg")' }}></div>
 
-                            <div className="space-y-6 relative z-10">
-                                <div>
-                                    <span className={`text-[10px] uppercase tracking-[0.2em] font-bold ${theme.accent} opacity-80 flex items-center gap-2`}>
-                                        <span className="w-1 h-1 rounded-full bg-current"></span>
-                                        {config.featured.label}
-                                    </span>
-                                    <h2 className="text-2xl font-serif font-bold text-white mt-3 leading-tight">
-                                        {config.featured.title}
-                                    </h2>
-                                    <p className="text-sm text-gray-400 mt-3 leading-relaxed border-l-2 border-white/10 pl-3">
-                                        {config.featured.desc}
-                                    </p>
-                                </div>
+                            {/* Featured Sidebar */}
+                            <div className={`w-1/4 p-8 border-r border-white/5 bg-gradient-to-b ${theme.bg.replace('/10', '/5')} to-transparent relative overflow-hidden group`}>
+                                {/* Subtle Glow Behind */}
+                                <div className={`absolute -top-20 -left-20 w-64 h-64 ${theme.bg.replace('/10', '/20')} rounded-full blur-[100px] opacity-40 group-hover:opacity-60 transition-opacity duration-700`}></div>
 
-                                <Link
-                                    href={config.featured.href}
-                                    onClick={onClose}
-                                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-lg hover:shadow-xl ${theme.bg.replace('/10', '/20')} hover:bg-white/10 text-white border ${theme.border} hover:border-white/20 group/btn`}
-                                >
-                                    Explore Now
-                                    <config.icon className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" />
-                                </Link>
-
-                                <div className="pt-8 mt-4 border-t border-white/5">
-                                    <div className="flex items-center gap-3 text-gray-500 text-xs italic opacity-70">
-                                        <Sparkles className="w-3 h-3" />
-                                        <span>"Where two or three are gathered in my name..."</span>
+                                <div className="space-y-6 relative z-10">
+                                    <div>
+                                        <span className={`text-[10px] uppercase tracking-[0.2em] font-bold ${theme.accent} opacity-80 flex items-center gap-2`}>
+                                            <span className="w-1 h-1 rounded-full bg-current"></span>
+                                            {config.featured.label}
+                                        </span>
+                                        <h2 className="text-2xl font-serif font-bold text-white mt-3 leading-tight">
+                                            {config.featured.title}
+                                        </h2>
+                                        <p className="text-sm text-gray-400 mt-3 leading-relaxed border-l-2 border-white/10 pl-3">
+                                            {config.featured.desc}
+                                        </p>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Main Content Areas */}
-                        <div className="flex-1 p-8 bg-gradient-to-br from-white/[0.02] to-transparent">
-                            <div className="grid grid-cols-3 gap-8">
-                                {config.columns.map((col, idx) => (
-                                    <div key={idx} className="space-y-6">
-                                        <h3 className="text-xs uppercase tracking-widest font-bold text-gray-500 border-b border-white/5 pb-3 flex items-center justify-between">
-                                            {col.title}
-                                            {idx === 0 && <span className="text-[10px] text-gray-700 bg-gray-900 px-1.5 py-0.5 rounded">FEATURED</span>}
-                                        </h3>
-                                        <div className="space-y-2">
-                                            {col.items.map((item) => (
-                                                <Link
-                                                    key={item.href}
-                                                    href={item.href}
-                                                    onClick={onClose}
-                                                    className="flex items-start gap-3 p-2 rounded-xl transition-all duration-300 group hover:bg-white/5 border border-transparent hover:border-white/5"
-                                                >
-                                                    <div className={`mt-0.5 p-2 rounded-lg transition-all duration-500 ${theme.bg} group-hover:bg-white/10 group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]`}>
-                                                        <item.icon className={`w-4 h-4 ${theme.icon} group-hover:text-white transition-colors`} />
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-medium text-gray-200 text-sm group-hover:text-white transition-colors">
-                                                            {item.label}
-                                                        </div>
-                                                        <p className="text-[11px] text-gray-500 leading-snug mt-0.5 group-hover:text-gray-400 transition-colors line-clamp-1">
-                                                            {item.desc}
-                                                        </p>
-                                                    </div>
-                                                </Link>
-                                            ))}
+                                    <Link
+                                        href={config.featured.href}
+                                        onClick={onClose}
+                                        className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-lg hover:shadow-xl ${theme.bg.replace('/10', '/20')} hover:bg-white/10 text-white border ${theme.border} hover:border-white/20 group/btn`}
+                                    >
+                                        Explore Now
+                                        <config.icon className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" />
+                                    </Link>
+
+                                    <div className="pt-8 mt-4 border-t border-white/5">
+                                        <div className="flex items-center gap-3 text-gray-500 text-xs italic opacity-70">
+                                            <Sparkles className="w-3 h-3" />
+                                            <span>"Where two or three are gathered in my name..."</span>
                                         </div>
                                     </div>
-                                ))}
+                                </div>
                             </div>
 
-                            {/* Footer CTA Area */}
-                            <div className="mt-10 pt-6 border-t border-white/5 flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className="flex -space-x-3 isolate">
-                                        {[1, 2, 3].map(i => (
-                                            <div key={i} className={`w-7 h-7 rounded-full border-2 border-[#0A0A0A] bg-gray-${800 + i * 10} flex items-center justify-center text-[8px] text-white font-medium`} style={{ zIndex: 4 - i }}>
-                                                {i === 1 ? 'JP' : i === 2 ? 'M' : 'T'}
+                            {/* Main Content Areas */}
+                            <div className="flex-1 p-8 bg-gradient-to-br from-white/[0.02] to-transparent">
+                                <div className="grid grid-cols-3 gap-8">
+                                    {config.columns.map((col, idx) => (
+                                        <div key={idx} className="space-y-6">
+                                            <h3 className="text-xs uppercase tracking-widest font-bold text-gray-500 border-b border-white/5 pb-3 flex items-center justify-between">
+                                                {col.title}
+                                                {idx === 0 && <span className="text-[10px] text-gray-700 bg-gray-900 px-1.5 py-0.5 rounded">FEATURED</span>}
+                                            </h3>
+                                            <div className="space-y-2">
+                                                {col.items.map((item) => (
+                                                    <Link
+                                                        key={item.href}
+                                                        href={item.href}
+                                                        onClick={onClose}
+                                                        className="flex items-start gap-3 p-2 rounded-xl transition-all duration-300 group hover:bg-white/5 border border-transparent hover:border-white/5"
+                                                    >
+                                                        <div className={`mt-0.5 p-2 rounded-lg transition-all duration-500 ${theme.bg} group-hover:bg-white/10 group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]`}>
+                                                            <item.icon className={`w-4 h-4 ${theme.icon} group-hover:text-white transition-colors`} />
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-medium text-gray-200 text-sm group-hover:text-white transition-colors">
+                                                                {item.label}
+                                                            </div>
+                                                            <p className="text-[11px] text-gray-500 leading-snug mt-0.5 group-hover:text-gray-400 transition-colors line-clamp-1">
+                                                                {item.desc}
+                                                            </p>
+                                                        </div>
+                                                    </Link>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs text-gray-300 font-medium">Join 12,400+ faithful</span>
-                                        <span className="text-[10px] text-gray-600">Praying together right now</span>
-                                    </div>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="flex items-center gap-6">
-                                    <Link href="/about" className="text-xs text-gray-500 hover:text-white transition-colors flex items-center gap-1.5 hover:underline decoration-white/20 underline-offset-4">
-                                        Our Mission
-                                    </Link>
-                                    <Link href="/contact" className="text-xs text-gray-500 hover:text-white transition-colors flex items-center gap-1.5 hover:underline decoration-white/20 underline-offset-4">
-                                        Help Center
-                                    </Link>
-                                    <Link
-                                        href={config.columns[0].items[0].href}
-                                        className={`text-xs font-bold ${theme.accent} hover:text-white transition-colors flex items-center gap-1 group`}
-                                    >
-                                        View Dashboard
-                                        <ChevronRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
-                                    </Link>
+
+                                {/* Footer CTA Area */}
+                                <div className="mt-10 pt-6 border-t border-white/5 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex -space-x-3 isolate">
+                                            {[1, 2, 3].map(i => (
+                                                <div key={i} className={`w-7 h-7 rounded-full border-2 border-[#0A0A0A] bg-gray-${800 + i * 10} flex items-center justify-center text-[8px] text-white font-medium`} style={{ zIndex: 4 - i }}>
+                                                    {i === 1 ? 'JP' : i === 2 ? 'M' : 'T'}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-xs text-gray-300 font-medium">Join 12,400+ faithful</span>
+                                            <span className="text-[10px] text-gray-600">Praying together right now</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-6">
+                                        <Link href="/about" className="text-xs text-gray-500 hover:text-white transition-colors flex items-center gap-1.5 hover:underline decoration-white/20 underline-offset-4">
+                                            Our Mission
+                                        </Link>
+                                        <Link href="/contact" className="text-xs text-gray-500 hover:text-white transition-colors flex items-center gap-1.5 hover:underline decoration-white/20 underline-offset-4">
+                                            Help Center
+                                        </Link>
+                                        <Link
+                                            href={config.columns[0].items[0].href}
+                                            className={`text-xs font-bold ${theme.accent} hover:text-white transition-colors flex items-center gap-1 group`}
+                                        >
+                                            View Dashboard
+                                            <ChevronRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -298,3 +300,5 @@ export function MegaMenu({ config, isOpen, onClose }: MegaMenuProps) {
         </AnimatePresence>
     );
 }
+
+export default MegaMenu;

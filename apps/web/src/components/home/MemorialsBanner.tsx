@@ -67,21 +67,22 @@ export function MemorialsBanner() {
                             className="grid grid-cols-2 gap-4"
                         >
                             {[
-                                { icon: Flame, title: 'Virtual Candles', description: 'Light candles in memory' },
-                                { icon: Heart, title: 'Share Memories', description: 'Photos & stories' },
-                                { icon: Gift, title: 'Spiritual Bouquets', description: 'Send prayers & Masses' },
-                                { icon: Calendar, title: 'Anniversaries', description: 'Never forget key dates' },
-                            ].map((feature, idx) => (
-                                <div
+                                { icon: Flame, title: 'Virtual Candles', description: 'Light candles in memory', href: '/candles' },
+                                { icon: Heart, title: 'Share Memories', description: 'Photos & stories', href: '/memorials' },
+                                { icon: Gift, title: 'Spiritual Bouquets', description: 'Send prayers & Masses', href: '/bouquets' },
+                                { icon: Calendar, title: 'Anniversaries', description: 'Never forget key dates', href: '/anniversaries' },
+                            ].map((feature) => (
+                                <Link
+                                    href={feature.href}
                                     key={feature.title}
-                                    className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow"
+                                    className="block bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all hover:bg-white dark:hover:bg-slate-800"
                                 >
                                     <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center mb-3">
                                         <feature.icon className="w-5 h-5 text-rose-600 dark:text-rose-400" />
                                     </div>
                                     <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{feature.title}</h3>
                                     <p className="text-sm text-gray-500 dark:text-gray-400">{feature.description}</p>
-                                </div>
+                                </Link>
                             ))}
                         </motion.div>
                     </div>

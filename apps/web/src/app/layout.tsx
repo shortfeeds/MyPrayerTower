@@ -104,9 +104,8 @@ export const metadata: Metadata = {
         google: 'google-site-verification-code', // User to replace
     },
     appleWebApp: {
-        capable: true,
-        statusBarStyle: 'black-translucent',
         title: 'MyPrayerTower',
+        statusBarStyle: 'black-translucent',
     },
 };
 

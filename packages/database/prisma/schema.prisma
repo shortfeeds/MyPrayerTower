@@ -932,6 +932,7 @@ model User {
   MemorialGuestbook                          MemorialGuestbook[]
   filedReports                               Report[]
   articles                                   Article[]
+  novenaParticipations                       NovenaParticipation[]
 
   @@index([email])
   @@index([homeChurchId])

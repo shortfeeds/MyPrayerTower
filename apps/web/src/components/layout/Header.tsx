@@ -265,7 +265,7 @@ export function Header() {
                 </div>
 
                 {/* Desktop Mega Menus - Positioned relative to the whole header for perfect centering */}
-                <div className="hidden lg:block relative">
+                <div className="hidden lg:block absolute left-0 bottom-0 w-full">
                     <MegaMenu config={PRAY_MENU} isOpen={prayOpen} onClose={() => setPrayOpen(false)} />
                     <MegaMenu config={OFFER_MENU} isOpen={offerOpen} onClose={() => setOfferOpen(false)} />
                     <MegaMenu config={LEARN_MENU} isOpen={learnOpen} onClose={() => setLearnOpen(false)} />
