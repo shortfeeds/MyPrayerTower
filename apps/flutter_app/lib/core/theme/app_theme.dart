@@ -98,15 +98,17 @@ class AppTheme {
   // THEME DATA
   // ---------------------------------------------------------------------------
 
-  static ThemeData get darkTheme {
+  static ThemeData get darkTheme => getDynamicTheme(gold500);
+
+  static ThemeData getDynamicTheme(Color primaryColor) {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: deepSpace,
-      primaryColor: royalPurple700,
+      primaryColor: primaryColor,
       fontFamily: GoogleFonts.outfit().fontFamily,
-      colorScheme: const ColorScheme.dark(
-        primary: gold500,
+      colorScheme: ColorScheme.dark(
+        primary: primaryColor,
         secondary: royalPurple500,
         surface: sacredNavy900,
         error: error,

@@ -86,7 +86,7 @@ import '../features/novena_tracker/screens/novena_tracker_screen.dart';
 import '../features/stations/screens/stations_of_the_cross_screen.dart';
 import '../features/journal/screens/prayer_journal_screen.dart';
 import '../features/focus_mode/screens/focus_mode_screen.dart';
-import '../features/live_mass/screens/live_mass_screen.dart';
+import '../features/live_mass/screens/live_mass_hub_screen.dart';
 import '../features/reading_plans/screens/reading_plans_screen.dart';
 import '../features/divine_office/screens/divine_office_screen.dart';
 
@@ -190,7 +190,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/live-mass',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(child: LiveMassScreen()),
+                const NoTransitionPage(child: LiveMassHubScreen()),
           ),
           GoRoute(
             path: '/reading-plans',

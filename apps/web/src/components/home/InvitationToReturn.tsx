@@ -45,14 +45,14 @@ export function InvitationToReturn() {
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
-                            href="/dashboard/prayer-corner"
+                            href="/journey"
                             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg transition-all"
                         >
                             <BookHeart className="w-5 h-5" />
                             Create My Prayer Corner
                         </Link>
                         <Link
-                            href="/settings/reminders"
+                            href="/dashboard/settings"
                             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-200 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
                         >
                             <Bell className="w-5 h-5" />

@@ -7,7 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/premium_glass_card.dart';
 import '../../../core/widgets/shiny_button.dart';
 import 'confession_companion_screen.dart';
-import 'confession_guide_screen.dart';
+import '../widgets/examination_stepper.dart';
 
 class ConfessionScreen extends ConsumerStatefulWidget {
   const ConfessionScreen({super.key});
@@ -60,17 +60,19 @@ class _ConfessionScreenState extends ConsumerState<ConfessionScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          // 1. Reuse the robust examination screen (removing its scaffold/appbar ideally,
-          // but since it has checks logic, we can wrap it or just instantiate it.
-          // ConfessionGuideScreen has its own Scaffold. Ideally we should refactor it,
-          // but for now let's just use it as a child.
-          // Note: Nested Scaffolds are okay-ish, but better to retain functionality.
-          // Let's rely on ConfessionGuideScreen as the widget here.
-          ConfessionGuideScreen(),
-
-          // 2. The Rite Launchpad
-          _RiteLaunchpadTab(),
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 16.0,
+            ),
+            child: ExaminationOfConscienceWidget(
+              onComplete: () {
+                _tabController.animateTo(1);
+              },
+            ),
+          ),
+          const _RiteLaunchpadTab(),
         ],
       ),
     );

@@ -15,6 +15,7 @@ import { PersonalizedHome } from '@/components/dashboard/PersonalizedHome';
 import { MemorialsBanner } from '@/components/home/MemorialsBanner';
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay } from '@/app/actions/home';
 import { WelcomeGreeting } from '@/components/home/WelcomeGreeting';
+import { GlobalPerpetualFlame } from '@/components/novenas/GlobalPerpetualFlame';
 
 async function AsyncDailyFocus() {
     try {
@@ -70,9 +71,11 @@ function LoggedOutHomePage() {
 
 
                 <div className="container mx-auto px-4 relative z-10 pt-32 md:pt-40 text-center">
+
                     {/* Time-Aware Greeting (Subtle) */}
-                    <div className="mb-8">
+                    <div className="mb-8 flex flex-col items-center gap-6">
                         <WelcomeGreeting />
+                        <GlobalPerpetualFlame />
                     </div>
 
                     {/* Mission-Driven Headline (Hero) */}
@@ -107,12 +110,20 @@ function LoggedOutHomePage() {
                     </div>
 
                     {/* Emotional Reassurance - Sacred UX */}
-                    <p className="text-blue-100/60 text-base font-light italic animate-fade-in-up delay-300">
-                        You are welcome here.
-                    </p>
-                    <p className="text-sm md:text-base text-blue-200/60 font-medium tracking-wider animate-delay-300 animate-fade-in-up">
-                        A place of prayer, remembrance, and hope.
-                    </p>
+                    <div className="flex flex-col items-center gap-4 animate-fade-in-up delay-300">
+                        <div className="flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 backdrop-blur-sm">
+                            <svg className="w-3.5 h-3.5 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            <span className="text-[10px] uppercase tracking-widest text-blue-100/60 font-bold">Sacred Privacy & Security</span>
+                        </div>
+                        <p className="text-blue-100/60 text-base font-light italic">
+                            You are welcome here.
+                        </p>
+                        <p className="text-sm md:text-base text-blue-200/60 font-medium tracking-wider">
+                            A global spiritual sanctuary, open to all.
+                        </p>
+                    </div>
                 </div>
             </section>
 

@@ -5,217 +5,341 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/pilgrimage_provider.dart';
+import '../services/passport_service.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/premium_glass_card.dart';
 
-class PilgrimagesScreen extends ConsumerWidget {
+class PilgrimagesScreen extends ConsumerStatefulWidget {
   const PilgrimagesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PilgrimagesScreen> createState() => _PilgrimagesScreenState();
+}
+
+class _PilgrimagesScreenState extends ConsumerState<PilgrimagesScreen> {
+  bool _showPassport = false;
+
+  @override
+  Widget build(BuildContext context) {
     final pilgrimagesAsync = ref.watch(pilgrimagesProvider);
+    final stampsAsync = ref.watch(passportStampsProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppTheme.deepSpace,
       appBar: AppBar(
         title: Text(
           'Virtual Pilgrimages',
-          style: GoogleFonts.merriweather(
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF1E293B),
-          ),
+          style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF1E293B)),
+        actions: [
+          IconButton(
+            icon: Icon(_showPassport ? LucideIcons.map : LucideIcons.bookOpen),
+            onPressed: () => setState(() => _showPassport = !_showPassport),
+            tooltip: _showPassport ? 'View Sites' : 'View Passport',
+          ),
+        ],
       ),
-      body: pilgrimagesAsync.when(
-        data: (sites) {
-          if (sites.isEmpty) {
-            return const Center(child: Text('No pilgrimages found.'));
-          }
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: sites.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
-            itemBuilder: (context, index) {
-              final site = sites[index];
-              return Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                clipBehavior: Clip.antiAlias,
+      body: _showPassport
+          ? _PassportView(stampsAsync: stampsAsync)
+          : _SitesView(pilgrimagesAsync: pilgrimagesAsync),
+    );
+  }
+}
+
+class _SitesView extends ConsumerWidget {
+  final AsyncValue<List<dynamic>> pilgrimagesAsync;
+
+  const _SitesView({required this.pilgrimagesAsync});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return pilgrimagesAsync.when(
+      data: (sites) {
+        if (sites.isEmpty) {
+          return const Center(child: Text('No pilgrimages found.'));
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(20),
+          itemCount: sites.length,
+          itemBuilder: (context, index) {
+            final site = sites[index];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: PremiumGlassCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Stack(
-                      children: [
-                        CachedNetworkImage(
-                          imageUrl: site.imageUrl,
-                          height: 200,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            height: 200,
-                            color: Colors.grey.shade200,
-                            child: const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => Container(
-                            height: 200,
-                            color: Colors.grey.shade200,
-                            child: const Icon(Icons.error),
-                          ),
-                        ),
-                        Positioned(
-                          top: 12,
-                          left: 12,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.9),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  LucideIcons.globe,
-                                  size: 12,
-                                  color: Color(0xFF1E293B),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  site.country,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF1E293B),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    _buildImageHeader(site),
                     Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             site.name,
                             style: GoogleFonts.merriweather(
-                              fontSize: 18,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1E293B),
+                              color: Colors.white,
                             ),
                           ),
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              const Icon(
-                                LucideIcons.mapPin,
-                                size: 14,
-                                color: Colors.blue,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                site.location,
-                                style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  color: Colors.blue.shade700,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
+                          _buildLocationInfo(site),
+                          const SizedBox(height: 16),
                           Text(
                             site.description,
                             style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: const Color(0xFF64748B),
+                              color: Colors.white70,
                               height: 1.5,
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF1F5F9),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  LucideIcons.info,
-                                  size: 16,
-                                  color: Color(0xFF64748B),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Significance: ${site.significance}',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      color: const Color(0xFF475569),
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (site.virtualTourUrl != null) ...[
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton.icon(
-                                onPressed: () => launchUrl(
-                                  Uri.parse(site.virtualTourUrl!),
-                                  mode: LaunchMode.inAppWebView,
-                                ),
-                                icon: const Icon(
-                                  LucideIcons.externalLink,
-                                  size: 16,
-                                ),
-                                label: const Text('Take Virtual Tour'),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.blue.shade700,
-                                  side: BorderSide(color: Colors.blue.shade200),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          const SizedBox(height: 20),
+                          _buildVirtualTourButton(context, ref, site),
                         ],
                       ),
                     ),
                   ],
                 ),
-              );
-            },
-          );
+              ),
+            );
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text('Error: $e')),
+    );
+  }
+
+  Widget _buildImageHeader(dynamic site) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: CachedNetworkImage(
+            imageUrl: site.imageUrl,
+            height: 220,
+            width: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned(
+          top: 16,
+          left: 16,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white24),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  LucideIcons.globe,
+                  size: 12,
+                  color: AppTheme.gold400,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  site.country.toUpperCase(),
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationInfo(dynamic site) {
+    return Row(
+      children: [
+        const Icon(LucideIcons.mapPin, size: 14, color: AppTheme.gold400),
+        const SizedBox(width: 6),
+        Text(
+          site.location,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            color: AppTheme.gold100,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVirtualTourButton(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic site,
+  ) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () async {
+          if (site.virtualTourUrl != null) {
+            await ref
+                .read(passportServiceProvider)
+                .addStamp(site.id, site.name);
+            await launchUrl(
+              Uri.parse(site.virtualTourUrl!),
+              mode: LaunchMode.inAppWebView,
+            );
+
+            if (!context.mounted) return;
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Passport Stamped! Journey recorded in your soul.',
+                ),
+                backgroundColor: AppTheme.gold600,
+              ),
+            );
+          }
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('Error: $e')),
+        icon: const Icon(LucideIcons.externalLink, size: 18),
+        label: const Text('EMBARK ON PILGRIMAGE'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.gold500,
+          foregroundColor: AppTheme.sacredNavy950,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        ),
       ),
+    );
+  }
+}
+
+class _PassportView extends StatelessWidget {
+  final AsyncValue<List<PassportStamp>> stampsAsync;
+
+  const _PassportView({required this.stampsAsync});
+
+  @override
+  Widget build(BuildContext context) {
+    return stampsAsync.when(
+      data: (stamps) {
+        if (stamps.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  LucideIcons.bookOpen,
+                  size: 64,
+                  color: Colors.white24,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Your Passport is Empty',
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 22,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Embark on virtual journeys to earn stamps.',
+                  style: TextStyle(color: Colors.white54),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'YOUR SPIRITUAL JOURNEY',
+                style: GoogleFonts.inter(
+                  color: AppTheme.gold500,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.8,
+                  ),
+                  itemCount: stamps.length,
+                  itemBuilder: (context, index) {
+                    final stamp = stamps[index];
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppTheme.gold500.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppTheme.gold500,
+                                width: 2,
+                              ),
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                LucideIcons.landmark,
+                                color: AppTheme.gold500,
+                                size: 32,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            stamp.name,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.merriweather(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${stamp.visitedAt.day}/${stamp.visitedAt.month}/${stamp.visitedAt.year}',
+                            style: const TextStyle(
+                              color: Colors.white30,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text('Error: $e')),
     );
   }
 }

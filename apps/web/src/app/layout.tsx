@@ -103,6 +103,11 @@ export const metadata: Metadata = {
     verification: {
         google: 'google-site-verification-code', // User to replace
     },
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: 'black-translucent',
+        title: 'MyPrayerTower',
+    },
 };
 
 export const viewport = {
@@ -110,8 +115,12 @@ export const viewport = {
     initialScale: 1,
     maximumScale: 5,
     userScalable: true,
+    viewportFit: 'cover',
+    themeColor: '#0a1835',
 };
 
+
+import { AudioProvider } from '@/components/audio/AudioContext';
 
 export default function RootLayout({
     children,
@@ -122,70 +131,73 @@ export default function RootLayout({
         <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
             <head>
                 {/* Preconnect to critical domains */}
+                <link rel="manifest" href="/manifest.json" />
                 <link rel="preconnect" href="https://htgvilktnadnwlforyjt.supabase.co" />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
                 <ThemeProvider>
-                    <SpiritualJourneyProvider>
-                        <PricingProvider>
-                            <SkipToContent />
-                            <Header />
-                            <main id="main-content" className="flex-1 w-full">{children}</main>
-                            <Footer />
+                    <AudioProvider>
+                        <SpiritualJourneyProvider>
+                            <PricingProvider>
+                                <SkipToContent />
+                                <Header />
+                                <main id="main-content" className="flex-1 w-full">{children}</main>
+                                <Footer />
 
-                            {/* Global Engagement Components */}
-                            <GlobalEngagement />
-                            <BackToTop />
-                            <CookieConsent />
+                                {/* Global Engagement Components */}
+                                <GlobalEngagement />
+                                <BackToTop />
+                                <CookieConsent />
 
-                            {/* Structured Data */}
-                            <Script
-                                id="schema-org"
-                                type="application/ld+json"
-                                strategy="worker"
-                                dangerouslySetInnerHTML={{
-                                    __html: JSON.stringify({
-                                        '@context': 'https://schema.org',
-                                        '@graph': [
-                                            {
-                                                '@type': 'Organization',
-                                                '@id': 'https://myprayertower.com/#organization',
-                                                name: 'MyPrayerTower',
-                                                url: 'https://myprayertower.com',
-                                                logo: 'https://myprayertower.com/icon.png',
-                                                sameAs: [
-                                                    'https://www.facebook.com/MyPrayerTower2',
-                                                    'https://www.youtube.com/c/MyPrayerTower',
-                                                    'https://twitter.com/MyPrayerTower',
-                                                    'https://www.instagram.com/myprayertower/',
-                                                    'https://www.threads.net/@myprayertower',
-                                                    'https://www.pinterest.com/myprayertower/'
-                                                ],
-                                                description: 'The #1 All-in-One Catholic Services App. Find churches, prayer wall, and daily readings.',
-                                            },
-                                            {
-                                                '@type': 'WebSite',
-                                                '@id': 'https://myprayertower.com/#website',
-                                                url: 'https://myprayertower.com',
-                                                name: 'MyPrayerTower',
-                                                description: 'The #1 All-in-One Catholic Services App',
-                                                publisher: {
-                                                    '@id': 'https://myprayertower.com/#organization'
+                                {/* Structured Data */}
+                                <Script
+                                    id="schema-org"
+                                    type="application/ld+json"
+                                    strategy="worker"
+                                    dangerouslySetInnerHTML={{
+                                        __html: JSON.stringify({
+                                            '@context': 'https://schema.org',
+                                            '@graph': [
+                                                {
+                                                    '@type': 'Organization',
+                                                    '@id': 'https://myprayertower.com/#organization',
+                                                    name: 'MyPrayerTower',
+                                                    url: 'https://myprayertower.com',
+                                                    logo: 'https://myprayertower.com/icon.png',
+                                                    sameAs: [
+                                                        'https://www.facebook.com/MyPrayerTower2',
+                                                        'https://www.youtube.com/c/MyPrayerTower',
+                                                        'https://twitter.com/MyPrayerTower',
+                                                        'https://www.instagram.com/myprayertower/',
+                                                        'https://www.threads.net/@myprayertower',
+                                                        'https://www.pinterest.com/myprayertower/'
+                                                    ],
+                                                    description: 'The #1 All-in-One Catholic Services App. Find churches, prayer wall, and daily readings.',
                                                 },
-                                                potentialAction: {
-                                                    '@type': 'SearchAction',
-                                                    target: 'https://myprayertower.com/prayers?q={search_term_string}',
-                                                    'query-input': 'required name=search_term_string'
+                                                {
+                                                    '@type': 'WebSite',
+                                                    '@id': 'https://myprayertower.com/#website',
+                                                    url: 'https://myprayertower.com',
+                                                    name: 'MyPrayerTower',
+                                                    description: 'The #1 All-in-One Catholic Services App',
+                                                    publisher: {
+                                                        '@id': 'https://myprayertower.com/#organization'
+                                                    },
+                                                    potentialAction: {
+                                                        '@type': 'SearchAction',
+                                                        target: 'https://myprayertower.com/prayers?q={search_term_string}',
+                                                        'query-input': 'required name=search_term_string'
+                                                    }
                                                 }
-                                            }
-                                        ]
-                                    }),
-                                }}
-                            />
-                        </PricingProvider>
-                    </SpiritualJourneyProvider>
+                                            ]
+                                        }),
+                                    }}
+                                />
+                            </PricingProvider>
+                        </SpiritualJourneyProvider>
+                    </AudioProvider>
                 </ThemeProvider>
 
                 <Analytics />

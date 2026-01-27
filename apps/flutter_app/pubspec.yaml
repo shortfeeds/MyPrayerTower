@@ -35,6 +35,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   lucide_icons: ^0.257.0
   audioplayers: ^6.5.1
+  just_audio: ^0.9.36
+  audio_service: ^0.18.12
 
   
   # Payments (Google Play Billing)

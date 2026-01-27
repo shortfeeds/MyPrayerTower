@@ -7,6 +7,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../core/theme/app_theme.dart';
 import '../core/services/config_service.dart';
+import '../core/services/sacred_audio_service.dart';
 
 class AppDrawer extends ConsumerStatefulWidget {
   const AppDrawer({super.key});
@@ -62,6 +63,13 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                               badge: 'Live',
                               badgeColor: Colors.pink,
                             ),
+                          _DrawerItem(
+                            icon: LucideIcons.tv,
+                            label: 'Live Mass Hub',
+                            onTap: () => _navigate(context, '/live-mass'),
+                            badge: 'New',
+                            badgeColor: Colors.red,
+                          ),
                         ],
                       ),
 
@@ -206,6 +214,11 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                             ),
                         ],
                       ),
+
+                      const Divider(color: Colors.white12, height: 32),
+
+                      // Sacred Audio Controller
+                      const _SacredAudioController(),
 
                       const Divider(color: Colors.white12, height: 32),
 
@@ -592,6 +605,137 @@ class _DrawerSubItem extends StatelessWidget {
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
       dense: true,
+    );
+  }
+}
+
+class _SacredAudioController extends ConsumerWidget {
+  const _SacredAudioController();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final audioService = ref.watch(sacredAudioServiceProvider);
+    final currentTrack = audioService.currentTrack;
+    final isPlaying = audioService.isPlaying;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(LucideIcons.music, color: Colors.white54, size: 14),
+              const SizedBox(width: 8),
+              Text(
+                'ATMOSPHERIC AUDIO',
+                style: GoogleFonts.inter(
+                  color: Colors.white38,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            ),
+            child: Column(
+              children: [
+                ...sacredTracks.map((track) {
+                  final isActive = currentTrack == track.id;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: InkWell(
+                      onTap: () => ref
+                          .read(sacredAudioServiceProvider)
+                          .playTrack(track.url, track.id),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isActive
+                              ? AppTheme.gold500.withValues(alpha: 0.1)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isActive && isPlaying
+                                  ? LucideIcons.pause
+                                  : LucideIcons.play,
+                              size: 14,
+                              color: isActive
+                                  ? AppTheme.gold500
+                                  : Colors.white70,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                track.title,
+                                style: GoogleFonts.inter(
+                                  color: isActive
+                                      ? AppTheme.gold500
+                                      : Colors.white70,
+                                  fontSize: 13,
+                                  fontWeight: isActive
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+                const Divider(color: Colors.white12, height: 24),
+                Row(
+                  children: [
+                    const Icon(
+                      LucideIcons.volume2,
+                      color: Colors.white38,
+                      size: 14,
+                    ),
+                    Expanded(
+                      child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          trackHeight: 2,
+                          thumbShape: const RoundSliderThumbShape(
+                            enabledThumbRadius: 6,
+                          ),
+                          overlayShape: const RoundSliderOverlayShape(
+                            overlayRadius: 12,
+                          ),
+                        ),
+                        child: Slider(
+                          value: 0.5, // Mock value
+                          activeColor: AppTheme.gold500,
+                          inactiveColor: Colors.white10,
+                          onChanged: (val) => ref
+                              .read(sacredAudioServiceProvider)
+                              .setVolume(val),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

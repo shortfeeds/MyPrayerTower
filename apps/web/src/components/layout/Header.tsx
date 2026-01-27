@@ -103,33 +103,9 @@ export function Header() {
     // ===== MASTER PLAN NAVIGATION =====
 
     // 1. PRAY (Core Action)
-    const prayLinks = [
-        { href: '/readings', label: 'Daily Readings', icon: Calendar, description: 'Mass readings & Gospel' },
-        { href: '/prayers/rosary', label: 'Holy Rosary', icon: Heart, description: 'Interactive guided prayer' },
-        { href: '/prayers', label: 'Prayer Library', icon: Book, description: 'Catholic prayers & litanies' },
-        { href: '/prayer-wall', label: 'Prayer Wall', icon: Users, description: 'Community intentions' },
-        { href: '/novenas', label: 'Novenas', icon: Sparkles, description: '9-day prayer devotions' },
-        { href: '/stations', label: 'Stations of the Cross', icon: MapPin, description: 'Way of the Cross' },
-        { href: '/examen', label: 'Daily Examen', icon: BookOpen, description: 'Ignatian reflection' },
-    ];
-
-    // 2. OFFER (Active Charity/Devotion + Memorials)
-    const offerLinks = [
-        { href: '/candles', label: 'Light a Candle', icon: Flame, description: 'Virtual intentions' },
-        { href: '/mass-offerings', label: 'Request a Mass', icon: Gift, description: 'Have a Mass offered' },
-        { href: '/memorials', label: 'Eternal Memorials', icon: Star, description: 'Honor loved ones' },
-        { href: '/bouquets', label: 'Spiritual Bouquets', icon: BookOpen, description: 'Send spiritual gifts' },
-    ];
-
-    // 3. LEARN (Resources & Discovery)
-    const learnLinks = [
-        { href: '/churches', label: 'Find a Church', icon: MapPin, description: 'Mass & Confession' },
-        { href: '/saints', label: 'Saints & Feasts', icon: User, description: 'Lives of the Holy Ones' },
-        { href: '/bible', label: 'Bible', icon: Book, description: 'Sacred Scriptures' },
-        { href: '/catechism', label: 'Catechism', icon: BookOpen, description: 'Church teachings' },
-        { href: '/calendar', label: 'Liturgical Calendar', icon: Calendar, description: 'Feasts & seasons' },
-        { href: '/glossary', label: 'Catholic Glossary', icon: Search, description: 'Terms & definitions' },
-    ];
+    const prayLinks = PRAY_MENU.columns.flatMap(col => col.items);
+    const offerLinks = OFFER_MENU.columns.flatMap(col => col.items);
+    const learnLinks = LEARN_MENU.columns.flatMap(col => col.items);
 
     // 5. MY PRAYER CORNER (User) - Handled separately via auth check
 
@@ -176,15 +152,14 @@ export function Header() {
                                 <button
                                     onClick={() => { setPrayOpen(!prayOpen); setOfferOpen(false); setLearnOpen(false); }}
                                     className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${prayOpen
-                                        ? 'bg-sacred-500 text-white'
-                                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                                        ? 'bg-liturgy text-white shadow-lg glow-liturgy'
+                                        : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent hover:border-liturgy'
                                         }`}
                                 >
-                                    <Sparkles className={`w-3.5 h-3.5 ${prayOpen ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
+                                    <Sparkles className={`w-3.5 h-3.5 ${prayOpen ? 'text-white' : 'text-gray-400 group-hover:text-liturgy'}`} />
                                     Pray
                                     <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${prayOpen ? 'rotate-180 opacity-100' : ''}`} />
                                 </button>
-                                <MegaMenu config={PRAY_MENU} isOpen={prayOpen} onClose={() => setPrayOpen(false)} />
                             </div>
 
                             {/* 2. OFFER */}
@@ -200,7 +175,6 @@ export function Header() {
                                     Offer
                                     <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${offerOpen ? 'rotate-180 opacity-100' : ''}`} />
                                 </button>
-                                <MegaMenu config={OFFER_MENU} isOpen={offerOpen} onClose={() => setOfferOpen(false)} />
                             </div>
 
                             {/* 3. LEARN */}
@@ -216,7 +190,6 @@ export function Header() {
                                     Learn
                                     <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${learnOpen ? 'rotate-180 opacity-100' : ''}`} />
                                 </button>
-                                <MegaMenu config={LEARN_MENU} isOpen={learnOpen} onClose={() => setLearnOpen(false)} />
                             </div>
                         </nav>
 
@@ -289,6 +262,13 @@ export function Header() {
                             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </button>
                     </div>
+                </div>
+
+                {/* Desktop Mega Menus - Positioned relative to the whole header for perfect centering */}
+                <div className="hidden lg:block relative">
+                    <MegaMenu config={PRAY_MENU} isOpen={prayOpen} onClose={() => setPrayOpen(false)} />
+                    <MegaMenu config={OFFER_MENU} isOpen={offerOpen} onClose={() => setOfferOpen(false)} />
+                    <MegaMenu config={LEARN_MENU} isOpen={learnOpen} onClose={() => setLearnOpen(false)} />
                 </div>
             </header >
 

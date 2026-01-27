@@ -59,8 +59,8 @@ export async function GET(request: NextRequest) {
                 placement: true,
                 adSource: true,
                 googleAdUnitId: true,
-                androidAdUnitId: true,
-                iosAdUnitId: true,
+                // androidAdUnitId: true, // Missing in current DB
+                // iosAdUnitId: true,     // Missing in current DB
                 priority: true,
             },
         });

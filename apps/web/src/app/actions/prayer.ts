@@ -239,6 +239,34 @@ export async function reportPrayer(prayerId: string, reason: string) {
         return { success: true, message: 'Report submitted for review' };
     } catch (error) {
         console.error('Error reporting:', error);
-        return { success: false, message: 'Failed to report' };
+    }
+}
+
+export async function getUserPrayerRequests() {
+    try {
+        const user = await getUserFromCookie();
+        if (!user) return [];
+
+        const prayers = await prisma.prayerRequest.findMany({
+            where: { userId: user.id },
+            orderBy: { createdAt: 'desc' },
+            select: {
+                id: true,
+                content: true,
+                createdAt: true,
+                isAnswered: true,
+                answeredAt: true
+            }
+        });
+
+        return prayers.map(p => ({
+            ...p,
+            date: new Date(p.createdAt).toLocaleDateString(),
+            status: p.isAnswered ? 'ANSWERED' : 'ACTIVE' // Helper for UI
+        }));
+
+    } catch (error) {
+        console.error('Error fetching user prayers:', error);
+        return [];
     }
 }

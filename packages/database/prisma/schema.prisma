@@ -1,12 +1,14 @@
 generator client {
   provider        = "prisma-client-js"
   binaryTargets   = ["native", "rhel-openssl-3.0.x"]
+  
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  
 }
 
 model AdminUser {
@@ -742,6 +744,8 @@ model Saint {
   lastSyncedAt    DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime
+  
+  dailyContents   DailyContent[]
 
   @@index([feastMonth, feastDayOfMonth])
   @@index([name])
@@ -1173,6 +1177,7 @@ model ConfessionLog {
 
 // UserPrayerHistory temporarily disabled - needs BigInt prayerId to match Prayer.id
 // model UserPrayerHistory {
+// @@schema("public")
 
 //   id        String   @id @default(cuid())
 //   userId    String
@@ -2355,6 +2360,82 @@ model DeviceToken {
 
   @@index([userId])
   @@index([platform])
+}
+
+
+
+// =========================================
+// DAILY CONTENT ENGINE
+// =========================================
+
+model DailyContent {
+  id          String    @id @default(cuid())
+  date        String    @unique // YYYY-MM-DD
+  
+  saintId     String?
+  saint       Saint?    @relation(fields: [saintId], references: [id])
+  
+  readingId   String?
+  // Reading relation not strictly enforced if Reading model doesn't exist or is external, 
+  // but let's assume we link to a generic 'Reading' or store raw data.
+  // For now, storing raw data often better for daily variability.
+  
+  readingTitle     String?
+  readingReference String?
+  readingText      String? @db.Text
+  
+  quoteText   String?   @db.Text
+  quoteAuthor String?
+  
+  isPublished Boolean   @default(false)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// =========================================
+// NOVENA SYSTEM
+// =========================================
+
+model Novena {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String   @db.Text
+  dayOneText      String   @db.Text
+  dayTwoText      String   @db.Text
+  dayThreeText    String   @db.Text
+  dayFourText     String   @db.Text
+  dayFiveText     String   @db.Text
+  daySixText      String   @db.Text
+  daySevenText    String   @db.Text
+  dayEightText    String   @db.Text
+  dayNineText     String   @db.Text
+  
+  activePrayers   Int      @default(0)
+  totalParticipants Int    @default(0)
+  
+  imageUrl        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  participations  NovenaParticipation[]
+}
+
+model NovenaParticipation {
+  id            String   @id @default(cuid())
+  novenaId      String
+  userId        String
+  currentDay    Int      @default(1)
+  lastPrayedAt  DateTime @default(now())
+  isCompleted   Boolean  @default(false)
+  
+  novena        Novena   @relation(fields: [novenaId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([novenaId, userId])
+  @@index([novenaId])
+  @@index([userId])
 }
 
 

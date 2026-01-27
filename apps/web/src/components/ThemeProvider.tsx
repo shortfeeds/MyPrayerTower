@@ -12,6 +12,8 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+import { getCurrentLiturgyTheme } from '@/lib/liturgy';
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme] = useState<Theme>('light');
     const [actualTheme] = useState<'light'>('light');
@@ -21,6 +23,22 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         const root = document.documentElement;
         root.classList.remove('dark');
         root.classList.add('light');
+
+        // Apply Liturgical Theme
+        const applyLiturgy = async () => {
+            try {
+                const liturgy = await getCurrentLiturgyTheme();
+                root.style.setProperty('--liturgy-primary', liturgy.primary);
+                root.style.setProperty('--liturgy-secondary', liturgy.secondary);
+                root.style.setProperty('--liturgy-accent', liturgy.accent);
+                root.style.setProperty('--liturgy-accent-light', liturgy.accentLight);
+                root.style.setProperty('--liturgy-glow', liturgy.glow);
+            } catch (error) {
+                console.error('Failed to apply liturgical theme:', error);
+            }
+        };
+
+        applyLiturgy();
     }, []);
 
     // No-op for unified mode

@@ -170,86 +170,104 @@ class _PremiumFloatingNavBar extends ConsumerWidget {
     final flags = ref.watch(featureFlagsProvider);
     final items = _getVisibleItems(flags);
     final selectedIndex = _getSelectedIndex(context, items);
-    final itemWidth = (MediaQuery.of(context).size.width - 32) / items.length;
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Ensure bar doesn't get too wide on tablets
+    final barWidth = (screenWidth - 32).clamp(200.0, 500.0);
+    final itemWidth = barWidth / items.length;
 
-    return Stack(
-      children: [
-        // Premium Glass Container
-        ClipRRect(
-          borderRadius: BorderRadius.circular(32),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-            child: Container(
-              height: 72,
-              decoration: BoxDecoration(
-                color: AppTheme.sacredNavy900.withValues(alpha: 0.7),
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.4),
-                    blurRadius: 24,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 8),
+    return Center(
+      child: SizedBox(
+        width: barWidth,
+        height: 72,
+        child: Stack(
+          children: [
+            // Premium Glass Container
+            ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                child: Container(
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: AppTheme.sacredNavy900.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(32),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        blurRadius: 30,
+                        spreadRadius: -4,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-
-        // Sliding Indicator
-        AnimatedPositioned(
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.elasticOut,
-          left: selectedIndex * itemWidth + (itemWidth - 64) / 2,
-          top: 10,
-          child: Container(
-            width: 64,
-            height: 52,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.gold500.withValues(alpha: 0.15),
-                  AppTheme.gold500.withValues(alpha: 0.05),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-        ),
-
-        // Nav Items Row
-        SizedBox(
-          height: 72,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(items.length, (index) {
-              final item = items[index];
-              final isActive = selectedIndex == index;
-
-              return Expanded(
-                child: _PremiumNavButton(
-                  icon: isActive ? item.activeIcon : item.icon,
-                  label: item.label,
-                  isActive: isActive,
-                  onTap: () => context.go(item.path),
                 ),
-              );
-            }),
-          ),
+              ),
+            ),
+
+            // Sliding Indicator - Premium Glow
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.elasticOut,
+              left: selectedIndex * itemWidth + (itemWidth - 56) / 2,
+              top: 8,
+              child: Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).primaryColor.withValues(alpha: 0.25),
+                      Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.2),
+                      blurRadius: 10,
+                      spreadRadius: -2,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Nav Items Row
+            SizedBox(
+              height: 72,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(items.length, (index) {
+                  final item = items[index];
+                  final isActive = selectedIndex == index;
+
+                  return Expanded(
+                    child: _PremiumNavButton(
+                      icon: isActive ? item.activeIcon : item.icon,
+                      label: item.label,
+                      isActive: isActive,
+                      onTap: () => context.go(item.path),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
 
-class _PremiumNavButton extends StatefulWidget {
+class _PremiumNavButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isActive;
@@ -263,104 +281,49 @@ class _PremiumNavButton extends StatefulWidget {
   });
 
   @override
-  State<_PremiumNavButton> createState() => _PremiumNavButtonState();
-}
-
-class _PremiumNavButtonState extends State<_PremiumNavButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 150),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.9,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => _controller.forward(),
-      onTapUp: (_) {
-        _controller.reverse();
-        widget.onTap();
-      },
-      onTapCancel: () => _controller.reverse(),
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedBuilder(
-        animation: _scaleAnimation,
-        builder: (context, child) {
-          return Transform.scale(scale: _scaleAnimation.value, child: child);
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-              padding: const EdgeInsets.all(8),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Icon Glow
-                  if (widget.isActive)
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.gold500.withValues(alpha: 0.3),
-                            blurRadius: 15,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                    ),
-                  Icon(
-                    widget.icon,
-                    color: widget.isActive
-                        ? AppTheme.gold500
-                        : Colors.white.withValues(alpha: 0.4),
-                    size: 22,
-                  ),
-                ],
-              ),
+    return InkWell(
+      onTap: onTap,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            padding: EdgeInsets.all(isActive ? 10 : 8),
+            decoration: BoxDecoration(
+              color: isActive
+                  ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
+                  : Colors.transparent,
+              shape: BoxShape.circle,
             ),
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: widget.isActive ? 1.0 : 0.0,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                height: widget.isActive ? 14 : 0,
-                child: Text(
-                  widget.label,
-                  style: GoogleFonts.inter(
-                    color: AppTheme.gold500,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
+            child: Icon(
+              icon,
+              color: isActive ? Theme.of(context).primaryColor : Colors.white60,
+              size: isActive ? 26 : 22,
+            ),
+          ),
+          const SizedBox(height: 4),
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: isActive ? 1.0 : 0.4,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+                  color: isActive
+                      ? Theme.of(context).primaryColor
+                      : Colors.white,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

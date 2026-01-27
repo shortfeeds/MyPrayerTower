@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { BookOpen, Users, CircleDot, Church, Heart, ChevronRight } from 'lucide-react';
+import { BookOpen, Users, CircleDot, Church, Heart, ChevronRight, Plane, ShieldCheck } from 'lucide-react';
 
 const FEATURES = [
     {
@@ -69,13 +69,22 @@ const FEATURES = [
         bg: 'bg-cyan-50'
     },
     {
-        id: 'bouquets',
-        icon: Heart,
-        title: 'Spiritual Bouquets',
-        description: 'Send spiritual gifts to loved ones.',
-        href: '/bouquets',
-        color: 'from-fuchsia-500 to-pink-500',
-        bg: 'bg-fuchsia-50'
+        id: 'pilgrimages',
+        icon: Plane,
+        title: 'Virtual Pilgrimages',
+        description: 'Visit the world\'s holiest sites virtually.',
+        href: '/pilgrimages',
+        color: 'from-amber-600 to-amber-800',
+        bg: 'bg-amber-50'
+    },
+    {
+        id: 'confession',
+        icon: ShieldCheck,
+        title: 'Confession Tool',
+        description: 'Examination of Conscience & Step-by-step guide.',
+        href: '/confession',
+        color: 'from-indigo-700 to-sacred-800',
+        bg: 'bg-indigo-50'
     }
 ];
 

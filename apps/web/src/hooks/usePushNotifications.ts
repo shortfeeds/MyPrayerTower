@@ -82,10 +82,9 @@ export function usePushNotifications() {
 
     const registerToken = async (playerId: string) => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+            // Use relative path for Next.js API routes
             const authToken = localStorage.getItem('authToken');
-
-            const response = await fetch(`${apiUrl}/notifications/register-device`, {
+            const response = await fetch('/api/notifications/register-device', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
