@@ -182,6 +182,7 @@ export function MegaMenu({ config, isOpen, onClose }: MegaMenuProps) {
                         exit={{ opacity: 0, y: 10, scale: 0.98 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
                         className="absolute top-full left-0 w-full flex justify-center z-50 pt-2 pointer-events-none"
+                        style={{ willChange: "transform, opacity" }}
                     >
                         {/* The Actual Menu Card */}
                         <div className="bg-[#0A0A0A] backdrop-blur-2xl rounded-3xl shadow-[0_40px_80px_rgba(0,0,0,0.7)] border border-white/10 overflow-hidden flex isolate ring-1 ring-white/10 pointer-events-auto w-[95%] max-w-[1100px] relative">

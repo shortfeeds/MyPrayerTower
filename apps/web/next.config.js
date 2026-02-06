@@ -81,8 +81,8 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 });
 
 /** @type {import('next').NextConfig} */
-// Force restart 4
 const nextConfig = {
+    // Force restart 5
     transpilePackages: ['@mpt/database', '@cashfreepayments/cashfree-js'],
     reactStrictMode: true,
     typescript: {

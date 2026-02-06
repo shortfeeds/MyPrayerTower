@@ -42,7 +42,8 @@ export function WelcomeGreeting() {
         }
     }, []);
 
-    if (!mounted) return null; // Avoid hydration mismatch
+    // Remove early return to prevent CLS
+    // if (!mounted) return null; 
 
     return (
         <div className="flex flex-col items-center animate-fade-in-up">
