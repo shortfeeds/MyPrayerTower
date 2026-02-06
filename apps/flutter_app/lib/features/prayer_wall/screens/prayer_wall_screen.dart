@@ -138,7 +138,7 @@ class _PrayerWallScreenState extends ConsumerState<PrayerWallScreen> {
         ],
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 100),
+        padding: const EdgeInsets.only(bottom: 130),
         child: FloatingActionButton.extended(
           onPressed: () => _showAddRequestDialog(context),
           backgroundColor: AppTheme.gold500,

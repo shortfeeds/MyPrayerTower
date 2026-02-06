@@ -234,7 +234,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   },
                 ),
 
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                const SliverToBoxAdapter(child: SizedBox(height: 150)),
               ],
             ),
           ),

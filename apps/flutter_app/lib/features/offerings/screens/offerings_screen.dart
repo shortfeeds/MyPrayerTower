@@ -151,7 +151,7 @@ class OfferingsScreen extends StatelessWidget {
           ),
 
           // Bottom padding for nav bar
-          const SliverToBoxAdapter(child: SizedBox(height: 120)),
+          const SliverToBoxAdapter(child: SizedBox(height: 150)),
         ],
       ),
     );

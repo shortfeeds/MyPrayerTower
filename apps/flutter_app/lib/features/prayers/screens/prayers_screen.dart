@@ -101,7 +101,7 @@ class PrayersScreen extends ConsumerWidget {
           ),
 
           // Bottom Padding for Floating Nav
-          const SliverToBoxAdapter(child: SizedBox(height: 120)),
+          const SliverToBoxAdapter(child: SizedBox(height: 150)),
         ],
       ),
     );

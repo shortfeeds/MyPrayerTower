@@ -258,7 +258,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 120)),
+          const SliverToBoxAdapter(child: SizedBox(height: 150)),
         ],
       ),
     );

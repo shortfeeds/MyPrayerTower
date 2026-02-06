@@ -242,7 +242,7 @@ class HomeScreen extends ConsumerWidget {
           ),
 
           const SliverToBoxAdapter(
-            child: SizedBox(height: 140),
+            child: SizedBox(height: 150),
           ), // Bottom padding for nav bar
         ],
       ),

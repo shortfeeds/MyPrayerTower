@@ -187,7 +187,7 @@ class _MemorialsScreenState extends ConsumerState<MemorialsScreen> {
                 }
 
                 return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 150),
                   itemCount: filteredMemorials.length,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 16),
@@ -202,7 +202,7 @@ class _MemorialsScreenState extends ConsumerState<MemorialsScreen> {
         ],
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 100),
+        padding: const EdgeInsets.only(bottom: 130),
         child: FloatingActionButton.extended(
           onPressed: () async {
             await Navigator.push(

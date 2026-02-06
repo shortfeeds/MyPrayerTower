@@ -279,18 +279,21 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> {
                     }, childCount: filteredEntries.length),
                   ),
 
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                const SliverToBoxAdapter(child: SizedBox(height: 150)),
               ],
             ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddEntryDialog(),
-        backgroundColor: AppTheme.gold500,
-        foregroundColor: Colors.black,
-        icon: const Icon(LucideIcons.plus),
-        label: const Text('New Entry'),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 130),
+        child: FloatingActionButton.extended(
+          onPressed: () => _showAddEntryDialog(),
+          backgroundColor: AppTheme.gold500,
+          foregroundColor: Colors.black,
+          icon: const Icon(LucideIcons.plus),
+          label: const Text('New Entry'),
+        ),
       ),
     );
   }
