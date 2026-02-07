@@ -21,7 +21,7 @@ class _SpiritualBouquetScreenState
   // Bouquet contents
   int _massesCount = 0;
   int _rosariesCount = 0;
-  int _prayersCount = 0;
+  final int _prayersCount = 1;
   int _candlesCount = 0;
 
   // Recipient info
@@ -179,12 +179,57 @@ class _SpiritualBouquetScreenState
             const SizedBox(height: 16),
 
             // Prayers - Free (simple toggle, no counter)
-            _buildFreeItemToggle(
-              icon: '🙏',
-              title: 'Prayers',
-              subtitle: 'A gift of prayer — Always Free',
-              isIncluded: _prayersCount > 0,
-              onChanged: (v) => setState(() => _prayersCount = v ? 1 : 0),
+            // Prayers - Always Included
+            Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
+              ),
+              child: Row(
+                children: [
+                  const Text('🙏', style: TextStyle(fontSize: 28)),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Prayers',
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'A gift of prayer — Always Included',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: Colors.green.shade300,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      LucideIcons.check,
+                      size: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
             _buildItemSelector(
               icon: '🕯️',
@@ -359,67 +404,8 @@ class _SpiritualBouquetScreenState
   }
 
   bool get _canSubmit =>
-      (_totalCents > 0 || _prayersCount > 0) &&
       _recipientNameController.text.isNotEmpty &&
       _recipientEmailController.text.isNotEmpty;
-
-  // Widget for free items with simple toggle (no counter)
-  Widget _buildFreeItemToggle({
-    required String icon,
-    required String title,
-    required String subtitle,
-    required bool isIncluded,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isIncluded
-            ? Colors.green.withValues(alpha: 0.1)
-            : AppTheme.darkCard,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isIncluded
-              ? Colors.green.withValues(alpha: 0.5)
-              : Colors.transparent,
-        ),
-      ),
-      child: Row(
-        children: [
-          Text(icon, style: const TextStyle(fontSize: 28)),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: Colors.green.shade300,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: isIncluded,
-            onChanged: onChanged,
-            activeColor: Colors.green,
-            activeTrackColor: Colors.green.withValues(alpha: 0.3),
-          ),
-        ],
-      ),
-    );
-  }
 
   // ... _buildItemSelector, _buildTextField, _buildSummaryRow match original ...
   Widget _buildItemSelector({
@@ -519,6 +505,7 @@ class _SpiritualBouquetScreenState
   }) {
     return TextField(
       controller: controller,
+      onChanged: (_) => setState(() {}),
       keyboardType: keyboardType,
       maxLines: maxLines,
       style: GoogleFonts.inter(color: Colors.white),

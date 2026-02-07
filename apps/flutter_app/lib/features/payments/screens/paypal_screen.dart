@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:url_launcher/url_launcher.dart';
 
 class PayPalScreen extends StatefulWidget {
   final String clientId;
@@ -43,9 +44,6 @@ class _PayPalScreenState extends State<PayPalScreen> {
   bool isLoading = true;
   String errorMessage = '';
 
-  // Store listener to remove it on dispose
-  // web.EventListener? _messageListener;
-
   // PayPal URLs - using api-m.paypal.com for v2 API
   final String _baseUrl = 'https://api-m.paypal.com';
 
@@ -60,7 +58,6 @@ class _PayPalScreenState extends State<PayPalScreen> {
       debugPrint(
         'PayPal WARNING: Running on Web. Direct PayPal API calls from browser may fail due to CORS.',
       );
-      // _registerWebListener();
     }
 
     _initPayment();
@@ -68,9 +65,6 @@ class _PayPalScreenState extends State<PayPalScreen> {
 
   @override
   void dispose() {
-    // if (kIsWeb && _messageListener != null) {
-    //   web.window.removeEventListener('message', _messageListener);
-    // }
     super.dispose();
   }
 
@@ -84,44 +78,58 @@ class _PayPalScreenState extends State<PayPalScreen> {
           'PayPal: Order created successfully, loading approval URL: ${urls['approval_url']}',
         );
 
-        _controller = WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onPageStarted: (url) =>
-                  debugPrint('PayPal: Page started loading: $url'),
-              onPageFinished: (url) {
-                debugPrint('PayPal: Page finished loading: $url');
-              },
-              onNavigationRequest: (NavigationRequest request) {
-                debugPrint('PayPal: Navigation request to: ${request.url}');
-                if (request.url.contains('payment-success') ||
-                    request.url.contains('return_url')) {
-                  debugPrint('PayPal: Return URL detected, capturing order...');
-                  final uri = Uri.parse(request.url);
-                  final token = uri.queryParameters['token'];
-                  if (token != null) {
-                    _captureOrder(token);
-                  }
-                  return NavigationDecision.prevent;
-                }
-                if (request.url.contains('payment-cancelled') ||
-                    request.url.contains('cancel_url')) {
-                  debugPrint('PayPal: Cancel URL detected');
-                  widget.onCancel();
-                  Navigator.of(context).pop();
-                  return NavigationDecision.prevent;
-                }
-                return NavigationDecision.navigate;
-              },
-            ),
-          )
-          ..loadRequest(Uri.parse(urls['approval_url']!));
+        if (kIsWeb) {
+          // Web: Initialize controller without mobile-specific settings
+          _controller = WebViewController();
+          _controller.loadRequest(Uri.parse(urls['approval_url']!));
 
-        setState(() {
-          checkoutUrl = urls['approval_url'];
-          isLoading = false;
-        });
+          setState(() {
+            checkoutUrl = urls['approval_url'];
+            isLoading = false;
+          });
+        } else {
+          // Mobile Flow: WebView with navigation delegates
+          _controller = WebViewController()
+            ..setJavaScriptMode(JavaScriptMode.unrestricted)
+            ..setNavigationDelegate(
+              NavigationDelegate(
+                onPageStarted: (url) =>
+                    debugPrint('PayPal: Page started loading: $url'),
+                onPageFinished: (url) {
+                  debugPrint('PayPal: Page finished loading: $url');
+                },
+                onNavigationRequest: (NavigationRequest request) {
+                  debugPrint('PayPal: Navigation request to: ${request.url}');
+                  if (request.url.contains('payment-success') ||
+                      request.url.contains('return_url')) {
+                    debugPrint(
+                      'PayPal: Return URL detected, capturing order...',
+                    );
+                    final uri = Uri.parse(request.url);
+                    final token = uri.queryParameters['token'];
+                    if (token != null) {
+                      _captureOrder(token);
+                    }
+                    return NavigationDecision.prevent;
+                  }
+                  if (request.url.contains('payment-cancelled') ||
+                      request.url.contains('cancel_url')) {
+                    debugPrint('PayPal: Cancel URL detected');
+                    widget.onCancel();
+                    Navigator.of(context).pop();
+                    return NavigationDecision.prevent;
+                  }
+                  return NavigationDecision.navigate;
+                },
+              ),
+            )
+            ..loadRequest(Uri.parse(urls['approval_url']!));
+
+          setState(() {
+            checkoutUrl = urls['approval_url'];
+            isLoading = false;
+          });
+        }
       }
     } catch (e) {
       debugPrint('PayPal: Initialization Error: $e');
@@ -232,7 +240,7 @@ class _PayPalScreenState extends State<PayPalScreen> {
 
         if (approvalUrl != null) {
           debugPrint('PayPal: Order created. ID: ${body['id']}');
-          return {'approval_url': approvalUrl};
+          return {'approval_url': approvalUrl, 'orderId': body['id']};
         }
         throw Exception('Approval URL not found in response');
       } else {
@@ -328,45 +336,6 @@ class _PayPalScreenState extends State<PayPalScreen> {
       );
     }
 
-    // if (kIsWeb && checkoutUrl != null) {
-    //   // Register iframe element for web
-    //   final viewType = 'paypal-iframe-${DateTime.now().millisecondsSinceEpoch}';
-    //   // ignore: undefined_prefixed_name
-    //   ui_web.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
-    //     final iframe = web.HTMLIFrameElement()
-    //       ..src = checkoutUrl!
-    //       ..style.border = 'none'
-    //       ..style.width = '100%'
-    //       ..style.height = '100%'
-    //       ..allow = 'payment'; // check valid attributes for package:web
-    //
-    //     return iframe;
-    //   });
-    //
-    //   return Scaffold(
-    //     backgroundColor: Colors.white,
-    //     appBar: AppBar(
-    //       title: Text(
-    //         'PayPal Checkout',
-    //         style: GoogleFonts.inter(
-    //           color: Colors.black,
-    //           fontWeight: FontWeight.bold,
-    //         ),
-    //       ),
-    //       backgroundColor: Colors.white,
-    //       elevation: 1,
-    //       leading: CloseButton(
-    //         color: Colors.black,
-    //         onPressed: () {
-    //           widget.onCancel();
-    //           Navigator.of(context).pop();
-    //         },
-    //       ),
-    //     ),
-    //     body: HtmlElementView(viewType: viewType),
-    //   );
-    // }
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -387,7 +356,68 @@ class _PayPalScreenState extends State<PayPalScreen> {
           },
         ),
       ),
-      body: WebViewWidget(controller: _controller),
+      body: Column(
+        children: [
+          Expanded(child: WebViewWidget(controller: _controller)),
+          if (kIsWeb)
+            Container(
+              padding: const EdgeInsets.all(12),
+              color: Colors.amber.withValues(alpha: 0.1),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'If blank, PayPal blocked the view. Click here to open in new tab:',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (checkoutUrl != null) {
+                        final url = Uri.parse(checkoutUrl!);
+                        if (await canLaunchUrl(url)) {
+                          // Using external application as backup if embedded fails
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
+
+                          if (context.mounted) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Payment Status'),
+                                content: const Text(
+                                  'Did you complete the payment in the new tab?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('No'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      widget.onCancel();
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Yes, I Paid'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        }
+                      }
+                    },
+                    child: const Text('Open in New Tab'),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

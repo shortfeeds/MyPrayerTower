@@ -319,7 +319,8 @@ class _DonationScreenState extends ConsumerState<DonationScreen>
                         ),
                         onChanged: (val) {
                           setState(() {
-                            _customAmount = (int.tryParse(val) ?? 0) * 100;
+                            final amount = double.tryParse(val) ?? 0;
+                            _customAmount = (amount * 100).toInt();
                           });
                         },
                       ),

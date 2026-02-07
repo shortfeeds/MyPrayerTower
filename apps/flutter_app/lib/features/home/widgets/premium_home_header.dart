@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,17 +9,17 @@ import '../../auth/providers/auth_provider.dart';
 import '../../../widgets/app_bar_menu_button.dart';
 import '../widgets/perpetual_flame.dart';
 import '../../../core/liturgy/liturgy_provider.dart';
-import '../widgets/stained_glass_painter.dart';
+// import '../widgets/stained_glass_painter.dart'; // Removed
 
 class PremiumHomeHeader extends ConsumerWidget {
   const PremiumHomeHeader({super.key});
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    if (hour < 21) return 'Good Evening';
-    return 'Blessed Night';
+    if (hour < 12) return 'Good Morning,';
+    if (hour < 17) return 'Good Afternoon,';
+    if (hour < 21) return 'Good Evening,';
+    return 'Blessed Night,';
   }
 
   @override
@@ -29,7 +28,7 @@ class PremiumHomeHeader extends ConsumerWidget {
     final userName = user?.name.split(' ').first ?? 'Pilgrim';
 
     return SliverAppBar(
-      expandedHeight: 500.0, // Increased height for the new card
+      expandedHeight: 460.0,
       collapsedHeight: kToolbarHeight + 10,
       floating: false,
       pinned: true,
@@ -40,11 +39,11 @@ class PremiumHomeHeader extends ConsumerWidget {
         padding: const EdgeInsets.only(left: 20.0, top: 12.0, bottom: 12.0),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
+            color: Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.1),
-              width: 1,
+              width: 0.5,
             ),
           ),
           child: const AppBarMenuButton(
@@ -64,13 +63,9 @@ class PremiumHomeHeader extends ConsumerWidget {
               padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.gold500,
-                    AppTheme.gold500.withValues(alpha: 0.1),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                border: Border.all(
+                  color: AppTheme.gold500.withValues(alpha: 0.2),
+                  width: 1,
                 ),
               ),
               child: Container(
@@ -83,7 +78,7 @@ class PremiumHomeHeader extends ConsumerWidget {
                       ? Image.network(user!.avatarUrl!, fit: BoxFit.cover)
                       : const Icon(
                           LucideIcons.user,
-                          color: Colors.white,
+                          color: Colors.white70,
                           size: 20,
                         ),
                 ),
@@ -97,61 +92,56 @@ class PremiumHomeHeader extends ConsumerWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // 1. Dynamic Living Sanctuary Background
-            const _LivingSanctuaryBackground(),
+            // 1. Static Sacred Atmosphere Background
+            const _SacredAtmosphereBackground(),
 
             // 2. Content Layer
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Top Row: Greeting & Flame (Flame preserved top-right context)
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _getGreeting(),
-                                style: GoogleFonts.playfairDisplay(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                userName,
-                                style: GoogleFonts.playfairDisplay(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: -0.5,
-                                  height: 1.1,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              // Integrated Liturgical Info
-                              const _LiturgicalInfoBadge(),
-                            ],
-                          ),
-                        ),
-                        const PerpetualFlame(participantCount: 1243),
-                      ],
+                    const Spacer(),
+
+                    // Liturgical Date Badge
+                    const _LiturgicalInfoBadge(),
+                    const SizedBox(height: 16),
+
+                    // Greeting
+                    Text(
+                      _getGreeting(),
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w400,
+                        color: AppTheme.gold500,
+                        letterSpacing: 0.5,
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
+                    const SizedBox(height: 4),
+
+                    // User Name
+                    Text(
+                      userName,
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 42,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                        height: 1.1,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Perpetual Flame Badge
+                    const PerpetualFlame(participantCount: 1243),
 
                     const Spacer(),
 
-                    // Central: Daily Inspiration Card
+                    // Daily Inspiration Card
                     const _DailyInspirationCard(),
-
-                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -163,96 +153,45 @@ class PremiumHomeHeader extends ConsumerWidget {
   }
 }
 
-class _LivingSanctuaryBackground extends ConsumerStatefulWidget {
-  const _LivingSanctuaryBackground();
-
-  @override
-  ConsumerState<_LivingSanctuaryBackground> createState() =>
-      _LivingSanctuaryBackgroundState();
-}
-
-class _LivingSanctuaryBackgroundState
-    extends ConsumerState<_LivingSanctuaryBackground>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  final Map<int, List<Offset>> _shardPoints = {};
-  final Random _random = Random(42); // Seed for consistency
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 20),
-    )..repeat(reverse: true);
-
-    _generateShardPoints();
-  }
-
-  void _generateShardPoints() {
-    // Generate Voronoi-like shard points (simplified for demo)
-    for (int i = 0; i < 15; i++) {
-      final center = Offset(_random.nextDouble(), _random.nextDouble());
-      final points = <Offset>[
-        center,
-        center +
-            Offset(
-              _random.nextDouble() * 0.4 - 0.2,
-              _random.nextDouble() * 0.4 - 0.2,
-            ),
-        center +
-            Offset(
-              _random.nextDouble() * 0.4 - 0.2,
-              _random.nextDouble() * 0.4 - 0.2,
-            ),
-      ];
-      _shardPoints[i] = points;
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+class _SacredAtmosphereBackground extends StatelessWidget {
+  const _SacredAtmosphereBackground();
 
   @override
   Widget build(BuildContext context) {
-    final liturgicalColor = ref.watch(liturgicalColorProvider);
-
     return Stack(
       fit: StackFit.expand,
       children: [
         // Deep Base
         Container(color: AppTheme.sacredNavy950),
 
-        // Animated Stained Glass
-        AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return CustomPaint(
-              painter: StainedGlassPainter(
-                baseColor: liturgicalColor,
-                progress: _controller.value,
-                shardPoints: _shardPoints,
-              ),
-              size: Size.infinite,
-            );
-          },
+        // Central Warm Glow (The "Tabernacle" Light effect)
+        Container(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: const Alignment(0, -0.2), // Slightly above center
+              radius: 1.2,
+              colors: [
+                AppTheme.gold500.withValues(alpha: 0.15), // Inner Glow
+                AppTheme.sacredNavy900.withValues(alpha: 0.5),
+                AppTheme.sacredNavy950, // Outer Darkness
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+          ),
         ),
 
-        // Vignette Overlay
+        // Subtle Vignette for focus
         Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withValues(alpha: 0.6),
+                Colors.black.withValues(alpha: 0.4),
                 Colors.transparent,
-                Colors.black.withValues(alpha: 0.7),
+                Colors.black.withValues(alpha: 0.6),
               ],
-              stops: const [0.0, 0.4, 1.0],
+              stops: const [0.0, 0.5, 1.0],
             ),
           ),
         ),
@@ -353,8 +292,8 @@ class _DailyInspirationCard extends StatelessWidget {
             color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.15),
-              width: 1,
+              color: Colors.white.withValues(alpha: 0.1),
+              width: 0.5,
             ),
             boxShadow: [
               BoxShadow(
