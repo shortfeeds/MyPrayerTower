@@ -99,8 +99,8 @@ export async function GET(request: NextRequest) {
             }
         });
 
-        // Add cache headers for CDN/browser caching (1 minute)
-        response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+        // Add cache headers for CDN/browser caching (1 hour)
+        response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
 
         return response;
     } catch (error: any) {
