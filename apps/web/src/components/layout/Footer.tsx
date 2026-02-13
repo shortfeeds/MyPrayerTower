@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, Smartphone, Gift, Flame } from 'lucide-react';
+import { Facebook, Youtube, Heart, Church, Star, Mail, Home, User, Check, Loader2, Apple, Smartphone, Gift, Flame, Send } from 'lucide-react';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
 import { UniversalOfferingModal } from '@/components/offerings/UniversalOfferingModal';
 
@@ -88,6 +88,7 @@ export function Footer() {
         { icon: InstagramIcon, label: 'Instagram', href: 'https://www.instagram.com/myprayertower/' },
         { icon: ThreadsIcon, label: 'Threads', href: 'https://www.threads.net/@myprayertower' },
         { icon: PinterestIcon, label: 'Pinterest', href: 'https://www.pinterest.com/myprayertower/' },
+        { icon: Send, label: 'Telegram', href: 'https://t.me/MyPrayerTower' },
     ];
 
     const mobileNavItems = [
