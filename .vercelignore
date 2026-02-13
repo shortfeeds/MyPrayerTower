@@ -1,0 +1,16 @@
+# Standard Ignore File
+node_modules
+.next
+.git
+.turbo
+
+# Apps to ignore
+apps/flutter_app
+apps/telegram-bot
+apps/admin
+apps/api
+packages/apps
+
+# Misc
+.DS_Store
+*.log

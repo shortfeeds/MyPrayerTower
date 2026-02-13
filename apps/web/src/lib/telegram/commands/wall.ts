@@ -1,71 +1,96 @@
 import { Context, InlineKeyboard } from "grammy";
-import { getLatestPublicPrayers, prayForRequest } from "../services/prayer-wall";
+import { getPrayerRequests, markPrayer as markPrayerService, submitPrayerFromTelegram } from "../services/prayer-wall";
+import { SUBMISSION_PROMPT_TEXT } from "../utils/constants";
 
 export const wallCommand = async (ctx: Context) => {
-    try {
-        const prayers = await getLatestPublicPrayers(5);
+    // Show options
+    const keyboard = new InlineKeyboard()
+        .text("🙏 View Requests", "wall_view")
+        .text("📝 Submit Request", "wall_submit").row()
+        .text("🏠 Home", "cmd_start");
+
+    await ctx.reply(
+        `🙏 *Prayer Wall*
+
+"Bear one another's burdens, and so fulfill the law of Christ." (Galatians 6:2)
+
+View requests from the community or ask for prayers.`,
+        {
+            parse_mode: "Markdown",
+            reply_markup: keyboard,
+        }
+    );
+};
+
+export const handlePrayerWallCallback = async (ctx: Context) => {
+    if (!ctx.callbackQuery?.data) return;
+    const data = ctx.callbackQuery.data;
+
+    // VIEW REQUESTS
+    if (data === "wall_view" || data === "wall_refresh") {
+        const prayers = await getPrayerRequests();
 
         if (prayers.length === 0) {
-            await ctx.reply("There are no active prayer requests at the moment.");
+            await ctx.answerCallbackQuery("No public requests found.");
             return;
         }
 
-        await ctx.reply("🙏 *Prayer Wall* \nHere are the latest intentions from our community:", { parse_mode: "Markdown" });
+        // Show latest 3
+        const subset = prayers.slice(0, 3);
 
-        for (const prayer of prayers) {
-            let author = "Anonymous";
-            if (prayer.visibility === "PUBLIC" && prayer.user) {
-                author = `${prayer.user.firstName} ${prayer.user.lastName ? prayer.user.lastName[0] + "." : ""}`;
-            }
+        for (const p of subset) {
+            const k = new InlineKeyboard()
+                .text(`🙏 Prayed (${p.prayerCount})`, `pray_${p.id}`);
 
-            const message = `
-*${prayer.title || "Prayer Request"}*
-_${author}_
-
-${prayer.content.length > 300 ? prayer.content.substring(0, 300) + "..." : prayer.content}
-
-🌱 ${prayer.prayerCount} prayers so far
-            `;
-
-            const keyboard = new InlineKeyboard().text(`🙏 I Prayed`, `pray_${prayer.id}`);
-
-            await ctx.reply(message, {
-                parse_mode: "Markdown",
-                reply_markup: keyboard,
-            });
+            await ctx.reply(
+                `👤 *${p.name || 'Anonymous'}*\n\n"${p.content}"\n\n_${new Date(p.createdAt).toLocaleDateString()}_`,
+                { parse_mode: "Markdown", reply_markup: k }
+            );
         }
 
-    } catch (error) {
-        console.error("Error in wall command:", error);
-        await ctx.reply("Sorry, I couldn't load the Prayer Wall right now.");
+        const refreshK = new InlineKeyboard()
+            .text("🔄 Refresh", "wall_refresh")
+            .text("📝 Submit", "wall_submit");
+
+        await ctx.reply("Scroll up to see requests.", { reply_markup: refreshK });
+        await ctx.answerCallbackQuery();
+    }
+
+    // SUBMIT REQUEST
+    if (data === "wall_submit") {
+        // ForceReply to make it easy to track
+        await ctx.reply(SUBMISSION_PROMPT_TEXT, {
+            reply_markup: { force_reply: true }
+        });
+        await ctx.answerCallbackQuery();
     }
 };
 
 export const handlePrayCallback = async (ctx: Context) => {
-    if (!ctx.callbackQuery || !ctx.callbackQuery.data) return;
-
+    if (!ctx.callbackQuery?.data) return;
     const data = ctx.callbackQuery.data;
-    if (!data.startsWith("pray_")) return;
 
-    const prayerId = data.split("_")[1];
-    const user = ctx.from;
-
-    if (!user) return;
-
-    try {
-        const result = await prayForRequest(user.id, prayerId);
-
-        if (result.success) {
-            if (result.alreadyPrayed) {
-                await ctx.answerCallbackQuery({ text: "You have already prayed for this intention. 🙏" });
-            } else {
-                await ctx.answerCallbackQuery({ text: "Prayer recorded! Thank you. 🕊️" });
-            }
-        } else {
-            await ctx.answerCallbackQuery({ text: "Failed to record prayer. Please try again." });
-        }
-    } catch (error) {
-        console.error("Callback error:", error);
-        await ctx.answerCallbackQuery({ text: "An error occurred." });
+    // pray_ID
+    const id = data.split("_")[1];
+    if (id) {
+        await markPrayerService(id);
+        await ctx.answerCallbackQuery("Thanks for praying! 🙏");
     }
 };
+
+export const handleSubmissionMessage = async (ctx: Context) => {
+    if (!ctx.message?.text || !ctx.from) return;
+
+    // Create prayer
+    const name = ctx.from.first_name || "Anonymous";
+    const content = ctx.message.text;
+
+    try {
+        await submitPrayerFromTelegram(content, name, ctx.from.id.toString());
+        await ctx.reply("✅ Your prayer request has been received and added to the wall.");
+    } catch (e) {
+        console.error(e);
+        await ctx.reply("Failed to submit prayer. Please try again.");
+    }
+};
+

@@ -1,28 +1,38 @@
 import { Context, InlineKeyboard } from "grammy";
+import { getSaintOfToday } from "@/lib/saints";
 
 export const startCommand = async (ctx: Context) => {
+    // 10-Module Main Menu
     const keyboard = new InlineKeyboard()
-        .text("📖 Daily Reading", "cmd_reading")
-        .text("😇 Saint of Day", "cmd_saint").row()
-        .text("🙏 Prayer Wall", "cmd_wall")
-        .text("🔥 My Streak", "cmd_streak").row()
-        .url("🌐 Visit Website", "https://myprayertower.com");
+        .text("📖 Daily Gospel", "menu_gospel")
+        .text("📿 Holy Rosary", "menu_rosary").row()
+        .text("🕯️ Novena Center", "menu_novena")
+        .text("✝️ Divine Mercy", "menu_mercy").row()
+        .text("😇 Saint of Day", "menu_saint")
+        .text("🧠 Catholic Quiz", "menu_quiz").row() // Phase 2 placeholder (active)
+        .text("🙏 Prayer Requests", "menu_wall")
+        .text("👨‍👩‍👧 Family & Kids", "menu_family").row() // Phase 2 placeholder (active)
+        .text("🎧 Audio Mode", "menu_audio")
+        .text("❤️ Support Us", "menu_support").row()
+        .webApp("🚀 Launch Mini App", "https://www.myprayertower.com/bot");
 
-    await ctx.reply(
-        `🙏 *Welcome to My Prayer Tower Bot!*
+    const welcomeMsg =
+        `🙏 <b>Welcome to My Prayer Tower</b>
 
-I am your daily Catholic companion. 
-Here is what I can do for you:
+I am your daily Catholic companion. Choose a devotion below to begin:
 
-• Get the **Daily Mass Readings**
-• Meet the **Saint of the Day**
-• View and pray for **Prayer Intentions**
-• Track your **Prayer Streak**
+📖 <b>Daily Gospel</b> - Readings & Reflection
+📿 <b>Holy Rosary</b> - Interactive Guide
+🕯️ <b>Novena Center</b> - Track 9-Day Prayers
+✝️ <b>Divine Mercy</b> - 3PM Chaplet
+😇 <b>Saint of Day</b> - Life & Lessons
+🙏 <b>Prayer Wall</b> - Submit Intentions
 
-Tap a button below or type /help to see all commands.`,
-        {
-            parse_mode: "Markdown",
-            reply_markup: keyboard,
-        }
-    );
+<i>"Pray without ceasing." - 1 Thessalonians 5:17</i>`;
+
+    await ctx.reply(welcomeMsg, {
+        parse_mode: "HTML",
+        reply_markup: keyboard,
+    });
 };
+

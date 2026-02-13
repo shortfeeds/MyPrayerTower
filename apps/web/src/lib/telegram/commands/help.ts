@@ -2,19 +2,24 @@ import { Context } from "grammy";
 
 export const helpCommand = async (ctx: Context) => {
     await ctx.reply(
-        `🤖 *My Prayer Tower Bot Help*
+        `🤖 *My Prayer Tower Bot Guide*
 
-Here are the commands you can use:
+Navigate using the main menu (/start) or use these commands:
 
-/start - Open the main menu
-/reading - Get today's Mass readings
-/saint - Get the Saint of the Day
-/wall - View recent prayer requests
-/pray - Link to the Prayer Wall
-/streak - Check your activity streak
-/help - Show this message
+/start - 🏠 Open Main Menu
+/reading - 📖 Daily Gospel & Reflection
+/rosary - 📿 Holy Rosary Guide
+/novena - 🕯️ Novena Center
+/mercy - ✝️ Divine Mercy Chaplet
+/saint - 😇 Saint of the Day
+/quiz - 🧠 Catholic Quiz
+/wall - 🙏 Prayer Requests
+/family - 👨‍👩‍👧 Family & Kids
+/audio - 🎧 Audio Resources
+/support - ❤️ Support & Share
 
-Needs support? Visit https://myprayertower.com/contact`,
+_Tap /start at any time to return home._`,
         { parse_mode: "Markdown" }
     );
 };
+

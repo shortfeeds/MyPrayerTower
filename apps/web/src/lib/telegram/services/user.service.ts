@@ -23,6 +23,14 @@ export const findOrCreateUser = async (telegramId: number | bigint, username?: s
     }
 };
 
+export const incrementQuizScore = async (telegramUserId: number | undefined) => {
+    if (!telegramUserId) return;
+    return db.telegramUser.update({
+        where: { telegramId: BigInt(telegramUserId) },
+        data: { quizScore: { increment: 1 } }
+    });
+};
+
 export const updateLastActive = async (telegramId: number | bigint) => {
     try {
         await db.telegramUser.update({

@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { getPrayerBySlug } from '@/app/actions/prayer-library';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const alt = 'Catholic Prayer from MyPrayerTower';
 export const size = {
     width: 1200,

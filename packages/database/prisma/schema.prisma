@@ -2445,16 +2445,25 @@ model NovenaParticipation {
 
 
 
+
 model TelegramUser {
   id               String    @id @default(cuid())
   telegramId       BigInt    @unique
   telegramUsername String?
   mptUserId        String?
   User             User?     @relation(fields: [mptUserId], references: [id])
-  preferredTime    String    @default("06:00")
+  
+  // Settings
+  preferredTime    String    @default("06:00") // Local time for gospel
   timezone         String    @default("UTC")
+  isGospelSubscribed Boolean @default(true)
+  isMercySubscribed  Boolean @default(false)
+
+  // Gamification
+  quizScore        Int       @default(0)
   streakCount      Int       @default(0)
   lastActiveDate   DateTime?
+  
   referralCode     String?   @unique
   referredById     String?
   ReferredBy       TelegramUser? @relation("TelegramReferrals", fields: [referredById], references: [id])

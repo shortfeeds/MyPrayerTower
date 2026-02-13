@@ -1,13 +1,9 @@
 import { Context, InlineKeyboard } from "grammy";
-import axios from "axios";
-
-// We use the same API URL logic
-const API_Base_URL = process.env.NEXT_PUBLIC_APP_URL ? `${process.env.NEXT_PUBLIC_APP_URL}/api` : "https://myprayertower.com/api";
+import { getSaintOfToday } from "@/lib/saints";
 
 export const saintCommand = async (ctx: Context) => {
     try {
-        const response = await axios.get(`${API_Base_URL}/saints/today`);
-        const saint = response.data;
+        const saint = await getSaintOfToday();
 
         if (!saint) {
             await ctx.reply("Could not fetch today's saint.");
@@ -19,15 +15,24 @@ export const saintCommand = async (ctx: Context) => {
         if (saint.feastDay) message += `_Feast Day: ${saint.feastDay}_\n\n`;
 
         if (saint.shortBio) {
-            message += `${saint.shortBio}\n\n`;
+            // Limited length for telegram summary
+            const bio = saint.shortBio.length > 800 ? saint.shortBio.substring(0, 800) + "..." : saint.shortBio;
+            message += `${bio}\n\n`;
         }
 
-        if (saint.patronOf && saint.patronOf.length > 0) {
-            message += `🛡️ *Patron of:* ${saint.patronOf.join(", ")}\n`;
+        if (saint.patronOf && (saint.patronOf as string[]).length > 0) {
+            message += `🛡️ *Patron of:* ${(saint.patronOf as string[]).join(", ")}\n\n`;
         }
+
+        // Static enhancements (since we don't have dynamic 'life lesson' in DB yet)
+        message += `💡 *Life Lesson:*\nLet us imitate their virtue and ask for their intercession today.\n\n`;
+
+        message += `🙏 *Prayer:*\nSaint ${saint.name}, pray for us! Amen.`;
 
         const keyboard = new InlineKeyboard()
-            .url("Read Full Bio", `https://myprayertower.com/saints/${saint.slug}`);
+            .url("📖 Read Full Bio", `https://myprayertower.com/saints/${saint.slug}`)
+            .row()
+            .text("🏠 Back to Menu", "cmd_start");
 
         if (saint.imageUrl) {
             await ctx.replyWithPhoto(saint.imageUrl, {
@@ -47,3 +52,4 @@ export const saintCommand = async (ctx: Context) => {
         await ctx.reply("An error occurred while fetching the saint.");
     }
 };
+

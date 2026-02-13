@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Heart, Loader2 } from 'lucide-react';
-import { createMemorial } from '@/lib/api/memorials';
+import { createMemorial } from '@/app/actions/memorials';
 import { useRouter } from 'next/navigation';
 
 export default function CreateMemorialPage() {

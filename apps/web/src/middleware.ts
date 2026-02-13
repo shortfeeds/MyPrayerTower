@@ -2,13 +2,26 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Security headers
-const securityHeaders = {
-    'X-Frame-Options': 'DENY',
-    'X-Content-Type-Options': 'nosniff',
-    'X-XSS-Protection': '1; mode=block',
-    'Referrer-Policy': 'strict-origin-when-cross-origin',
-    'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self), payment=()',
-    'Content-Security-Policy': [
+const getSecurityHeaders = (pathname: string) => {
+    const headers: Record<string, string> = {
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self), payment=()',
+    };
+
+    // Telegram Mini Apps need to be embeddable
+    if (pathname.startsWith('/bot')) {
+        headers['X-Frame-Options'] = 'ALLOWALL'; // Or specific ALLOW-FROM if supported
+    } else {
+        headers['X-Frame-Options'] = 'DENY';
+    }
+
+    const frameAncestors = pathname.startsWith('/bot')
+        ? "'self' https://t.me https://web.telegram.org https://desktop.telegram.org"
+        : "'none'";
+
+    headers['Content-Security-Policy'] = [
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.vercel-scripts.com https://*.vercel-insights.com https://*.adtrafficquality.google https://translate.googleapis.com https://translate-pa.googleapis.com",
         "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.vercel-scripts.com https://*.vercel-insights.com https://*.adtrafficquality.google https://translate.googleapis.com https://translate-pa.googleapis.com",
@@ -21,9 +34,11 @@ const securityHeaders = {
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",
-        "frame-ancestors 'none'",
+        `frame-ancestors ${frameAncestors}`,
         "upgrade-insecure-requests",
-    ].join('; '),
+    ].join('; ');
+
+    return headers;
 };
 
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -56,6 +71,7 @@ export async function middleware(request: NextRequest) {
     if (
         pathname.startsWith('/_next') ||
         pathname.startsWith('/static') ||
+        pathname.startsWith('/api/telegram/webhook') ||
         pathname.includes('.') ||
         pathname === '/favicon.ico'
     ) {
@@ -79,7 +95,8 @@ export async function middleware(request: NextRequest) {
     // Add pathname header for server components to detect current route
     response.headers.set('x-pathname', pathname);
 
-    Object.entries(securityHeaders).forEach(([key, value]) => {
+    const headers = getSecurityHeaders(pathname);
+    Object.entries(headers).forEach(([key, value]) => {
         response.headers.set(key, value);
     });
 
