@@ -1,5 +1,6 @@
 # Standard Ignore File
 node_modules
+**/node_modules
 .next
 .git
 .turbo

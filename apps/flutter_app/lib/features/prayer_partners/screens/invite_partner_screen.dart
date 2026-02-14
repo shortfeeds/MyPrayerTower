@@ -31,14 +31,18 @@ class _InvitePartnerScreenState extends ConsumerState<InvitePartnerScreen> {
 
     final state = ref.read(prayerPartnerControllerProvider);
     if (state.hasError) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: ${state.error}')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${state.error}')));
+      }
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Invitation sent!')));
-      context.pop();
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Invitation sent!')));
+        context.pop();
+      }
     }
   }
 
