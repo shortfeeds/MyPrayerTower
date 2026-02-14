@@ -1,3 +1,4 @@
+// Deploy: 2026-02-14T13:50 - Force fresh build
 import { Bot, GrammyError, HttpError } from "grammy";
 
 import { startCommand } from "./commands/start";
