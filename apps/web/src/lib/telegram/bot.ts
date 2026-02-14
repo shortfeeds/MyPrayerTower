@@ -116,6 +116,11 @@ export const createBot = (botInfo?: UserFromGetMe) => {
         console.log(`>>> [BOT] Callback: ${data}`);
 
         // Navigation Router
+        if (data === "cmd_start") {
+            // "Back to Menu" from any module
+            await startCommand(ctx);
+            return;
+        }
         if (data === "menu_gospel") {
             const { readingCommand } = await import("./commands/reading");
             return readingCommand(ctx);
