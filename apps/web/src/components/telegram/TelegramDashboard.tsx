@@ -58,7 +58,13 @@ export function TelegramDashboard() {
         else setGreeting("Good Evening");
     }, []);
 
-    const firstName = user?.firstName || "Beloved";
+    const handleExternalLink = (url: string) => {
+        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+            window.Telegram.WebApp.openLink(url);
+        } else {
+            window.open(url, '_blank');
+        }
+    };
 
     return (
         <div className="flex flex-col min-h-screen bg-sacred-950 text-white overflow-x-hidden pb-20">
@@ -149,7 +155,7 @@ export function TelegramDashboard() {
                         title="Prayer"
                         subtitle="Wall"
                         color="bg-emerald-500/20"
-                        href="/prayers"
+                        href="/prayer-wall"
                         delay={0.5}
                     />
                 </div>
@@ -170,9 +176,9 @@ export function TelegramDashboard() {
                             <p className="text-xs text-gold-200/60">Help us keep the servers running</p>
                         </div>
                     </div>
-                    <Link href="/support">
+                    <Link href="/contributions">
                         <Button size="sm" className="bg-gold-500 text-black hover:bg-gold-400 rounded-lg px-4 font-bold text-xs h-9">
-                            Give
+                            Give Offering
                         </Button>
                     </Link>
                 </motion.div>
@@ -189,7 +195,14 @@ export function TelegramDashboard() {
                             <Sparkles className="w-6 h-6 text-white" />
                         </Link>
                     </div>
-                    <TabItem icon={<Music className="w-6 h-6" />} label="Audio" href="/audio" />
+                    {/* Audio Redirects to YouTube */}
+                    <button
+                        onClick={() => handleExternalLink('https://youtube.com/@MyPrayerTower')}
+                        className="flex flex-col items-center gap-1 text-blue-200/40 hover:text-blue-100"
+                    >
+                        <Music className="w-6 h-6" />
+                        <span className="text-[10px] font-medium tracking-wide">Audio</span>
+                    </button>
                     <TabItem icon={<User className="w-6 h-6" />} label="Profile" href="/profile" />
                 </div>
             </div>

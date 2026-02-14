@@ -2,185 +2,244 @@ export interface QuizQuestion {
     id: number;
     question: string;
     options: string[];
-    correctIndex: number; // 0-3
+    correctIndex: number;
     explanation?: string;
 }
 
 export const QUIZ_QUESTIONS: QuizQuestion[] = [
-    {
-        id: 1,
-        question: "Who is the Patron Saint of lost things?",
-        options: ["St. Anthony", "St. Jude", "St. Francis", "St. Peter"],
-        correctIndex: 0,
-        explanation: "St. Anthony of Padua is widely invoked for finding lost articles."
-    },
-    {
-        id: 2,
-        question: "How many days is a Novena?",
-        options: ["3", "7", "9", "40"],
-        correctIndex: 2,
-        explanation: "The word 'Novena' comes from the Latin 'novem', meaning nine."
-    },
-    {
-        id: 3,
-        question: "What is the first book of the Bible?",
-        options: ["Exodus", "Genesis", "Leviticus", "Matthew"],
-        correctIndex: 1,
-        explanation: "Genesis recounts the creation of the world."
-    },
-    {
-        id: 4,
-        question: "Who was the first Pope?",
-        options: ["St. Paul", "St. John", "St. Peter", "St. Linus"],
-        correctIndex: 2,
-        explanation: "Jesus gave the keys of the Kingdom to Peter (Matthew 16:19)."
-    },
-    {
-        id: 5,
-        question: "What prayer did Jesus teach us?",
-        options: ["Hail Mary", "The Lord's Prayer", "Glory Be", "Act of Contrition"],
-        correctIndex: 1,
-        explanation: "Also known as the 'Our Father' (Matthew 6:9-13)."
-    },
-    {
-        id: 6,
-        question: "What is the center of Catholic life?",
-        options: [" The Rosary", "The Eucharist", "The Saints", "The Bible"],
-        correctIndex: 1,
-        explanation: "The Eucharist is the 'source and summit' of the Christian life."
-    },
-    {
-        id: 7,
-        question: "How many decades are in a standard Rosary?",
-        options: ["3", "4", "5", "15"],
-        correctIndex: 2,
-        explanation: "A standard Rosary consists of 5 decades."
-    },
-    {
-        id: 8,
-        question: "Where was Jesus born?",
-        options: ["Nazareth", "Jerusalem", "Bethlehem", "Galilee"],
-        correctIndex: 2,
-        explanation: "Jesus was born in Bethlehem of Judea."
-    },
-    {
-        id: 9,
-        question: "Who is the mother of John the Baptist?",
-        options: ["Mary", "Elizabeth", "Anne", "Martha"],
-        correctIndex: 1,
-        explanation: "Elizabeth, the cousin of Mary, is John the Baptist's mother."
-    },
-    {
-        id: 10,
-        question: "What day do we celebrate the Resurrection?",
-        options: ["Good Friday", "Easter Sunday", "Christmas", "Pentecost"],
-        correctIndex: 1,
-        explanation: "Easter Sunday marks the Resurrection of the Lord."
-    },
-    {
-        id: 11,
-        question: "How many Apostles did Jesus choose?",
-        options: ["10", "12", "7", "40"],
-        correctIndex: 1,
-        explanation: "Jesus chose 12 Apostles."
-    },
-    {
-        id: 12,
-        question: "Who betrayed Jesus?",
-        options: ["Judas Iscariot", "Peter", "Thomas", "Pilate"],
-        correctIndex: 0,
-        explanation: "Judas betrayed Jesus for 30 pieces of silver."
-    },
-    {
-        id: 13,
-        question: "What sacrament welcomes us into the Church?",
-        options: ["Confirmation", "Eucharist", "Baptism", "Marriage"],
-        correctIndex: 2,
-        explanation: "Baptism is the gateway to the other sacraments."
-    },
-    {
-        id: 14,
-        question: "Who is the Patron Saint of workers?",
-        options: ["St. Joseph", "St. Patrick", "St. Paul", "St. Luke"],
-        correctIndex: 0,
-        explanation: "St. Joseph the Worker is the patron saint of all workers."
-    },
-    {
-        id: 15,
-        question: "What color does the priest wear during Ordinary Time?",
-        options: ["Red", "White", "Green", "Purple"],
-        correctIndex: 2,
-        explanation: "Green symbolizes hope and growth."
-    },
-    {
-        id: 16,
-        question: "What is the season before Christmas?",
-        options: ["Lent", "Advent", "Easter", "Pentecost"],
-        correctIndex: 1,
-        explanation: "Advent is the season of preparation for Christmas."
-    },
-    {
-        id: 17,
-        question: "Where did Jesus perform his first miracle?",
-        options: ["Cana", "Jericho", "Bethany", "Capernaum"],
-        correctIndex: 0,
-        explanation: "At the wedding feast at Cana."
-    },
-    {
-        id: 18,
-        question: "Who appeared to Mary at the Annunciation?",
-        options: ["The Holy Spirit", "Angel Gabriel", "Angel Michael", "St. Joseph"],
-        correctIndex: 1,
-        explanation: "The Archangel Gabriel announced the birth of Jesus."
-    },
-    {
-        id: 19,
-        question: "What do we call the 40 days before Easter?",
-        options: ["Advent", "Lent", "Epiphany", "Triduum"],
-        correctIndex: 1,
-        explanation: "Lent is the 40-day period of fasting and prayer."
-    },
-    {
-        id: 20,
-        question: "Who led the Israelites out of Egypt?",
-        options: ["Abraham", "David", "Moses", "Joshua"],
-        correctIndex: 2,
-        explanation: "Moses led the Exodus."
-    },
-    {
-        id: 21,
-        question: "What is the 'Golden Rule'?",
-        options: ["Love God", "Do unto others as you would have them do unto you", "Thou shall not kill", "Pray always"],
-        correctIndex: 1,
-        explanation: "Matthew 7:12."
-    },
-    {
-        id: 22,
-        question: "Who wiped the face of Jesus on the way to Calvary?",
-        options: ["Mary", "Veronica", "Mary Magdalene", "Simon"],
-        correctIndex: 1,
-        explanation: "St. Veronica is traditionally known for this act of kindness."
-    },
-    {
-        id: 23,
-        question: "Who doubted Jesus' resurrection until he touched His wounds?",
-        options: ["Peter", "John", "Thomas", "James"],
-        correctIndex: 2,
-        explanation: "Hence the phrase 'Doubting Thomas'."
-    },
-    {
-        id: 24,
-        question: "Which Saint saw the vision of the Divine Mercy?",
-        options: ["St. Faustina", "St. Therese", "St. Bernadette", "St. Clare"],
-        correctIndex: 0,
-        explanation: "St. Maria Faustina Kowalska."
-    },
-    {
-        id: 25,
-        question: "What language was the New Testament originally written in?",
-        options: ["Hebrew", "Latin", "Greek", "Aramaic"],
-        correctIndex: 2,
-        explanation: "Koine Greek."
-    },
-    // Add more to reach 50 if needed, starting with 25 diverse questions
+    // --- SCRIPTURE (OLD TESTAMENT) ---
+    { id: 1, question: "Who built the Ark?", options: ["Moses", "Noah", "Abraham", "David"], correctIndex: 1, explanation: "Noah built the Ark as commanded by God." },
+    { id: 2, question: "What was the first sin?", options: ["Murder", "Disobedience", "Theft", "Lying"], correctIndex: 1, explanation: "Adam and Eve disobeyed God by eating the forbidden fruit." },
+    { id: 3, question: "Who killed Goliath?", options: ["Saul", "David", "Solomon", "Samuel"], correctIndex: 1, explanation: "David defeated the giant Goliath with a sling and a stone." },
+    { id: 4, question: "Who was swallowed by a great fish?", options: ["Jonah", "Job", "Jeremiah", "Joel"], correctIndex: 0, explanation: "Jonah was in the belly of the fish for three days." },
+    { id: 5, question: "Who received the Ten Commandments?", options: ["Abraham", "Isaac", "Jacob", "Moses"], correctIndex: 3, explanation: "Moses received them on Mount Sinai." },
+    { id: 6, question: "Who was sold into slavery by his brothers?", options: ["Joseph", "Benjamin", "Reuben", "Levi"], correctIndex: 0, explanation: "Joseph was sold to merchants heading to Egypt." },
+    { id: 7, question: "Who led the Israelites into the Promised Land?", options: ["Moses", "Aaron", "Joshua", "Caleb"], correctIndex: 2, explanation: "Joshua succeeded Moses." },
+    { id: 8, question: "What city's walls fell down?", options: ["Jerusalem", "Jericho", "Babylon", "Nineveh"], correctIndex: 1, explanation: "The walls of Jericho fell after the Israelites marched around them." },
+    { id: 9, question: "Who was the strongest man in the Bible?", options: ["Samson", "Goliath", "David", "Saul"], correctIndex: 0, explanation: "Samson's strength came from his nazirite vow." },
+    { id: 10, question: "Who was the wisest king?", options: ["David", "Saul", "Solomon", "Hezekiah"], correctIndex: 2, explanation: "Solomon asked God for wisdom to rule his people." },
+    { id: 11, question: "What is the first book of the Bible?", options: ["Genesis", "Exodus", "Leviticus", "Numbers"], correctIndex: 0, explanation: "Genesis means 'origin' or 'beginning'." },
+    { id: 12, question: "Who was the father of many nations?", options: ["Abraham", "Isaac", "Jacob", "Esau"], correctIndex: 0, explanation: "God made a covenant with Abraham." },
+    { id: 13, question: "Who interpreted Pharaoh's dreams?", options: ["Daniel", "Joseph", "Moses", "Aaron"], correctIndex: 1, explanation: "Joseph interpreted the dreams seven years of plenty and famine." },
+    { id: 14, question: "Who was thrown into the lion's den?", options: ["Daniel", "Shadrach", "Meshach", "Abednego"], correctIndex: 0, explanation: "Daniel was protected by an angel." },
+    { id: 15, question: "Who was the weeping prophet?", options: ["Isaiah", "Jeremiah", "Ezekiel", "Daniel"], correctIndex: 1, explanation: "Jeremiah wept for the sins of Israel." },
+
+    // --- SCRIPTURE (NEW TESTAMENT) ---
+    { id: 16, question: "Who is the mother of Jesus?", options: ["Mary", "Elizabeth", "Martha", "Anna"], correctIndex: 0, explanation: "The Blessed Virgin Mary." },
+    { id: 17, question: "Where was Jesus born?", options: ["Nazareth", "Jerusalem", "Bethlehem", "Cana"], correctIndex: 2, explanation: "In the City of David." },
+    { id: 18, question: "Who baptized Jesus?", options: ["John the Baptist", "Peter", "James", "Andrew"], correctIndex: 0, explanation: "In the River Jordan." },
+    { id: 19, question: "How many apostles were there?", options: ["10", "12", "7", "3"], correctIndex: 1, explanation: "Jesus chose Twelve." },
+    { id: 20, question: "Who betrayed Jesus?", options: ["Peter", "Judas", "Thomas", "Pilate"], correctIndex: 1, explanation: "Judas Iscariot." },
+    { id: 21, question: "Who denied Jesus three times?", options: ["John", "Judas", "Peter", "James"], correctIndex: 2, explanation: "Peter denied knowing Him before the cock crowed." },
+    { id: 22, question: "Who doubted the Resurrection?", options: ["Thomas", "Peter", "John", "Matthew"], correctIndex: 0, explanation: "Doubting Thomas." },
+    { id: 23, question: "Who wrote the most Epistles?", options: ["Peter", "John", "Paul", "James"], correctIndex: 2, explanation: "St. Paul wrote 13 (or 14 including Hebrews) letters." },
+    { id: 24, question: "What is the last book of the Bible?", options: ["Revelation", "Acts", "Jude", "3 John"], correctIndex: 0, explanation: "The Apocalypse of St. John." },
+    { id: 25, question: "Where was Paul converted?", options: ["Road to Emmaus", "Road to Damascus", "Jerusalem", "Rome"], correctIndex: 1, explanation: "He saw a blinding light." },
+    { id: 26, question: "Who was the first martyr?", options: ["Stephen", "James", "Peter", "Paul"], correctIndex: 0, explanation: "St. Stephen was stoned to death." },
+    { id: 27, question: "What is the shortest verse?", options: ["Jesus wept", "Pray always", "God is love", "Rejoice"], correctIndex: 0, explanation: "John 11:35." },
+    { id: 28, question: "Who climbed a tree to see Jesus?", options: ["Zacchaeus", "Bartimaeus", "Lazarus", "Matthew"], correctIndex: 0, explanation: "He was a short tax collector." },
+    { id: 29, question: "Who raised Lazarus from the dead?", options: ["Peter", "Paul", "Jesus", "Elijah"], correctIndex: 2, explanation: "Jesus called him out of the tomb." },
+    { id: 30, question: "What is the Great Commandment?", options: ["Love God and Neighbor", "Keep the Sabbath", "Honor Parents", "Do not kill"], correctIndex: 0, explanation: "Love the Lord your God... and your neighbor as yourself." },
+
+    // --- SAINTS ---
+    { id: 31, question: "Who is the patron of lost causes?", options: ["St. Jude", "St. Anthony", "St. Rita", "St. Joseph"], correctIndex: 0, explanation: "St. Jude Thaddeus." },
+    { id: 32, question: "Who is the patron of lost items?", options: ["St. Jude", "St. Anthony", "St. Christopher", "St. Michael"], correctIndex: 1, explanation: "St. Anthony of Padua." },
+    { id: 33, question: "Who founded the Franciscans?", options: ["St. Dominic", "St. Benedict", "St. Francis of Assisi", "St. Ignatius"], correctIndex: 2, explanation: "St. Francis of Assisi." },
+    { id: 34, question: "Who is the Little Flower?", options: ["St. Rose", "St. Therese of Lisieux", "St. Teresa of Avila", "St. Clare"], correctIndex: 1, explanation: "Doctor of the Church." },
+    { id: 35, question: "Who saw Mary at Lourdes?", options: ["Bernadette", "Lucia", "Jacinta", "Catherine"], correctIndex: 0, explanation: "St. Bernadette Soubirous." },
+    { id: 36, question: "Who saw Mary at Fatima?", options: ["Bernadette", "Lucia, Francisco, Jacinta", "Juan Diego", "Catherine Laboure"], correctIndex: 1, explanation: "Three shepherd children." },
+    { id: 37, question: "Who received the Divine Mercy?", options: ["St. Faustina", "St. Margaret Mary", "St. Gertrud", "St. Bridget"], correctIndex: 0, explanation: "St. Faustina Kowalska." },
+    { id: 38, question: "Who is the patron of the Universal Church?", options: ["St. Peter", "St. Paul", "St. Joseph", "St. Michael"], correctIndex: 2, explanation: "St. Joseph." },
+    { id: 39, question: "Who is the patron of music?", options: ["St. Cecilia", "St. Agnes", "St. Lucy", "St. Philomena"], correctIndex: 0, explanation: "St. Cecilia." },
+    { id: 40, question: "Who founded the Jesuits?", options: ["St. Ignatius of Loyola", "St. Francis Xavier", "St. Peter Claver", "St. Aloysius"], correctIndex: 0, explanation: "St. Ignatius." },
+    { id: 41, question: "Who was the first American saint?", options: ["St. Elizabeth Ann Seton", "St. John Neumann", "St. Kateri", "St. Frances Cabrini"], correctIndex: 3, explanation: "St. Frances Xavier Cabrini (citizen)." },
+    { id: 42, question: "Who is the patron of Ireland?", options: ["St. Patrick", "St. Brigid", "St. Columba", "St. Kevin"], correctIndex: 0, explanation: "St. Patrick." },
+    { id: 43, question: "Who translated the Bible into Latin?", options: ["St. Augustine", "St. Jerome", "St. Ambrose", "St. Gregory"], correctIndex: 1, explanation: "The Vulgate." },
+    { id: 44, question: "Who wrote the Confessions?", options: ["St. Augustine", "St. Thomas Aquinas", "St. Bonaventure", "St. Anselm"], correctIndex: 0, explanation: "St. Augustine of Hippo." },
+    { id: 45, question: "Who is the Angelic Doctor?", options: ["St. Thomas Aquinas", "St. Bonaventure", "St. Albert", "St. Dominic"], correctIndex: 0, explanation: "St. Thomas Aquinas." },
+
+    // --- SACRAMENTS ---
+    { id: 46, question: "How many sacraments are there?", options: ["5", "6", "7", "8"], correctIndex: 2, explanation: "Seven sacraments." },
+    { id: 47, question: "Which is the first sacrament?", options: ["Eucharist", "Baptism", "Confirmation", "Reconciliation"], correctIndex: 1, explanation: "Gateway to the others." },
+    { id: 48, question: "What is the matter of Baptism?", options: ["Oil", "Water", "Light", "Salt"], correctIndex: 1, explanation: "Water." },
+    { id: 49, question: "Who is the ordinary minister of Confirmation?", options: ["Priest", "Deacon", "Bishop", "Pope"], correctIndex: 2, explanation: "The Bishop." },
+    { id: 50, question: "What is Transubstantiation?", options: ["Change of substance", "Symbolic change", "Spiritual presence", "Consubstantiation"], correctIndex: 0, explanation: "Bread and wine become Body and Blood." },
+    { id: 51, question: "What are the words of absolution?", options: ["I forgive you", "I absolve you", "Go in peace", "You are clean"], correctIndex: 1, explanation: "'I absolve you from your sins...'." },
+    { id: 52, question: "Who can receive Holy Orders?", options: ["Anyone", "Baptized men", "Baptized women", "Married men only"], correctIndex: 1, explanation: "Baptized males." },
+    { id: 53, question: "What makes a marriage valid?", options: ["Ring", "Vows/Consent", "Mass", "Flowers"], correctIndex: 1, explanation: "Free consent of the spouses." },
+    { id: 54, question: "What oil is used for the sick?", options: ["Chrism", "Oil of Catechumens", "Oil of the Sick", "Olive Oil"], correctIndex: 2, explanation: "Oleum Infirmorum." },
+    { id: 55, question: "How often should one confess serious sins?", options: ["Once a year", "Before receiving Communion", "Never", "Every day"], correctIndex: 1, explanation: "And at least once a year." },
+
+    // --- MASS & LITURGY ---
+    { id: 56, question: "What is the first part of the Mass?", options: ["Liturgy of the Word", "Liturgy of the Eucharist", "Introductory Rites", "Concluding Rites"], correctIndex: 2, explanation: "Entrance, Greeting, Penitential Act." },
+    { id: 57, question: "What language is official for the Church?", options: ["Italian", "Latin", "Greek", "English"], correctIndex: 1, explanation: "Latin." },
+    { id: 58, question: "What color is worn in Ordinary Time?", options: ["Green", "Red", "White", "Purple"], correctIndex: 0, explanation: "Symbolizing hope." },
+    { id: 59, question: "What color is worn in Advent?", options: ["Purple", "Blue", "Pink", "White"], correctIndex: 0, explanation: "Penitential/Preparation." },
+    { id: 60, question: "What color is worn on Pentecost?", options: ["White", "Green", "Red", "Gold"], correctIndex: 2, explanation: "Holy Spirit/Fire." },
+    { id: 61, question: "What is the Responsorial Psalm?", options: ["A song", "A reading from Psalms", "A poem", "A hymn"], correctIndex: 1, explanation: "Sung or read after the First Reading." },
+    { id: 62, question: "Who reads the Gospel?", options: ["Lector", "Altar Server", "Deacon or Priest", "Choir"], correctIndex: 2, explanation: "Ordained minister." },
+    { id: 63, question: "What is the Homily?", options: ["A song", "A prayer", "An explanation of readings", "A blessing"], correctIndex: 2, explanation: "Preaching on the Scripture." },
+    { id: 64, question: "What is the Epiclesis?", options: ["Calling down the Spirit", "Breaking of bread", "The dismissal", "The collection"], correctIndex: 0, explanation: "Asking the Father to send the Spirit." },
+    { id: 65, question: "What does 'Eucharist' mean?", options: ["Sacrifice", "Thanksgiving", "Meal", "Blessing"], correctIndex: 1, explanation: "Thanksgiving." },
+
+    // --- PRAYER ---
+    { id: 66, question: "What prayer did Jesus teach?", options: ["Hail Mary", "Glory Be", "Our Father", "Credo"], correctIndex: 2, explanation: "The Lord's Prayer." },
+    { id: 67, question: "How many decades in a Rosary?", options: ["3", "4", "5", "6"], correctIndex: 2, explanation: "Five decades." },
+    { id: 68, question: "Who gave us the Rosary?", options: ["St. Dominic (tradition)", "St. Francis", "St. Peter", "St. Paul"], correctIndex: 0, explanation: "Traditionally given to St. Dominic." },
+    { id: 69, question: "What are the Sorrowful Mysteries?", options: ["Birth of Jesus", "Passion of Jesus", "Resurrection", "Ministry"], correctIndex: 1, explanation: "Agony, Scourging, Crowning, Carrying Cross, Crucifixion." },
+    { id: 70, question: "What prayer honors the Incarnation?", options: ["Angelus", "Regina Caeli", "Salve Regina", "Memorare"], correctIndex: 0, explanation: "The Angel of the Lord declared unto Mary." },
+    { id: 71, question: "What is the Liturgy of the Hours?", options: ["Daily Mass", "Official prayer of the Church", "Rosary", "Stations"], correctIndex: 1, explanation: "Divine Office." },
+    { id: 72, question: "What is Lectio Divina?", options: ["Divine Reading", "Divine Office", "Divine Liturgy", "Divine Mercy"], correctIndex: 0, explanation: "Prayerful reading of Scripture." },
+    { id: 73, question: "What is a Novena?", options: ["7 days", "9 days", "30 days", "40 days"], correctIndex: 1, explanation: "Nine days of prayer." },
+    { id: 74, question: "What is the Way of the Cross?", options: ["Rosary", "Stations of the Cross", "Pilgrimage", "Procession"], correctIndex: 1, explanation: "Mediating on the Passion." },
+    { id: 75, question: "What is Adoration?", options: ["Singing", "Praying before the Blessed Sacrament", "Reading", "Preaching"], correctIndex: 1, explanation: "Worship of the Eucharist." },
+
+    // --- HISTORY & DOCTRINE ---
+    { id: 76, question: "Who is the Vicar of Christ?", options: ["The Bishop", "The Pope", "The King", "The President"], correctIndex: 1, explanation: "The successor of Peter." },
+    { id: 77, question: "What is the Magisterium?", options: ["Teaching authority", " governing body", "The Bible", "The mystics"], correctIndex: 0, explanation: "The Church's teaching office." },
+    { id: 78, question: "What is Infallibility?", options: ["Sinlessness", "Protection from error in teaching", "Knowing everything", "Power"], correctIndex: 1, explanation: "In faith and morals." },
+    { id: 79, question: "What is a heresy?", options: ["A sin", "A false teaching", "A schism", "A doubt"], correctIndex: 1, explanation: "Denial of a truth of the faith." },
+    { id: 80, question: "What year was the Great Schism?", options: ["1054", "1517", "325", "1960"], correctIndex: 0, explanation: "Split between East and West." },
+    { id: 81, question: "When did the Protestant Reformation begin?", options: ["1517", "1054", "1492", "1776"], correctIndex: 0, explanation: "Luther's 95 Theses." },
+    { id: 82, question: "What council addressed the Reformation?", options: ["Trent", "Nicaea", "Chalcedon", "Vatican I"], correctIndex: 0, explanation: "Council of Trent." },
+    { id: 83, question: "What is the Immaculate Conception?", options: ["Jesus' birth", "Mary conceived without sin", "Jesus' conception", "Virgin Birth"], correctIndex: 1, explanation: "Mary was preserved from original sin." },
+    { id: 84, question: "What is the Assumption?", options: ["Mary taken to heaven body and soul", "Jesus ascending", "Elijah's chariot", "Enoch"], correctIndex: 0, explanation: "Mary expected into heaven." },
+    { id: 85, question: "What is Purgatory?", options: ["Second chance", "Final purification", "Hell", "Limbo"], correctIndex: 1, explanation: "Cleansing before heaven." },
+
+    // --- POPES ---
+    { id: 86, question: "Who was the Polish Pope?", options: ["John Paul I", "John Paul II", "Benedict XVI", "Francis"], correctIndex: 1, explanation: "Karol Wojtyla." },
+    { id: 87, question: "Who called Vatican II?", options: ["Pius XII", "John XXIII", "Paul VI", "John Paul I"], correctIndex: 1, explanation: "Good Pope John." },
+    { id: 88, question: "Who is the current Pope?", options: ["Benedict", "Francis", "John Paul", "Peter"], correctIndex: 1, explanation: "Pope Francis." },
+    { id: 89, question: "Where does the Pope live?", options: ["Rome", "Vatican City", "Avignon", "Castel Gandolfo"], correctIndex: 1, explanation: "Vatican City State." },
+    { id: 90, question: "What is the Pope's ring called?", options: ["Fisherman's Ring", "Signet Ring", "Peter's Ring", "Gold Ring"], correctIndex: 0, explanation: "St. Peter was a fisherman." },
+
+    // --- MARY ---
+    { id: 91, question: "What is the Magnificat?", options: ["Mary's song", "Angel's song", "Zechariah's song", "Simeon's song"], correctIndex: 0, explanation: "My soul magnifies the Lord." },
+    { id: 92, question: "The Rosary is a prayer to whom?", options: ["God", "Mary", "Saints", "Angels"], correctIndex: 1, explanation: "Honoring Mary and meditating on Christ." },
+    { id: 93, question: "What does 'Theotokos' mean?", options: ["God-bearer", "Queen", "Mother", "Virgin"], correctIndex: 0, explanation: "Mother of God." },
+    { id: 94, question: "What is the Scapular?", options: ["A medal", "A garment/devotion", "A rosary", "A prayer"], correctIndex: 1, explanation: "Brown Scapular of Mt. Carmel." },
+    { id: 95, question: "Feast of Mary, Mother of God?", options: ["Jan 1", "Dec 8", "Aug 15", "Mar 25"], correctIndex: 0, explanation: "January 1st." },
+
+    // --- VARIOUS ---
+    { id: 96, question: "What is Ash Wednesday?", options: ["Start of Lent", "End of Lent", "Start of Advent", "End of Christmas"], correctIndex: 0, explanation: "Day of fasting and ashes." },
+    { id: 97, question: "What isn't eaten on Lenten Fridays?", options: ["Dairy", "Meat", "Oil", "Wine"], correctIndex: 1, explanation: "Abstinence from meat." },
+    { id: 98, question: "What is a relic?", options: ["An old item", "Part of a saint/holy object", "A statue", "A picture"], correctIndex: 1, explanation: "Venerated memory of a saint." },
+    { id: 99, question: "What is a monstrance?", options: ["Vessel for Eucharist", "Cup", "Plate", "Hat"], correctIndex: 0, explanation: "To display the Blessed Sacrament." },
+    { id: 100, question: "What is incense used for?", options: ["Smell", "Symbolize prayer rising", "Cleaning", "Tradition"], correctIndex: 1, explanation: "Prayer rising to God." },
+
+    // --- 100 MORE QUESTIONS (Condensed for brevity/speed but distinct) ---
+    { id: 101, question: "Who was the brother of Peter?", options: ["James", "John", "Andrew", "Phillip"], correctIndex: 2, explanation: "St. Andrew." },
+    { id: 102, question: "Who was the Beloved Disciple?", options: ["Peter", "James", "John", "Judas"], correctIndex: 2, explanation: "St. John." },
+    { id: 103, question: "Who replaced Judas?", options: ["Paul", "Matthias", "Barnabas", "Silas"], correctIndex: 1, explanation: "St. Matthias." },
+    { id: 104, question: "Who was the first Gentile convert?", options: ["Cornelius", "Lydia", "Timothy", "Titus"], correctIndex: 0, explanation: "The Centurion Cornelius." },
+    { id: 105, question: "Who accompanied Paul on his first journey?", options: ["Barnabas", "Silas", "Luke", "Timothy"], correctIndex: 0, explanation: "Barnabas." },
+    { id: 106, question: "Who was the seller of purple cloth?", options: ["Lydia", "Priscilla", "Phoebe", "Mary"], correctIndex: 0, explanation: "Lydia." },
+    { id: 107, question: "Who was the doctor among the evangelists?", options: ["Matthew", "Mark", "Luke", "John"], correctIndex: 2, explanation: "St. Luke the Physician." },
+    { id: 108, question: "Who was the tax collector?", options: ["Matthew", "Mark", "Luke", "John"], correctIndex: 0, explanation: "St. Matthew." },
+    { id: 109, question: "Who is the patron of throat ailments?", options: ["St. Blaise", "St. Luke", "St. Peregrine", "St. Roch"], correctIndex: 0, explanation: "St. Blaise." },
+    { id: 110, question: "Who is the patron of cancer patients?", options: ["St. Peregrine", "St. Jude", "St. Agatha", "St. Lucy"], correctIndex: 0, explanation: "St. Peregrine." },
+    { id: 111, question: "Who is the patron of charitable societies?", options: ["St. Vincent de Paul", "St. Francis", "St. Martin", "St. Nicholas"], correctIndex: 0, explanation: "St. Vincent de Paul." },
+    { id: 112, question: "Who is the patron of priests?", options: ["St. John Vianney", "St. Peter", "St. Paul", "St. Pius X"], correctIndex: 0, explanation: "The Curé of Ars." },
+    { id: 113, question: "Who is the patron of youth?", options: ["St. John Bosco", "St. Dominic Savio", "St. Aloysius", "All of them"], correctIndex: 3, explanation: "All are patrons, but Bosco is major." },
+    { id: 114, question: "Who is the patron of messiness?", options: ["St. Zita", "St. Martha", "St. Benedict", "St. Anthony"], correctIndex: 0, explanation: "St. Zita (maid)." },
+    { id: 115, question: "Who is the patron of cooks?", options: ["St. Lawrence", "St. Martha", "St. Paschal", "St. Honoratus"], correctIndex: 0, explanation: "St. Lawrence." },
+    { id: 116, question: "Who is the patron of athletes?", options: ["St. Sebastian", "St. Christopher", "St. Michael", "St. George"], correctIndex: 0, explanation: "St. Sebastian." },
+    { id: 117, question: "Who is the patron of lawyers?", options: ["St. Thomas More", "St. Ivo", "Both", "Neither"], correctIndex: 2, explanation: "Both." },
+    { id: 118, question: "Who is the patron of doctors?", options: ["St. Luke", "Cosmas & Damian", "Both", "Neither"], correctIndex: 2, explanation: "Both." },
+    { id: 119, question: "Who found the True Cross?", options: ["St. Helena", "St. Monica", "St. Catherine", "St. Bridget"], correctIndex: 0, explanation: "Mother of Constantine." },
+    { id: 120, question: "Who is the patron of altar servers?", options: ["St. John Berchmans", "St. Tarcisius", "Both", "St. Stephen"], correctIndex: 2, explanation: "Both." },
+
+    // --- MORE THEOLOGY ---
+    { id: 121, question: "What is Simony?", options: ["Selling holy things", "Lying", "Stealing", "Killing"], correctIndex: 0, explanation: "Sin of buying/selling spiritual goods." },
+    { id: 122, question: "What is Apostasy?", options: ["Total rejection of faith", "Schism", "Heresy", "Doubt"], correctIndex: 0, explanation: "By a baptized person." },
+    { id: 123, question: "What is the Beatific Vision?", options: ["Seeing God face to face", "A dream", "A prophecy", "Angels singing"], correctIndex: 0, explanation: "Heaven." },
+    { id: 124, question: "What is 'ex cathedra'?", options: ["From the chair", "From the table", "From the heart", "From the Bible"], correctIndex: 0, explanation: "Pope teaching infallibly." },
+    { id: 125, question: "What is 'sola scriptura'?", options: ["Scripture alone", "Faith alone", "Grace alone", "Christ alone"], correctIndex: 0, explanation: "Protestant doctrine rejected by Catholics." },
+    { id: 126, question: "What is the Vulgate?", options: ["Latin Bible", "Greek Bible", "Hebrew Bible", "English Bible"], correctIndex: 0, explanation: "St. Jerome's translation." },
+    { id: 127, question: "What is the Septuagint?", options: ["Greek Old Testament", "Latin New Testament", "Hebrew Bible", "Scrolls"], correctIndex: 0, explanation: "Greek translation of Hebrew Scriptures." },
+    { id: 128, question: "What is the 'Didache'?", options: ["Teaching of the 12 Apostles", "A gospel", "A letter", "A creed"], correctIndex: 0, explanation: "Early Christian manual." },
+    { id: 129, question: "What is a 'Doctor of the Church'?", options: ["Saint with great teaching", "Medical doctor", "Pope", "Bishop"], correctIndex: 0, explanation: "Title given for contribution to theology." },
+    { id: 130, question: "What is a 'Father of the Church'?", options: ["Early theologian", "Priest", "Pope", "Founder"], correctIndex: 0, explanation: "Early writers/teachers." },
+
+    // --- MORE HISTORY ---
+    { id: 131, question: "What were the Crusades?", options: ["Wars for Holy Land", "Missions", "Councils", "Schisms"], correctIndex: 0, explanation: "Military expeditions." },
+    { id: 132, question: "What was the Inquisition?", options: ["Church court", "School", "Order", "War"], correctIndex: 0, explanation: "Combating heresy." },
+    { id: 133, question: "Who was the 'Dumb Ox'?", options: ["Aquinas", "Albert", "Bonaventure", "Scotus"], correctIndex: 0, explanation: "St. Thomas Aquinas." },
+    { id: 134, question: "Who was the 'Hammer of Heretics'?", options: ["St. Anthony", "St. Dominic", "St. Francis", "St. Ignatius"], correctIndex: 0, explanation: "St. Anthony of Padua." },
+    { id: 135, question: "Who was the 'Seraphic Father'?", options: ["St. Francis", "St. Dominic", "St. Benedict", "St. Bernard"], correctIndex: 0, explanation: "St. Francis of Assisi." },
+    { id: 136, question: "Who preached to the birds?", options: ["St. Francis", "St. Anthony", "St. Roch", "St. Kevin"], correctIndex: 0, explanation: "St. Francis." },
+    { id: 137, question: "Who preached to the fish?", options: ["St. Anthony", "St. Francis", "St. Peter", "St. Andrew"], correctIndex: 0, explanation: "St. Anthony." },
+    { id: 138, question: "Who founded the Poor Clares?", options: ["St. Clare", "St. Francis", "St. Agnes", "St. Colette"], correctIndex: 0, explanation: "St. Clare of Assisi." },
+    { id: 139, question: "Who founded the Dominicans?", options: ["St. Dominic", "St. Albert", "St. Thomas", "St. Catherine"], correctIndex: 0, explanation: "Order of Preachers." },
+    { id: 140, question: "Who founded the Benedictines?", options: ["St. Benedict", "St. Scholastica", "St. Gregory", "St. Bede"], correctIndex: 0, explanation: "St. Benedict of Nursia." },
+
+    // --- OBJECTS ---
+    { id: 141, question: "What is a Ciborium?", options: ["Cup for hosts", "Plate", "Hat", "Book"], correctIndex: 0, explanation: "Holds consecrated hosts in tabernacle." },
+    { id: 142, question: "What is a Chalice?", options: ["Cup for Precious Blood", "Plate", "Bowl", "Pitcher"], correctIndex: 0, explanation: "Sacred vessel." },
+    { id: 143, question: "What is a Paten?", options: ["Plate for Host", "Cup", "Spoon", "Cloth"], correctIndex: 0, explanation: "Holds the large host." },
+    { id: 144, question: "What is a Cruet?", options: ["Bottle for water/wine", "Candle", "Bell", "Book"], correctIndex: 0, explanation: "Small pitcher." },
+    { id: 145, question: "What is a Thurible?", options: ["Incense burner", "Bell", "Boat", "Stand"], correctIndex: 0, explanation: "Censer." },
+    { id: 146, question: "What is a Stole?", options: ["Scarf-like vestment", "Hat", "Belt", "Cape"], correctIndex: 0, explanation: "Symbol of authority." },
+    { id: 147, question: "What is a Chasuble?", options: ["Outer vestment", "Inner shirt", "Belt", "Scarf"], correctIndex: 0, explanation: "Color of the day." },
+    { id: 148, question: "What is an Alb?", options: ["White robe", "Belt", "Cape", "Hat"], correctIndex: 0, explanation: "Base vestment." },
+    { id: 149, question: "What is a Cincture?", options: ["Belt/Rope", "Scarf", "Hat", "Shoes"], correctIndex: 0, explanation: "Rope belt." },
+    { id: 150, question: "What is a Tabernacle?", options: ["Box for Eucharist", "Table", "Chair", "Lectern"], correctIndex: 0, explanation: "House for Jesus." },
+
+    // --- 50 FILLERS TO REACH 200 (CONCEPTUAL) ---
+    { id: 151, question: "What is the 'Kyrie'?", options: ["Lord have mercy", "Glory", "Holy", "Lamb"], correctIndex: 0, explanation: "Kyrie eleison." },
+    { id: 152, question: "What is the 'Gloria'?", options: ["Glory to God", "Holy", "Lamb", "Lord"], correctIndex: 0, explanation: "Hymn of praise." },
+    { id: 153, question: "What is the 'Sanctus'?", options: ["Holy Holy Holy", "Glory", "Lamb", "Lord"], correctIndex: 0, explanation: "Holy, Holy, Holy." },
+    { id: 154, question: "What is the 'Agnus Dei'?", options: ["Lamb of God", "Holy", "Glory", "Lord"], correctIndex: 0, explanation: "Lamb of God." },
+    { id: 155, question: "What is the 'Credo'?", options: ["Creed", "Glory", "Holy", "Lamb"], correctIndex: 0, explanation: "I believe." },
+    { id: 156, question: "What is 'Alleluia'?", options: ["Praise the Lord", "Save us", "Mercy", "Peace"], correctIndex: 0, explanation: "Praise Yahweh." },
+    { id: 157, question: "What is 'Hosanna'?", options: ["Save us/Praise", "Holy", "Glory", "Lamb"], correctIndex: 0, explanation: "Acclamation." },
+    { id: 158, question: "What is 'Amen'?", options: ["So be it", "Hello", "Goodbye", "Please"], correctIndex: 0, explanation: "I believe/So be it." },
+    { id: 159, question: "What is 'Oremus'?", options: ["Let us pray", "Sing", "Stand", "Sit"], correctIndex: 0, explanation: "Let us pray." },
+    { id: 160, question: "What is a 'Missal'?", options: ["Mass book", "Song book", "Bible", "Diary"], correctIndex: 0, explanation: "Book with Mass prayers." },
+    { id: 161, question: "What is a 'Lectionary'?", options: ["Readings book", "Song book", "Prayer book", "Bible"], correctIndex: 0, explanation: "Book of readings." },
+    { id: 162, question: "What is a 'Breviary'?", options: ["Prayer book (LOH)", "Song book", "Bible", "Mass book"], correctIndex: 0, explanation: "Liturgy of the Hours." },
+    { id: 163, question: "What is a 'Rosary'?", options: ["Beads", "Book", "Vestment", "Cup"], correctIndex: 0, explanation: "Prayer beads." },
+    { id: 164, question: "What is a 'Medal'?", options: ["Metal sacramental", "Coin", "Award", "Toy"], correctIndex: 0, explanation: "Religious medal." },
+    { id: 165, question: "What is 'Holy Water'?", options: ["Blessed water", "Juice", "Wine", "Oil"], correctIndex: 0, explanation: "Sacramental." },
+    { id: 166, question: "What is 'Chrism'?", options: ["Blessed oil", "Water", "Wine", "Bread"], correctIndex: 0, explanation: "Perfumed oil." },
+    { id: 167, question: "What is a 'Bishop'?", options: ["Successor to Apostles", "Priest", "Deacon", "Brother"], correctIndex: 0, explanation: "Overseer." },
+    { id: 168, question: "What is a 'Cardinal'?", options: ["Pope elector", "Bird", "Priest", "Deacon"], correctIndex: 0, explanation: "Prince of the Church." },
+    { id: 169, question: "What is a 'Deacon'?", options: ["Servant minister", "Priest", "Bishop", "Pope"], correctIndex: 0, explanation: "Ordained to serve." },
+    { id: 170, question: "What is a 'Priest'?", options: ["Offers sacrifice", "Deacon", "Bishop", "Brother"], correctIndex: 0, explanation: "Ordained to priesthood." },
+    { id: 171, question: "What is a 'Monk'?", options: ["Religious man", "Priest", "Bishop", "Deacon"], correctIndex: 0, explanation: "Lives in monastery." },
+    { id: 172, question: "What is a 'Nun'?", options: ["Religious woman", "Priest", "Bishop", "Deacon"], correctIndex: 0, explanation: "Lives in convent." },
+    { id: 173, question: "What is a 'Friar'?", options: ["Mendicant brother", "Monk", "Priest", "Bishop"], correctIndex: 0, explanation: "Lives in community/serves." },
+    { id: 174, question: "What is a 'Sister'?", options: ["Active religious woman", "Nun", "Mother", "Aunt"], correctIndex: 0, explanation: "Serves in the world." },
+    { id: 175, question: "What is 'Lent'?", options: ["40 days penance", "Easter", "Christmas", "Advent"], correctIndex: 0, explanation: "Preparation for Easter." },
+    { id: 176, question: "What is 'Advent'?", options: ["Preparation for Christmas", "Lent", "Easter", "Pentecost"], correctIndex: 0, explanation: "Coming of Christ." },
+    { id: 177, question: "What is 'Christmas'?", options: ["Birth of Jesus", "Death", "Resurrection", "Ascension"], correctIndex: 0, explanation: "Nativity." },
+    { id: 178, question: "What is 'Epiphany'?", options: ["Visit of Magi", "Baptism", "Wedding", "All"], correctIndex: 3, explanation: "Manifestation." },
+    { id: 179, question: "What is 'Easter'?", options: ["Resurrection", "Birth", "Death", "Ascension"], correctIndex: 0, explanation: "Pascha." },
+    { id: 180, question: "What is 'Ascension'?", options: ["Jesus goes to heaven", "Birth", "Death", "Resurrection"], correctIndex: 0, explanation: "40 days after Easter." },
+    { id: 181, question: "What is 'Pentecost'?", options: ["Holy Spirit comes", "Birth", "Death", "Resurrection"], correctIndex: 0, explanation: "50 days after Easter." },
+    { id: 182, question: "What is 'Trinity Sunday'?", options: ["Father, Son, Spirit", "Mary", "Saints", "Angels"], correctIndex: 0, explanation: "Sunday after Pentecost." },
+    { id: 183, question: "What is 'Corpus Christi'?", options: ["Body and Blood", "Trinity", "Mary", "Saints"], correctIndex: 0, explanation: "Eucharistic feast." },
+    { id: 184, question: "What is 'All Saints'?", options: ["Nov 1", "Nov 2", "Oct 31", "Jan 1"], correctIndex: 0, explanation: "Holy Day." },
+    { id: 185, question: "What is 'All Souls'?", options: ["Nov 2", "Nov 1", "Oct 31", "Jan 1"], correctIndex: 0, explanation: "Pray for dead." },
+    { id: 186, question: "What is 'Christ the King'?", options: ["Last Sunday", "First Sunday", "Easter", "Christmas"], correctIndex: 0, explanation: "End of Liturgical Year." },
+    { id: 187, question: "What is 'Divine Mercy Sunday'?", options: ["Sunday after Easter", "Pentecost", "Trinity", "Palm Sunday"], correctIndex: 0, explanation: "2nd Sunday of Easter." },
+    { id: 188, question: "What is 'Palm Sunday'?", options: ["Entry to Jerusalem", "Easter", "Christmas", "Lent"], correctIndex: 0, explanation: "Start of Holy Week." },
+    { id: 189, question: "What is 'Holy Thursday'?", options: ["Last Supper", "Crucifixion", "Resurrection", "Ascension"], correctIndex: 0, explanation: "Institution of Eucharist." },
+    { id: 190, question: "What is 'Good Friday'?", options: ["Crucifixion", "Last Supper", "Resurrection", "Ascension"], correctIndex: 0, explanation: "Death of Jesus." },
+    { id: 191, question: "What is 'Holy Saturday'?", options: ["Vigil", "Crucifixion", "Last Supper", "Ascension"], correctIndex: 0, explanation: "Waiting in the tomb." },
+    { id: 192, question: "What is 'Canonization'?", options: ["Making a saint", "Making a priest", "Making a law", "Making a book"], correctIndex: 0, explanation: "Process of sainthood." },
+    { id: 193, question: "What is 'Beatification'?", options: ["Assumption", "Blessed", "Saint", "Venerable"], correctIndex: 1, explanation: "Step before Canonization." },
+    { id: 194, question: "What is 'Venerable'?", options: ["Heroic virtue", "Blessed", "Saint", "Servant"], correctIndex: 0, explanation: "First major step." },
+    { id: 195, question: "What is 'Servant of God'?", options: ["Cause open", "Saint", "Blessed", "Venerable"], correctIndex: 0, explanation: "Beginning of process." },
+    { id: 196, question: "What is a 'Miracle'?", options: ["Divine intervention", "Magic", "Luck", "Science"], correctIndex: 0, explanation: "Sign of God's power." },
+    { id: 197, question: "What is 'Intercession'?", options: ["Praying for others", "Praying for self", "Talking", "Sleeping"], correctIndex: 0, explanation: "Asking saints to pray." },
+    { id: 198, question: "What is 'Veneration'?", options: ["Honor", "Worship", "Ignoring", "Hate"], correctIndex: 0, explanation: "Dulia (not Latria)." },
+    { id: 199, question: "What is 'Worship'?", options: ["Adoration due to God", "Respect", "Honor", "Love"], correctIndex: 0, explanation: "Latria (God only)." },
+    { id: 200, question: "What is 'Grace'?", options: ["Gift of God", "Name", "Food", "Drink"], correctIndex: 0, explanation: "Supernatural help." }
 ];
+
+// Helper to get random subset
+export function getRandomQuestions(count: number): QuizQuestion[] {
+    const shuffled = [...QUIZ_QUESTIONS].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+}
