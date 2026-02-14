@@ -195,14 +195,11 @@ export function TelegramDashboard() {
                             <Sparkles className="w-6 h-6 text-white" />
                         </Link>
                     </div>
-                    {/* Audio Redirects to YouTube */}
-                    <button
-                        onClick={() => handleExternalLink('https://youtube.com/@MyPrayerTower')}
-                        className="flex flex-col items-center gap-1 text-blue-200/40 hover:text-blue-100"
-                    >
-                        <Music className="w-6 h-6" />
-                        <span className="text-[10px] font-medium tracking-wide">Audio</span>
-                    </button>
+                    {/* Offerings Tab */}
+                    <Link href="/contributions" className="flex flex-col items-center gap-1 text-blue-200/40 hover:text-blue-100">
+                        <Gift className="w-6 h-6" />
+                        <span className="text-[10px] font-medium tracking-wide">Offerings</span>
+                    </Link>
                     <TabItem icon={<User className="w-6 h-6" />} label="Profile" href="/profile" />
                 </div>
             </div>
