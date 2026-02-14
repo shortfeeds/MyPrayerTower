@@ -137,6 +137,18 @@ export const createBot = (botInfo?: UserFromGetMe) => {
         const { askCommand } = await import("./commands/ask");
         return askCommand(ctx);
     });
+    bot.command("donate", async (ctx) => {
+        const { donateCommand } = await import("./commands/donate");
+        return donateCommand(ctx);
+    });
+    bot.command("invite", async (ctx) => {
+        const { inviteCommand } = await import("./commands/invite");
+        return inviteCommand(ctx);
+    });
+    bot.command("calendar", async (ctx) => {
+        const { calendarCommand } = await import("./commands/calendar");
+        return calendarCommand(ctx);
+    });
 
     // Admin: Reload Menu Commands
     bot.command("admin_reload_commands", async (ctx) => {
@@ -144,17 +156,19 @@ export const createBot = (botInfo?: UserFromGetMe) => {
             await ctx.api.setMyCommands([
                 { command: "start", description: "🏠 Home & Menu" },
                 { command: "ask", description: "✝️ AI Spiritual Companion" },
+                { command: "calendar", description: "📅 Liturgical Calendar" },
                 { command: "reading", description: "📖 Daily Gospel" },
                 { command: "rosary", description: "📿 Holy Rosary" },
                 { command: "novena", description: "🕯️ Novena Center" },
                 { command: "pray", description: "🙏 Prayer Request" },
                 { command: "wall", description: "🧱 Prayer Wall" },
+                { command: "donate", description: "🌟 Support App" },
+                { command: "invite", description: "🤝 Referral Dashboard" },
                 { command: "quiz", description: "🧠 Catholic Quiz" },
                 { command: "saint", description: "😇 Saint of the Day" },
                 { command: "mercy", description: "✝️ Divine Mercy" },
                 { command: "hours", description: "⏳ Liturgy of Hours" },
                 { command: "confession", description: "🔓 Confession Guide" },
-                { command: "help", description: "❓ Help & Support" },
             ]);
             await ctx.reply("✅ Bot commands menu updated!");
         } catch (e) {
@@ -254,7 +268,28 @@ export const createBot = (botInfo?: UserFromGetMe) => {
             const { handleConfessionCallback } = await import("./commands/confession");
             await handleConfessionCallback(ctx);
         }
+        if (data.startsWith("donate_")) {
+            const { handleDonateCallback } = await import("./commands/donate");
+            await handleDonateCallback(ctx);
+        }
     });
+
+    // Payment Handlers (Telegram Stars)
+    bot.on("pre_checkout_query", async (ctx) => {
+        // Always answer true for Stars if payload valid
+        await ctx.answerPreCheckoutQuery(true);
+    });
+
+    bot.on(":successful_payment", async (ctx) => {
+        const amount = ctx.message?.successful_payment.total_amount;
+        // const payload = ctx.message?.successful_payment.invoice_payload;
+
+        await ctx.reply(`🌟 <b>Thank You!</b>\n\nYour offering of ${amount} Stars has been received. May God bless your generosity hundredfold.`, {
+            parse_mode: "HTML"
+        });
+    });
+
+    // Debug: Log all other messages
 
     // Debug: Log all other messages
     bot.on("message", async (ctx) => {
