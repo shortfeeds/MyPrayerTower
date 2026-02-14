@@ -97,6 +97,9 @@ export function Footer() {
 
     const isActive = (path: string) => pathname === path;
 
+    // Hide Footer on Mini App Dashboard to prevent double navigation
+    if (pathname.startsWith('/bot')) return null;
+
     return (
         <>
             {/* Desktop Footer - Professional Grid Layout */}
