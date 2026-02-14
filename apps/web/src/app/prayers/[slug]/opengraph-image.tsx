@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { getPrayerBySlug } from '@/app/actions/prayer-library';
+import { db } from '@/lib/db';
 
 export const runtime = 'nodejs';
 export const alt = 'Catholic Prayer from MyPrayerTower';
@@ -10,8 +10,16 @@ export const size = {
 export const contentType = 'image/png';
 
 export default async function Image({ params }: { params: { slug: string } }) {
-    const prayer = await getPrayerBySlug(params.slug);
-    const title = prayer?.title || 'Catholic Prayer';
+    let title = 'Catholic Prayer';
+    try {
+        const prayer = await db.prayer.findFirst({
+            where: { slug: params.slug, is_active: true },
+            select: { title: true },
+        });
+        if (prayer?.title) title = prayer.title;
+    } catch (e) {
+        console.error('OG image DB error:', e);
+    }
 
     return new ImageResponse(
         (
