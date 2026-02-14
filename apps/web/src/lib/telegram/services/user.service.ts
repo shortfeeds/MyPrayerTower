@@ -41,7 +41,17 @@ export const findOrCreateUser = async (telegramId: number | bigint, username?: s
             });
         }
 
-        return user;
+        // 3. Update Streak & Last Active
+        // We do this AFTER creating/finding to ensure user exists
+        const streakResult = await updateStreak(telegramIdBigInt);
+
+        // If we just created the user, return the new user
+        // If existing, the updateStreak already updated lastActiveDate
+
+        return {
+            ...user,
+            streakCount: streakResult?.streak || user.streakCount
+        };
     } catch (error) {
         console.error("Error finding or creating user:", error);
         return null;

@@ -134,6 +134,30 @@ export const createBot = (botInfo?: UserFromGetMe) => {
         return confessionCommand(ctx);
     });
 
+    // Admin: Reload Menu Commands
+    bot.command("admin_reload_commands", async (ctx) => {
+        try {
+            await ctx.api.setMyCommands([
+                { command: "start", description: "🏠 Home & Menu" },
+                { command: "reading", description: "📖 Daily Gospel" },
+                { command: "rosary", description: "📿 Holy Rosary" },
+                { command: "novena", description: "🕯️ Novena Center" },
+                { command: "pray", description: "🙏 Prayer Request" },
+                { command: "wall", description: "🧱 Prayer Wall" },
+                { command: "quiz", description: "🧠 Catholic Quiz" },
+                { command: "saint", description: "😇 Saint of the Day" },
+                { command: "mercy", description: "✝️ Divine Mercy" },
+                { command: "hours", description: "⏳ Liturgy of Hours" },
+                { command: "confession", description: "🔓 Confession Guide" },
+                { command: "help", description: "❓ Help & Support" },
+            ]);
+            await ctx.reply("✅ Bot commands menu updated!");
+        } catch (e) {
+            console.error("Failed to set commands:", e);
+            await ctx.reply("❌ Failed to update commands.");
+        }
+    });
+
     // Register Callbacks with dynamic imports
     bot.on("callback_query:data", async (ctx) => {
         const data = ctx.callbackQuery.data;

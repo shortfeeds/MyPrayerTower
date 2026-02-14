@@ -46,10 +46,25 @@ Tap below to pray.
 👇`;
 
         // 2. Fetch Users (Batching could be added here for scale)
-        const users = await db.telegramUser.findMany({
-            where: { isGospelSubscribed: true },
-            select: { telegramId: true }
-        });
+        const url = new URL(request.url);
+        const isTest = url.searchParams.get('test') === 'true';
+
+        let users;
+        if (isTest) {
+            // Test mode: Send only to specific admin ID (replace with your ID or dynamic)
+            // For now, let's try to find the user who triggered it if possible, or just a known admin.
+            // Since we can't easily valid admin ID without hardcoding, let's just fetch 1 user.
+            users = await db.telegramUser.findMany({
+                where: { isGospelSubscribed: true },
+                take: 1
+            });
+            console.log("🧪 TEST MODE: Sending to 1 user only.");
+        } else {
+            users = await db.telegramUser.findMany({
+                where: { isGospelSubscribed: true },
+                select: { telegramId: true }
+            });
+        }
 
         console.log(`Sending daily update to ${users.length} users...`);
 
