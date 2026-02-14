@@ -10,6 +10,10 @@ export const novenaCommand = async (ctx: Context) => {
 };
 
 async function listNovenas(ctx: Context, page: number) {
+    let displayNovenas: any[] = [];
+    let totalCount = 0;
+
+    // 1. Try Database
     try {
         const count = await db.novena.count();
         const novenas = await db.novena.findMany({
@@ -17,221 +21,231 @@ async function listNovenas(ctx: Context, page: number) {
             skip: (page - 1) * ITEMS_PER_PAGE,
             orderBy: { name: 'asc' }
         });
+        displayNovenas = novenas;
+        totalCount = count;
+    } catch (e) {
+        console.error(">>> [NOVENA] DB Error (falling back to static):", e);
+    }
 
-        // FALLBACK: If DB is empty, use static content (fixes "Novena center not loading" bug)
-        let displayNovenas: any[] = novenas;
-        let totalCount = count;
-
-        if (novenas.length === 0 && page === 1) {
+    // 2. Fallback to Static Content if DB failed or empty
+    if (displayNovenas.length === 0) {
+        try {
             const { NOVENA_CONTENT } = await import("../content/novena-content");
             displayNovenas = NOVENA_CONTENT.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
             totalCount = NOVENA_CONTENT.length;
+        } catch (err) {
+            console.error(">>> [NOVENA] Static Content Error:", err);
+            await ctx.reply("System maintenance. Please try again in 5 minutes.");
+            return;
         }
+    }
 
-        const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
-        const keyboard = new InlineKeyboard();
-        displayNovenas.forEach(n => {
-            keyboard.text(`🕯️ ${n.name}`, `novena_view_${n.id}`).row();
-        });
+    const keyboard = new InlineKeyboard();
+    displayNovenas.forEach(n => {
+        keyboard.text(`🕯️ ${n.name}`, `novena_view_${n.id}`).row();
+    });
 
-        // Pagination row
-        if (totalPages > 1) {
-            if (page > 1) keyboard.text("⬅️ Prev", `novena_page_${page - 1}`);
-            keyboard.text(`${page}/${totalPages}`, "noop");
-            if (page < totalPages) keyboard.text("Next ➡️", `novena_page_${page + 1}`);
-            keyboard.row();
-        }
+    // Pagination row
+    if (totalPages > 1) {
+        if (page > 1) keyboard.text("⬅️ Prev", `novena_page_${page - 1}`);
+        keyboard.text(`${page}/${totalPages}`, "noop");
+        if (page < totalPages) keyboard.text("Next ➡️", `novena_page_${page + 1}`);
+        keyboard.row();
+    }
 
-        keyboard.text("🏠 Back to Menu", "cmd_start");
+    keyboard.text("🏠 Back to Menu", "cmd_start");
 
-        const msgProps = {
-            parse_mode: "Markdown" as const,
-            reply_markup: keyboard
-        };
+    const msgProps = {
+        parse_mode: "Markdown" as const,
+        reply_markup: keyboard
+    };
 
-        const text = `🕯️ *Novena Center*
-        
+    const text = `🕯️ *Novena Center*
+    
 Select a Novena to begin your 9-day journey of prayer.`;
 
-        // Either edit or reply depending on context
+    // Either edit or reply depending on context
+    try {
         if (ctx.callbackQuery) {
             await ctx.editMessageText(text, msgProps);
         } else {
             await ctx.reply(text, msgProps);
         }
-
     } catch (e) {
-        console.error("Error listing novenas:", e);
-        await ctx.reply("Failed to load Novena Center.");
+        console.error(">>> [NOVENA] Message Send Error:", e);
     }
 }
+
 
 export const handleNovenaCallback = async (ctx: Context) => {
     if (!ctx.callbackQuery?.data || !ctx.from) return;
     const data = ctx.callbackQuery.data;
 
-    // PAGE NAVIGATION
-    if (data.startsWith("novena_page_")) {
-        const page = parseInt(data.split("_")[2]);
-        await listNovenas(ctx, page);
-        await ctx.answerCallbackQuery();
-        return;
-    }
-
-    // VIEW NOVENA DETAILS
-    if (data.startsWith("novena_view_")) {
-        const id = data.split("_")[2];
-        let novena: any = await db.novena.findUnique({ where: { id } });
-
-        if (!novena) {
-            const { NOVENA_CONTENT } = await import("../content/novena-content");
-            novena = NOVENA_CONTENT.find(n => n.id === id);
-        }
-
-        if (!novena) {
-            await ctx.answerCallbackQuery("Novena not found.");
+    try {
+        // PAGE NAVIGATION
+        if (data.startsWith("novena_page_")) {
+            const page = parseInt(data.split("_")[2]);
+            await listNovenas(ctx, page);
+            await ctx.answerCallbackQuery();
             return;
         }
 
-        // Check if user has active participation
-        const user = await findOrCreateUser(ctx.from.id, ctx.from.username);
-        // We need the User ID to check participation. 
-        // Note: findOrCreateUser returns TelegramUser. Participation is linked to...
-        // Wait, schema says NovenaParticipation links to `User` (the MPT User), NOT TelegramUser directly.
-        // This is a schema constraint. 
-        // If the TelegramUser is not linked to an MPT User, we can't store participation in the current schema.
-        // CHECK SCHEMA: model NovenaParticipation { userId String ... user User ... }
-        // This means Guest users (Telegram only) cannot use Novenas unless we modify schema or use a hack.
+        // VIEW NOVENA DETAILS
+        if (data.startsWith("novena_view_")) {
+            const id = data.split("_")[2];
+            let novena: any = null;
 
-        // HACK for MVP: If no MPT user linked, we can't save progress. 
-        // But the user requested this feature.
-        // Let's check if we can link to TelegramUser in schema? 
-        // I can't modify schema easily in a running app without migration.
-        // Let's see if TelegramUser has an MPT User ID.
+            try {
+                novena = await db.novena.findUnique({ where: { id } });
+            } catch (e) {
+                console.error(">>> [NOVENA] DB Find Error:", e);
+            }
 
-        // Use case: Many bots store state in metadata if no DB user.
-        // Or we just allow viewing text without tracking for now if no account.
+            if (!novena) {
+                try {
+                    const { NOVENA_CONTENT } = await import("../content/novena-content");
+                    novena = NOVENA_CONTENT.find(n => n.id === id);
+                } catch (e) {
+                    console.error(">>> [NOVENA] Static Content Error:", e);
+                }
+            }
 
-        let hasActive = false;
-        let day = 1;
+            if (!novena) {
+                await ctx.answerCallbackQuery("Novena not found (System maintenance).");
+                return;
+            }
 
-        if (user && user.mptUserId) {
-            const participation = await db.novenaParticipation.findUnique({
-                where: {
-                    novenaId_userId: {
-                        novenaId: id,
-                        userId: user.mptUserId
+            // Check participation (Safely)
+            let hasActive = false;
+            let day = 1;
+
+            try {
+                const user = await findOrCreateUser(ctx.from.id, ctx.from.username);
+                if (user && user.mptUserId) {
+                    const participation = await db.novenaParticipation.findUnique({
+                        where: {
+                            novenaId_userId: {
+                                novenaId: id,
+                                userId: user.mptUserId
+                            }
+                        }
+                    });
+                    if (participation) {
+                        hasActive = !participation.isCompleted;
+                        day = participation.currentDay;
                     }
                 }
-            });
-            if (participation) {
-                hasActive = !participation.isCompleted;
-                day = participation.currentDay;
+            } catch (e) {
+                console.error(">>> [NOVENA] Participation Check Error:", e);
+                // Continue as guest (hasActive = false)
             }
-        }
 
-        const keyboard = new InlineKeyboard();
-        if (hasActive) {
-            keyboard.text(`▶️ Continue Day ${day}`, `novena_day_${id}_${day}`).row();
-        } else {
-            keyboard.text("🙏 Start Novena", `novena_day_${id}_1`).row();
-        }
-        keyboard.text("🔙 Back to List", "novena_page_1");
+            const keyboard = new InlineKeyboard();
+            if (hasActive) {
+                keyboard.text(`▶️ Continue Day ${day}`, `novena_day_${id}_${day}`).row();
+            } else {
+                keyboard.text("🙏 Start Novena", `novena_day_${id}_1`).row();
+            }
+            keyboard.text("🔙 Back to List", "novena_page_1");
 
-        await ctx.editMessageText(
-            `🕯️ *${novena.name}*
-            
+            await ctx.editMessageText(
+                `🕯️ *${novena.name}*
+                
 _${novena.description}_
 
 ${hasActive ? `✅ You are currently on Day ${day}.` : "Start this 9-day prayer today."}`,
-            { parse_mode: "Markdown", reply_markup: keyboard }
-        );
-        await ctx.answerCallbackQuery();
-        return;
-    }
-
-    // PRAY SPECIFIC DAY
-    if (data.startsWith("novena_day_")) {
-        // Format: novena_day_{id}_{day}
-        const parts = data.split("_");
-        const id = parts[2];
-        const day = parseInt(parts[3]);
-
-        let novena: any = await db.novena.findUnique({ where: { id } });
-
-        if (!novena) {
-            const { NOVENA_CONTENT } = await import("../content/novena-content");
-            novena = NOVENA_CONTENT.find(n => n.id === id);
+                { parse_mode: "Markdown", reply_markup: keyboard }
+            );
+            await ctx.answerCallbackQuery();
+            return;
         }
 
-        if (!novena) return;
+        // PRAY SPECIFIC DAY
+        if (data.startsWith("novena_day_")) {
+            const parts = data.split("_");
+            const id = parts[2];
+            const day = parseInt(parts[3]);
 
-        // Get text dynamically
-        // Prisma model has dayOneText...dayNineText
-        const dayKey = `day${getDayWord(day)}Text` as keyof typeof novena;
-        const text = novena[dayKey] as string;
+            let novena: any = null;
+            try {
+                novena = await db.novena.findUnique({ where: { id } });
+            } catch (e) { console.error(">>> [NOVENA] DB Find Error:", e); }
 
-        const keyboard = new InlineKeyboard();
+            if (!novena) {
+                try {
+                    const { NOVENA_CONTENT } = await import("../content/novena-content");
+                    novena = NOVENA_CONTENT.find(n => n.id === id);
+                } catch (e) { console.error(">>> [NOVENA] Static Load Error:", e); }
+            }
 
-        // "Mark Complete" button - strictly requires MPT user link for now? 
-        // Or we just simulate progress for guests by showing "Next" button immediately?
-        // Let's show "Complete Day X" which updates DB if possible, or just Says "Done".
+            if (!novena) return;
 
-        keyboard.text(`✅ Complete Day ${day}`, `novena_complete_${id}_${day}`).row();
-        keyboard.text("🔙 Back", `novena_view_${id}`);
+            // Get text dynamically
+            const dayKey = `day${getDayWord(day)}Text` as keyof typeof novena;
+            const text = novena[dayKey] as string;
 
-        await ctx.editMessageText(
-            `*${novena.name} - Day ${day}*
+            const keyboard = new InlineKeyboard();
+            keyboard.text(`✅ Complete Day ${day}`, `novena_complete_${id}_${day}`).row();
+            keyboard.text("🔙 Back", `novena_view_${id}`);
+
+            await ctx.editMessageText(
+                `*${novena.name} - Day ${day}*
 
 ${text}`,
-            { parse_mode: "Markdown", reply_markup: keyboard }
-        );
-        await ctx.answerCallbackQuery();
-        return;
-    }
-
-    // COMPLETE DAY
-    if (data.startsWith("novena_complete_")) {
-        const parts = data.split("_");
-        const id = parts[2];
-        const day = parseInt(parts[3]);
-
-        const user = await findOrCreateUser(ctx.from.id);
-        let success = false;
-
-        if (user && user.mptUserId) {
-            // Update DB
-            // We need to upsert participation
-            // Note: Prisma update
-            // Logic: If day 9, mark completed. Else day + 1.
-
-            const isFinal = day >= 9;
-            await db.novenaParticipation.upsert({
-                where: { novenaId_userId: { novenaId: id, userId: user.mptUserId } },
-                update: {
-                    currentDay: isFinal ? 9 : day + 1,
-                    isCompleted: isFinal,
-                    lastPrayedAt: new Date()
-                },
-                create: {
-                    novenaId: id,
-                    userId: user.mptUserId,
-                    currentDay: isFinal ? 9 : 2, // If they completed day 1, next is 2
-                }
-            });
-            success = true;
+                { parse_mode: "Markdown", reply_markup: keyboard }
+            );
+            await ctx.answerCallbackQuery();
+            return;
         }
 
-        const keyboard = new InlineKeyboard().text("🏠 Back to Menu", "cmd_start");
-        const msg = success
-            ? `🎉 *Day ${day} Completed!* \n\nSee you tomorrow for the next prayer.`
-            : `🎉 *Day ${day} Completed!* \n\n(Note: Connect your MPT account to save progress permanently.)`;
+        // COMPLETE DAY
+        if (data.startsWith("novena_complete_")) {
+            const parts = data.split("_");
+            const id = parts[2];
+            const day = parseInt(parts[3]);
+            let success = false;
 
-        await ctx.editMessageText(msg, { parse_mode: "Markdown", reply_markup: keyboard });
-        await ctx.answerCallbackQuery("Prayer recorded!");
+            try {
+                const user = await findOrCreateUser(ctx.from.id);
+                if (user && user.mptUserId) {
+                    const isFinal = day >= 9;
+                    await db.novenaParticipation.upsert({
+                        where: { novenaId_userId: { novenaId: id, userId: user.mptUserId } },
+                        update: {
+                            currentDay: isFinal ? 9 : day + 1,
+                            isCompleted: isFinal,
+                            lastPrayedAt: new Date()
+                        },
+                        create: {
+                            novenaId: id,
+                            userId: user.mptUserId,
+                            currentDay: isFinal ? 9 : 2,
+                        }
+                    });
+                    success = true;
+                }
+            } catch (e) {
+                console.error(">>> [NOVENA] Progress Save Error:", e);
+                // success stays false
+            }
+
+            const keyboard = new InlineKeyboard().text("🏠 Back to Menu", "cmd_start");
+            const msg = success
+                ? `🎉 *Day ${day} Completed!* \n\nSee you tomorrow for the next prayer.`
+                : `🎉 *Day ${day} Completed!* \n\n(Note: Progress saved locally. Connect MPT account to sync.)`;
+
+            await ctx.editMessageText(msg, { parse_mode: "Markdown", reply_markup: keyboard });
+            await ctx.answerCallbackQuery("Prayer recorded!");
+        }
+
+    } catch (e) {
+        console.error(">>> [NOVENA] Critical Callback Error:", e);
+        await ctx.answerCallbackQuery("An error occurred. Please try again.");
     }
 };
+
 
 function getDayWord(n: number) {
     const map = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
