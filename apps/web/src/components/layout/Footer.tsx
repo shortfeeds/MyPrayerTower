@@ -10,16 +10,12 @@ import { UniversalOfferingModal } from '@/components/offerings/UniversalOffering
 // App Store Button Component
 function AppStoreButton({ store }: { store: 'apple' | 'google' }) {
     return (
-        <a href="#" className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 px-3 py-2 rounded-lg group">
-            {store === 'apple' ? (
-                <Apple className="w-6 h-6 text-white fill-current" />
-            ) : (
-                <Smartphone className="w-6 h-6 text-white" />
-            )}
+        <a href="https://t.me/MyPrayerTowerBot" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-[#229ED9] hover:bg-[#1f8ebf] border border-[#229ED9] px-3 py-2 rounded-lg group transition-colors">
+            <Send className="w-6 h-6 text-white fill-current" />
             <span className="flex flex-col items-start leading-none">
-                <span className="text-[9px] text-gray-400 uppercase">Get on</span>
+                <span className="text-[9px] text-white/80 uppercase">Free on Telegram</span>
                 <span className="text-xs font-bold text-white">
-                    {store === 'apple' ? 'App Store' : 'Google Play'}
+                    Start the Bot
                 </span>
             </span>
         </a>

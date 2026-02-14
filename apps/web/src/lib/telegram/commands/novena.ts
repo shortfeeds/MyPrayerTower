@@ -18,10 +18,20 @@ async function listNovenas(ctx: Context, page: number) {
             orderBy: { name: 'asc' }
         });
 
-        const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+        // FALLBACK: If DB is empty, use static content (fixes "Novena center not loading" bug)
+        let displayNovenas: any[] = novenas;
+        let totalCount = count;
+
+        if (novenas.length === 0 && page === 1) {
+            const { NOVENA_CONTENT } = await import("../content/novena-content");
+            displayNovenas = NOVENA_CONTENT.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+            totalCount = NOVENA_CONTENT.length;
+        }
+
+        const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
         const keyboard = new InlineKeyboard();
-        novenas.forEach(n => {
+        displayNovenas.forEach(n => {
             keyboard.text(`🕯️ ${n.name}`, `novena_view_${n.id}`).row();
         });
 
@@ -72,7 +82,12 @@ export const handleNovenaCallback = async (ctx: Context) => {
     // VIEW NOVENA DETAILS
     if (data.startsWith("novena_view_")) {
         const id = data.split("_")[2];
-        const novena = await db.novena.findUnique({ where: { id } });
+        let novena: any = await db.novena.findUnique({ where: { id } });
+
+        if (!novena) {
+            const { NOVENA_CONTENT } = await import("../content/novena-content");
+            novena = NOVENA_CONTENT.find(n => n.id === id);
+        }
 
         if (!novena) {
             await ctx.answerCallbackQuery("Novena not found.");
@@ -143,7 +158,13 @@ ${hasActive ? `✅ You are currently on Day ${day}.` : "Start this 9-day prayer 
         const id = parts[2];
         const day = parseInt(parts[3]);
 
-        const novena = await db.novena.findUnique({ where: { id } });
+        let novena: any = await db.novena.findUnique({ where: { id } });
+
+        if (!novena) {
+            const { NOVENA_CONTENT } = await import("../content/novena-content");
+            novena = NOVENA_CONTENT.find(n => n.id === id);
+        }
+
         if (!novena) return;
 
         // Get text dynamically

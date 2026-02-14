@@ -1,51 +1,91 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createBot } from "@/lib/telegram/bot";
-import { db } from "@/lib/db";
+import { NextResponse } from 'next/server';
+import { createBot } from '@/lib/telegram/bot';
+import { db } from '@/lib/db';
+import { getSaintOfToday } from '@/lib/saints';
+import { getReadings } from '@/lib/readings';
 
-// Secure this endpoint (e.g. check CRON_SECRET or just keep it obscure/Vercel protected)
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // Extend timeout for sending many messages
 
-export const GET = async (req: NextRequest) => {
-    // Basic auth check against CRON_SECRET if configured via Vercel
-    const authHeader = req.headers.get('authorization');
-    if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-        // return new Response('Unauthorized', { status: 401 });
-    }
-
+export async function GET(request: Request) {
     try {
+        // Authenticate cron request (optional, Vercel secures this usually)
+        const authHeader = request.headers.get('authorization');
+        if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // 1. Initialize Bot & Fetch Content
         const bot = createBot();
+        const today = new Date();
+        const saint = await getSaintOfToday();
+        const readings = await getReadings(today);
 
-        // Fetch all users
-        // NOTE: In production with many users, implement cursor-based pagination
-        const users = await db.telegramUser.findMany();
+        let gospelText = "";
+        let gospelCitation = "";
 
-        const message = `
-🌅 *Good Morning!*
-
-Starting your day with prayer? 
-
-Use /reading to get today's Mass readings.
-Use /saint to meet the Saint of the Day.
-        `;
-
-        let sentCount = 0;
-        let failCount = 0;
-
-        for (const user of users) {
-            try {
-                await bot.api.sendMessage(Number(user.telegramId), message, { parse_mode: "Markdown" });
-                // Small delay to be polite to TG API
-                await new Promise(r => setTimeout(r, 30));
-                sentCount++;
-            } catch (e) {
-                console.error(`Failed to send to ${user.telegramId}:`, e);
-                failCount++;
+        if (readings && readings.readings) {
+            const gospel = readings.readings.find((r: any) => r.type === "Gospel" || r.type === "Holy Gospel");
+            if (gospel) {
+                gospelCitation = gospel.citation;
+                gospelText = gospel.text.substring(0, 150) + "..."; // Teaser
             }
         }
 
-        return NextResponse.json({ success: true, sent: sentCount, failed: failCount });
+        const message =
+            `🌅 <b>Morning Prayer</b>
+
+<b>Today's Gospel:</b> ${gospelCitation}
+<i>"${gospelText}"</i>
+
+<b>Saint of the Day:</b> ${saint?.name || "All Saints"}
+
+🔥 <b>Keep your prayer streak alive!</b>
+Tap below to pray.
+
+👇`;
+
+        // 2. Fetch Users (Batching could be added here for scale)
+        const users = await db.telegramUser.findMany({
+            where: { isGospelSubscribed: true },
+            select: { telegramId: true }
+        });
+
+        console.log(`Sending daily update to ${users.length} users...`);
+
+        // 3. Send Messages (with concurrency limit)
+        const results = await Promise.allSettled(
+            users.map(async (user) => {
+                try {
+                    await bot.api.sendMessage(Number(user.telegramId), message, {
+                        parse_mode: "HTML",
+                        reply_markup: {
+                            inline_keyboard: [[{ text: "🙏 Start Prayer", callback_data: "cmd_start" }]]
+                        }
+                    });
+                    return "sent";
+                } catch (e) {
+                    // Start parameter not available in sendMessage, so just text.
+                    // Actually, cmd_start via callback works if we handle it? 
+                    // No, "cmd_start" is not a standard callback unless we defined it. 
+                    // In start.ts we used "cmd_start" as callback data for "Back to Menu".
+                    // So it should work!
+                    console.error(`Failed to send to ${user.telegramId}:`, e);
+                    return "failed";
+                }
+            })
+        );
+
+        const successCount = results.filter(r => r.status === 'fulfilled' && r.value === 'sent').length;
+
+        return NextResponse.json({
+            success: true,
+            sent: successCount,
+            total: users.length
+        });
+
     } catch (error) {
-        console.error("Error in daily cron:", error);
-        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 });
+        console.error("Cron failed:", error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-};
+}

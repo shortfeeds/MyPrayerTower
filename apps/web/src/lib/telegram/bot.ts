@@ -1,8 +1,10 @@
 // Deploy: 2026-02-14T14:30 - Perf Optimization & User Tracking Restore
 import { Bot, GrammyError, HttpError } from "grammy";
-import { startCommand } from "./commands/start";
 import { UserFromGetMe } from "grammy/types";
-import { findOrCreateUser, updateStreak } from "./services/user.service"; // Restore imports
+import { findOrCreateUser, updateStreak } from "./services/user.service";
+
+// Commands
+import { startCommand } from "./commands/start";
 
 // Singleton instance
 let botInstance: Bot | null = null;
@@ -25,7 +27,6 @@ export const createBot = (botInfo?: UserFromGetMe) => {
     // CRITICAL: Override Grammy's HTTP layer to use native fetch.
     bot.api.config.use(async (prev, method, payload, signal) => {
         const url = `https://api.telegram.org/bot${token}/${method}`;
-        // console.log(`>>> [API] Native fetch: ${method}`); // Reduce log spam
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -43,12 +44,8 @@ export const createBot = (botInfo?: UserFromGetMe) => {
             const userId = ctx.from.id;
             const username = ctx.from.username;
 
-            // We must AWAIT creation to ensure leaderboards/foreign keys work
-            // But we can catch errors to not crash the bot
             findOrCreateUser(userId, username)
                 .then(() => {
-                    // Only update streak AFTER user exists
-                    // Fire-and-forget streak to keep bot fast
                     updateStreak(userId).catch(e => console.error("Streak error:", e));
                 })
                 .catch(e => console.error("User tracking error:", e));
@@ -84,7 +81,6 @@ export const createBot = (botInfo?: UserFromGetMe) => {
         const { prayCommand } = await import("./commands/pray");
         return prayCommand(ctx);
     });
-    // Alias for Rosary
     bot.command("rosary", async (ctx) => {
         const { rosaryCommand } = await import("./commands/rosary");
         return rosaryCommand(ctx);
@@ -121,21 +117,26 @@ export const createBot = (botInfo?: UserFromGetMe) => {
         const { streakCommand } = await import("./commands/streak");
         return streakCommand(ctx);
     });
-
     bot.command("leaderboard", async (ctx) => {
         const { leaderboardCommand } = await import("./commands/leaderboard");
         return leaderboardCommand(ctx);
     });
-
     bot.command("admin", async (ctx) => {
         const { adminCommand } = await import("./commands/admin");
         return adminCommand(ctx);
+    });
+    bot.command("hours", async (ctx) => {
+        const { hoursCommand } = await import("./commands/hours");
+        return hoursCommand(ctx);
+    });
+    bot.command("confession", async (ctx) => {
+        const { confessionCommand } = await import("./commands/confession");
+        return confessionCommand(ctx);
     });
 
     // Register Callbacks with dynamic imports
     bot.on("callback_query:data", async (ctx) => {
         const data = ctx.callbackQuery.data;
-        // console.log(`>>> [BOT] Callback: ${data}`); // Reduce log spam
 
         // Navigation Router
         if (data === "cmd_start") {
@@ -182,6 +183,14 @@ export const createBot = (botInfo?: UserFromGetMe) => {
             const { supportCommand } = await import("./commands/support");
             return supportCommand(ctx);
         }
+        if (data === "cmd_hours") {
+            const { hoursCommand } = await import("./commands/hours");
+            return hoursCommand(ctx);
+        }
+        if (data === "cmd_confession") {
+            const { confessionCommand } = await import("./commands/confession");
+            return confessionCommand(ctx);
+        }
 
         // Feature-specific callbacks
         if (data.startsWith("pray_")) {
@@ -207,6 +216,14 @@ export const createBot = (botInfo?: UserFromGetMe) => {
         if (data.startsWith("family_")) {
             const { handleFamilyCallback } = await import("./commands/family");
             await handleFamilyCallback(ctx);
+        }
+        if (data.startsWith("audio_")) {
+            const { handleAudioCallback } = await import("./commands/audio");
+            await handleAudioCallback(ctx);
+        }
+        if (data.startsWith("confess_")) {
+            const { handleConfessionCallback } = await import("./commands/confession");
+            await handleConfessionCallback(ctx);
         }
     });
 

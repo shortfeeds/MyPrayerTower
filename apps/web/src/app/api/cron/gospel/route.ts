@@ -1,6 +1,6 @@
 import { createBot } from "@/lib/telegram/bot";
 import { db } from "@/lib/db";
-import { getDailyReading } from "@/lib/liturgy";
+import { getReadings } from "@/lib/readings";
 
 export const dynamic = 'force-dynamic';
 
@@ -17,8 +17,12 @@ export async function GET(req: Request) {
             return new Response("No subscribers found", { status: 200 });
         }
 
-        const reading = await getDailyReading();
-        const text = `📖 *Daily Gospel: ${reading.date}*\n\n_${reading.gospelCitation}_\n\n"${reading.gospelText.substring(0, 500)}..."\n\n[Read Full](${reading.link})`;
+        const daysReadings = await getReadings();
+        const gospel = daysReadings.readings.find((r: any) => r.type === 'Gospel' || r.type === 'Holy Gospel');
+        const gospelCitation = gospel?.citation || "";
+        const gospelText = gospel?.text || "";
+
+        const text = `📖 *Daily Gospel: ${daysReadings.date}*\n\n_${gospelCitation}_\n\n"${gospelText.substring(0, 500)}..."\n\n[Read Full](${daysReadings.sourceUrl})`;
 
         const bot = createBot();
 

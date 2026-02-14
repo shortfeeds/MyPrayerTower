@@ -1,21 +1,46 @@
 import { db } from "@/lib/db";
 
-export const findOrCreateUser = async (telegramId: number | bigint, username?: string) => {
+export const findOrCreateUser = async (telegramId: number | bigint, username?: string, referrerCode?: string) => {
     const telegramIdBigInt = BigInt(telegramId);
 
     try {
+        // If referrer code provided, try to find the referrer
+        let referredById: string | undefined;
+        if (referrerCode) {
+            const referrer = await db.telegramUser.findUnique({
+                where: { referralCode: referrerCode }
+            });
+            if (referrer) {
+                referredById = referrer.id;
+            }
+        }
+
         const user = await db.telegramUser.upsert({
             where: { telegramId: telegramIdBigInt },
             update: {
                 telegramUsername: username,
                 lastActiveDate: new Date(),
+                // If they don't have a referral code yet, generate one (migration)
+                referralCode: { set: undefined } // Don't overwrite if exists, but we can't conditionally set in update easily without raw query or separate check. 
+                // Actually, let's just ensure it exists? No, keep simple.
             },
             create: {
                 telegramId: telegramIdBigInt,
                 telegramUsername: username,
                 lastActiveDate: new Date(),
+                referralCode: telegramId.toString(), // Use ID as simple referral code
+                referredById: referredById
             },
         });
+
+        // Ensure referral code exists (for old users)
+        if (!user.referralCode) {
+            return await db.telegramUser.update({
+                where: { id: user.id },
+                data: { referralCode: telegramId.toString() }
+            });
+        }
+
         return user;
     } catch (error) {
         console.error("Error finding or creating user:", error);
