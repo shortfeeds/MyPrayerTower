@@ -133,12 +133,17 @@ export const createBot = (botInfo?: UserFromGetMe) => {
         const { confessionCommand } = await import("./commands/confession");
         return confessionCommand(ctx);
     });
+    bot.command("ask", async (ctx) => {
+        const { askCommand } = await import("./commands/ask");
+        return askCommand(ctx);
+    });
 
     // Admin: Reload Menu Commands
     bot.command("admin_reload_commands", async (ctx) => {
         try {
             await ctx.api.setMyCommands([
                 { command: "start", description: "🏠 Home & Menu" },
+                { command: "ask", description: "✝️ AI Spiritual Companion" },
                 { command: "reading", description: "📖 Daily Gospel" },
                 { command: "rosary", description: "📿 Holy Rosary" },
                 { command: "novena", description: "🕯️ Novena Center" },
