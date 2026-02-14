@@ -1,12 +1,20 @@
-// Deploy: 2026-02-14T13:50 - Force fresh build
+// Deploy: 2026-02-14T14:30 - Perf Optimization & User Tracking Restore
 import { Bot, GrammyError, HttpError } from "grammy";
-
 import { startCommand } from "./commands/start";
-
 import { UserFromGetMe } from "grammy/types";
+import { findOrCreateUser, updateStreak } from "./services/user.service"; // Restore imports
+
+// Singleton instance
+let botInstance: Bot | null = null;
 
 export const createBot = (botInfo?: UserFromGetMe) => {
-    console.log(">>> [BOT] Initializing createBot (Mixed Mode)...");
+    // Return cached instance if available (Critical for Vercel perf)
+    if (botInstance) {
+        console.log(">>> [BOT] Returning cached bot instance");
+        return botInstance;
+    }
+
+    console.log(">>> [BOT] Initializing new Bot instance (Mixed Mode)...");
     const token = process.env.BOT_TOKEN;
     if (!token) {
         throw new Error("BOT_TOKEN is unset");
@@ -15,12 +23,9 @@ export const createBot = (botInfo?: UserFromGetMe) => {
     const bot = new Bot(token, { botInfo });
 
     // CRITICAL: Override Grammy's HTTP layer to use native fetch.
-    // Grammy bundles node-fetch which has its own AbortSignal polyfill.
-    // On Vercel (Node 18+), the native AbortSignal fails the instanceof check
-    // against node-fetch's polyfilled AbortSignal, causing all API calls to crash.
     bot.api.config.use(async (prev, method, payload, signal) => {
         const url = `https://api.telegram.org/bot${token}/${method}`;
-        console.log(`>>> [API] Native fetch: ${method}`);
+        // console.log(`>>> [API] Native fetch: ${method}`); // Reduce log spam
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -29,19 +34,34 @@ export const createBot = (botInfo?: UserFromGetMe) => {
         return await response.json();
     });
 
-    // Middleware
+    // Middleware: User Tracking & Streak (Restored)
     bot.use(async (ctx, next) => {
-        console.log(`>>> [BOT] Middleware received update type: ${Object.keys(ctx.update).join(', ')}`);
+        console.log(`>>> [BOT] Update: ${Object.keys(ctx.update).join(', ')}`);
+
+        // Fire-and-forget user tracking (don't block response)
+        if (ctx.from) {
+            const userId = ctx.from.id;
+            const username = ctx.from.username;
+
+            // We must AWAIT creation to ensure leaderboards/foreign keys work
+            // But we can catch errors to not crash the bot
+            findOrCreateUser(userId, username)
+                .then(() => {
+                    // Only update streak AFTER user exists
+                    // Fire-and-forget streak to keep bot fast
+                    updateStreak(userId).catch(e => console.error("Streak error:", e));
+                })
+                .catch(e => console.error("User tracking error:", e));
+        }
+
         await next();
     });
 
     // Register commands
     // STATIC: /start (critical path)
     bot.command("start", async (ctx) => {
-        console.log(">>> [BOT] /start command triggered (Static)");
         try {
             await startCommand(ctx);
-            console.log(">>> [BOT] startCommand executed successfully");
         } catch (e) {
             console.error(">>> [BOT] Error in /start command:", e);
         }
@@ -63,7 +83,9 @@ export const createBot = (botInfo?: UserFromGetMe) => {
     bot.command("pray", async (ctx) => {
         const { prayCommand } = await import("./commands/pray");
         return prayCommand(ctx);
-        // Rosary Command
+    });
+    // Alias for Rosary
+    bot.command("rosary", async (ctx) => {
         const { rosaryCommand } = await import("./commands/rosary");
         return rosaryCommand(ctx);
     });
@@ -113,11 +135,10 @@ export const createBot = (botInfo?: UserFromGetMe) => {
     // Register Callbacks with dynamic imports
     bot.on("callback_query:data", async (ctx) => {
         const data = ctx.callbackQuery.data;
-        console.log(`>>> [BOT] Callback: ${data}`);
+        // console.log(`>>> [BOT] Callback: ${data}`); // Reduce log spam
 
         // Navigation Router
         if (data === "cmd_start") {
-            // "Back to Menu" from any module
             await startCommand(ctx);
             return;
         }
@@ -201,9 +222,10 @@ export const createBot = (botInfo?: UserFromGetMe) => {
             return;
         }
 
-        console.log(">>> [BOT] Received message (no command matched):", ctx.message.text);
+        console.log(">>> [BOT] Received message:", ctx.message.text);
     });
 
     console.log(">>> [BOT] createBot completed");
+    botInstance = bot; // Cache the instance
     return bot;
 };
