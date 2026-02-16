@@ -40,7 +40,7 @@ export const MDXComponents = {
         );
     },
     blockquote: (props: any) => (
-        <blockquote className="border-l-4 border-gold-400 pl-6 py-2 my-8 italic text-xl text-gray-600 bg-gray-50 rounded-r-lg" {...props} />
+        <blockquote className="blog-quote" {...props} />
     ),
     img: (props: any) => (
         <div className="my-8 rounded-xl overflow-hidden shadow-lg">
