@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { db } from '@/lib/db';
 import { NOVENAS } from '@/lib/novenas';
-import { getAllGuides } from '@/lib/content';
+import { getAllGuides, getAllPosts } from '@/lib/content';
 
 const baseUrl = 'https://myprayertower.com';
 const CHUNK_SIZE = 10000; // Large chunk size for sitemap logic
@@ -135,6 +135,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.9
         }));
 
+        // 5b. Blog Posts (New Blog Hub)
+        const posts = await getAllPosts();
+        const blogRoutes = posts.map(post => ({
+            url: `${baseUrl}/blog/${post.slug}`,
+            lastModified: new Date(post.updatedAt || post.publishedAt),
+            changeFrequency: 'weekly' as const,
+            priority: 0.9
+        }));
+
         // 6. Novenas (New SEO Pages)
         const novenaRoutes = NOVENAS.map(novena => ({
             url: `${baseUrl}/novenas/${novena.id}`,
@@ -166,6 +175,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.9
         };
 
+        const blogHubRoute = {
+            url: `${baseUrl}/blog`,
+            lastModified: new Date(),
+            changeFrequency: 'daily' as const,
+            priority: 0.9
+        };
+
         const novenaHubRoute = {
             url: `${baseUrl}/novenas`,
             lastModified: new Date(),
@@ -190,10 +206,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         return [
             ...routes,
             guideHubRoute,
+            blogHubRoute,
             novenaHubRoute,
             howToHubRoute,
             catholicLifeHubRoute,
             ...guideRoutes,
+            ...blogRoutes,
             ...novenaRoutes,
             ...churchRoutes,
             ...saintRoutes,

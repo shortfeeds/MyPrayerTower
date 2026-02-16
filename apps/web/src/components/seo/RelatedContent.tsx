@@ -6,7 +6,7 @@ interface RelatedItem {
     slug: string;
     category?: string;
     description?: string;
-    type: 'prayer' | 'guide';
+    type: 'prayer' | 'guide' | 'post';
 }
 
 interface RelatedContentProps {
@@ -28,11 +28,11 @@ export function RelatedContent({ title = 'You Might Also Like', items }: Related
                     {items.map((item) => (
                         <Link
                             key={item.slug}
-                            href={item.type === 'prayer' ? `/prayers/${item.slug}` : `/guides/${item.slug}`}
+                            href={item.type === 'prayer' ? `/prayers/${item.slug}` : item.type === 'post' ? `/blog/${item.slug}` : `/guides/${item.slug}`}
                             className="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-gold-200 transition-all block"
                         >
                             <div className="text-xs font-bold text-gold-600 uppercase tracking-widest mb-2">
-                                {item.category || (item.type === 'prayer' ? 'Prayer' : 'Guide')}
+                                {item.category || (item.type === 'prayer' ? 'Prayer' : item.type === 'post' ? 'Article' : 'Guide')}
                             </div>
                             <h4 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-gold-700 transition-colors">
                                 {item.title}

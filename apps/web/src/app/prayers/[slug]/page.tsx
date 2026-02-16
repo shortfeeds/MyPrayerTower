@@ -7,6 +7,9 @@ import { PrayerInteractions } from '@/components/prayer/PrayerInteractions';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { RelatedContent } from '@/components/seo/RelatedContent';
 import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { FAQModule } from '@/components/seo/FAQModule';
+import { DailyPrayerCTA } from '@/components/seo/DailyPrayerCTA';
+import { getPrayerFAQs } from '@/lib/seo/prayerFAQs';
 
 interface Props {
     params: {
@@ -23,11 +26,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         };
     }
 
+    const title = `${prayer.title} — Powerful Catholic Prayer for ${prayer.category || 'Help'} (With Reflection)`;
+
     return {
-        title: `${prayer.title} | Catholic Prayers`,
+        title: `${title} | MyPrayerTower`,
         description: prayer.content.slice(0, 160),
+        keywords: prayer.tags,
+        alternates: {
+            canonical: `https://myprayertower.com/prayers/${params.slug}`
+        },
         openGraph: {
-            title: prayer.title,
+            title: title,
             description: prayer.content.slice(0, 160),
             type: 'article',
             publishedTime: new Date().toISOString(), // In real app, use updated_at
@@ -57,6 +66,9 @@ export default async function PrayerPage({ params }: Props) {
 
     // Simple formatting for content: split by newlines and wrap in paragraphs
     const paragraphs = prayer.content.split('\n').filter(p => p.trim() !== '');
+
+    // Generate FAQs
+    const faqs = getPrayerFAQs(prayer.category || 'general', prayer.title);
 
     // SEO Schema
     const articleLd = {
@@ -187,6 +199,12 @@ export default async function PrayerPage({ params }: Props) {
                 {relatedItems.length > 0 && (
                     <RelatedContent items={relatedItems} title="Prayers offering similar graces" />
                 )}
+
+                {/* FAQ Section */}
+                <FAQModule items={faqs} title={`Common Questions about ${prayer.title}`} />
+
+                {/* Global CTA */}
+                <DailyPrayerCTA />
             </article>
         </div>
     );

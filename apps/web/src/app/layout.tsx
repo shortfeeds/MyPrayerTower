@@ -101,7 +101,7 @@ export const metadata: Metadata = {
     },
     category: 'Lifestyle',
     verification: {
-        google: 'google-site-verification-code', // User to replace
+        google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'google-site-verification-code',
     },
     appleWebApp: {
         title: 'MyPrayerTower',
@@ -174,6 +174,14 @@ export default function RootLayout({
                                                         'https://www.pinterest.com/myprayertower/'
                                                     ],
                                                     description: 'The #1 All-in-One Catholic Services App. Find churches, prayer wall, and daily readings.',
+                                                    foundingDate: '2023-01-01',
+                                                    contactPoint: {
+                                                        '@type': 'ContactPoint',
+                                                        contactType: 'customer support',
+                                                        email: 'support@myprayertower.com'
+                                                    },
+                                                    areaServed: 'Worldwide',
+                                                    knowsAbout: ['Catholicism', 'Prayer', 'Mass Times', 'Saints', 'Catholic Church', 'Rosary', 'Liturgy'],
                                                 },
                                                 {
                                                     '@type': 'WebSite',

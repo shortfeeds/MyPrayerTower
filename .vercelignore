@@ -1,17 +1,31 @@
-# Standard Ignore File
 node_modules
 **/node_modules
 .next
+**/.next
+dist
+**/dist
+build
+**/build
+coverage
+**/coverage
+android
+**/android
+ios
+**/ios
+linux
+macos
+windows
+test
+e2e
 .git
-.turbo
-
-# Apps to ignore
-apps/flutter_app
-apps/telegram-bot
-apps/admin
-apps/api
-packages/apps
-
-# Misc
-.DS_Store
+.github
+.vscode
+.idea
 *.log
+.turbo
+fvm
+.dart_tool
+**/.dart_tool
+.pub-cache
+.flutter-plugins
+.flutter-plugins-dependencies

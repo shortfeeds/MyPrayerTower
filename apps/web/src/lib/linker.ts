@@ -20,6 +20,35 @@ const KEYWORD_REGISTRY: Record<string, string> = {
     'Liturgical Year': '/catholic-life/living-the-liturgical-year',
     'Fasting': '/catholic-life/catholic-fasting-rules',
 
+    // Essential Prayers (High Volume)
+    'Hail Mary': '/prayers/hail-mary',
+    'Our Father': '/prayers/our-father',
+    'Lord\'s Prayer': '/prayers/our-father',
+    'Glory Be': '/prayers/glory-be',
+    'Apostles Creed': '/prayers/apostles-creed',
+    'Nicene Creed': '/prayers/nicene-creed',
+    'Act of Contrition': '/prayers/act-of-contrition',
+    'St. Michael Prayer': '/prayers/st-michael-the-archangel',
+    'St. Michael': '/prayers/st-michael-the-archangel',
+    'Guardian Angel': '/prayers/guardian-angel-prayer',
+    'Morning Offering': '/prayers/morning-offering',
+    'Memorare': '/prayers/the-memorare',
+    'Salve Regina': '/prayers/hail-holy-queen',
+    'Magnificat': '/prayers/the-magnificat',
+    'Stations of the Cross': '/prayers/stations-of-the-cross',
+
+    // Life Situations & Categories
+    'Healing Prayer': '/prayers?category=healing',
+    'Prayer for Healing': '/prayers?category=healing',
+    'Protection Prayer': '/prayers?category=protection',
+    'Prayer for Protection': '/prayers?category=protection',
+    'Anxiety Prayer': '/prayers?category=anxiety',
+    'Prayer for Anxiety': '/prayers?category=anxiety',
+    'Peace': '/prayers?category=peace',
+    'Sleep Prayer': '/prayers?category=evening',
+    'Morning Prayer': '/prayers?category=morning',
+    'Evening Prayer': '/prayers?category=evening',
+
     // Phase 4 Content
     'Seven Sorrows': '/guides/seven-sorrows-of-mary',
     'Sorrows of Mary': '/guides/seven-sorrows-of-mary',

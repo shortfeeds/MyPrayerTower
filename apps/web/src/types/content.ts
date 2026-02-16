@@ -18,3 +18,25 @@ export interface Guide {
 }
 
 export type GuideMeta = Omit<Guide, 'content'>;
+
+export interface BlogPost {
+    slug: string;
+    title: string;
+    description: string;
+    publishedAt: string;
+    updatedAt?: string;
+    author?: {
+        name: string;
+        url?: string;
+        image?: string;
+    };
+    image?: string;
+    category: string; // More flexible for blog
+    tags?: string[];
+    readingTime?: string;
+    relatedPosts?: string[]; // Slugs of related posts
+    featured?: boolean;
+    content: string; // The raw MDX content
+}
+
+export type BlogPostMeta = Omit<BlogPost, 'content'>;
