@@ -126,22 +126,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.6
         }));
 
-        // 5. Guides / Content (New SEO Hub)
+        // 5. Guides / Content (New SEO Hub) - Max Priority for Master Guides
         const guides = await getAllGuides();
         const guideRoutes = guides.map(guide => ({
             url: `${baseUrl}/guides/${guide.slug}`,
             lastModified: new Date(guide.updatedAt || guide.publishedAt),
-            changeFrequency: 'weekly' as const,
-            priority: 0.9
+            changeFrequency: 'daily' as const,
+            priority: 1.0
         }));
 
-        // 5b. Blog Posts (New Blog Hub)
+        // 5b. Blog Posts (New Blog Hub) - High Priority for Liturgical Content
         const posts = await getAllPosts();
         const blogRoutes = posts.map(post => ({
             url: `${baseUrl}/blog/${post.slug}`,
             lastModified: new Date(post.updatedAt || post.publishedAt),
-            changeFrequency: 'weekly' as const,
-            priority: 0.9
+            changeFrequency: 'daily' as const,
+            priority: 1.0
         }));
 
         // 6. Novenas (New SEO Pages)

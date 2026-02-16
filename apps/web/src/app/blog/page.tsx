@@ -15,6 +15,8 @@ export const metadata: Metadata = {
     }
 };
 
+import { BlogSearch } from '@/components/blog/BlogSearch';
+
 export default async function BlogHubPage() {
     const posts = await getAllPosts();
     const featuredPost = posts.find(p => p.featured) || posts[0];
@@ -32,9 +34,14 @@ export default async function BlogHubPage() {
                     <h1 className="font-serif text-5xl md:text-6xl font-medium text-gray-900 mb-6 tracking-tight text-balance">
                         Faith, Prayer & <span className="italic text-gray-400 font-light">Life</span>
                     </h1>
-                    <p className="text-xl text-gray-500 max-w-2xl mx-auto font-light leading-relaxed text-balance">
+                    <p className="text-xl text-gray-500 max-w-2xl mx-auto font-light leading-relaxed text-balance mb-12">
                         Timeless Catholic wisdom for the modern soul. Explore reflections on prayer, the saints, and living out your vocation.
                     </p>
+
+                    {/* Live Search Implementation */}
+                    <div className="max-w-xl mx-auto">
+                        <BlogSearch />
+                    </div>
                 </div>
             </div>
 

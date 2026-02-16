@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 interface SearchResult {
     id: string;
-    type: 'prayer' | 'saint' | 'church';
+    type: 'prayer' | 'saint' | 'church' | 'blog' | 'guide';
     title: string;
     subtitle?: string;
     url: string;
@@ -59,14 +59,31 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
 
         const searchAll = async () => {
             try {
-                // Fetch from all three APIs in parallel
-                const [prayersRes, saintsRes, churchesRes] = await Promise.allSettled([
+                // Fetch from all APIs in parallel
+                const [prayersRes, saintsRes, churchesRes, blogRes] = await Promise.allSettled([
                     fetch(`/api/prayers?search=${encodeURIComponent(query)}&limit=5`, { signal: controller.signal }),
                     fetch(`/api/saints?search=${encodeURIComponent(query)}&limit=5`, { signal: controller.signal }),
                     fetch(`/api/churches?search=${encodeURIComponent(query)}&limit=5`, { signal: controller.signal }),
+                    fetch(`/api/blog/search?search=${encodeURIComponent(query)}&limit=5`, { signal: controller.signal }),
                 ]);
 
                 const allResults: SearchResult[] = [];
+
+                // Process Blog/Guide Results (Highest priority for new content)
+                if (blogRes.status === 'fulfilled' && blogRes.value.ok) {
+                    const data = await blogRes.value.json();
+                    if (data.results) {
+                        data.results.forEach((r: any) => {
+                            allResults.push({
+                                id: r.id,
+                                type: r.type,
+                                title: r.title,
+                                subtitle: r.category || 'Article',
+                                url: r.url
+                            });
+                        });
+                    }
+                }
 
                 // Process Prayers
                 if (prayersRes.status === 'fulfilled' && prayersRes.value.ok) {
@@ -144,6 +161,8 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
             case 'prayer': return Heart;
             case 'saint': return Star;
             case 'church': return Building2;
+            case 'blog': return BookOpen;
+            case 'guide': return Cross;
             default: return BookOpen;
         }
     };
@@ -153,6 +172,8 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
             case 'prayer': return 'bg-rose-100 text-rose-600 dark:bg-rose-900/30';
             case 'saint': return 'bg-purple-100 text-purple-600 dark:bg-purple-900/30';
             case 'church': return 'bg-blue-100 text-blue-600 dark:bg-blue-900/30';
+            case 'blog': return 'bg-gold-100 text-gold-600 dark:bg-gold-900/30';
+            case 'guide': return 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30';
             default: return 'bg-gray-100 text-gray-600';
         }
     };
