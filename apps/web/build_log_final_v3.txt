@@ -1,0 +1,344 @@
+
+> @mpt/web@1.0.0 build F:\Downloads\Antigravity\MPT\apps\web
+> npx prisma generate --schema=../../packages/database/prisma/schema.prisma && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from ..\..\packages\database\prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.22.0) to .\..\..\node_modules\.pnpm\@prisma+client@5.22.0_prisma@5.22.0\node_modules\@prisma\client in 2.08s
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+   Γû▓ Next.js 14.1.0
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ Γ£ô (pwa) Compiling for server...
+ Γ£ô (pwa) Compiling for server...
+ Γ£ô (pwa) Compiling for client (static)...
+ Γùï (pwa) Service worker: F:\Downloads\Antigravity\MPT\apps\web\public\sw.js
+ Γùï (pwa)   URL: /sw.js
+ Γùï (pwa)   Scope: /
+ Γùï (pwa) Custom runtimeCaching array found, using it instead of the default one.
+
+
+Source path: F:\Downloads\Antigravity\MPT\apps\web\src\app\globals.css
+Setting up new context...
+Finding changed files: 125.951ms
+Reading changed files: 1.985s
+Sorting candidates: 61.383ms
+Generate rules: 1.849s
+Build stylesheet: 25.277ms
+Potential classes:  24669
+Active contexts:  1
+JIT TOTAL: 4.954s
+
+
+ Γ£ô Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+ ΓÜá Using edge runtime on a page currently disables static generation for that page
+>>> [DB] Creating new PrismaClient instance...
+   Generating static pages (0/314) ...
+>>> [DB] Creating new PrismaClient instance...
+
+   Generating static pages (78/314) 
+
+   Generating static pages (156/314) 
+>>> [DB] Creating new PrismaClient instance...
+>>> [DB] Creating new PrismaClient instance...
+
+   Generating static pages (235/314) 
+>>> [DB] Creating new PrismaClient instance...
+>>> [DB] Creating new PrismaClient instance...
+>>> [DB] Creating new PrismaClient instance...
+
+ Γ£ô Generating static pages (314/314) 
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                Size     First Load JS
+Γöî ╬╗ /                                      14.1 kB         178 kB
+Γö£ Γùï /_not-found                            0 B                0 B
+Γö£ Γùï /about                                 232 B          93.8 kB
+Γö£ Γùï /achievements                          3.25 kB        90.1 kB
+Γö£ ╬╗ /admin                                 2.06 kB        95.7 kB
+Γö£ ╬╗ /admin/abandoned-carts                 2.62 kB        89.4 kB
+Γö£ ╬╗ /admin/ads                             5.87 kB        92.7 kB
+Γö£ ╬╗ /admin/analytics                       183 B            87 kB
+Γö£ ╬╗ /admin/articles                        3.58 kB         102 kB
+Γö£ ╬╗ /admin/audit                           3.36 kB        90.2 kB
+Γö£ ╬╗ /admin/candles                         4.52 kB        91.3 kB
+Γö£ ╬╗ /admin/churches                        3.8 kB          102 kB
+Γö£ ╬╗ /admin/churches/[id]/edit              3.21 kB         102 kB
+Γö£ ╬╗ /admin/churches/claims                 2.36 kB        89.2 kB
+Γö£ ╬╗ /admin/churches/create                 2.93 kB         101 kB
+Γö£ ╬╗ /admin/churches/verified               2.44 kB          96 kB
+Γö£ ╬╗ /admin/cms/prayers                     2.58 kB         100 kB
+Γö£ ╬╗ /admin/cms/saints                      2.79 kB         106 kB
+Γö£ ╬╗ /admin/cms/saints/create               3.02 kB         101 kB
+Γö£ ╬╗ /admin/donations                       3.31 kB        90.1 kB
+Γö£ ╬╗ /admin/features                        1.48 kB        88.3 kB
+Γö£ ╬╗ /admin/finance/analytics               3.62 kB        95.3 kB
+Γö£ ╬╗ /admin/finance/overview                3.24 kB        90.1 kB
+Γö£ ╬╗ /admin/finance/transactions            2.27 kB        99.7 kB
+Γö£ ╬╗ /admin/login                           2.45 kB        89.3 kB
+Γö£ ╬╗ /admin/mass-offerings                  2.67 kB        89.5 kB
+Γö£ ╬╗ /admin/memorials                       2.72 kB         101 kB
+Γö£ ╬╗ /admin/memorials/[id]/edit             3.61 kB         102 kB
+Γö£ ╬╗ /admin/memorials/create                3.38 kB         102 kB
+Γö£ ╬╗ /admin/moderation                      2.18 kB        99.6 kB
+Γö£ ╬╗ /admin/newsletter                      3.87 kB        90.7 kB
+Γö£ ╬╗ /admin/offerings                       2.84 kB        94.5 kB
+Γö£ ╬╗ /admin/offerings/candles               2.88 kB        94.5 kB
+Γö£ ╬╗ /admin/offerings/donations             2.68 kB        94.4 kB
+Γö£ ╬╗ /admin/offerings/mass-offerings        2.91 kB        94.6 kB
+Γö£ ╬╗ /admin/offerings/spiritual-bouquets    2.64 kB        94.3 kB
+Γö£ ╬╗ /admin/partners                        3.56 kB        90.4 kB
+Γö£ ╬╗ /admin/prayers                         3.9 kB         90.7 kB
+Γö£ ╬╗ /admin/readings                        2.12 kB        88.9 kB
+Γö£ ╬╗ /admin/reports                         3.56 kB        90.4 kB
+Γö£ ╬╗ /admin/revenue                         495 B          87.3 kB
+Γö£ ╬╗ /admin/saints                          2.76 kB        89.6 kB
+Γö£ ╬╗ /admin/settings                        5.58 kB        92.4 kB
+Γö£ ╬╗ /admin/users                           4.69 kB         103 kB
+Γö£ ╬╗ /admin/users/[id]/edit                 3.16 kB         102 kB
+Γö£ ╬╗ /admin/users/create                    2.88 kB         101 kB
+Γö£ Γùï /advertise                             3 kB           89.8 kB
+Γö£ Γùï /ai-companion                          3.09 kB        89.9 kB
+Γö£ Γùï /anniversaries                         7.14 kB         138 kB
+Γö£ ╬╗ /api/abandoned-cart                    0 B                0 B
+Γö£ ╬╗ /api/admin/ads                         0 B                0 B
+Γö£ ╬╗ /api/admin/ads/[id]                    0 B                0 B
+Γö£ ╬╗ /api/admin/analytics                   0 B                0 B
+Γö£ ╬╗ /api/admin/audit                       0 B                0 B
+Γö£ ╬╗ /api/admin/auth/login                  0 B                0 B
+Γö£ ╬╗ /api/admin/auth/logout                 0 B                0 B
+Γö£ ╬╗ /api/admin/churches                    0 B                0 B
+Γö£ ╬╗ /api/admin/churches/[id]               0 B                0 B
+Γö£ ╬╗ /api/admin/churches/bulk               0 B                0 B
+Γö£ ╬╗ /api/admin/claims                      0 B                0 B
+Γö£ ╬╗ /api/admin/claims/[id]                 0 B                0 B
+Γö£ ╬╗ /api/admin/mass-offerings              0 B                0 B
+Γö£ ╬╗ /api/admin/newsletter                  0 B                0 B
+Γö£ ╬╗ /api/admin/prayers                     0 B                0 B
+Γö£ ╬╗ /api/admin/prayers/[id]                0 B                0 B
+Γö£ ╬╗ /api/admin/prayers/bulk                0 B                0 B
+Γö£ ╬╗ /api/admin/reports                     0 B                0 B
+Γö£ ╬╗ /api/admin/reports/[id]                0 B                0 B
+Γö£ ╬╗ /api/admin/saints                      0 B                0 B
+Γö£ ╬╗ /api/admin/settings                    0 B                0 B
+Γö£ ╬╗ /api/admin/users                       0 B                0 B
+Γö£ ╬╗ /api/admin/users/[id]                  0 B                0 B
+Γö£ ╬╗ /api/admin/users/bulk                  0 B                0 B
+Γö£ ╬╗ /api/auth/login                        0 B                0 B
+Γö£ ╬╗ /api/bouquets/checkout                 0 B                0 B
+Γö£ ╬╗ /api/bouquets/payment/capture          0 B                0 B
+Γö£ ╬╗ /api/bouquets/payment/create           0 B                0 B
+Γö£ ╬╗ /api/calendar/liturgical               0 B                0 B
+Γö£ ╬╗ /api/calendar/parse                    0 B                0 B
+Γö£ ╬╗ /api/candles/checkout                  0 B                0 B
+Γö£ ╬╗ /api/candles/count                     0 B                0 B
+Γö£ ╬╗ /api/candles/payment/capture           0 B                0 B
+Γö£ ╬╗ /api/candles/payment/create            0 B                0 B
+Γö£ ╬╗ /api/catechism                         0 B                0 B
+Γö£ ╬╗ /api/churches                          0 B                0 B
+Γö£ ╬╗ /api/churches/[id]                     0 B                0 B
+Γö£ ╬╗ /api/churches/follow                   0 B                0 B
+Γö£ ╬╗ /api/contact                           0 B                0 B
+Γö£ ╬╗ /api/cron/anniversary-reminders        0 B                0 B
+Γö£ ╬╗ /api/cron/gospel                       0 B                0 B
+Γö£ ╬╗ /api/cron/mercy                        0 B                0 B
+Γö£ ╬╗ /api/cron/reminders                    0 B                0 B
+Γö£ ╬╗ /api/cron/telegram-daily               0 B                0 B
+Γö£ ╬╗ /api/daily-content/today               0 B                0 B
+Γö£ ╬╗ /api/debug-env                         0 B                0 B
+Γö£ ╬╗ /api/devotionals                       0 B                0 B
+Γö£ ╬╗ /api/documents                         0 B                0 B
+Γö£ ╬╗ /api/donations/checkout                0 B                0 B
+Γö£ ╬╗ /api/donations/payment/capture         0 B                0 B
+Γö£ ╬╗ /api/donations/payment/create          0 B                0 B
+Γö£ ╬╗ /api/groups                            0 B                0 B
+Γö£ ╬╗ /api/groups/[id]                       0 B                0 B
+Γö£ ╬╗ /api/groups/[id]/join                  0 B                0 B
+Γö£ ╬╗ /api/groups/[id]/prayers               0 B                0 B
+Γö£ ╬╗ /api/hierarchy/cardinals               0 B                0 B
+Γö£ ╬╗ /api/indexnow                          0 B                0 B
+Γö£ ╬╗ /api/mass-offerings/checkout           0 B                0 B
+Γö£ ╬╗ /api/mass-offerings/payment/capture    0 B                0 B
+Γö£ ╬╗ /api/mass-offerings/payment/create     0 B                0 B
+Γö£ ╬╗ /api/memorials                         0 B                0 B
+Γö£ ╬╗ /api/memorials/[id]                    0 B                0 B
+Γö£ ╬╗ /api/memorials/[id]/guestbook          0 B                0 B
+Γö£ ╬╗ /api/memorials/[id]/offering-checkout  0 B                0 B
+Γö£ ╬╗ /api/memorials/[id]/offerings          0 B                0 B
+Γö£ ╬╗ /api/memorials/checkout                0 B                0 B
+Γö£ ╬╗ /api/memorials/verify-payment          0 B                0 B
+Γö£ ╬╗ /api/newsletter                        0 B                0 B
+Γö£ ╬╗ /api/notifications/register-device     0 B                0 B
+Γö£ Γäç /api/og/bouquets                       0 B                0 B
+Γö£ Γäç /api/og/prayer/[id]                    0 B                0 B
+Γö£ Γäç /api/og/saint/[slug]                   0 B                0 B
+Γö£ ╬╗ /api/payments/verify                   0 B                0 B
+Γö£ ╬╗ /api/paypal/capture-order              0 B                0 B
+Γö£ ╬╗ /api/paypal/create-order               0 B                0 B
+Γö£ ╬╗ /api/prayers                           0 B                0 B
+Γö£ ╬╗ /api/prayers/[id]/answer               0 B                0 B
+Γö£ ╬╗ /api/quotes                            0 B                0 B
+Γö£ ╬╗ /api/readings                          0 B                0 B
+Γö£ Γùï /api/readings/today                    0 B                0 B
+Γö£ ╬╗ /api/reports                           0 B                0 B
+Γö£ ╬╗ /api/saints                            0 B                0 B
+Γö£ ╬╗ /api/saints/[id]                       0 B                0 B
+Γö£ ╬╗ /api/saints/today                      0 B                0 B
+Γö£ ╬╗ /api/seed/memorials                    0 B                0 B
+Γö£ Γùï /api/settings                          0 B                0 B
+Γö£ ╬╗ /api/sponsored                         0 B                0 B
+Γö£ ╬╗ /api/sponsored/[id]/click              0 B                0 B
+Γö£ ╬╗ /api/sponsored/[id]/impression         0 B                0 B
+Γö£ ╬╗ /api/sponsored/[id]/mobile-click       0 B                0 B
+Γö£ ╬╗ /api/sponsored/[id]/mobile-impression  0 B                0 B
+Γö£ ╬╗ /api/stats                             0 B                0 B
+Γö£ ╬╗ /api/telegram/webhook                  0 B                0 B
+Γö£ ╬╗ /api/test-db-connection                0 B                0 B
+Γö£ ╬╗ /api/test-health                       0 B                0 B
+Γö£ ╬╗ /api/test-telegram-api                 0 B                0 B
+Γö£ ╬╗ /api/upload/memorial-photo             0 B                0 B
+Γö£ ╬╗ /api/users/streak                      0 B                0 B
+Γö£ Γùï /art                                   183 B            87 kB
+Γö£ Γùï /bible                                 232 B          93.8 kB
+Γö£ Γäç /bot                                   4.2 kB          147 kB
+Γö£ Γùï /bouquets                              5.67 kB        99.3 kB
+Γö£ ╬╗ /bouquets/[id]                         2.32 kB          99 kB
+Γö£ Γùï /calendar                              4.15 kB        97.8 kB
+Γö£ Γùï /campaigns                             3.96 kB        97.6 kB
+Γö£ Γùï /candles                               14.5 kB         155 kB
+Γö£ Γùï /canon-law                             2.84 kB        89.6 kB
+Γö£ Γùï /careers                               183 B            87 kB
+Γö£ Γùï /catechism                             183 B            87 kB
+Γö£ Γùï /catholic-life                         232 B          93.8 kB
+Γö£ Γùï /certificates                          2.44 kB        89.2 kB
+Γö£ ╬╗ /challenges                            232 B          93.8 kB
+Γö£ ╬╗ /challenges/[slug]                     3.57 kB        97.2 kB
+Γö£ Γùï /chant                                 3.03 kB        89.8 kB
+Γö£ Γùï /chaplets                              3.32 kB        90.1 kB
+Γö£ Γùï /church-dashboard                      232 B          93.8 kB
+Γö£ ╬╗ /churches                              2.26 kB         101 kB
+Γö£ ╬╗ /churches/[id]                         193 B          98.8 kB
+Γö£ ╬╗ /claim/[churchId]                      2.99 kB        96.6 kB
+Γö£ ╬╗ /community/groups                      2.6 kB         96.2 kB
+Γö£ ╬╗ /community/groups/[id]                 2.64 kB         101 kB
+Γö£ Γùï /confession                            5.91 kB         139 kB
+Γö£ Γùï /contact                               2.71 kB        89.5 kB
+Γö£ Γùï /contributions                         2.61 kB        96.2 kB
+Γö£ Γùï /cookies                               232 B          93.8 kB
+Γö£ ╬╗ /dashboard                             3.55 kB        97.2 kB
+Γö£ ╬╗ /dashboard/analytics                   182 B            87 kB
+Γö£ ╬╗ /dashboard/announcements               2.75 kB        96.4 kB
+Γö£ ╬╗ /dashboard/billing                     1.7 kB         95.3 kB
+Γö£ ╬╗ /dashboard/confession                  3.42 kB          97 kB
+Γö£ ╬╗ /dashboard/events                      3.37 kB          97 kB
+Γö£ ╬╗ /dashboard/followers                   2.33 kB        89.1 kB
+Γö£ ╬╗ /dashboard/onboarding                  3.78 kB        90.6 kB
+Γö£ ╬╗ /dashboard/orders                      4.23 kB        97.8 kB
+Γö£ ╬╗ /dashboard/profile                     2.96 kB        89.8 kB
+Γö£ ╬╗ /dashboard/reminders                   2.69 kB        96.3 kB
+Γö£ ╬╗ /dashboard/sacraments                  2.89 kB        89.7 kB
+Γö£ ╬╗ /dashboard/settings                    726 B          94.6 kB
+Γö£ Γùï /dioceses                              3.13 kB        96.7 kB
+Γö£ Γùï /divine-office                         2.84 kB        95.4 kB
+Γö£ Γùï /dmca                                  232 B          93.8 kB
+Γö£ Γùï /encyclicals                           183 B            87 kB
+Γö£ Γùï /events                                3.09 kB        89.9 kB
+Γö£ Γùï /examen                                3.55 kB        97.2 kB
+Γö£ Γùï /fasting                               2.75 kB        89.6 kB
+Γö£ Γùï /features                              183 B            87 kB
+Γö£ Γùï /focus-mode                            2.81 kB        96.4 kB
+Γö£ Γùï /for-churches                          4.86 kB        98.5 kB
+Γö£ Γùï /glossary                              6.36 kB        93.2 kB
+Γö£ ╬╗ /groups                                4.38 kB         137 kB
+Γö£ Γùï /guidelines                            232 B          93.8 kB
+Γö£ Γùï /guides                                232 B          93.8 kB
+Γö£ ΓùÅ /guides/[slug]                         232 B          93.8 kB
+Γö£   Γö£ /guides/catholic-fasting-rules
+Γö£   Γö£ /guides/how-to-attend-latin-mass
+Γö£   Γö£ /guides/how-to-go-to-confession
+Γö£   Γöö [+7 more paths]
+Γö£ Γùï /hierarchy                             2.82 kB        89.6 kB
+Γö£ Γùï /history                               2.83 kB        89.6 kB
+Γö£ Γùï /how-to                                232 B          93.8 kB
+Γö£ Γùï /how-we-work                           4.18 kB        97.8 kB
+Γö£ Γùï /hymns                                 2.85 kB        89.7 kB
+Γö£ Γùï /journal                               3.16 kB        95.8 kB
+Γö£ ╬╗ /journey                               13.7 kB         113 kB
+Γö£ ╬╗ /leaderboard                           232 B          93.8 kB
+Γö£ Γùï /library                               232 B          93.8 kB
+Γö£ Γùï /live-mass                             193 B          98.8 kB
+Γö£ Γùï /login                                 3.31 kB        96.9 kB
+Γö£ Γùï /manifest.webmanifest                  0 B                0 B
+Γö£ Γùï /mass-offerings                        9.26 kB         142 kB
+Γö£ Γùï /mass-times                            2.67 kB        96.3 kB
+Γö£ ╬╗ /memorials                             2.14 kB         142 kB
+Γö£ Γùï /memorials/create                      2.81 kB        96.7 kB
+Γö£ Γùï /news                                  2.56 kB        89.4 kB
+Γö£ Γùï /novena-tracker                        3.08 kB        95.7 kB
+Γö£ Γùï /novenas                               5.17 kB         138 kB
+Γö£ ΓùÅ /novenas/[id]                          232 B          93.8 kB
+Γö£   Γö£ /novenas/divine-mercy
+Γö£   Γö£ /novenas/st-jude
+Γö£   Γö£ /novenas/sacred-heart
+Γö£   Γöö [+52 more paths]
+Γö£ Γùï /offerings                             232 B          93.8 kB
+Γö£ Γùï /opengraph-image.jpg                   0 B                0 B
+Γö£ ╬╗ /partners                              232 B          93.8 kB
+Γö£ Γùï /pilgrimages                           7.79 kB         134 kB
+Γö£ Γùï /podcasts                              183 B            87 kB
+Γö£ Γùï /prayer-partners                       2.95 kB        89.8 kB
+Γö£ Γùï /prayer-wall                           13.4 kB         175 kB
+Γö£ ╬╗ /prayer-wall/[id]                      2.85 kB        96.5 kB
+Γö£ ╬╗ /prayers                               2.48 kB        96.1 kB
+Γö£ ╬╗ /prayers/[slug]                        2.44 kB         101 kB
+Γö£ ╬╗ /prayers/[slug]/opengraph-image        0 B                0 B
+Γö£ Γùï /press                                 183 B            87 kB
+Γö£ Γùï /privacy                               183 B            87 kB
+Γö£ Γùï /profile                               302 B           159 kB
+Γö£ Γùï /quiz                                  11.8 kB        98.6 kB
+Γö£ Γùï /reading-plans                         2.34 kB        89.2 kB
+Γö£ Γùï /readings                              5.46 kB         105 kB
+Γö£ Γùï /refunds                               3.35 kB          97 kB
+Γö£ Γùï /register                              2.57 kB        96.2 kB
+Γö£ Γùï /robots.txt                            0 B                0 B
+Γö£ Γùï /rosary                                232 B          93.8 kB
+Γö£ Γùï /sacraments                            3.25 kB        95.8 kB
+Γö£ Γùï /saints                                2.63 kB         101 kB
+Γö£ ΓùÅ /saints/[slug]                         3.5 kB          141 kB
+Γö£   Γö£ /saints/st-peter
+Γö£   Γö£ /saints/st-paul
+Γö£   Γö£ /saints/st-john-the-apostle
+Γö£   Γöö [+57 more paths]
+Γö£ Γùï /sessions                              3.35 kB          97 kB
+Γö£ Γùï /settings                              2.31 kB        89.1 kB
+Γö£ Γùï /sitemap.xml                           0 B                0 B
+Γö£ Γùï /stations                              3.25 kB        90.1 kB
+Γö£ Γùï /summa                                 3.09 kB        89.9 kB
+Γö£ Γùï /terms                                 182 B            87 kB
+Γö£ Γùï /testimonies                           2.94 kB        89.8 kB
+Γö£ Γùï /vatican-ii                            183 B            87 kB
+Γö£ Γùï /welcome                               232 B          93.8 kB
+Γöö Γùï /year-in-review                        3.38 kB          97 kB
++ First Load JS shared by all              86.8 kB
+  Γö£ chunks/9419-6d6c42e520bbb5ef.js        31.4 kB
+  Γö£ chunks/c1b5b5cb-4f1a6b52cfb21dc3.js    53.4 kB
+  Γöö other shared chunks (total)            2.08 kB
+
+
+╞Æ Middleware                               70.9 kB
+
+Γùï  (Static)        prerendered as static content
+ΓùÅ  (SSG)           prerendered as static HTML (uses getStaticProps)
+╬╗  (Dynamic)       server-rendered on demand using Node.js
+Γäç  (Edge Runtime)  server-rendered on demand using the Edge Runtime
+

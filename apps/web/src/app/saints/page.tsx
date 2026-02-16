@@ -1,26 +1,60 @@
-import { User, BookOpen } from 'lucide-react';
-import Link from 'next/link';
+import { Metadata } from 'next';
+import { db } from '@/lib/db';
+import SaintList from './SaintList';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { User } from 'lucide-react';
 
-export default function SaintsPage() {
+export const metadata: Metadata = {
+    title: 'Catholic Saints Library | Biographies & Patronages',
+    description: 'Explore our comprehensive library of Catholic Saints. Read biographies, find patron saints, and learn about their feast days.',
+};
+
+export default async function SaintsPage() {
+    // Fetch all saints - ordered by feast day or name could be good, let's do name for now
+    const saints = await db.saint.findMany({
+        take: 60,
+        orderBy: { name: 'asc' },
+        select: {
+            id: true,
+            name: true,
+            slug: true,
+            title: true,
+            feastDay: true,
+            imageUrl: true,
+            patronOf: true,
+            shortBio: true
+            // biography: true - Excluded for performance on list view
+        }
+    });
+
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-            <div className="max-w-md w-full text-center">
-                <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <User className="w-10 h-10 text-amber-600" />
+        <div className="min-h-screen bg-[#faf9f6]">
+            <JsonLd<any> data={{
+                '@context': 'https://schema.org',
+                '@type': 'CollectionPage',
+                name: 'Catholic Saints Library',
+                description: 'Comprehensive library of Catholic Saints.',
+                url: 'https://myprayertower.com/saints'
+            }} />
+
+            {/* Hero Section */}
+            <div className="bg-white border-b border-gray-100 pt-32 pb-20">
+                <div className="container mx-auto px-4 text-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-50 text-amber-700 rounded-full text-sm font-bold mb-6">
+                        <User className="w-4 h-4" />
+                        <span>The Communion of Saints</span>
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-serif font-bold text-gray-900 mb-6">
+                        Catholic <span className="text-amber-600">Saints</span> Library
+                    </h1>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        "The saints were not superhuman. They were people who loved God in their hearts, and who shared this joy with others." — Pope Francis
+                    </p>
                 </div>
-                <h1 className="text-3xl font-serif font-bold text-gray-900 mb-4">Saints Library</h1>
-                <p className="text-gray-600 mb-8">
-                    Discover the lives of the holy men and women who have gone before us. Our comprehensive library is being curated.
-                </p>
-                <div className="grid grid-cols-3 gap-3 mb-8 opacity-50">
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className="h-24 bg-gray-200 rounded-lg animate-pulse" />
-                    ))}
-                </div>
-                <Link href="/" className="text-amber-600 font-medium hover:underline">
-                    Return Home
-                </Link>
             </div>
+
+            {/* Client Side List */}
+            <SaintList initialSaints={saints} />
         </div>
     );
 }

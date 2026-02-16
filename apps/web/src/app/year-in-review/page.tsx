@@ -1,156 +1,181 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Sparkles, BookOpen, Heart, Flame, Church, Trophy, Star, Share2, Download, ChevronRight, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { Sparkles, BookOpen, Heart, Flame, Church, Trophy, Star, Share2, Download, ChevronRight } from 'lucide-react';
-
-// Mock data - in production this would come from server
-const mockStats = {
-    totalPrayers: 847,
-    rosaries: 45,
-    dailyReadings: 312,
-    streakDays: 156,
-    longestStreak: 45,
-    churchVisits: 52,
-    prayerWallPosts: 23,
-    prayersForOthers: 234,
-    challengesCompleted: 3,
-    badges: ['first_prayer', 'rosary_warrior', 'streak_7', 'streak_30', 'community_helper', 'lent_2025'],
-    topPrayers: ['Morning Offering', 'Hail Mary', 'Our Father', 'Divine Mercy Chaplet'],
-    monthlyProgress: [12, 23, 34, 45, 32, 43, 54, 45, 56, 67, 78, 89]
-};
 
 export default function YearInReviewPage() {
+    const router = useRouter();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
-    const year = new Date().getFullYear() - 1; // Show last year
+    const [stats, setStats] = useState({
+        totalPrayers: 0,
+        rosaries: 0,
+        dailyReadings: 0,
+        streakDays: 0,
+        longestStreak: 0,
+        churchVisits: 0,
+        prayersForOthers: 0,
+        journalEntries: 0,
+        sacraments: 0,
+        novenas: 0,
+        badges: [] as string[],
+    });
+
+    const year = new Date().getFullYear();
+
+    useEffect(() => {
+        // Load real data from localStorage
+        const journal = JSON.parse(localStorage.getItem('mpt_journal_entries') || '[]');
+        const readingPlans = JSON.parse(localStorage.getItem('mpt_reading_plans') || '{}');
+        const novenas = JSON.parse(localStorage.getItem('mpt_active_novenas') || '[]');
+        const sacraments = JSON.parse(localStorage.getItem('mpt_sacrament_records') || '[]');
+
+        // Calculate stats
+        const totalReadingDays = Object.values(readingPlans).reduce((acc: number, days: any) => acc + days.length, 0);
+        const completedNovenas = novenas.filter((n: any) => n.isCompleted).length;
+        const receivedSacraments = sacraments.filter((s: any) => s.isReceived).length;
+
+        setStats({
+            totalPrayers: journal.length + totalReadingDays + (completedNovenas * 9), // Rough estimate
+            rosaries: 0, // No specific tracker for this yet
+            dailyReadings: totalReadingDays,
+            streakDays: 0, // Needs a proper streak tracker
+            longestStreak: 0,
+            churchVisits: 0,
+            prayersForOthers: 0,
+            journalEntries: journal.length,
+            sacraments: receivedSacraments,
+            novenas: completedNovenas,
+            badges: [],
+        });
+    }, []);
 
     const slides = [
         // Slide 1: Intro
         {
             id: 'intro',
-            bg: 'from-sacred-700 via-sacred-800 to-sacred-900',
+            bg: 'bg-slate-900',
             content: (
                 <div className="flex flex-col items-center justify-center h-full text-center px-8">
-                    <Sparkles className="w-16 h-16 text-gold-400 mb-6" />
-                    <h1 className="text-5xl font-display font-bold text-white mb-4">
+                    <Sparkles className="w-16 h-16 text-amber-400 mb-6 animate-pulse" />
+                    <h1 className="text-4xl md:text-6xl font-serif font-bold text-white mb-6">
                         Your {year} Faith Journey
                     </h1>
-                    <p className="text-xl text-blue-100/80 max-w-md">
-                        Let's look back at how you grew in faith this year ✨
+                    <p className="text-xl text-slate-300 max-w-md">
+                        A look back at your spiritual growth and moments of grace.
                     </p>
                 </div>
             )
         },
-        // Slide 2: Total Prayers
+        // Slide 2: Journaling
         {
-            id: 'prayers',
-            bg: 'from-rose-600 to-rose-700',
+            id: 'journal',
+            bg: 'bg-indigo-900',
             content: (
                 <div className="flex flex-col items-center justify-center h-full text-center px-8">
-                    <Heart className="w-16 h-16 text-rose-200 mb-6" />
-                    <p className="text-xl text-rose-100 mb-2">You prayed</p>
-                    <h2 className="text-7xl font-display font-bold text-white mb-2">
-                        {mockStats.totalPrayers}
+                    <BookOpen className="w-16 h-16 text-indigo-300 mb-6" />
+                    <p className="text-xl text-indigo-200 mb-2">You recorded</p>
+                    <h2 className="text-7xl font-serif font-bold text-white mb-2">
+                        {stats.journalEntries}
                     </h2>
-                    <p className="text-2xl text-rose-100">prayers this year</p>
-                    <p className="text-rose-200/80 mt-4">That's {Math.round(mockStats.totalPrayers / 365)} prayers per day! 🙏</p>
+                    <p className="text-2xl text-indigo-200">journal entries</p>
+                    <p className="text-indigo-300/80 mt-4 max-w-md">
+                        Each entry is a conversation with God. Keep writing your story.
+                    </p>
                 </div>
             )
         },
-        // Slide 3: Streak
+        // Slide 3: Scripture
         {
-            id: 'streak',
-            bg: 'from-orange-500 to-amber-600',
+            id: 'scripture',
+            bg: 'bg-emerald-900',
             content: (
                 <div className="flex flex-col items-center justify-center h-full text-center px-8">
-                    <Flame className="w-16 h-16 text-white mb-6" />
-                    <p className="text-xl text-orange-100 mb-2">Your longest streak was</p>
-                    <h2 className="text-7xl font-display font-bold text-white mb-2">
-                        {mockStats.longestStreak}
+                    <Flame className="w-16 h-16 text-emerald-300 mb-6" />
+                    <p className="text-xl text-emerald-200 mb-2">You spent</p>
+                    <h2 className="text-7xl font-serif font-bold text-white mb-2">
+                        {stats.dailyReadings}
                     </h2>
-                    <p className="text-2xl text-orange-100">days in a row!</p>
-                    <p className="text-orange-200/80 mt-4">Incredible dedication! 🔥</p>
+                    <p className="text-2xl text-emerald-200">days in scripture</p>
+                    <p className="text-emerald-300/80 mt-4">
+                        "Your word is a lamp for my feet, a light on my path."
+                    </p>
                 </div>
             )
         },
-        // Slide 4: Rosaries
+        // Slide 4: Novenas
         {
-            id: 'rosary',
-            bg: 'from-sky-500 to-blue-600',
+            id: 'novenas',
+            bg: 'bg-rose-900',
             content: (
                 <div className="flex flex-col items-center justify-center h-full text-center px-8">
-                    <Star className="w-16 h-16 text-sky-200 mb-6" />
-                    <p className="text-xl text-sky-100 mb-2">You prayed the Rosary</p>
-                    <h2 className="text-7xl font-display font-bold text-white mb-2">
-                        {mockStats.rosaries}
+                    <Heart className="w-16 h-16 text-rose-300 mb-6" />
+                    <p className="text-xl text-rose-200 mb-2">You completed</p>
+                    <h2 className="text-7xl font-serif font-bold text-white mb-2">
+                        {stats.novenas}
                     </h2>
-                    <p className="text-2xl text-sky-100">times!</p>
-                    <p className="text-sky-200/80 mt-4">{mockStats.rosaries * 53} Hail Marys 📿</p>
+                    <p className="text-2xl text-rose-200">novenas</p>
+                    <p className="text-rose-300/80 mt-4">
+                        Powerful prayers of persistence and faith.
+                    </p>
                 </div>
             )
         },
-        // Slide 5: Community
+        // Slide 5: Sacraments
         {
-            id: 'community',
-            bg: 'from-purple-600 to-violet-700',
+            id: 'sacraments',
+            bg: 'bg-amber-900',
             content: (
                 <div className="flex flex-col items-center justify-center h-full text-center px-8">
-                    <Heart className="w-16 h-16 text-purple-200 mb-6 fill-purple-200" />
-                    <p className="text-xl text-purple-100 mb-2">You prayed for others</p>
-                    <h2 className="text-7xl font-display font-bold text-white mb-2">
-                        {mockStats.prayersForOthers}
+                    <Church className="w-16 h-16 text-amber-300 mb-6" />
+                    <p className="text-xl text-amber-200 mb-2">You have received</p>
+                    <h2 className="text-7xl font-serif font-bold text-white mb-2">
+                        {stats.sacraments}
                     </h2>
-                    <p className="text-2xl text-purple-100">times</p>
-                    <p className="text-purple-200/80 mt-4">The power of community! 💜</p>
+                    <p className="text-2xl text-amber-200">sacraments</p>
+                    <p className="text-amber-300/80 mt-4">
+                        Visible signs of invisible grace.
+                    </p>
                 </div>
             )
         },
-        // Slide 6: Badges
-        {
-            id: 'badges',
-            bg: 'from-emerald-600 to-teal-700',
-            content: (
-                <div className="flex flex-col items-center justify-center h-full text-center px-8">
-                    <Trophy className="w-16 h-16 text-emerald-200 mb-6" />
-                    <p className="text-xl text-emerald-100 mb-2">You earned</p>
-                    <h2 className="text-7xl font-display font-bold text-white mb-2">
-                        {mockStats.badges.length}
-                    </h2>
-                    <p className="text-2xl text-emerald-100">badges!</p>
-                    <div className="flex gap-2 mt-6">
-                        {mockStats.badges.slice(0, 4).map((badge, i) => (
-                            <div key={i} className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                                <Star className="w-6 h-6 text-gold-300" />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )
-        },
-        // Slide 7: Summary
+        // Slide 6: Summary
         {
             id: 'summary',
-            bg: 'from-gold-500 to-amber-600',
+            bg: 'bg-slate-900',
             content: (
-                <div className="flex flex-col items-center justify-center h-full text-center px-8">
-                    <Sparkles className="w-16 h-16 text-white mb-6" />
-                    <h2 className="text-4xl font-display font-bold text-white mb-6">
-                        What an Amazing Year!
+                <div className="flex flex-col items-center justify-center h-full text-center px-8 animate-in fade-in duration-1000">
+                    <Trophy className="w-20 h-20 text-yellow-400 mb-8" />
+                    <h2 className="text-4xl font-serif font-bold text-white mb-6">
+                        Keep the Faith!
                     </h2>
-                    <p className="text-xl text-amber-100 max-w-md mb-8">
-                        Keep growing in faith. We're blessed to have you in our community!
-                    </p>
-                    <div className="flex gap-4">
-                        <button className="px-6 py-3 bg-white text-amber-700 font-bold rounded-xl flex items-center gap-2 hover:bg-amber-50 transition-colors">
-                            <Share2 className="w-5 h-5" />
-                            Share
-                        </button>
-                        <button className="px-6 py-3 bg-white/20 text-white font-bold rounded-xl flex items-center gap-2 hover:bg-white/30 transition-colors">
-                            <Download className="w-5 h-5" />
-                            Download
-                        </button>
+                    <div className="grid grid-cols-2 gap-4 mb-8 w-full max-w-sm">
+                        <div className="bg-white/10 p-4 rounded-xl">
+                            <div className="text-2xl font-bold">{stats.journalEntries}</div>
+                            <div className="text-xs text-slate-400">Entries</div>
+                        </div>
+                        <div className="bg-white/10 p-4 rounded-xl">
+                            <div className="text-2xl font-bold">{stats.dailyReadings}</div>
+                            <div className="text-xs text-slate-400">Readings</div>
+                        </div>
+                        <div className="bg-white/10 p-4 rounded-xl">
+                            <div className="text-2xl font-bold">{stats.novenas}</div>
+                            <div className="text-xs text-slate-400">Novenas</div>
+                        </div>
+                        <div className="bg-white/10 p-4 rounded-xl">
+                            <div className="text-2xl font-bold">{stats.sacraments}</div>
+                            <div className="text-xs text-slate-400">Sacraments</div>
+                        </div>
                     </div>
+
+                    <Link
+                        href="/"
+                        className="px-8 py-3 bg-white text-slate-900 font-bold rounded-full hover:bg-slate-200 transition-colors flex items-center gap-2"
+                    >
+                        Return Home <ArrowRight size={18} />
+                    </Link>
                 </div>
             )
         }
@@ -177,53 +202,46 @@ export default function YearInReviewPage() {
     };
 
     return (
-        <div className={`min-h-screen bg-gradient-to-br ${slides[currentSlide].bg} transition-all duration-500`}>
-            {/* Progress */}
-            <div className="fixed top-0 left-0 right-0 z-50 p-4">
-                <div className="max-w-md mx-auto flex gap-1">
+        <div className={`min-h-screen ${slides[currentSlide].bg} transition-colors duration-700`}>
+            {/* Progress Bar */}
+            <div className="fixed top-0 left-0 right-0 z-50 px-4 py-6">
+                <div className="flex gap-2 max-w-md mx-auto">
                     {slides.map((_, i) => (
                         <div
                             key={i}
-                            className={`flex-1 h-1 rounded-full transition-all ${i <= currentSlide ? 'bg-white' : 'bg-white/30'
+                            className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${i <= currentSlide ? 'bg-white' : 'bg-white/20'
                                 }`}
                         />
                     ))}
                 </div>
             </div>
 
-            {/* Content */}
+            {/* Content Area */}
             <div
-                className={`min-h-screen flex items-center justify-center transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'
-                    }`}
+                className={`min-h-screen transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}
             >
                 {slides[currentSlide].content}
             </div>
 
-            {/* Navigation */}
-            <div className="fixed bottom-8 left-0 right-0 px-4">
-                <div className="max-w-md mx-auto flex justify-between">
+            {/* Navigation Controls */}
+            <div className="fixed bottom-0 left-0 right-0 p-8 z-50">
+                <div className="max-w-md mx-auto flex justify-between items-center">
                     <button
                         onClick={prevSlide}
                         disabled={currentSlide === 0}
-                        className="px-6 py-3 bg-white/20 text-white font-semibold rounded-xl disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/30 transition-colors"
+                        className={`text-white/50 hover:text-white transition-colors disabled:opacity-0 ${currentSlide === 0 ? 'pointer-events-none' : ''
+                            }`}
                     >
                         Back
                     </button>
-                    {currentSlide < slides.length - 1 ? (
+
+                    {currentSlide < slides.length - 1 && (
                         <button
                             onClick={nextSlide}
-                            className="px-8 py-3 bg-white text-gray-900 font-semibold rounded-xl flex items-center gap-2 hover:bg-white/90 transition-colors"
+                            className="bg-white text-slate-900 px-6 py-3 rounded-full font-bold hover:bg-slate-200 transition-colors flex items-center gap-2 shadow-lg"
                         >
-                            Next
-                            <ChevronRight className="w-5 h-5" />
+                            Next <ChevronRight size={18} />
                         </button>
-                    ) : (
-                        <Link
-                            href="/"
-                            className="px-8 py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-white/90 transition-colors"
-                        >
-                            Done
-                        </Link>
                     )}
                 </div>
             </div>

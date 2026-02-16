@@ -1,9 +1,12 @@
-import { getPrayerBySlug } from '@/app/actions/prayer-library';
+import { getPrayerBySlug, getLibraryPrayers } from '@/app/actions/prayer-library';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ChevronLeft, Share2, Printer } from 'lucide-react';
 import { PrayerInteractions } from '@/components/prayer/PrayerInteractions';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
+import { RelatedContent } from '@/components/seo/RelatedContent';
+import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 
 interface Props {
     params: {
@@ -27,6 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title: prayer.title,
             description: prayer.content.slice(0, 160),
             type: 'article',
+            publishedTime: new Date().toISOString(), // In real app, use updated_at
+            authors: ['MyPrayerTower'],
         }
     };
 }
@@ -38,11 +43,64 @@ export default async function PrayerPage({ params }: Props) {
         notFound();
     }
 
+    // Fetch related prayers (same category, exclude current)
+    const { prayers: relatedPrayersData } = await getLibraryPrayers(1, 4, undefined, prayer.category || undefined);
+    const relatedItems = relatedPrayersData
+        .filter(p => p.id !== prayer.id)
+        .slice(0, 3)
+        .map(p => ({
+            title: p.title,
+            slug: p.slug!,
+            category: p.category || 'Prayer',
+            type: 'prayer' as const
+        }));
+
     // Simple formatting for content: split by newlines and wrap in paragraphs
     const paragraphs = prayer.content.split('\n').filter(p => p.trim() !== '');
 
+    // SEO Schema
+    const articleLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: prayer.title,
+        description: prayer.content.slice(0, 160),
+        datePublished: new Date().toISOString(), // Mock for now, should be DB field
+        author: {
+            '@type': 'Organization',
+            name: 'MyPrayerTower',
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'MyPrayerTower',
+            logo: {
+                '@type': 'ImageObject',
+                url: 'https://myprayertower.com/icon.png'
+            }
+        },
+        articleSection: prayer.category || 'Prayers'
+    };
+
+    const breadcrumbs = [
+        { label: 'Prayers', href: '/prayers' },
+        { label: prayer.category || 'General', href: `/prayers?category=${prayer.category}` },
+        { label: prayer.title, href: `/prayers/${prayer.slug}` },
+    ];
+
     return (
         <div className="min-h-screen bg-[#faf9f6]">
+            {/* SEO Data */}
+            <ArticleJsonLd data={articleLd as any} />
+            <BreadcrumbJsonLd data={{
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: breadcrumbs.map((crumb, index) => ({
+                    '@type': 'ListItem',
+                    position: index + 1,
+                    name: crumb.label,
+                    item: `https://myprayertower.com${crumb.href}`
+                }))
+            }} />
+
             {/* Header / Nav */}
             <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -62,7 +120,9 @@ export default async function PrayerPage({ params }: Props) {
                 </div>
             </div>
 
-            <article className="max-w-3xl mx-auto px-4 py-16">
+            <article className="max-w-3xl mx-auto px-4 py-12">
+                <Breadcrumbs items={breadcrumbs} />
+
                 {/* Meta Header */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-2 mb-6">
@@ -89,7 +149,7 @@ export default async function PrayerPage({ params }: Props) {
                 </div>
 
                 {/* Prayer Content Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 lg:p-16 relative overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 lg:p-16 relative overflow-hidden mb-16">
                     {/* Background decoration */}
                     <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-gold-300 via-gold-500 to-gold-300"></div>
                     <div className="absolute top-10 right-10 opacity-5 pointer-events-none">
@@ -122,6 +182,11 @@ export default async function PrayerPage({ params }: Props) {
                         />
                     </div>
                 </div>
+
+                {/* Related Prayers */}
+                {relatedItems.length > 0 && (
+                    <RelatedContent items={relatedItems} title="Prayers offering similar graces" />
+                )}
             </article>
         </div>
     );

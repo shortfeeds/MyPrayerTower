@@ -1,0 +1,57 @@
+
+> @mpt/web@1.0.0 build F:\Downloads\Antigravity\MPT\apps\web
+> npx prisma generate --schema=../../packages/database/prisma/schema.prisma && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from ..\..\packages\database\prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.22.0) to .\..\..\node_modules\.pnpm\@prisma+client@5.22.0_prisma@5.22.0\node_modules\@prisma\client in 2.19s
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+   Γû▓ Next.js 14.1.0
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ Γ£ô (pwa) Compiling for server...
+ Γ£ô (pwa) Compiling for server...
+ Γ£ô (pwa) Compiling for client (static)...
+ Γùï (pwa) Service worker: F:\Downloads\Antigravity\MPT\apps\web\public\sw.js
+ Γùï (pwa)   URL: /sw.js
+ Γùï (pwa)   Scope: /
+ Γùï (pwa) Custom runtimeCaching array found, using it instead of the default one.
+
+
+Source path: F:\Downloads\Antigravity\MPT\apps\web\src\app\globals.css
+Setting up new context...
+Finding changed files: 114.992ms
+Reading changed files: 2.113s
+Sorting candidates: 88.671ms
+Generate rules: 1.919s
+Build stylesheet: 26.767ms
+Potential classes:  24625
+Active contexts:  1
+JIT TOTAL: 5.334s
+
+
+ Γ£ô Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+ ΓÜá Using edge runtime on a page currently disables static generation for that page
+   Generating static pages (0/254) ...
+>>> [DB] Creating new PrismaClient instance...
+>>> [DB] Creating new PrismaClient instance...
+
+   Generating static pages (63/254) 
+
+   Generating static pages (126/254) 
+
+   Generating static pages (190/254) 
+ ΓÜá Sending SIGTERM signal to static worker due to timeout of 60 seconds. Subsequent errors may be a result of the worker exiting.
+ Γ¿» Static worker exited with code: null and signal: SIGTERM
+ ΓÜá Restarted static page generation for /saints because it took more than 60 seconds
+ ΓÜá See more info here https://nextjs.org/docs/messages/static-page-generation-timeout
+>>> [DB] Creating new PrismaClient instance...

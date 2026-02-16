@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { db } from '@/lib/db';
 import { NOVENAS } from '@/lib/novenas';
+import { getAllGuides } from '@/lib/content';
 
 const baseUrl = 'https://myprayertower.com';
 const CHUNK_SIZE = 10000; // Large chunk size for sitemap logic
@@ -106,16 +107,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             url: `${baseUrl}/saints/${saint.slug}`,
             lastModified: new Date(),
             changeFrequency: 'monthly' as const,
-            priority: 0.7
+            priority: 0.8
         }));
 
         // 3. Novenas (Static list/Lib)
-        const novenaRoutes = NOVENAS.map(novena => ({
-            url: `${baseUrl}/novenas/${novena.id}`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly' as const,
-            priority: 0.7
-        }));
+        // Replaced by individual routes below
 
         // 4. Memorials (Public only)
         const memorials = await db.memorial.findMany({
@@ -130,7 +126,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.6
         }));
 
-        // 5. Prayers Application (3900+ items)
+        // 5. Guides / Content (New SEO Hub)
+        const guides = await getAllGuides();
+        const guideRoutes = guides.map(guide => ({
+            url: `${baseUrl}/guides/${guide.slug}`,
+            lastModified: new Date(guide.updatedAt || guide.publishedAt),
+            changeFrequency: 'weekly' as const,
+            priority: 0.9
+        }));
+
+        // 6. Novenas (New SEO Pages)
+        const novenaRoutes = NOVENAS.map(novena => ({
+            url: `${baseUrl}/novenas/${novena.id}`,
+            lastModified: new Date(), // Static content, could update manually
+            changeFrequency: 'monthly' as const,
+            priority: 0.8
+        }));
+
+        // 7. Prayers Application (3900+ items)
         const prayers = await db.prayer.findMany({
             where: {
                 is_active: true,
@@ -146,11 +159,44 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.7
         }));
 
+        const guideHubRoute = {
+            url: `${baseUrl}/guides`,
+            lastModified: new Date(),
+            changeFrequency: 'daily' as const,
+            priority: 0.9
+        };
+
+        const novenaHubRoute = {
+            url: `${baseUrl}/novenas`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.9
+        };
+
+        const howToHubRoute = {
+            url: `${baseUrl}/how-to`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.9
+        };
+
+        const catholicLifeHubRoute = {
+            url: `${baseUrl}/catholic-life`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.9
+        };
+
         return [
             ...routes,
+            guideHubRoute,
+            novenaHubRoute,
+            howToHubRoute,
+            catholicLifeHubRoute,
+            ...guideRoutes,
+            ...novenaRoutes,
             ...churchRoutes,
             ...saintRoutes,
-            ...novenaRoutes,
             ...memorialRoutes,
             ...prayerRoutes
         ];

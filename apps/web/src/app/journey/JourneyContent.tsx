@@ -8,11 +8,12 @@ import { PrayerIntentionsJournal } from '@/components/spiritual/PrayerIntentions
 import { PrayerReminderScheduler } from '@/components/settings/PrayerReminderScheduler';
 import { SavedPrayersList } from '@/components/spiritual/SavedPrayersList';
 import { ActiveCandlesList } from '@/components/spiritual/ActiveCandlesList';
-import { BarChart3, Target, Heart, Book, Trophy, Bell, Bookmark, Flame, Church, Gift, ChevronRight, Home, ScrollText } from 'lucide-react';
+import { BarChart3, Target, Heart, Book, Trophy, Bell, Bookmark, Flame, Church, Gift, ChevronRight, Home, ScrollText, Footprints } from 'lucide-react';
 import Link from 'next/link';
 import { SACRED_COPY } from '@/lib/sacred-copy';
+import { JourneyTimeline } from '@/components/journey/JourneyTimeline';
 
-type TabId = 'overview' | 'intentions' | 'saved' | 'offerings' | 'challenges' | 'bible' | 'achievements' | 'reminders';
+type TabId = 'overview' | 'intentions' | 'saved' | 'offerings' | 'challenges' | 'bible' | 'achievements' | 'reminders' | 'timeline';
 
 
 const TABS: { id: TabId; label: string; icon: any }[] = [
@@ -22,6 +23,7 @@ const TABS: { id: TabId; label: string; icon: any }[] = [
     { id: 'offerings', label: 'Offerings', icon: Flame },
     // { id: 'challenges', label: 'Challenges', icon: Target }, // Removed
     { id: 'bible', label: 'Scripture', icon: Book },
+    { id: 'timeline', label: 'Timeline', icon: Footprints },
     // { id: 'achievements', label: 'Achievements', icon: Trophy }, // Removed
     { id: 'reminders', label: 'Reminders', icon: Bell },
 ];
@@ -119,6 +121,10 @@ export default function JourneyContent({ initialStats }: { initialStats: UserPra
                     {/* {activeTab === 'achievements' && (
                         <AchievementSystem />
                     )} */}
+
+                    {activeTab === 'timeline' && (
+                        <JourneyTimeline />
+                    )}
 
                     {activeTab === 'saved' && (
                         <SavedPrayersList />

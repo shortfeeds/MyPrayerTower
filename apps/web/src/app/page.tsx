@@ -16,6 +16,8 @@ import { MemorialsBanner } from '@/components/home/MemorialsBanner';
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay } from '@/app/actions/home';
 import { WelcomeGreeting } from '@/components/home/WelcomeGreeting';
 import { GlobalPerpetualFlame } from '@/components/novenas/GlobalPerpetualFlame';
+import { SeoContentSection } from '@/components/home/SeoContentSection';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 async function AsyncDailyFocus() {
     try {
@@ -177,6 +179,9 @@ function LoggedOutHomePage() {
                     "May peace remain with you."
                 </p>
             </div>
+
+            {/* SEO Content for Search Engines */}
+            <SeoContentSection />
         </div>
     );
 }
@@ -188,5 +193,20 @@ export default async function Home() {
         return <PersonalizedHome />;
     }
 
-    return <LoggedOutHomePage />;
+    return (
+        <>
+            <JsonLd<any> data={{
+                '@context': 'https://schema.org',
+                '@type': 'WebSite',
+                name: 'MyPrayerTower',
+                url: 'https://myprayertower.com',
+                potentialAction: {
+                    '@type': 'SearchAction',
+                    target: 'https://myprayertower.com/prayers?q={search_term_string}',
+                    'query-input': 'required name=search_term_string'
+                }
+            }} />
+            <LoggedOutHomePage />
+        </>
+    );
 }
