@@ -27,5 +27,7 @@ fvm
 .dart_tool
 **/.dart_tool
 .pub-cache
+.pub_cache
+.deploy_temp
 .flutter-plugins
 .flutter-plugins-dependencies
