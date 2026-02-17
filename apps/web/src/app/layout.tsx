@@ -219,7 +219,7 @@ export default function RootLayout({
                     async
                     src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924'}`}
                     crossOrigin="anonymous"
-                    strategy="lazyOnload"
+                    strategy="afterInteractive"
                 />
             </body>
         </html >

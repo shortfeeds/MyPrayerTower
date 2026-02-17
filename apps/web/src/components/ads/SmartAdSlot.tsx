@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { GoogleAdUnit } from './GoogleAdUnit';
 import { Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { getAdSlot, isAdsEnabled } from '@/lib/adSlots';
 
 interface Ad {
     id: string;
@@ -151,7 +152,22 @@ export function SmartAdSlot({
             );
         }
 
-        // Placeholder when no ad available
+        // Placeholder when no ad available -> Fallback to Google Ad Unit
+        const fallbackSlotId = getAdSlot(page as any, position);
+        if (isAdsEnabled() && fallbackSlotId) {
+            return (
+                <div className={`text-center my-4 relative z-0 ${className}`}>
+                    <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/50 text-white text-[9px] font-medium rounded">
+                        Ad
+                    </div>
+                    <GoogleAdUnit
+                        slot={fallbackSlotId}
+                        format={position === 'sidebar' ? 'rectangle' : position === 'inline' ? 'fluid' : 'horizontal'}
+                    />
+                </div>
+            );
+        }
+
         if (showPlaceholder) {
             const styles = {
                 top: 'w-full h-20 bg-gradient-to-r from-gray-100 to-gray-200',
