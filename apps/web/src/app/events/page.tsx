@@ -169,9 +169,9 @@ export default function EventsPage() {
                         <div className="h-[600px] bg-gray-100 flex items-center justify-center">
                             <div className="text-center">
                                 <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                <p className="text-gray-500 text-lg mb-2">Map View Coming Soon</p>
-                                <p className="text-gray-400 text-sm">
-                                    Interactive map with event locations will be available soon.
+                                <p className="text-gray-500 text-lg mb-2 font-serif">Global Event Map</p>
+                                <p className="text-gray-400 text-sm max-w-xs mx-auto">
+                                    Our interactive map of Catholic events worldwide is currently being synchronized.
                                 </p>
                             </div>
                         </div>

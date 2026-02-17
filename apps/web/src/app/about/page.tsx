@@ -1,5 +1,6 @@
 import { Heart, Globe, Shield, Church, BookOpen, Star, Users } from 'lucide-react';
 import Link from 'next/link';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 export default function AboutPage() {
     return (
@@ -144,6 +145,11 @@ export default function AboutPage() {
                                 Read our Community Guidelines
                             </Link>
                         </div>
+                    </div>
+
+                    {/* Bottom Ad */}
+                    <div className="max-w-4xl mx-auto mt-8">
+                        <SmartAdSlot page="general" position="bottom" showPlaceholder={false} />
                     </div>
                 </div>
             </section>

@@ -113,8 +113,8 @@ export default function ChantPage() {
                             </div>
                         ))}
                     </div>
-                    <p className="text-center text-gray-500 mt-6 text-sm">
-                        Audio playback coming soon. For now, explore the resources below.
+                    <p className="text-center text-gray-500 mt-6 text-sm italic">
+                        The digital audio library is currently being curated. In the meantime, please explore the external resources and notation databases below.
                     </p>
                 </section>
 
@@ -134,8 +134,8 @@ export default function ChantPage() {
                                 className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group flex gap-4"
                             >
                                 <div className={`w-12 h-12 shrink-0 rounded-xl flex items-center justify-center ${resource.type === 'notation' ? 'bg-blue-100 text-blue-600' :
-                                        resource.type === 'audio' ? 'bg-green-100 text-green-600' :
-                                            'bg-amber-100 text-amber-600'
+                                    resource.type === 'audio' ? 'bg-green-100 text-green-600' :
+                                        'bg-amber-100 text-amber-600'
                                     }`}>
                                     {resource.type === 'notation' ? <BookOpen className="w-6 h-6" /> :
                                         resource.type === 'audio' ? <Volume2 className="w-6 h-6" /> :

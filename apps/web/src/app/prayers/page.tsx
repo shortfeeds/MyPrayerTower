@@ -2,6 +2,7 @@ import { getLibraryPrayers, getPrayerCategories } from '@/app/actions/prayer-lib
 import { PrayerSearch, PrayerFilter, Pagination } from '@/components/library/LibraryControls';
 import Link from 'next/link';
 import { Book, Heart, Sun, Moon, Calendar, ChevronRight, Sparkles, Anchor, Feather, Flame } from 'lucide-react';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 interface Props {
     searchParams: { [key: string]: string | string[] | undefined };
@@ -166,6 +167,11 @@ export default async function PrayerLibraryPage({ searchParams }: Props) {
 
                 {/* Pagination */}
                 <Pagination currentPage={page} totalPages={totalPages} />
+
+                {/* Bottom Ad */}
+                <div className="mt-8">
+                    <SmartAdSlot page="prayers" position="bottom" showPlaceholder={false} />
+                </div>
 
             </div>
         </div>

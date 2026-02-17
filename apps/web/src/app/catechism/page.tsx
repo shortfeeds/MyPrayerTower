@@ -1,5 +1,6 @@
 import { BookOpen, Search, ExternalLink, ChevronRight, Book, FileText } from 'lucide-react';
 import Link from 'next/link';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 const CATECHISM_PARTS = [
     {
@@ -153,6 +154,11 @@ export default function CatechismPage() {
                             </a>
                         ))}
                     </div>
+                </div>
+
+                {/* Bottom Ad */}
+                <div className="mt-12">
+                    <SmartAdSlot page="catechism" position="bottom" showPlaceholder={false} />
                 </div>
             </div>
         </div>

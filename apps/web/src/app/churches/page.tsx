@@ -3,6 +3,7 @@ import { ChurchCard } from '@/components/churches/ChurchCard';
 import { DirectoryFilters } from '@/components/churches/DirectoryFilters';
 import { Building, MapPin, Search, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 export const dynamic = 'force-dynamic';
 
@@ -127,6 +128,11 @@ export default async function ChurchesPage({ searchParams }: ChurchesPageProps) 
                         </Link>
                     </div>
                 )}
+            </div>
+
+            {/* Bottom Ad */}
+            <div className="container mx-auto px-6 pb-12">
+                <SmartAdSlot page="churches" position="bottom" showPlaceholder={false} />
             </div>
         </div>
     );

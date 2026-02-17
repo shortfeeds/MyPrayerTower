@@ -61,10 +61,7 @@ export default async function AnalyticsPage() {
                 </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-8 text-center text-blue-800">
-                <h3 className="text-lg font-bold mb-2">Detailed Historical Data Coming Soon</h3>
-                <p>We are currently gathering more data points to provide you with detailed historical charts and trends.</p>
-            </div>
+
         </div>
     );
 }

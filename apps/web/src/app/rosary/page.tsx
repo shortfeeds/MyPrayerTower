@@ -2,6 +2,7 @@
 import { Metadata } from 'next';
 import { BookOpen, Disc, Calendar, Star, Heart } from 'lucide-react';
 import Link from 'next/link';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 export const metadata: Metadata = {
     title: 'How to Pray the Rosary | MyPrayerTower',
@@ -113,6 +114,11 @@ export default function RosaryPage() {
                                 </ul>
                             </div>
                         ))}
+                    </div>
+
+                    {/* Bottom Ad */}
+                    <div className="mb-12">
+                        <SmartAdSlot page="rosary" position="bottom" showPlaceholder={false} />
                     </div>
 
                     {/* App CTA */}

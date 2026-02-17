@@ -213,7 +213,9 @@ export default async function SaintPage({ params }: Props) {
                             dangerouslySetInnerHTML={{ __html: saint.biography }}
                         />
                     ) : (
-                        <p className="text-gray-500 italic text-center py-8">Biography coming soon.</p>
+                        <p className="text-gray-500 italic text-center py-8 bg-gray-50 rounded-xl px-4">
+                            We are currently expanding our library. A detailed biography for {fullName} will be available soon.
+                        </p>
                     )}
                 </div>
 

@@ -4,6 +4,7 @@ import { NovenaList } from './NovenaList';
 import { Metadata } from 'next';
 import { FAQSection } from '@/components/seo/FAQSection';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 export const metadata: Metadata = {
     title: 'Catholic Novenas | 9-Day Prayers for Every Intention',
@@ -60,6 +61,11 @@ export default function NovenasPage() {
 
             {/* Interactive List (Client Component) */}
             <NovenaList novenas={NOVENAS} />
+
+            {/* Ad Slot */}
+            <div className="container mx-auto px-4 max-w-4xl py-8">
+                <SmartAdSlot page="novenas" position="inline" showPlaceholder={false} />
+            </div>
 
             {/* FAQ Section */}
             <div className="container mx-auto px-4 max-w-4xl pb-16">

@@ -205,12 +205,10 @@ export default async function ChurchDetailPage({ params }: { params: { id: strin
                                         )}
                                     </div>
                                 </div>
-                                <div className="h-64 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden relative border border-gray-200 dark:border-gray-700 flex items-center justify-center">
-                                    <div className="text-center p-6">
-                                        <MapPin className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                                        <p className="text-xs text-gray-400">Interactive map view coming soon.</p>
-                                        <p className="text-[10px] text-gray-500 mt-1">Coordinates: {church.latitude}, {church.longitude}</p>
-                                    </div>
+                                <div className="text-center p-6">
+                                    <MapPin className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                                    <p className="text-xs text-gray-400 italic">Enhanced map features are currently in development.</p>
+                                    <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">Loc: {church.latitude}, {church.longitude}</p>
                                 </div>
                             </div>
                         </section>

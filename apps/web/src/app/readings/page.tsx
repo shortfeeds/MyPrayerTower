@@ -5,6 +5,7 @@ import { BookOpen, Calendar, ChevronLeft, ChevronRight, Sun, Share2, ExternalLin
 import { format, addDays, subDays, isToday } from 'date-fns';
 import Link from 'next/link';
 import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 interface Reading {
     type: string;
@@ -317,6 +318,11 @@ export default function ReadingsPage() {
                             )}
                         </div>
                     )}
+
+                    {/* Ad Slot — Between Readings and Reflection */}
+                    <div className="mt-10 mb-4">
+                        <SmartAdSlot page="readings" position="bottom" showPlaceholder={false} />
+                    </div>
 
                     {/* Daily Reflection CTA */}
                     <div className="mt-12 bg-gradient-to-br from-green-800 to-green-900 text-white rounded-2xl p-8 md:p-10 text-center">

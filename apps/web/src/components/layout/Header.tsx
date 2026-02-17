@@ -13,16 +13,8 @@ import { usePathname } from 'next/navigation';
 import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { useAuth } from '@/hooks/useAuth';
 import { MegaMenu, PRAY_MENU, OFFER_MENU, LEARN_MENU } from './MegaMenu';
-
-
-
-// Simulated auth hook - replace with your actual auth implementation
-const useAuth = () => {
-    // TODO: Replace with actual auth context/hook
-    return { isAuthenticated: false, user: null };
-};
-
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,7 +32,7 @@ export function Header() {
     const learnRef = useRef<HTMLDivElement>(null);
     const locateRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated, user, signOut } = useAuth();
 
     useEffect(() => {
         setMounted(true);
@@ -448,8 +440,8 @@ export function Header() {
                         ) : (
                             <button
                                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full"
-                                onClick={() => {
-                                    // TODO: Implement logout
+                                onClick={async () => {
+                                    await signOut();
                                     setIsMenuOpen(false);
                                 }}
                             >
@@ -476,10 +468,11 @@ export function Header() {
                         </div>
                     </nav>
                 </div>
-            </div>
+            </div >
 
             {/* Global Search Modal */}
-            <GlobalSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+            < GlobalSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)
+            } />
         </>
     );
 }

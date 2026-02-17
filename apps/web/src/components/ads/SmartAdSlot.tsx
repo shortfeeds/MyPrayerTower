@@ -17,7 +17,7 @@ interface Ad {
 
 interface SmartAdSlotProps {
     /** Page identifier for fetching relevant ads */
-    page: 'home' | 'churches' | 'saints' | 'prayers' | 'bible' | 'readings' | 'prayer-wall' | 'memorials' | 'candles';
+    page: 'home' | 'churches' | 'saints' | 'prayers' | 'bible' | 'readings' | 'prayer-wall' | 'memorials' | 'candles' | 'blog' | 'rosary' | 'novenas' | 'guides' | 'catechism' | 'general';
     /** Position on the page */
     position: 'top' | 'sidebar' | 'inline' | 'bottom';
     /** Additional CSS classes */

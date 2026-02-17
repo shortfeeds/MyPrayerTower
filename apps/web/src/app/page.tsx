@@ -18,6 +18,7 @@ import { WelcomeGreeting } from '@/components/home/WelcomeGreeting';
 import { GlobalPerpetualFlame } from '@/components/novenas/GlobalPerpetualFlame';
 import { SeoContentSection } from '@/components/home/SeoContentSection';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 async function AsyncDailyFocus() {
     try {
@@ -159,6 +160,11 @@ function LoggedOutHomePage() {
             ============================================ */}
             <FeatureDiscovery />
 
+            {/* Ad Slot — Between Features and Testimonials */}
+            <div className="container mx-auto px-4 py-6">
+                <SmartAdSlot page="home" position="inline" showPlaceholder={false} />
+            </div>
+
             {/* Testimonials - Social Proof (Soft) */}
             <div className="bg-slate-50 dark:bg-slate-900 py-16 border-t border-gray-100 dark:border-slate-800">
                 <TestimonialsSection />
@@ -172,6 +178,11 @@ function LoggedOutHomePage() {
 
             {/* App Download */}
             <AppDownloadBanner />
+
+            {/* Ad Slot — Pre-footer */}
+            <div className="container mx-auto px-4 py-6">
+                <SmartAdSlot page="home" position="bottom" showPlaceholder={false} />
+            </div>
 
             {/* Closing Benediction */}
             <div className="py-12 text-center">

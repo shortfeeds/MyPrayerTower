@@ -134,6 +134,8 @@ export default function RootLayout({
                 <link rel="preconnect" href="https://htgvilktnadnwlforyjt.supabase.co" />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+                <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
                 <ThemeProvider>
@@ -211,16 +213,14 @@ export default function RootLayout({
                 <SpeedInsights />
                 <GoogleAnalytics gaId="G-1X6N63VWZH" />
 
-                {/* Google AdSense - Lazy Loaded */}
-                {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
-                    <Script
-                        id="adsense"
-                        async
-                        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-                        crossOrigin="anonymous"
-                        strategy="lazyOnload"
-                    />
-                )}
+                {/* Google AdSense - Auto Ads Enabled */}
+                <Script
+                    id="adsense"
+                    async
+                    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924'}`}
+                    crossOrigin="anonymous"
+                    strategy="lazyOnload"
+                />
             </body>
         </html >
     );

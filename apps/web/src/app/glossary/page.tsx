@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { BookA, Search, ChevronDown } from 'lucide-react';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 interface Term {
     term: string;
@@ -223,6 +224,11 @@ export default function GlossaryPage() {
                             <p className="text-gray-600">{term.definition}</p>
                         </div>
                     ))}
+                </div>
+
+                {/* Bottom Ad */}
+                <div className="max-w-3xl mx-auto mt-10">
+                    <SmartAdSlot page="general" position="bottom" showPlaceholder={false} />
                 </div>
             </div>
         </div>

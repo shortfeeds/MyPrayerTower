@@ -2,6 +2,7 @@
 import React from 'react';
 import { Mail, Phone, Clock, MapPin } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 import { Suspense } from 'react';
 
@@ -58,6 +59,11 @@ export default function ContactPage() {
                             </Suspense>
                         </div>
                     </div>
+                </div>
+
+                {/* Bottom Ad */}
+                <div className="mt-8">
+                    <SmartAdSlot page="general" position="bottom" showPlaceholder={false} />
                 </div>
             </div>
         </div>

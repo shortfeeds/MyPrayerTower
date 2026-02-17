@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { BookOpen, Calendar, ChevronRight, Search } from 'lucide-react';
 import { Metadata } from 'next';
 import { format } from 'date-fns';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 export const metadata: Metadata = {
     title: 'Catholic Guides & Resources | MyPrayerTower',
@@ -108,6 +109,11 @@ export default async function GuidesPage() {
                         <p className="text-gray-500">No guides found. Check back soon!</p>
                     </div>
                 )}
+
+                {/* Bottom Ad */}
+                <div className="mt-12">
+                    <SmartAdSlot page="guides" position="bottom" showPlaceholder={false} />
+                </div>
             </div>
         </div>
     );

@@ -13,6 +13,7 @@ export const AD_SLOTS = {
     home: {
         banner: process.env.NEXT_PUBLIC_ADSENSE_HOME_BANNER || '',
         sidebar: process.env.NEXT_PUBLIC_ADSENSE_HOME_SIDEBAR || '',
+        inline: process.env.NEXT_PUBLIC_ADSENSE_HOME_INLINE || '',
     },
 
     // Prayer Library ads
@@ -33,23 +34,60 @@ export const AD_SLOTS = {
     bible: {
         top: process.env.NEXT_PUBLIC_ADSENSE_BIBLE_TOP || '',
         sidebar: process.env.NEXT_PUBLIC_ADSENSE_BIBLE_SIDEBAR || '',
+        bottom: process.env.NEXT_PUBLIC_ADSENSE_BIBLE_BOTTOM || '',
     },
 
     // Daily readings ads
     readings: {
         top: process.env.NEXT_PUBLIC_ADSENSE_READINGS_TOP || '',
         inline: process.env.NEXT_PUBLIC_ADSENSE_READINGS_INLINE || '',
+        bottom: process.env.NEXT_PUBLIC_ADSENSE_READINGS_BOTTOM || '',
     },
 
     // Church finder ads
     churches: {
         top: process.env.NEXT_PUBLIC_ADSENSE_CHURCHES_TOP || '',
         sidebar: process.env.NEXT_PUBLIC_ADSENSE_CHURCHES_SIDEBAR || '',
+        bottom: process.env.NEXT_PUBLIC_ADSENSE_CHURCHES_BOTTOM || '',
     },
 
     // Prayer Wall ads
     prayerWall: {
         inline: process.env.NEXT_PUBLIC_ADSENSE_PRAYERWALL_INLINE || '',
+    },
+
+    // Blog pages ads
+    blog: {
+        sidebar: process.env.NEXT_PUBLIC_ADSENSE_BLOG_SIDEBAR || '',
+        inline: process.env.NEXT_PUBLIC_ADSENSE_BLOG_INLINE || '',
+        bottom: process.env.NEXT_PUBLIC_ADSENSE_BLOG_BOTTOM || '',
+    },
+
+    // Rosary page ads
+    rosary: {
+        bottom: process.env.NEXT_PUBLIC_ADSENSE_ROSARY_BOTTOM || '',
+    },
+
+    // Novenas page ads
+    novenas: {
+        bottom: process.env.NEXT_PUBLIC_ADSENSE_NOVENAS_BOTTOM || '',
+        inline: process.env.NEXT_PUBLIC_ADSENSE_NOVENAS_INLINE || '',
+    },
+
+    // Guides page ads
+    guides: {
+        inline: process.env.NEXT_PUBLIC_ADSENSE_GUIDES_INLINE || '',
+        bottom: process.env.NEXT_PUBLIC_ADSENSE_GUIDES_BOTTOM || '',
+    },
+
+    // Catechism page ads
+    catechism: {
+        bottom: process.env.NEXT_PUBLIC_ADSENSE_CATECHISM_BOTTOM || '',
+    },
+
+    // General / utility page ads (about, contact, careers, etc.)
+    general: {
+        bottom: process.env.NEXT_PUBLIC_ADSENSE_GENERAL_BOTTOM || '',
     },
 
     // Global ads
@@ -84,6 +122,10 @@ export const AD_CONFIG = {
         prayers: 8,
         saints: 6,
         prayerWall: 10,
+        blog: 5,
+        guides: 4,
+        novenas: 6,
+        news: 5,
     },
 
     // Minimum content before showing first inline ad
@@ -97,7 +139,17 @@ export const AD_CONFIG = {
         '/admin',
         '/donate',
         '/mass-offerings',
+        '/offerings',
         '/candles',
         '/checkout',
+        '/login',
+        '/register',
+        '/confession',
+        '/welcome',
+        '/privacy',
+        '/terms',
+        '/cookies',
+        '/dmca',
+        '/refunds',
     ],
 } as const;

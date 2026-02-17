@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { Clock, Calendar, ChevronRight, Tag, BookOpen, Sparkles } from 'lucide-react';
 import { Metadata } from 'next';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 export const metadata: Metadata = {
     title: 'Catholic Blog & Spiritual Reflections | MyPrayerTower',
@@ -104,55 +105,63 @@ export default async function BlogHubPage() {
 
                 {/* Recent Posts Grid - Masonry-ish Text Cards */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                    {recentPosts.map((post) => (
-                        <Link
-                            key={post.slug}
-                            href={`/blog/${post.slug}`}
-                            className="group bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg hover:border-gold-200 transition-all duration-300 flex flex-col h-full relative overflow-hidden"
-                        >
-                            <div className="absolute top-0 left-0 w-full h-0.5 bg-gold-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {recentPosts.map((post, index) => (
+                        <>
+                            <Link
+                                key={post.slug}
+                                href={`/blog/${post.slug}`}
+                                className="group bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg hover:border-gold-200 transition-all duration-300 flex flex-col h-full relative overflow-hidden"
+                            >
+                                <div className="absolute top-0 left-0 w-full h-0.5 bg-gold-400 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                            {/* Meta */}
-                            <div className="flex items-center justify-between mb-5">
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-gold-600">
-                                    {post.category}
-                                </span>
-                                <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
-                                    <Calendar className="w-3 h-3" />
-                                    {format(new Date(post.publishedAt), 'MMM d')}
-                                </div>
-                            </div>
-
-                            {/* Title */}
-                            <h3 className="font-serif text-2xl font-medium text-gray-900 mb-4 group-hover:text-sacred-700 transition-colors leading-[1.2]">
-                                {post.title}
-                            </h3>
-
-                            {/* Excerpt */}
-                            <p className="text-gray-500 text-sm line-clamp-3 leading-relaxed mb-6 flex-1">
-                                {post.description}
-                            </p>
-
-                            {/* Footer */}
-                            <div className="flex items-center justify-between mt-auto pt-6 border-t border-gray-50">
-                                <div className="flex items-center gap-2 text-xs font-medium text-gray-900">
-                                    {post.author?.name ? (
-                                        <>
-                                            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[9px] text-gray-500">
-                                                {post.author.name.charAt(0)}
-                                            </span>
-                                            {post.author.name}
-                                        </>
-                                    ) : 'MPT Team'}
-                                </div>
-
-                                {post.readingTime && (
-                                    <span className="text-[10px] text-gray-400 flex items-center gap-1">
-                                        <Clock className="w-3 h-3" /> {post.readingTime}
+                                {/* Meta */}
+                                <div className="flex items-center justify-between mb-5">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-gold-600">
+                                        {post.category}
                                     </span>
-                                )}
-                            </div>
-                        </Link>
+                                    <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                                        <Calendar className="w-3 h-3" />
+                                        {format(new Date(post.publishedAt), 'MMM d')}
+                                    </div>
+                                </div>
+
+                                {/* Title */}
+                                <h3 className="font-serif text-2xl font-medium text-gray-900 mb-4 group-hover:text-sacred-700 transition-colors leading-[1.2]">
+                                    {post.title}
+                                </h3>
+
+                                {/* Excerpt */}
+                                <p className="text-gray-500 text-sm line-clamp-3 leading-relaxed mb-6 flex-1">
+                                    {post.description}
+                                </p>
+
+                                {/* Footer */}
+                                <div className="flex items-center justify-between mt-auto pt-6 border-t border-gray-50">
+                                    <div className="flex items-center gap-2 text-xs font-medium text-gray-900">
+                                        {post.author?.name ? (
+                                            <>
+                                                <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[9px] text-gray-500">
+                                                    {post.author.name.charAt(0)}
+                                                </span>
+                                                {post.author.name}
+                                            </>
+                                        ) : 'MPT Team'}
+                                    </div>
+
+                                    {post.readingTime && (
+                                        <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                            <Clock className="w-3 h-3" /> {post.readingTime}
+                                        </span>
+                                    )}
+                                </div>
+                            </Link>
+                            {/* In-feed Ad — every 5th post */}
+                            {(index + 1) % 5 === 0 && index < recentPosts.length - 1 && (
+                                <div key={`ad-${index}`} className="md:col-span-2 lg:col-span-3">
+                                    <SmartAdSlot page="blog" position="inline" showPlaceholder={false} />
+                                </div>
+                            )}
+                        </>
                     ))}
                 </div>
 

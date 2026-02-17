@@ -116,13 +116,7 @@ export default function FocusModePage() {
                     </button>
 
                     {/* Placeholder for Sound Controls - Future Enhancement */}
-                    <button
-                        className="p-4 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 transition-all hover:scale-105 opacity-50 cursor-not-allowed"
-                        aria-label="Sound Settings"
-                        title="Ambient sounds coming soon"
-                    >
-                        <Music size={24} />
-                    </button>
+
                 </div>
 
                 {/* Duration Presets */}
@@ -132,8 +126,8 @@ export default function FocusModePage() {
                             key={min}
                             onClick={() => setDuration(min)}
                             className={`py-3 px-4 rounded-xl text-sm font-medium transition-all ${initialTime === min * 60
-                                    ? 'bg-white text-slate-900 shadow-lg'
-                                    : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
+                                ? 'bg-white text-slate-900 shadow-lg'
+                                : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
                                 }`}
                         >
                             {min} min

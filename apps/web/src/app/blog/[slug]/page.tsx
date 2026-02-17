@@ -12,6 +12,7 @@ import { ReadingProgressBar } from '@/components/blog/ReadingProgressBar';
 import { SocialShareBar } from '@/components/blog/SocialShareBar';
 import { TableOfContents } from '@/components/blog/TableOfContents';
 import { FloatingShareBar } from '@/components/blog/FloatingShareBar';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 interface Props {
     params: {
@@ -243,6 +244,11 @@ export default async function BlogPostPage({ params }: Props) {
                             <MDXRemote source={post.content} components={MDXComponents} />
                         </div>
 
+                        {/* After-Article Ad */}
+                        <div className="my-12">
+                            <SmartAdSlot page="blog" position="bottom" showPlaceholder={false} />
+                        </div>
+
                         {/* Editorial Divider */}
                         <div className="blog-section-divider">
                             <span />
@@ -302,6 +308,11 @@ export default async function BlogPostPage({ params }: Props) {
                                     <Layers className="w-3.5 h-3.5" /> In This Article
                                 </h4>
                                 <TableOfContents />
+                            </div>
+
+                            {/* Sidebar Ad */}
+                            <div className="px-4">
+                                <SmartAdSlot page="blog" position="sidebar" showPlaceholder={false} />
                             </div>
 
                             {/* Read Next Sticky */}
