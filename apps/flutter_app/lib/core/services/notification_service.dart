@@ -90,8 +90,10 @@ class NotificationService {
   Future<void> _registerToken() async {
     try {
       String? token = await _fcm.getToken();
-      await _registerDevice(token);
-        } catch (e) {
+      if (token != null) {
+        await _registerDevice(token);
+      }
+    } catch (e) {
       debugPrint('Failed to get FCM token: $e');
     }
   }

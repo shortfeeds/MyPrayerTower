@@ -8,6 +8,17 @@
             "dependsOn": [
                 "^build"
             ],
+            "env": [
+                "DATABASE_URL",
+                "DIRECT_URL",
+                "JWT_SECRET",
+                "PAYPAL_CLIENT_SECRET",
+                "PAYPAL_ENVIRONMENT",
+                "GMAIL_USER",
+                "GMAIL_APP_PASSWORD",
+                "BOT_TOKEN",
+                "YOUTUBE_API_KEY"
+            ],
             "outputs": [
                 ".next/**",
                 "!.next/cache/**",
