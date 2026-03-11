@@ -28,13 +28,13 @@ export const socialLinksData = [
     {
         icon: Facebook,
         label: 'Facebook',
-        href: 'https://www.facebook.com/MyPrayerTower2',
+        href: 'https://www.facebook.com/myprayertower',
         color: 'bg-[#1877f2]'
     },
     {
         icon: Youtube,
         label: 'YouTube',
-        href: 'https://www.youtube.com/c/MyPrayerTower',
+        href: 'https://www.youtube.com/@myprayertower',
         color: 'bg-[#ff0000]'
     },
     {

@@ -94,8 +94,8 @@ export function Footer() {
     }, []);
 
     const socialLinks = [
-        { icon: Facebook, label: 'Facebook', href: 'https://www.facebook.com/MyPrayerTower2' },
-        { icon: Youtube, label: 'YouTube', href: 'https://www.youtube.com/c/MyPrayerTower' },
+        { icon: Facebook, label: 'Facebook', href: 'https://www.facebook.com/myprayertower' },
+        { icon: Youtube, label: 'YouTube', href: 'https://www.youtube.com/@myprayertower' },
         { icon: TwitterIcon, label: 'X', href: 'https://twitter.com/MyPrayerTower' },
         { icon: InstagramIcon, label: 'Instagram', href: 'https://www.instagram.com/myprayertower/' },
         { icon: ThreadsIcon, label: 'Threads', href: 'https://www.threads.net/@myprayertower' },
@@ -199,6 +199,7 @@ export function Footer() {
                                 <li><Link href="/catechism" className="hover:text-gold-400 transition-colors">Catechism</Link></li>
                                 <li><Link href="/calendar" className="hover:text-gold-400 transition-colors">Liturgical Calendar</Link></li>
                                 <li><Link href="/churches" className="hover:text-gold-400 transition-colors">Find a Church</Link></li>
+                                <li><Link href="/watch" className="hover:text-gold-400 transition-colors">Watch</Link></li>
                                 <li><Link href="/glossary" className="hover:text-gold-400 transition-colors">Glossary</Link></li>
                             </ul>
                         </div>
@@ -281,6 +282,7 @@ export function Footer() {
                                 <li><Link href="/churches" className="hover:text-gold-400">Churches</Link></li>
                                 <li><Link href="/saints" className="hover:text-gold-400">Saints</Link></li>
                                 <li><Link href="/bible" className="hover:text-gold-400">Bible</Link></li>
+                                <li><Link href="/watch" className="hover:text-gold-400">Watch</Link></li>
                                 <li><Link href="/calendar" className="hover:text-gold-400">Calendar</Link></li>
                             </ul>
                         </div>

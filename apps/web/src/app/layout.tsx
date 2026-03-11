@@ -168,8 +168,8 @@ export default function RootLayout({
                                                     url: 'https://myprayertower.com',
                                                     logo: 'https://myprayertower.com/icon.png',
                                                     sameAs: [
-                                                        'https://www.facebook.com/MyPrayerTower2',
-                                                        'https://www.youtube.com/c/MyPrayerTower',
+                                                        'https://www.facebook.com/myprayertower',
+                                                        'https://www.youtube.com/@myprayertower',
                                                         'https://twitter.com/MyPrayerTower',
                                                         'https://www.instagram.com/myprayertower/',
                                                         'https://www.threads.net/@myprayertower',

@@ -19,6 +19,8 @@ import { GlobalPerpetualFlame } from '@/components/novenas/GlobalPerpetualFlame'
 import { SeoContentSection } from '@/components/home/SeoContentSection';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
+import { YouTubeChannelSection } from '@/components/home/YouTubeChannelSection';
+import { fetchYouTubeVideos } from '@/lib/youtube';
 
 async function AsyncDailyFocus() {
     try {
@@ -53,7 +55,15 @@ async function AsyncDailyFocus() {
  * 5. Feature Discovery - Soft exploration
  * 6. Invitation to Return - Gentle retention
  */
-function LoggedOutHomePage() {
+async function LoggedOutHomePage() {
+    // Fetch YouTube videos server-side (ISR cached, no per-visitor function invocation)
+    let youtubeVideos: any[] = [];
+    try {
+        youtubeVideos = await fetchYouTubeVideos(6);
+    } catch (error) {
+        console.error('Failed to fetch YouTube videos for homepage:', error);
+    }
+
     return (
         <div className="flex flex-col min-h-screen selection:bg-gold-500/30 selection:text-gold-200">
             {/* ============================================
@@ -169,6 +179,12 @@ function LoggedOutHomePage() {
             <div className="bg-slate-50 dark:bg-slate-900 py-16 border-t border-gray-100 dark:border-slate-800">
                 <TestimonialsSection />
             </div>
+
+            {/* ============================================
+                SECTION 5.5: YOUTUBE CHANNEL
+                Goal: Content discovery & engagement
+            ============================================ */}
+            <YouTubeChannelSection videos={youtubeVideos} />
 
             {/* ============================================
                 SECTION 6: INVITATION TO RETURN
