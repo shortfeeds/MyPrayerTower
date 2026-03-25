@@ -28,7 +28,8 @@ export function LiveStatsBar() {
         const fetchStats = async () => {
             try {
                 console.log('Fetching stats from API...');
-                const res = await fetch('/api/stats', { next: { revalidate: 30 } });
+                const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+                const res = await fetch(`${API_BASE}/api/v1/stats`, { next: { revalidate: 30 } });
                 if (res.ok) {
                     const data = await res.json();
                     console.log('Stats received:', data);
@@ -48,8 +49,7 @@ export function LiveStatsBar() {
         // Fetch immediately
         fetchStats();
 
-        // Poll API every 30 seconds for real data updates
-        const apiInterval = setInterval(fetchStats, 30000);
+        // Fetch immediately (Polling removed to save Vercel Edge limits)
 
         // Local "Liveliness" Animation
         // Slightly fluctuates numbers between API calls to make it feel alive
@@ -75,7 +75,6 @@ export function LiveStatsBar() {
         }, 3000);
 
         return () => {
-            clearInterval(apiInterval);
             clearInterval(livelinessInterval);
         };
     }, []);

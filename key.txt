@@ -1,0 +1,37 @@
+Keystore type: JKS
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+Alias name: upload
+Creation date: 06-Jan-2026
+Entry type: PrivateKeyEntry
+Certificate chain length: 1
+Certificate[1]:
+Owner: CN=My Prayer Tower, OU=Mobile Development, O=My Prayer Tower, L=Mumbai, ST=Maharashtra, C=IN
+Issuer: CN=My Prayer Tower, OU=Mobile Development, O=My Prayer Tower, L=Mumbai, ST=Maharashtra, C=IN
+Serial number: 7e26c0df506f7716
+Valid from: Tue Jan 06 20:25:37 IST 2026 until: Sat May 24 20:25:37 IST 2053
+Certificate fingerprints:
+	 SHA1: F9:C2:F7:A8:1B:A4:F1:0B:44:17:4A:9C:94:4F:06:3A:2A:45:B7:DB
+	 SHA256: 27:FF:9E:14:1F:0B:6A:0D:32:AB:81:30:A7:0A:60:0D:5B:7E:1F:7D:76:7D:89:68:BD:76:98:C5:FA:51:C6:FC
+Signature algorithm name: SHA256withRSA
+Subject Public Key Algorithm: 2048-bit RSA key
+Version: 3
+
+Extensions: 
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 78 83 6C D6 89 BC 6A AE   60 89 CF CC 33 54 60 FE  x.l...j.`...3T`.
+0010: AC A2 55 DC                                        ..U.
+]
+]
+
+
+
+*******************************************
+*******************************************
+
+

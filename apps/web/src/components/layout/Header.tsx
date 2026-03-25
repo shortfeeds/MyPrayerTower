@@ -297,7 +297,6 @@ export function Header() {
                             <Link
                                 href="/register"
                                 className="w-full py-3.5 bg-gradient-to-r from-gold-500 to-gold-600 text-white text-center font-bold rounded-xl shadow-lg mb-4"
-                                onClick={() => setIsMenuOpen(false)}
                             >
                                 Begin Your Journey
                             </Link>
@@ -308,7 +307,6 @@ export function Header() {
                             <Link
                                 href="/journey"
                                 className="flex items-center gap-3 px-4 py-3.5 bg-sacred-50 dark:bg-sacred-900/20 text-sacred-700 dark:text-sacred-300 rounded-xl font-semibold mb-2 focus:outline-none"
-                                onClick={() => setIsMenuOpen(false)}
                             >
                                 <div className="p-2 rounded-lg bg-sacred-100 dark:bg-sacred-800 text-sacred-600">
                                     <Home className="w-5 h-5" />
@@ -343,7 +341,6 @@ export function Header() {
                                             key={link.href}
                                             href={link.href}
                                             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                                            onClick={() => setIsMenuOpen(false)}
                                         >
                                             <link.icon className="w-4 h-4" />
                                             <div>{link.label}</div>
@@ -377,7 +374,6 @@ export function Header() {
                                             key={link.href}
                                             href={link.href}
                                             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                                            onClick={() => setIsMenuOpen(false)}
                                         >
                                             <link.icon className="w-4 h-4" />
                                             <div>{link.label}</div>
@@ -411,7 +407,6 @@ export function Header() {
                                             key={link.href}
                                             href={link.href}
                                             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                                            onClick={() => setIsMenuOpen(false)}
                                         >
                                             <link.icon className="w-4 h-4" />
                                             <div>{link.label}</div>
@@ -432,7 +427,6 @@ export function Header() {
                                 <Link
                                     href="/login"
                                     className="w-full py-3.5 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl font-medium border border-gray-200 dark:border-gray-700"
-                                    onClick={() => setIsMenuOpen(false)}
                                 >
                                     Sign In
                                 </Link>

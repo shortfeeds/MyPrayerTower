@@ -276,7 +276,7 @@ importers:
         specifier: ^12.24.10
         version: 12.24.10(react-dom@18.3.1)(react@18.2.0)
       grammy:
-        specifier: ^1.21.1
+        specifier: ^1.40.0
         version: 1.40.0
       gray-matter:
         specifier: ^4.0.3

@@ -21,7 +21,8 @@ export function CandleBanner() {
         // Fetch actual candle count from API and add to base
         const fetchCandleCount = async () => {
             try {
-                const res = await fetch('/api/candles/count');
+                const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+                const res = await fetch(`${API_BASE}/api/v1/candles/count`);
                 if (res.ok) {
                     const data = await res.json();
                     // Add real candles to base of 2000
@@ -35,9 +36,7 @@ export function CandleBanner() {
 
         fetchCandleCount();
 
-        // Optionally refresh every minute
-        const interval = setInterval(fetchCandleCount, 60000);
-        return () => clearInterval(interval);
+        // Initial fetch complete (Polling removed to save Vercel limits)
     }, []);
 
     // Slight random fluctuation for engagement
