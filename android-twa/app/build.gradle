@@ -21,7 +21,7 @@ plugins {
 }
 
 def twaManifest = [
-    applicationId: 'com.myprayertower.app',
+    applicationId: 'com.myprayertower.myprayertower_app',
     hostName: 'myprayertower.com', // The domain being opened in the TWA.
     launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
     name: 'My Prayer Tower', // The application name.
@@ -52,9 +52,9 @@ def twaManifest = [
 
 android {
     compileSdkVersion 36
-    namespace "com.myprayertower.app"
+    namespace "com.myprayertower.myprayertower_app"
     defaultConfig {
-        applicationId "com.myprayertower.app"
+        applicationId "com.myprayertower.myprayertower_app"
         minSdkVersion 21
         targetSdkVersion 35
         versionCode 22

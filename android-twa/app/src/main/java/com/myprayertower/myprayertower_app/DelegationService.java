@@ -1,4 +1,4 @@
-package com.myprayertower.app;
+package com.myprayertower.myprayertower_app;
 
 
 
@@ -11,4 +11,3 @@ public class DelegationService extends
         
     }
 }
-
