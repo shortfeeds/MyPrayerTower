@@ -174,6 +174,23 @@ const nextConfig = {
             ],
         };
     },
+
+    async redirects() {
+        return [
+            {
+                // Match all paths EXCEPT those starting with .well-known
+                source: '/:path((?!.well-known/).*)',
+                has: [
+                    {
+                        type: 'host',
+                        value: 'myprayertower.com', // Only apply to the non-www domain
+                    },
+                ],
+                destination: 'https://www.myprayertower.com/:path*',
+                permanent: false, // Use true for a 308/301, false for a 307
+            },
+        ];
+    },
 };
 
 module.exports = withPWA(nextConfig);
