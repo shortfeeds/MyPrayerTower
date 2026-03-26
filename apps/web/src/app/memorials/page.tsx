@@ -7,6 +7,7 @@ import { SACRED_COPY } from '@/lib/sacred-copy';
 import { getMemorials } from '@/app/actions/memorials';
 import { Memorial } from '@/lib/types/memorials';
 import { MemorialCard } from './_components/memorial-card';
+import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
 export const metadata: Metadata = {
     title: 'Eternal Memorials | MyPrayerTower',
@@ -158,6 +159,12 @@ export default async function MemorialsPage({
 
             {/* Featured / Recent Memorials */}
             <section className="container mx-auto px-4 py-20">
+                {/* Inline Ad between hero and grid */}
+                <div className="mb-8">
+                    <SmartAdSlot page="memorials" position="inline" showPlaceholder={false} />
+                </div>
+
+                <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-white mb-12 text-center">Recent Tributes</h2>
                 <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-white mb-12 text-center">Recent Tributes</h2>
 
                 {displayMemorials.length === 0 ? (
@@ -195,6 +202,11 @@ export default async function MemorialsPage({
                     )
                 }
             </section >
+
+            {/* Bottom Ad */}
+            <div className="container mx-auto px-4 pb-12">
+                <SmartAdSlot page="memorials" position="bottom" showPlaceholder={false} />
+            </div>
         </div >
     );
 }
