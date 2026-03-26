@@ -165,7 +165,6 @@ export default async function MemorialsPage({
                 </div>
 
                 <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-white mb-12 text-center">Recent Tributes</h2>
-                <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-white mb-12 text-center">Recent Tributes</h2>
 
                 {displayMemorials.length === 0 ? (
                     <div className="text-center py-12 text-gray-500">
