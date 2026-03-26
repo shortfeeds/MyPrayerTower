@@ -1,7 +1,7 @@
 # llms.txt
 # Website: https://www.myprayertower.com
 # Purpose: Guidance for AI systems, search engines, and LLMs
-# Last-Updated: 2026-01-15
+# Last-Updated: 2026-03-26
 
 ## SITE OVERVIEW
 MyPrayerTower is a global Catholic prayer and spiritual platform designed to support prayer, remembrance, devotion, and faith-based community engagement.

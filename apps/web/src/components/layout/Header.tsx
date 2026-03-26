@@ -119,11 +119,11 @@ export function Header() {
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-xl">
+                        <Link href="/" className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-xl" aria-label="MyPrayerTower Home">
                             <div className="w-10 h-10 rounded-xl overflow-hidden transition-all duration-500 transform group-hover:scale-110 relative">
                                 <Image
                                     src="/icon.png"
-                                    alt="MyPrayerTower"
+                                    alt="MyPrayerTower Logo"
                                     fill
                                     className="object-cover"
                                     sizes="40px"
@@ -146,6 +146,8 @@ export function Header() {
                             <div className="relative" ref={prayRef}>
                                 <button
                                     onClick={() => { setPrayOpen(!prayOpen); setOfferOpen(false); setLearnOpen(false); }}
+                                    aria-expanded={prayOpen}
+                                    aria-haspopup="true"
                                     className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${prayOpen
                                         ? 'bg-liturgy text-white shadow-lg glow-liturgy'
                                         : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent hover:border-liturgy'
@@ -161,6 +163,8 @@ export function Header() {
                             <div className="relative" ref={offerRef}>
                                 <button
                                     onClick={() => { setOfferOpen(!offerOpen); setPrayOpen(false); setLearnOpen(false); }}
+                                    aria-expanded={offerOpen}
+                                    aria-haspopup="true"
                                     className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${offerOpen
                                         ? 'bg-amber-600 text-white'
                                         : 'text-gray-300 hover:text-white hover:bg-white/5'
@@ -176,6 +180,8 @@ export function Header() {
                             <div className="relative" ref={learnRef}>
                                 <button
                                     onClick={() => { setLearnOpen(!learnOpen); setPrayOpen(false); setOfferOpen(false); }}
+                                    aria-expanded={learnOpen}
+                                    aria-haspopup="true"
                                     className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${learnOpen
                                         ? 'bg-blue-600 text-white'
                                         : 'text-gray-300 hover:text-white hover:bg-white/5'

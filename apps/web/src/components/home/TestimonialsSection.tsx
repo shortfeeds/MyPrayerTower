@@ -206,6 +206,7 @@ export function TestimonialsSection() {
                         <button
                             onClick={() => setVisibleCount(prev => Math.min(prev + 3, TESTIMONIALS.length))}
                             className="inline-flex items-center gap-2 px-8 py-4 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-full text-gray-900 dark:text-white font-bold tracking-wide hover:bg-gray-50 dark:hover:bg-white/20 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+                            aria-label="Read more testimonial stories from our community"
                         >
                             Read More Stories
                         </button>

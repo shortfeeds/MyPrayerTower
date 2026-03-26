@@ -63,6 +63,7 @@ export function SponsoredBanner({ placement, className = '' }: SponsoredBannerPr
                 target="_blank"
                 rel="noopener noreferrer sponsored"
                 onClick={handleClick}
+                aria-label={`Learn more about ${content.title} from ${content.advertiser}`}
                 className={`block overflow-hidden transition-all ${isNative
                         ? 'bg-gradient-to-r from-primary-50 to-gold-50 border border-primary-100 rounded-xl p-4 hover:shadow-md'
                         : 'rounded-xl shadow-sm hover:shadow-lg'

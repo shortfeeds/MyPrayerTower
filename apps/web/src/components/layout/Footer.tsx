@@ -11,7 +11,7 @@ import { UniversalOfferingModal } from '@/components/offerings/UniversalOffering
 function AppStoreButton({ store }: { store: 'telegram' | 'google' }) {
     if (store === 'google') {
         return (
-            <a href="https://play.google.com/store/apps/details?id=com.myprayertower.app" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-gray-900 border border-gray-700 hover:border-gray-500 px-3 py-2 rounded-lg group transition-colors">
+            <a href="https://play.google.com/store/apps/details?id=com.myprayertower.app" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-gray-900 border border-gray-700 hover:border-gray-500 px-3 py-2 rounded-lg group transition-colors" aria-label="Get MyPrayerTower on Google Play Store">
                 <svg className="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
                 </svg>
@@ -26,7 +26,7 @@ function AppStoreButton({ store }: { store: 'telegram' | 'google' }) {
     }
 
     return (
-        <a href="https://t.me/MyPrayerTowerBot" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-[#229ED9] hover:bg-[#1f8ebf] border border-[#229ED9] px-3 py-2 rounded-lg group transition-colors">
+        <a href="https://t.me/MyPrayerTowerBot" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-[#229ED9] hover:bg-[#1f8ebf] border border-[#229ED9] px-3 py-2 rounded-lg group transition-colors" aria-label="Start MyPrayerTower Bot on Telegram">
             <Send className="w-6 h-6 text-white fill-current" />
             <span className="flex flex-col items-start leading-none">
                 <span className="text-[9px] text-white/80 uppercase">Free on Telegram</span>
@@ -129,7 +129,7 @@ export function Footer() {
                     <div className="container mx-auto px-6 py-3 flex items-center justify-center text-sm font-serif italic text-gold-400">
                         <Star className="w-4 h-4 mr-2" />
                         Today is dedicated to St. Francis de Sales, Patron of Writers.
-                        <Link href="/saints/st-francis-de-sales" className="ml-2 underline text-gold-200/50 hover:text-gold-200">Read more</Link>
+                        <Link href="/saints/st-francis-de-sales" className="ml-2 underline text-gold-200/50 hover:text-gold-200" aria-label="Read more about St. Francis de Sales">Read more</Link>
                     </div>
                 </div>
 
@@ -157,6 +157,7 @@ export function Footer() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-8 h-8 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-lg hover:border-gold-500 hover:text-gold-400 transition-all duration-300"
+                                        aria-label={`Follow MyPrayerTower on ${s.label}`}
                                         title={s.label}
                                     >
                                         <s.icon className="w-4 h-4" />
@@ -294,7 +295,7 @@ export function Footer() {
 
                     <div className="flex flex-wrap justify-center gap-2 mt-6 border-t border-gray-800 pt-6">
                         {socialLinks.map((s) => (
-                            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center bg-gray-800 rounded-full text-gray-400 hover:text-white">
+                            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center bg-gray-800 rounded-full text-gray-400 hover:text-white" aria-label={`Follow MyPrayerTower on ${s.label}`}>
                                 <s.icon className="w-4 h-4" />
                             </a>
                         ))}

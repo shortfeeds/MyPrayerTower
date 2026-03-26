@@ -107,11 +107,21 @@ const nextConfig = {
 
     // Experimental optimizations
     experimental: {
-        optimizePackageImports: ['lucide-react', '@headlessui/react'],
+        optimizePackageImports: [
+            'lucide-react',
+            '@headlessui/react',
+            'framer-motion',
+            'date-fns',
+            'recharts',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-toast',
+        ],
         serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
+        optimizeCss: true,
     },
 
-    // Headers for caching
+    // Headers for caching and SEO
     async headers() {
         return [
             {
@@ -142,8 +152,17 @@ const nextConfig = {
                 ],
             },
             {
+                // Global security and performance headers
                 source: '/(.*)',
                 headers: [
+                    {
+                        key: 'Strict-Transport-Security',
+                        value: 'max-age=63072000; includeSubDomains; preload',
+                    },
+                    {
+                        key: 'X-DNS-Prefetch-Control',
+                        value: 'on',
+                    },
                     {
                         key: 'Content-Security-Policy',
                         value: [

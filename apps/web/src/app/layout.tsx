@@ -47,6 +47,9 @@ export const metadata: Metadata = {
     authors: [{ name: 'MyPrayerTower Team', url: 'https://myprayertower.com' }],
     creator: 'MyPrayerTower',
     publisher: 'MyPrayerTower',
+    alternates: {
+        canonical: 'https://www.myprayertower.com',
+    },
     formatDetection: {
         email: false,
         address: false,
@@ -97,7 +100,7 @@ export const metadata: Metadata = {
         title: 'MyPrayerTower',
         description: 'Find churches, request prayers, and grow in faith with the #1 Catholic App.',
         creator: '@myprayertower',
-        images: ['/opengraph-image'], // Use the generate OG image for Twitter too
+        images: ['/opengraph-image'],
     },
     category: 'Lifestyle',
     verification: {
@@ -132,13 +135,15 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
             <head>
-                {/* Preconnect to critical domains */}
+                {/* Preconnect + DNS Prefetch for critical domains */}
                 <link rel="manifest" href="/manifest.json" />
+                <link rel="dns-prefetch" href="https://htgvilktnadnwlforyjt.supabase.co" />
                 <link rel="preconnect" href="https://htgvilktnadnwlforyjt.supabase.co" />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
-                <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
+                <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+                <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
+                <link rel="dns-prefetch" href="https://www.google-analytics.com" />
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
                 <ThemeProvider>
@@ -216,14 +221,15 @@ export default function RootLayout({
                 <SpeedInsights />
                 <GoogleAnalytics gaId="G-1X6N63VWZH" />
 
-                {/* Google AdSense - Auto Ads Enabled (Standard script to avoid data-nscript) */}
-                <script
-                    async
+                {/* Google AdSense - Deferred to avoid render-blocking */}
+                <Script
+                    id="google-adsense"
                     src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924'}`}
                     crossOrigin="anonymous"
+                    strategy="lazyOnload"
                 />
             </body>
-        </html >
+        </html>
     );
 }
 

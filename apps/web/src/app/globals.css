@@ -133,8 +133,8 @@ body {
   --secondary: 48 96% 89%;
   --secondary-foreground: 24 9.8% 10%;
 
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  --muted: 215.4 16.3% 40%; /* Darkened for better contrast on white (WCAG AA) */
+  --muted-foreground: 215.4 16.3% 40%;
   --accent: 210 40% 96.1%;
   --accent-foreground: 222.2 47.4% 11.2%;
   --destructive: 0 84.2% 60.2%;
@@ -247,11 +247,11 @@ body {
 }
 
 .text-secondary {
-  @apply text-gray-600 dark:text-gray-400;
+  @apply text-gray-700 dark:text-gray-300; /* Increased contrast */
 }
 
 .text-muted {
-  @apply text-gray-500 dark:text-gray-500;
+  @apply text-gray-600 dark:text-gray-400; /* Increased contrast */
 }
 
 /* Border colors that adapt */
@@ -679,14 +679,17 @@ main {
   }
 }
 
-/* Touch-friendly button sizes on mobile */
-@media (max-width: 639px) {
-
+/* Touch-friendly button sizes on mobile — Strictly enforce 44x44px min */
+@media (max-width: 1023px) {
   button,
   a[role="button"],
-  .btn {
-    min-height: 44px;
-    min-width: 44px;
+  .btn,
+  .touch-target {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
