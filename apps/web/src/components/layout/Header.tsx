@@ -46,6 +46,9 @@ export function Header() {
     // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            // Only handle click-outside for desktop megamenus
+            if (window.innerWidth < 1024) return;
+
             if (prayRef.current && !prayRef.current.contains(event.target as Node)) {
                 setPrayOpen(false);
             }

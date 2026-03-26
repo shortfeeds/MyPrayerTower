@@ -127,3 +127,35 @@ export async function createMemorial(data: any): Promise<Memorial> {
         throw new Error('Failed to create memorial');
     }
 }
+
+export async function getMemorialById(id: string): Promise<Memorial | null> {
+    try {
+        const memorial = await db.memorial.findUnique({
+            where: { id },
+            include: { owner: true },
+        });
+
+        if (!memorial) return null;
+
+        return {
+            id: memorial.id,
+            firstName: memorial.firstName,
+            lastName: memorial.lastName,
+            birthDate: memorial.birthDate?.toISOString(),
+            deathDate: memorial.deathDate?.toISOString(),
+            biography: memorial.biography || undefined,
+            photoUrl: memorial.photoUrl || undefined,
+            owner: memorial.owner ? {
+                displayName: memorial.owner.displayName || memorial.owner.firstName || 'Anonymous',
+                firstName: memorial.owner.firstName || '',
+                lastName: memorial.owner.lastName || '',
+                avatarUrl: memorial.owner.avatarUrl || undefined,
+            } : undefined,
+            totalCandles: memorial.totalCandles,
+            totalFlowers: memorial.totalFlowers,
+        };
+    } catch (error) {
+        console.error('Error fetching memorial by ID:', error);
+        return null;
+    }
+}
