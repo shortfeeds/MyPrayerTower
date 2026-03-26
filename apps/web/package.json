@@ -59,6 +59,7 @@
         "@types/react": "^18.2.0",
         "@types/react-dom": "^18.2.0",
         "autoprefixer": "^10.4.0",
+        "critters": "^0.0.25",
         "dotenv": "^17.2.3",
         "pg": "^8.17.2",
         "postcss": "^8.4.0",
