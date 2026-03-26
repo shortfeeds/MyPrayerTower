@@ -40,8 +40,13 @@ export async function GET(request: NextRequest) {
             whereClause.platforms = { has: 'web' };
         }
 
+        if (!db || !(db as any).sponsoredContent) {
+            console.error('[Sponsored API] Prisma model "sponsoredContent" not found in client');
+            return NextResponse.json({ ads: [], content: null }, { status: 200 });
+        }
+
         // Find all active sponsored content, sorted by priority then impressions
-        const contents = await db.sponsoredContent.findMany({
+        const contents = await (db as any).sponsoredContent.findMany({
             where: whereClause,
             orderBy: [
                 { priority: 'desc' },      // Higher priority first

@@ -107,6 +107,9 @@ export const metadata: Metadata = {
         title: 'MyPrayerTower',
         statusBarStyle: 'black-translucent',
     },
+    other: {
+        'mobile-web-app-capable': 'yes',
+    },
 };
 
 export const viewport = {
@@ -134,8 +137,8 @@ export default function RootLayout({
                 <link rel="preconnect" href="https://htgvilktnadnwlforyjt.supabase.co" />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
-                <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
+                <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+                <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
                 <ThemeProvider>
@@ -213,13 +216,11 @@ export default function RootLayout({
                 <SpeedInsights />
                 <GoogleAnalytics gaId="G-1X6N63VWZH" />
 
-                {/* Google AdSense - Auto Ads Enabled */}
-                <Script
-                    id="adsense"
+                {/* Google AdSense - Auto Ads Enabled (Standard script to avoid data-nscript) */}
+                <script
                     async
                     src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924'}`}
                     crossOrigin="anonymous"
-                    strategy="afterInteractive"
                 />
             </body>
         </html >
