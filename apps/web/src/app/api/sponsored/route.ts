@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
         const page = searchParams.get('page');
         const position = searchParams.get('position');
         const placement = searchParams.get('placement'); // Legacy support
+        const platform = searchParams.get('platform');
+
+        console.log(`[Sponsored API] Request: page=${page}, position=${position}, placement=${placement}, platform=${platform}`);
 
         const now = new Date();
 
@@ -21,24 +24,20 @@ export async function GET(request: NextRequest) {
         };
 
         if (page && position) {
-            // New format: page + position
             whereClause.placement = `${page}-${position}`;
         } else if (page) {
-            // Just page, any position
             whereClause.placement = { startsWith: page };
         } else if (placement) {
-            // Legacy support
             whereClause.placement = placement;
         }
 
-        // Platform filtering
-        const platform = searchParams.get('platform');
         if (platform) {
             whereClause.platforms = { has: platform };
         } else {
-            // Default to web if no platform specified (backward compatibility)
             whereClause.platforms = { has: 'web' };
         }
+
+        console.log('[Sponsored API] Query:', JSON.stringify(whereClause));
 
         if (!db || !(db as any).sponsoredContent) {
             console.error('[Sponsored API] Prisma model "sponsoredContent" not found in client');
@@ -64,11 +63,11 @@ export async function GET(request: NextRequest) {
                 placement: true,
                 adSource: true,
                 googleAdUnitId: true,
-                // androidAdUnitId: true, // Missing in current DB
-                // iosAdUnitId: true,     // Missing in current DB
                 priority: true,
             },
         });
+
+        console.log(`[Sponsored API] Found ${contents.length} contents`);
 
         // Transform to match frontend expectations
         const ads = contents.map(content => {
@@ -87,7 +86,6 @@ export async function GET(request: NextRequest) {
             };
         });
 
-        // Also return legacy format for backward compatibility
         const content = contents[0] || null;
 
         return NextResponse.json({
@@ -103,10 +101,11 @@ export async function GET(request: NextRequest) {
             } : null
         });
     } catch (error: any) {
-        console.error('Error fetching sponsored content:', error);
+        console.error('[Sponsored API] FATAL ERROR:', error);
         return NextResponse.json({
             error: 'Failed to fetch sponsored content',
             details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
             ads: [],
             content: null
         }, { status: 500 });
