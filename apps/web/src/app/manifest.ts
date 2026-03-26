@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
         description: 'The #1 All-in-One Catholic Services App',
         start_url: '/',
         display: 'standalone',
-        background_color: '#ffffff',
-        theme_color: '#FCD34D', // Gold/Amber theme color
+        background_color: '#0A1835',
+        theme_color: '#0A1835',
         icons: [
             {
                 src: '/icon.png',

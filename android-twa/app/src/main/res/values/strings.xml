@@ -15,13 +15,15 @@
      limitations under the License.
 -->
 <resources>
-  
-
-  <!--
-    The "fullscreen" and "fullscreen-sticky" TWA manifest values correspond to "immersive" and "sticky-immersive"
-    AndroidManifest values.
-  -->
-  
+  <string name="appName">My Prayer Tower</string>
+  <string name="launcherName">PrayerTower</string>
+  <string name="hostName">www.myprayertower.com</string>
+  <string name="launchUrl">https://www.myprayertower.com/</string>
+  <string name="webManifestUrl">https://www.myprayertower.com/manifest.json</string>
+  <string name="providerAuthority">com.myprayertower.myprayertower_app.fileprovider</string>
+  <string name="generatorApp">bubblewrap-cli</string>
+  <string name="fallbackType">customtabs</string>
+  <string name="orientation">portrait</string>
 
   <!--
     This variable below expresses the relationship between the app and the site,
@@ -34,7 +36,7 @@
         \"relation\": [\"delegate_permission/common.handle_all_urls\"],
         \"target\": {
             \"namespace\": \"web\",
-            \"site\": \"https://myprayertower.com\"
+            \"site\": \"https://www.myprayertower.com\"
         }
     }]
     

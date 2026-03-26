@@ -1,6 +1,6 @@
 {
   "packageId": "com.myprayertower.myprayertower_app",
-  "host": "myprayertower.com",
+  "host": "www.myprayertower.com",
   "name": "My Prayer Tower",
   "launcherName": "PrayerTower",
   "display": "standalone",
@@ -13,17 +13,17 @@
   "backgroundColor": "#0A1835",
   "enableNotifications": true,
   "startUrl": "/",
-  "iconUrl": "https://myprayertower.com/icon.png",
+  "iconUrl": "https://www.myprayertower.com/icon.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "D:\\Downloads\\Antigravity\\MyPrayerTower\\android-twa\\android.keystore",
     "alias": "android"
   },
-  "appVersionName": "22",
-  "appVersionCode": 22,
+  "appVersionName": "23",
+  "appVersionCode": 23,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://myprayertower.com/manifest.json",
+  "webManifestUrl": "https://www.myprayertower.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -32,15 +32,19 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://myprayertower.com/",
+  "fullScopeUrl": "https://www.myprayertower.com/",
   "minSdkVersion": 21,
   "orientation": "portrait",
   "fingerprints": [],
-  "additionalTrustedOrigins": [],
+  "additionalTrustedOrigins": [
+    "https://myprayertower.com",
+    "https://www.paypal.com",
+    "https://www.sandbox.paypal.com"
+  ],
   "retainedBundles": [],
   "protocolHandlers": [],
   "fileHandlers": [],
   "launchHandlerClientMode": "",
   "displayOverride": [],
-  "appVersion": "22"
+  "appVersion": "23"
 }
