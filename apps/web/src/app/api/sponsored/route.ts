@@ -31,58 +31,40 @@ export async function GET(request: NextRequest) {
             whereClause.placement = placement;
         }
 
-        if (platform) {
-            whereClause.platforms = { has: platform };
-        } else {
-            whereClause.platforms = { has: 'web' };
-        }
-
         console.log('[Sponsored API] Query:', JSON.stringify(whereClause));
 
-        if (!db || !(db as any).sponsoredContent) {
-            console.error('[Sponsored API] Prisma model "sponsoredContent" not found in client');
-            return NextResponse.json({ ads: [], content: null }, { status: 200 });
-        }
+        // Find all active sponsored content using raw SQL to bypass Prisma model validation issues
+        // (Specifically the missing "platforms" column in production DB)
+        const contents: any[] = await (db as any).$queryRaw`
+            SELECT 
+                id, type, title, description, 
+                "imageUrl", "linkUrl", advertiser, placement, 
+                "adSource", "googleAdUnitId", priority 
+            FROM "SponsoredContent" 
+            WHERE "isActive" = true 
+              AND "isApproved" = true 
+              AND "startDate" <= ${now}
+              AND "endDate" >= ${now}
+              AND ("placement" = ${whereClause.placement} OR "placement" LIKE ${page ? `${page}-%` : '%'})
+            ORDER BY priority DESC, "paidAmount" DESC, impressions ASC
+        `;
 
-        // Find all active sponsored content, sorted by priority then impressions
-        const contents = await (db as any).sponsoredContent.findMany({
-            where: whereClause,
-            orderBy: [
-                { priority: 'desc' },      // Higher priority first
-                { paidAmount: 'desc' },    // Then by paid amount
-                { impressions: 'asc' },    // Then by least impressions (fairness)
-            ],
-            select: {
-                id: true,
-                type: true,
-                title: true,
-                description: true,
-                imageUrl: true,
-                linkUrl: true,
-                advertiser: true,
-                placement: true,
-                adSource: true,
-                googleAdUnitId: true,
-                priority: true,
-            },
-        });
-
-        console.log(`[Sponsored API] Found ${contents.length} contents`);
+        console.log(`[Sponsored API] Found ${contents.length} contents via raw SQL`);
 
         // Transform to match frontend expectations
         const ads = contents.map(content => {
-            const parts = content.placement.split('-');
+            const parts = (content.placement || '').split('-');
             return {
                 id: content.id,
-                adSource: (content as any).adSource || 'OFFLINE',
+                adSource: content.adSource || 'OFFLINE',
                 imageUrl: content.imageUrl || '',
                 linkUrl: content.linkUrl || '',
                 altText: content.description || content.title,
-                googleAdUnitId: (content as any).googleAdUnitId || '',
-                androidAdUnitId: (content as any).androidAdUnitId || '',
-                iosAdUnitId: (content as any).iosAdUnitId || '',
+                googleAdUnitId: content.googleAdUnitId || '',
+                androidAdUnitId: '', 
+                iosAdUnitId: '',
                 position: parts[1] || 'sidebar',
-                priority: (content as any).priority || 0,
+                priority: content.priority || 0,
             };
         });
 
