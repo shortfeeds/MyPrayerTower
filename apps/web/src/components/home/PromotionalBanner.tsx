@@ -175,7 +175,7 @@ export function AppDownloadBanner() {
 
                             {/* Android App Button */}
                             <a
-                                href="https://play.google.com/store/apps/details?id=com.myprayertower.app"
+                                href="https://play.google.com/store/apps/details?id=com.myprayertower.myprayertower_app"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-3 px-6 py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-colors border border-gray-200"
