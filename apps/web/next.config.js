@@ -119,6 +119,9 @@ const nextConfig = {
         ],
         serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
         optimizeCss: true,
+        scrollRestoration: true,
+        webpackBuildWorker: true,
+        parallelServerBuildTraces: true,
     },
 
     // Headers for caching and SEO

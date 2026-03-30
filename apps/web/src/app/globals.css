@@ -5,10 +5,7 @@
 /* Sacred UX Design System - Global Polish */
 @layer base {
 
-  /* Slower, more graceful transitions */
-  * {
-    @apply transition-all duration-500 ease-out;
-  }
+  /* Removed global transition-all for performance */
 
   /* Increased spacing for calm feel */
   body {

@@ -14,13 +14,13 @@
   "enableNotifications": true,
   "startUrl": "/",
   "iconUrl": "https://www.myprayertower.com/icon.png",
-  "splashScreenFadeOutDuration": 300,
+  "splashScreenFadeOutDuration": 0,
   "signingKey": {
     "path": "D:\\Downloads\\Antigravity\\MyPrayerTower\\android-twa\\android.keystore",
     "alias": "android"
   },
-  "appVersionName": "23",
-  "appVersionCode": 23,
+  "appVersionName": "25",
+  "appVersionCode": 25,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://www.myprayertower.com/manifest.json",
