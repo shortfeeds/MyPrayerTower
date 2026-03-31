@@ -1052,4 +1052,28 @@ export class AdminService {
 
         return items;
     }
+
+    // ===== AD PLACEMENTS MATRIX =====
+    async getAdPlacements() {
+        const setting = await this.prisma.systemSetting.findUnique({
+            where: { key: 'ad_placements_matrix' }
+        });
+        if (setting) {
+            try {
+                return JSON.parse(setting.value);
+            } catch {
+                return {};
+            }
+        }
+        return {};
+    }
+
+    async updateAdPlacements(data: any) {
+        await this.prisma.systemSetting.upsert({
+            where: { key: 'ad_placements_matrix' },
+            update: { value: JSON.stringify(data) },
+            create: { key: 'ad_placements_matrix', value: JSON.stringify(data), description: 'Matrix governing global ad placements.' }
+        });
+        return { success: true };
+    }
 }

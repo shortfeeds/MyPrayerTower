@@ -48,6 +48,28 @@ async function main() {
         });
     }
 
+    const defaultMatrix = {
+            "home": { "top": true, "inline": true, "bottom": true },
+            "churches": { "top": true, "inline": true, "sidebar": true },
+            "saints": { "top": true, "inline": true, "sidebar": true },
+            "prayers": { "top": true, "inline": true, "sidebar": true },
+            "bible": { "top": true, "sidebar": true },
+            "readings": { "top": true, "sidebar": true },
+            "blog": { "top": true, "inline": true, "sidebar": true },
+            "prayer-wall": { "bottom": true },
+            "memorials": { "top": true, "inline": true, "sidebar": true }
+    };
+
+    await (prisma as any).systemSetting.upsert({
+        where: { key: 'ad_placements_matrix' },
+        update: { value: JSON.stringify(defaultMatrix) },
+        create: {
+            key: 'ad_placements_matrix',
+            value: JSON.stringify(defaultMatrix),
+            description: 'Matrix governing global ad placements.'
+        }
+    });
+
     console.log('Global Ad containers seeded successfully.');
 }
 

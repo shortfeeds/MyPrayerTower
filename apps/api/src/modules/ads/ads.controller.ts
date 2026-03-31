@@ -47,6 +47,30 @@ export class AdsController {
             }
         }
 
-        return { message: `Seeded ${createdCount} new global ad units. Old temporary templates removed.`, total: ads.length };
+        // 3. Seed the default Respectful Master Matrix
+        const defaultMatrix = {
+            "home": { "top": true, "inline": true, "bottom": true },
+            "churches": { "top": true, "inline": true, "sidebar": true },
+            "saints": { "top": true, "inline": true, "sidebar": true },
+            "prayers": { "top": true, "inline": true, "sidebar": true }, // Standard list of prayers (not praying them)
+            "bible": { "top": true, "sidebar": true },
+            "readings": { "top": true, "sidebar": true },
+            "blog": { "top": true, "inline": true, "sidebar": true },
+            "prayer-wall": { "bottom": true }, // Sacred space, ONLY bottom allowed
+            "memorials": { "top": true, "inline": true, "sidebar": true },
+        };
+
+        const existingMatrix = await this.prisma.systemSetting.findUnique({ where: { key: 'ad_placements_matrix' } });
+        if (!existingMatrix) {
+            await this.prisma.systemSetting.create({
+                data: {
+                    key: 'ad_placements_matrix',
+                    value: JSON.stringify(defaultMatrix),
+                    description: 'Matrix governing global ad placements.'
+                }
+            });
+        }
+
+        return { message: `Seeded ${createdCount} new global ad units and configured the Ad Placement Matrix.`, total: ads.length };
     }
 }

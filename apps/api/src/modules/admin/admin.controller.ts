@@ -388,4 +388,14 @@ export class AdminController {
     async deleteAdContainer(@Param('id') id: string) {
         return this.adminService.deleteAdContainer(id);
     }
+
+    @Get('settings/ad-placements')
+    async getAdPlacements() {
+        return this.adminService.getAdPlacements();
+    }
+
+    @Post('settings/ad-placements')
+    async updateAdPlacements(@Body() data: any) {
+        return this.adminService.updateAdPlacements(data);
+    }
 }

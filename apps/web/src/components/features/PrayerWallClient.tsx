@@ -302,9 +302,6 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
             if (result.success) {
                 // 2. ASSURANCE
                 setStillnessStage('offered');
-                
-                // Trigger Native Interstitial for Android TWA
-                triggerInterstitial('GLOBAL_INTERSTITIAL');
 
                 await new Promise(resolve => setTimeout(resolve, 2000));
 

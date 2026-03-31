@@ -108,7 +108,11 @@ export function SmartAdSlot({
         }
     }, [ad?.id]);
 
-    const { getAdForSection, fetched } = useAdStore();
+    const { getAdForSection, isAdEnabledForPosition, fetched } = useAdStore();
+
+    if (fetched && !isAdEnabledForPosition(page, position)) {
+        return null; // Admin has explicitly disabled this paginated ad slot
+    }
 
     // Map SmartAdSlot params to DB sectionKeys
     const getSectionKey = () => {

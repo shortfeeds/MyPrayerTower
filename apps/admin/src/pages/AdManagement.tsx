@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Card, Table, Tag, Button, Modal, Form, Input, Select, Switch, Space, message, Popconfirm, Typography, Tooltip } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined, GoogleOutlined, MobileOutlined, AppleOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Modal, Form, Input, Select, Switch, Space, message, Popconfirm, Typography, Tooltip, Checkbox, Alert } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined, GoogleOutlined, MobileOutlined, AppleOutlined, PushpinOutlined } from '@ant-design/icons';
 import { api } from '../utils/api';
 
 const { Title, Text } = Typography;
@@ -19,6 +19,7 @@ interface AdContainer {
 
 export function AdManagement() {
     const [ads, setAds] = useState<AdContainer[]>([]);
+    const [matrix, setMatrix] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
     const [editingAd, setEditingAd] = useState<AdContainer | null>(null);
@@ -31,12 +32,31 @@ export function AdManagement() {
     const fetchAds = async () => {
         setLoading(true);
         try {
-            const res = await api.get('/admin/ads');
-            setAds(res.data);
+            const [adsRes, matrixRes] = await Promise.all([
+                api.get('/admin/ads'),
+                api.get('/admin/settings/ad-placements')
+            ]);
+            setAds(adsRes.data);
+            setMatrix(matrixRes.data || {});
         } catch (err) {
             message.error('Failed to load ad units');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleToggleMatrix = async (page: string, position: string, checked: boolean) => {
+        const newMatrix = { ...matrix };
+        if (!newMatrix[page]) newMatrix[page] = {};
+        newMatrix[page][position] = checked;
+        
+        setMatrix(newMatrix);
+        
+        try {
+            await api.post('/admin/settings/ad-placements', newMatrix);
+            message.success('Ad placement instantly updated');
+        } catch (err) {
+            message.error('Failed to update ad placement');
         }
     };
 
@@ -155,6 +175,18 @@ export function AdManagement() {
             )
         }
     ];
+    
+    const pages = ['churches', 'saints', 'prayers', 'memorials', 'bible', 'readings', 'prayer-wall', 'home'];
+    
+    const matrixColumns = [
+        { title: 'Page', dataIndex: 'page', key: 'page', render: (text: string) => <span style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>{text.replace('-', ' ')}</span> },
+        { title: 'Top', key: 'top', align: 'center' as const, render: (_: any, record: any) => <Checkbox checked={matrix[record.page]?.top} onChange={(e) => handleToggleMatrix(record.page, 'top', e.target.checked)} /> },
+        { title: 'Sidebar', key: 'sidebar', align: 'center' as const, render: (_: any, record: any) => <Checkbox checked={matrix[record.page]?.sidebar} onChange={(e) => handleToggleMatrix(record.page, 'sidebar', e.target.checked)} /> },
+        { title: 'Inline', key: 'inline', align: 'center' as const, render: (_: any, record: any) => <Checkbox checked={matrix[record.page]?.inline} onChange={(e) => handleToggleMatrix(record.page, 'inline', e.target.checked)} /> },
+        { title: 'Bottom', key: 'bottom', align: 'center' as const, render: (_: any, record: any) => <Checkbox checked={matrix[record.page]?.bottom} onChange={(e) => handleToggleMatrix(record.page, 'bottom', e.target.checked)} /> },
+    ];
+    
+    const matrixData = pages.map(p => ({ page: p }));
 
     return (
         <div style={{ padding: 24 }}>
@@ -167,6 +199,31 @@ export function AdManagement() {
                     Add Ad Unit
                 </Button>
             </div>
+
+            <Card bordered={false} style={{ marginBottom: 24 }}>
+                <div style={{ marginBottom: 16 }}>
+                    <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <PushpinOutlined style={{ color: '#eb2f96' }} /> Ad Slot Positions by Page
+                    </h3>
+                    <Text type="secondary">Toggle exactly where ads should appear across different app/web pages. Changes apply instantly.</Text>
+                </div>
+                
+                <Alert
+                    message="Setup your 3 Global AdSense/AdMob IDs in the table below, and then use this matrix to distribute them!"
+                    type="info"
+                    showIcon
+                    style={{ marginBottom: 16 }}
+                />
+
+                <Table
+                    columns={matrixColumns}
+                    dataSource={matrixData}
+                    rowKey="page"
+                    pagination={false}
+                    size="small"
+                    bordered
+                />
+            </Card>
 
             <Card bordered={false}>
                 <Table
