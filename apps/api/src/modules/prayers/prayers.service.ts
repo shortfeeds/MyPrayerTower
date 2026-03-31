@@ -8,7 +8,7 @@ export class PrayersService {
     async getCategories() {
         return this.prisma.prayerLibraryCategory.findMany({
             where: { parentId: null },
-            include: { children: true, _count: { select: { prayers: true } } },
+            include: { children: true },
             orderBy: { sortOrder: 'asc' },
         });
     }
