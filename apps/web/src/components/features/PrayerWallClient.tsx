@@ -11,6 +11,7 @@ import { PrayerCardSkeleton } from '@/components/ui/SkeletonLoaders';
 import { ClosingPrayerModal, ReportModal, AnsweredModal } from './PrayerInteractionModals';
 import { SmartAdSlot } from '@/components/ads';
 import { PrayerCompletionModal } from '@/components/prayer/PrayerCompletionModal';
+import { useNativeAds } from '@/hooks/useNativeAds';
 
 export interface Prayer {
     id: string;
@@ -99,6 +100,7 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const { triggerSacredMoment } = useSpiritualJourney();
+    const { triggerInterstitial } = useNativeAds();
 
     // -- New Modal States --
     const [closingPrayerFor, setClosingPrayerFor] = useState<Prayer | null>(null);
@@ -300,6 +302,10 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
             if (result.success) {
                 // 2. ASSURANCE
                 setStillnessStage('offered');
+                
+                // Trigger Native Interstitial for Android TWA
+                triggerInterstitial('PRAYER_SUBMIT_INTERSTITIAL');
+
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
                 setIsPrayingId(null);

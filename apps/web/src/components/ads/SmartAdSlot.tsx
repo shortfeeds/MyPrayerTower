@@ -5,6 +5,7 @@ import { GoogleAdUnit } from './GoogleAdUnit';
 import { Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { getAdSlot, isAdsEnabled } from '@/lib/adSlots';
+import { useAdStore } from '@/store/useAdStore';
 
 interface Ad {
     id: string;
@@ -107,10 +108,76 @@ export function SmartAdSlot({
         }
     }, [ad?.id]);
 
-    if (loading) return null;
+    const { getAdForSection, fetched } = useAdStore();
+
+    // Map SmartAdSlot params to DB sectionKeys
+    const getSectionKey = () => {
+        if (page === 'home' && position === 'top') return 'HOME_TOP_BANNER';
+        if (page === 'home' && position === 'inline') return 'ARTICLE_LIST_NATIVE';
+        if (page === 'blog' && position === 'bottom') return 'ARTICLE_DETAIL_BOTTOM';
+        if (page === 'blog' && position === 'inline') return 'ARTICLE_LIST_NATIVE';
+        if (page === 'prayer-wall' && position === 'top') return 'PRAYER_WALL_BANNER';
+        if (page === 'bible' && position === 'bottom') return 'BIBLE_READING_BOTTOM';
+        if (page === 'readings' && position === 'bottom') return 'DAILY_READING_BOTTOM';
+        if (page === 'churches' && position === 'inline') return 'CHURCH_LIST_NATIVE';
+        if (page === 'catechism' && position === 'sidebar') return 'CATECHISM_SIDEBAR';
+        return null;
+    };
+
+    const sectionKey = getSectionKey();
+    const dynamicAd = sectionKey ? getAdForSection(sectionKey) : null;
+
+    if (loading && !fetched) return null;
 
     const renderAd = () => {
-        // Render Google Ad if source is Google
+        // Platform detection
+        const isTwa = typeof window !== 'undefined' && (
+            window.matchMedia('(display-mode: standalone)').matches || 
+            (window.navigator as any).standalone ||
+            document.referrer.includes('android-app://') ||
+            (window as any).AndroidBridge !== undefined
+        );
+
+        // 1. Check Dynamic DB Ad first (High Priority)
+        if (dynamicAd) {
+            let unitId: string | undefined;
+
+            if (isTwa) {
+                // Prioritize Mobile IDs in TWA
+                unitId = typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent) 
+                    ? dynamicAd.iosUnitId 
+                    : dynamicAd.androidUnitId;
+                
+                // Fallback to web ID if mobile ID is missing but we're in TWA
+                if (!unitId) unitId = dynamicAd.webUnitId;
+            } else {
+                // Prioritize Web (AdSense) ID on Browser
+                unitId = dynamicAd.webUnitId;
+                
+                // Fallback to mobile ID if web ID is missing (AdMob-on-web compatibility)
+                if (!unitId) {
+                    unitId = typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent) 
+                        ? dynamicAd.iosUnitId 
+                        : dynamicAd.androidUnitId;
+                }
+            }
+
+            if (unitId) {
+                return (
+                    <div className={`text-center my-4 relative z-0 ${className}`}>
+                        <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/50 text-white text-[9px] font-medium rounded">
+                            Ad
+                        </div>
+                        <GoogleAdUnit
+                            slot={unitId}
+                            format={position === 'sidebar' ? 'rectangle' : position === 'inline' ? 'fluid' : 'horizontal'}
+                        />
+                    </div>
+                );
+            }
+        }
+
+        // 2. Render Google Ad if source is Google (Legacy compatibility)
         if (ad?.adSource === 'GOOGLE' && ad.googleAdUnitId) {
             return (
                 <div className={`text-center my-4 relative z-0 ${className}`}>

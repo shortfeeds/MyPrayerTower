@@ -5,7 +5,8 @@ import { PushNotificationPrompt } from '@/components/engagement/PushNotification
 import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
 
 import { usePathname } from 'next/navigation';
-
+import { useEffect } from 'react';
+import { useAdStore } from '@/store/useAdStore';
 import { AmbientControls } from '@/components/audio/AmbientControls';
 
 /**
@@ -14,6 +15,12 @@ import { AmbientControls } from '@/components/audio/AmbientControls';
  */
 export function GlobalEngagement() {
     const pathname = usePathname();
+
+    const fetchAds = useAdStore(state => state.fetchAds);
+
+    useEffect(() => {
+        fetchAds();
+    }, [fetchAds]);
 
     // Don't show engagement components on admin or payment pages
     const excludedPaths = ['/admin', '/checkout', '/payment'];

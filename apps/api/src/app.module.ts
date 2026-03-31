@@ -33,9 +33,9 @@ import { MassOfferingsModule } from './modules/mass-offerings/mass-offerings.mod
 import { PlatformDonationsModule } from './modules/platform-donations/platform-donations.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 
-// In-App Purchases (Google Play)
 import { PurchasesModule } from './modules/purchases/purchases.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { AdsModule } from './modules/ads/ads.module';
 
 @Module({
     imports: [
@@ -97,6 +97,9 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 
         // Analytics
         AnalyticsModule,
+
+        // Ads
+        AdsModule,
     ],
 })
 export class AppModule { }

@@ -14,10 +14,10 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "clean": "turbo run clean",
-    "db:generate": "pnpm --filter @mpt/database generate",
-    "db:migrate": "pnpm --filter @mpt/database migrate",
-    "db:push": "pnpm --filter @mpt/database push",
-    "db:studio": "pnpm --filter @mpt/database studio",
+    "db:generate": "pnpm --filter @mpt/database db:generate",
+    "db:migrate": "pnpm --filter @mpt/database db:migrate",
+    "db:push": "pnpm --filter @mpt/database db:push",
+    "db:studio": "pnpm --filter @mpt/database db:studio",
     "import:netministries": "npm run import:netministries --workspace=@mpt/scraper"
   },
   "devDependencies": {

@@ -9,9 +9,10 @@ interface AdContainer {
     id: string;
     sectionKey: string;
     description?: string;
-    adType: 'BANNER' | 'NATIVE' | 'NEWSLETTER' | 'FEATURED';
+    adType: 'BANNER' | 'NATIVE' | 'INTERSTITIAL' | 'REWARDED' | 'APP_OPEN' | 'NEWSLETTER' | 'FEATURED';
     androidUnitId?: string;
     iosUnitId?: string;
+    webUnitId?: string;
     isActive: boolean;
     updatedAt: string;
 }
@@ -113,6 +114,17 @@ export function AdManagement() {
             )
         },
         {
+            title: 'Web Slot ID',
+            dataIndex: 'webUnitId',
+            key: 'web',
+            render: (id: string) => (
+                <Space>
+                    <GoogleOutlined style={{ color: '#4285F4' }} />
+                    <Text code copyable={!!id}>{id || 'Not set'}</Text>
+                </Space>
+            )
+        },
+        {
             title: 'Status',
             dataIndex: 'isActive',
             key: 'status',
@@ -195,18 +207,25 @@ export function AdManagement() {
                     <Form.Item name="adType" label="Ad Type" rules={[{ required: true }]}>
                         <Select>
                             <Select.Option value="BANNER">Banner</Select.Option>
-                            <Select.Option value="NATIVE">Native</Select.Option>
-                            <Select.Option value="FEATURED">Interstitial/Featured</Select.Option>
-                            <Select.Option value="NEWSLETTER">Newsletter</Select.Option>
+                            <Select.Option value="NATIVE">Native Advanced</Select.Option>
+                            <Select.Option value="INTERSTITIAL">Interstitial</Select.Option>
+                            <Select.Option value="REWARDED">Rewarded</Select.Option>
+                            <Select.Option value="APP_OPEN">App Open</Select.Option>
+                            <Select.Option value="FEATURED">Custom Featured</Select.Option>
+                            <Select.Option value="NEWSLETTER">Newsletter Slot</Select.Option>
                         </Select>
                     </Form.Item>
 
-                    <Form.Item name="androidUnitId" label={<span><MobileOutlined /> Android Unit ID</span>}>
+                    <Form.Item name="androidUnitId" label={<span><MobileOutlined /> Android (AdMob) Unit ID</span>}>
                         <Input placeholder="ca-app-pub-3940256099942544/6300978111" />
                     </Form.Item>
 
-                    <Form.Item name="iosUnitId" label={<span><AppleOutlined /> iOS Unit ID</span>}>
+                    <Form.Item name="iosUnitId" label={<span><AppleOutlined /> iOS (AdMob) Unit ID</span>}>
                         <Input placeholder="ca-app-pub-3940256099942544/2934735716" />
+                    </Form.Item>
+
+                    <Form.Item name="webUnitId" label={<span><GoogleOutlined /> Web (AdSense) Slot ID</span>}>
+                        <Input placeholder="1234567890" />
                     </Form.Item>
 
                     <Form.Item name="isActive" label="Status" valuePropName="checked">

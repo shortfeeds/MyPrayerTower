@@ -57,19 +57,26 @@ export function GoogleAdUnit({
 
     if (!slot) return null;
 
+    // Detect if this is an AdMob ID (contains /) or AdSense ID (numeric)
+    const isAdMob = slot.includes('/');
+    const adClient = isAdMob ? (slot.split('/')[0].startsWith('ca-app-pub-') ? slot.split('/')[0] : process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID) : process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+    const finalSlot = isAdMob ? slot.split('/')[1] : slot;
+
     return (
-        <div className={`adsense-container relative ${className}`} style={{ minHeight: '100px', ...style }}>
+        <div className={`adsense-container relative overflow-hidden flex items-center justify-center ${className}`} style={{ minHeight: '100px', ...style }}>
             {isDev && (
-                <div className="ad-dev-debug-overlay">
-                    <span className="ad-dev-debug-label">Google Ad: {slot}</span>
+                <div className="absolute inset-0 bg-blue-500/10 border border-dashed border-blue-500 flex items-center justify-center pointer-events-none z-10">
+                    <span className="bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded font-mono">
+                        {isAdMob ? 'AdMob' : 'AdSense'}: {slot}
+                    </span>
                 </div>
             )}
             <ins
                 ref={adRef}
                 className="adsbygoogle"
                 style={{ display: 'block', width: '100%', height: '100%', ...style }}
-                data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924'}
-                data-ad-slot={slot}
+                data-ad-client={adClient || 'ca-pub-1009360672921924'}
+                data-ad-slot={finalSlot}
                 data-ad-format={format}
                 data-full-width-responsive={responsive ? 'true' : 'false'}
             />
