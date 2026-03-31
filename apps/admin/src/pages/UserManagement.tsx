@@ -38,6 +38,8 @@ const roleColors: Record<string, string> = {
     CHURCH_ADMIN: 'green',
 };
 
+import { api } from '../utils/api';
+
 export function UserManagement() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -50,14 +52,6 @@ export function UserManagement() {
     const [activeTab, setActiveTab] = useState('all');
     const [form] = Form.useForm();
 
-    const getAuthHeaders = () => {
-        const token = localStorage.getItem('token');
-        return {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        };
-    };
-
     useEffect(() => {
         fetchUsers();
     }, []);
@@ -65,21 +59,8 @@ export function UserManagement() {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            // Try to fetch from API first
-            const res = await fetch(`${API_URL}/admin/users`, { headers: getAuthHeaders() });
-            if (res.ok) {
-                const data = await res.json();
-                setUsers(data.users || data || []);
-            } else {
-                // Fallback to mock data
-                setUsers([
-                    { id: '1', email: 'maria@example.com', firstName: 'Maria', lastName: 'Santos', displayName: 'Maria S.', role: 'USER', subscriptionTier: 'PREMIUM', isEmailVerified: true, isBanned: false, createdAt: '2024-12-01T00:00:00Z', lastLoginAt: '2024-12-15T10:30:00Z', prayerCount: 45 },
-                    { id: '2', email: 'john@example.com', firstName: 'John', lastName: 'Doe', displayName: 'John D.', role: 'USER', subscriptionTier: 'FREE', isEmailVerified: true, isBanned: false, createdAt: '2024-11-15T00:00:00Z', lastLoginAt: '2024-12-10T14:20:00Z', prayerCount: 12 },
-                    { id: '3', email: 'sarah@example.com', firstName: 'Sarah', lastName: 'Miller', displayName: 'Sarah M.', role: 'CHURCH_ADMIN', subscriptionTier: 'PLUS', isEmailVerified: true, isBanned: false, createdAt: '2024-10-20T00:00:00Z', lastLoginAt: '2024-12-14T09:15:00Z', prayerCount: 28 },
-                    { id: '4', email: 'admin@prayertower.com', firstName: 'Super', lastName: 'Admin', displayName: 'Admin', role: 'SUPER_ADMIN', subscriptionTier: 'LIFETIME', isEmailVerified: true, isBanned: false, createdAt: '2024-01-01T00:00:00Z', lastLoginAt: '2024-12-15T08:00:00Z', prayerCount: 100 },
-                    { id: '5', email: 'banned@example.com', firstName: 'Banned', lastName: 'User', displayName: 'Banned', role: 'USER', subscriptionTier: 'FREE', isEmailVerified: false, isBanned: true, bannedReason: 'Spam and inappropriate content', createdAt: '2024-11-01T00:00:00Z', prayerCount: 0 },
-                ]);
-            }
+            const res = await api.get(`/admin/users?search=${searchText}`);
+            setUsers(res.data.users || res.data || []);
         } catch (err) {
             console.error('Failed to fetch users:', err);
             message.error('Failed to load users');
@@ -102,13 +83,11 @@ export function UserManagement() {
 
     const handleDelete = async (id: string) => {
         try {
-            await fetch(`${API_URL}/admin/users/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
-            setUsers(prev => prev.filter(u => u.id !== id));
+            await api.delete(`/admin/users/${id}`);
             message.success('User deleted successfully');
+            fetchUsers();
         } catch (err) {
-            // Still update UI for demo
-            setUsers(prev => prev.filter(u => u.id !== id));
-            message.success('User deleted successfully');
+            message.error('Failed to delete user');
         }
     };
 
@@ -121,58 +100,37 @@ export function UserManagement() {
     const confirmBan = async () => {
         if (!banningUser) return;
         try {
-            await fetch(`${API_URL}/admin/users/${banningUser.id}/ban`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ reason: banReason })
-            });
-            setUsers(prev => prev.map(u => u.id === banningUser.id ? { ...u, isBanned: true, bannedReason: banReason } : u));
+            await api.post(`/admin/users/${banningUser.id}/ban`, { reason: banReason });
             message.success('User banned successfully');
+            fetchUsers();
+            setBanModalVisible(false);
         } catch (err) {
-            // Still update UI for demo
-            setUsers(prev => prev.map(u => u.id === banningUser.id ? { ...u, isBanned: true, bannedReason: banReason } : u));
-            message.success('User banned successfully');
+            message.error('Failed to ban user');
         }
-        setBanModalVisible(false);
     };
 
     const handleUnban = async (user: User) => {
         try {
-            await fetch(`${API_URL}/admin/users/${user.id}/unban`, { method: 'POST', headers: getAuthHeaders() });
-            setUsers(prev => prev.map(u => u.id === user.id ? { ...u, isBanned: false, bannedReason: undefined } : u));
+            await api.post(`/admin/users/${user.id}/unban`);
             message.success('User unbanned successfully');
+            fetchUsers();
         } catch (err) {
-            setUsers(prev => prev.map(u => u.id === user.id ? { ...u, isBanned: false, bannedReason: undefined } : u));
-            message.success('User unbanned successfully');
+            message.error('Failed to unban user');
         }
     };
 
     const handleSubmit = async (values: any) => {
         try {
             if (editingUser) {
-                // Update
-                await fetch(`${API_URL}/admin/users/${editingUser.id}`, {
-                    method: 'PUT',
-                    headers: getAuthHeaders(),
-                    body: JSON.stringify(values)
-                });
-                setUsers(prev => prev.map(u => u.id === editingUser.id ? { ...u, ...values } : u));
+                await api.put(`/admin/users/${editingUser.id}`, values);
                 message.success('User updated successfully');
             } else {
-                // Create
-                const newUser: User = {
-                    id: Date.now().toString(),
-                    ...values,
-                    isEmailVerified: false,
-                    isBanned: false,
-                    createdAt: new Date().toISOString(),
-                    prayerCount: 0,
-                };
-                setUsers(prev => [newUser, ...prev]);
+                await api.post('/admin/users', values);
                 message.success('User created successfully');
             }
             setModalVisible(false);
             form.resetFields();
+            fetchUsers();
         } catch (err) {
             message.error('Failed to save user');
         }

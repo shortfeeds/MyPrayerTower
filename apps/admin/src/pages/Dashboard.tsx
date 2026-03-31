@@ -19,7 +19,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
+import { api } from '../utils/api';
 
 const { TabPane } = Tabs;
 const { TextArea } = Input;
@@ -39,19 +39,10 @@ export function Dashboard() {
         fetchReportsQueue();
     }, []);
 
-    const getAuthHeaders = () => {
-        const token = localStorage.getItem('token');
-        return { Authorization: `Bearer ${token}` };
-    };
-
     const fetchDashboardData = async () => {
         try {
             setLoading(true);
-            const res = await fetch(`${API_URL}/admin/dashboard`, {
-                headers: getAuthHeaders()
-            });
-            if (!res.ok) throw new Error('Failed to fetch dashboard data');
-            const data = await res.json();
+            const { data } = await api.get('/admin/dashboard');
             setStats(data);
         } catch (err) {
             console.error(err);
@@ -63,39 +54,40 @@ export function Dashboard() {
 
     const fetchModerationQueue = async () => {
         try {
-            const res = await fetch(`${API_URL}/moderation/queue`, {
-                headers: getAuthHeaders()
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setModerationQueue(data || []);
-            }
+            const { data } = await api.get('/admin/prayers/pending');
+            setModerationQueue(data || []);
         } catch (err) {
             console.error('Failed to fetch moderation queue', err);
         }
     };
 
     const fetchReportsQueue = async () => {
-        // In production, fetch from /admin/reports endpoint
-        // For demo, use mock data
-        setReportsQueue([
-            { id: '1', reporter: { displayName: 'John D.' }, reportedUser: { displayName: 'User123' }, reason: 'SPAM', status: 'PENDING', createdAt: new Date().toISOString() },
-        ]);
+        try {
+            const { data } = await api.get('/admin/reports?status=PENDING');
+            setReportsQueue(data || []);
+        } catch (err) {
+            console.error('Failed to fetch reports queue', err);
+        }
     };
 
     const handleModerateAction = async (prayerId: string, action: 'approve' | 'reject') => {
         try {
-            const res = await fetch(`${API_URL}/moderation/${prayerId}/${action}`, {
-                method: 'POST',
-                headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
-                body: JSON.stringify({ moderatorId: 'admin' })
-            });
-            if (res.ok) {
-                message.success(`Prayer ${action}d successfully`);
-                fetchModerationQueue();
-            }
+            await api.post(`/admin/prayers/${prayerId}/${action}`);
+            message.success(`Prayer ${action}d successfully`);
+            fetchModerationQueue();
         } catch (err) {
             message.error(`Failed to ${action} prayer`);
+        }
+    };
+
+    const handleReportAction = async (reportId: string, action: 'resolve' | 'dismiss') => {
+        try {
+            await api.put(`/admin/reports/${reportId}`, { action });
+            message.success(`Report ${action}ed`);
+            setActionModalVisible(false);
+            fetchReportsQueue();
+        } catch (err) {
+            message.error(`Failed to ${action} report`);
         }
     };
 
@@ -331,13 +323,13 @@ export function Dashboard() {
                 open={actionModalVisible}
                 onCancel={() => setActionModalVisible(false)}
                 footer={[
-                    <Button key="dismiss" onClick={() => { message.info('Report dismissed'); setActionModalVisible(false); }}>
+                    <Button key="dismiss" onClick={() => handleReportAction(selectedReport.id, 'dismiss')}>
                         Dismiss
                     </Button>,
-                    <Button key="warn" type="primary" onClick={() => { message.success('User warned'); setActionModalVisible(false); }}>
+                    <Button key="warn" type="primary" onClick={() => handleReportAction(selectedReport.id, 'resolve')}>
                         Warn User
                     </Button>,
-                    <Button key="suspend" danger onClick={() => { message.success('User suspended'); setActionModalVisible(false); }}>
+                    <Button key="suspend" danger onClick={() => handleReportAction(selectedReport.id, 'resolve')}>
                         Suspend User
                     </Button>,
                 ]}

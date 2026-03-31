@@ -106,9 +106,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         '/analytics': 'Analytics',
         '/articles': 'Articles',
         '/memorials': 'Memorials',
-        '/reports': 'Reports',
         '/notifications': 'Notifications',
         '/abandoned-carts': 'Abandoned Carts',
+        '/ads': 'Ads Management',
     };
 
     const menuItems = [
@@ -136,6 +136,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         { key: '/users', icon: <UserOutlined />, label: <Link to="/users">User Management</Link> },
         { key: '/notifications', icon: <NotificationOutlined />, label: <Link to="/notifications">Notifications</Link> },
         { key: '/reports', icon: <BarChartOutlined />, label: <Link to="/reports">Reports</Link> },
+        { key: '/ads', icon: <NotificationOutlined />, label: <Link to="/ads">Ads Management</Link> },
         { key: '/sync', icon: <SyncOutlined />, label: <Link to="/sync">Sync Control</Link> },
         { key: '/settings', icon: <SettingOutlined />, label: <Link to="/settings">Settings</Link> },
     ];

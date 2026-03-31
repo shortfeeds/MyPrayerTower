@@ -1,28 +1,49 @@
-import { Card, Button, Table, Tag, Row, Col, Statistic, message, Switch, Select } from 'antd';
+import { Card, Button, Table, Tag, Row, Col, Statistic, message, Switch, Select, Spin } from 'antd';
 import { SyncOutlined, CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import { useState } from 'react';
-
-const mockSyncHistory = [
-    { id: '1', type: 'Full Sync', status: 'completed', startedAt: 'Dec 22, 2024 02:00 AM', duration: '45 min', records: 12450 },
-    { id: '2', type: 'Full Sync', status: 'completed', startedAt: 'Dec 15, 2024 02:00 AM', duration: '42 min', records: 12380 },
-    { id: '3', type: 'Manual Sync', status: 'completed', startedAt: 'Dec 10, 2024 11:30 AM', duration: '38 min', records: 12100 },
-    { id: '4', type: 'Full Sync', status: 'failed', startedAt: 'Dec 8, 2024 02:00 AM', duration: '5 min', records: 0, error: 'Connection timeout' },
-];
+import { useEffect, useState } from 'react';
+import { api } from '../utils/api';
+import dayjs from 'dayjs';
 
 export function SyncControl() {
+    const [syncHistory, setSyncHistory] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [syncing, setSyncing] = useState(false);
 
-    const handleSync = () => {
-        setSyncing(true);
-        message.loading('Starting sync...');
-        setTimeout(() => {
+    useEffect(() => {
+        fetchHistory();
+    }, []);
+
+    const fetchHistory = async () => {
+        try {
+            setLoading(true);
+            const { data } = await api.get('/admin/sync/history');
+            setSyncHistory(data || []);
+        } catch (err) {
+            console.error('Failed to fetch sync history:', err);
+            message.error('Failed to load sync history');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSync = async () => {
+        try {
+            setSyncing(true);
+            message.loading('Starting manual synchronization...', 0);
+            await api.post('/admin/sync/run');
+            message.destroy();
+            message.success('Sync triggered successfully! It will run in the background.');
+            setTimeout(fetchHistory, 5000); // Wait 5s and refresh
+        } catch (err) {
+            message.destroy();
+            message.error('Failed to start sync');
+        } finally {
             setSyncing(false);
-            message.success('Sync completed successfully!');
-        }, 2000);
+        }
     };
 
     const columns = [
-        { title: 'Type', dataIndex: 'type', key: 'type' },
+        { title: 'Type', dataIndex: 'type', key: 'type', render: (t: string) => t.toUpperCase() },
         {
             title: 'Status',
             dataIndex: 'status',
@@ -36,12 +57,12 @@ export function SyncControl() {
                 </Tag>
             ),
         },
-        { title: 'Started', dataIndex: 'startedAt', key: 'startedAt' },
-        { title: 'Duration', dataIndex: 'duration', key: 'duration' },
-        { title: 'Records', dataIndex: 'records', key: 'records', render: (r: number) => r.toLocaleString() },
+        { title: 'Started', dataIndex: 'startedAt', key: 'startedAt', render: (d: string) => dayjs(d).format('MMM D, YYYY HH:mm') },
+        { title: 'Completed', dataIndex: 'completedAt', key: 'completedAt', render: (d: string) => d ? dayjs(d).format('MMM D, YYYY HH:mm') : '-' },
+        { title: 'Records', dataIndex: 'recordsProcessed', key: 'records', render: (r: number) => r?.toLocaleString() || 0 },
         {
             title: 'Error',
-            dataIndex: 'error',
+            dataIndex: 'errorMessage',
             key: 'error',
             render: (error: string) => error ? <Tag color="red">{error}</Tag> : '-',
         },
@@ -111,9 +132,11 @@ export function SyncControl() {
             <Card title="Sync History">
                 <Table
                     columns={columns}
-                    dataSource={mockSyncHistory}
+                    dataSource={syncHistory}
                     rowKey="id"
+                    loading={loading}
                     pagination={{ pageSize: 10 }}
+                    locale={{ emptyText: 'No sync history found' }}
                 />
             </Card>
         </div>

@@ -15,9 +15,10 @@ import MassOfferingsManagement from './pages/MassOfferingsManagement';
 import PilgrimagesManagement from './pages/PilgrimagesManagement';
 import DonationsList from './pages/DonationsList';
 import { NotificationCenter } from './pages/NotificationCenter';
+import { AdManagement } from './pages/AdManagement';
 import { UserReports } from './pages/UserReports';
 import SaintsManagement from './pages/SaintsManagement';
-import AbandonedCartManagement from './pages/AbandonedCartManagement';
+import { AbandonedCartManagement } from './pages/AbandonedCartManagement';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
     const token = localStorage.getItem('token');
@@ -121,6 +122,11 @@ function App() {
             <Route path="/donations" element={
                 <RequireAuth>
                     <Layout><DonationsList /></Layout>
+                </RequireAuth>
+            } />
+            <Route path="/ads" element={
+                <RequireAuth>
+                    <Layout><AdManagement /></Layout>
                 </RequireAuth>
             } />
             <Route path="/abandoned-carts" element={

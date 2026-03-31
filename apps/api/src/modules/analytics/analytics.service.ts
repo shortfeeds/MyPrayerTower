@@ -46,20 +46,16 @@ export class AnalyticsService {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - days);
 
-        const prayers = await this.prisma.prayerRequest.groupBy({
-            by: ['createdAt'],
-            where: { createdAt: { gte: startDate } },
-            _count: true,
-        });
+        // Group by day using raw SQL for accuracy across different times
+        const results: { date: string; count: number }[] = await this.prisma.$queryRaw`
+            SELECT DATE("createdAt") as date, COUNT(*)::int as count
+            FROM "PrayerRequest"
+            WHERE "createdAt" >= ${startDate}
+            GROUP BY DATE("createdAt")
+            ORDER BY date ASC
+        `;
 
-        // Aggregate by date
-        const heatmap: Record<string, number> = {};
-        for (const p of prayers) {
-            const date = p.createdAt.toISOString().split('T')[0];
-            heatmap[date] = (heatmap[date] || 0) + p._count;
-        }
-
-        return Object.entries(heatmap).map(([date, count]) => ({ date, count }));
+        return results;
     }
 
     /**

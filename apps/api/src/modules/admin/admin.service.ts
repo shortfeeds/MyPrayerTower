@@ -136,7 +136,7 @@ export class AdminService {
         } : {};
 
         const [users, total] = await Promise.all([
-            this.prisma.user.findMany({
+            (this.prisma.user as any).findMany({
                 where,
                 skip,
                 take: limit,
@@ -151,6 +151,7 @@ export class AdminService {
                     emailVerified: true,
                     createdAt: true,
                     lastLoginAt: true,
+                    totalPrayers: true,
                 }
             }),
             this.prisma.user.count({ where })
@@ -159,11 +160,8 @@ export class AdminService {
         return {
             users: users.map(u => ({
                 ...u,
-                role: 'USER', // Default role - actual role management would need schema updates
                 isEmailVerified: u.emailVerified,
-                isBanned: false,
-                bannedReason: null,
-                prayerCount: 0,
+                prayerCount: (u as any).totalPrayers || 0,
             })),
             total,
             page,
@@ -172,7 +170,7 @@ export class AdminService {
     }
 
     async getUser(id: string) {
-        return this.prisma.user.findUnique({
+        return (this.prisma.user as any).findUnique({
             where: { id },
             select: {
                 id: true,
@@ -184,34 +182,42 @@ export class AdminService {
                 emailVerified: true,
                 createdAt: true,
                 lastLoginAt: true,
+                totalPrayers: true,
+                role: true,
+                isBanned: true,
+                bannedReason: true,
             }
         });
     }
 
     async createUser(data: any) {
         // Basic implementation - requires password hashing import if real auth used
-        const { password, ...userData } = data;
-        // Note: In a real app, hash password here using bcrypt
+        const { password, role, ...userData } = data;
         return this.prisma.user.create({
             data: {
                 ...userData,
-                id: crypto.randomUUID(), // Ensure ID generation if not auto
+                id: crypto.randomUUID(),
+                role: role || 'USER',
                 passwordHash: password ? 'hashed_placeholder' : undefined,
+                updatedAt: new Date(),
             }
         });
     }
 
     async updateUser(id: string, data: any) {
-        // Filter out fields that don't exist in the schema
-        const { isBanned, bannedReason, password, ...validData } = data;
-        const updateData: any = { ...validData };
+        const { password, ...updateData } = data;
 
         if (password) {
-            // Note: In a real app, hash password here using bcrypt
-            updateData.passwordHash = 'hashed_placeholder';
+            (updateData as any).passwordHash = 'hashed_placeholder';
         }
 
-        return this.prisma.user.update({ where: { id }, data: updateData });
+        return this.prisma.user.update({ 
+            where: { id }, 
+            data: {
+                ...updateData,
+                updatedAt: new Date(),
+            } 
+        });
     }
 
     async deleteUser(id: string) {
@@ -219,16 +225,37 @@ export class AdminService {
     }
 
     async banUser(id: string, reason: string) {
-        // isBanned field doesn't exist in schema - this would need schema update
-        // For now, just return success
+        await (this.prisma.user as any).update({
+            where: { id },
+            data: {
+                isBanned: true,
+                bannedReason: reason,
+            }
+        });
+        
+        // Also persist in reports
+        await this.prisma.userReport.create({
+            data: {
+                id: crypto.randomUUID(),
+                reporterId: 'SYSTEM',
+                reportedUserId: id,
+                reason: 'OTHER',
+                details: `BANNED: ${reason}`,
+                status: 'RESOLVED',
+                createdAt: new Date(),
+            }
+        });
         return { id, banned: true, reason };
     }
 
     async unbanUser(id: string) {
-        // isBanned field doesn't exist in schema - this would need schema update
-        // For now, just return success
-        return { id, banned: false };
+        return (this.prisma.user as any).update({
+            where: { id },
+            data: { isBanned: false, bannedReason: null }
+        });
     }
+
+
 
     // ===== CHURCH MANAGEMENT =====
     async getChurches(page = 1, limit = 20, search?: string) {
@@ -256,11 +283,24 @@ export class AdminService {
 
     async createChurch(data: any) {
         const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        return this.prisma.church.create({ data: { ...data, slug } });
+        return this.prisma.church.create({ 
+            data: { 
+                ...data, 
+                slug,
+                countryCode: data.countryCode || 'US', // Schema requires it
+                updatedAt: new Date(),
+            } 
+        });
     }
 
     async updateChurch(id: string, data: any) {
-        return this.prisma.church.update({ where: { id }, data });
+        return this.prisma.church.update({ 
+            where: { id }, 
+            data: {
+                ...data,
+                updatedAt: new Date(),
+            }
+        });
     }
 
     async deleteChurch(id: string) {
@@ -320,6 +360,7 @@ export class AdminService {
                 tier: data.isPremium ? 'PREMIUM' : 'BASIC',
                 isPublic: data.isActive !== false, // Default to true
                 ownerId: adminId,
+                updatedAt: new Date(),
             }
         });
 
@@ -344,7 +385,10 @@ export class AdminService {
 
         const memorial = await this.prisma.memorial.update({
             where: { id },
-            data: updateData
+            data: {
+                ...updateData,
+                updatedAt: new Date(),
+            }
         });
 
         return {
@@ -360,29 +404,39 @@ export class AdminService {
     }
 
     // ===== NOTIFICATION MANAGEMENT =====
-    // Note: AdminNotification model needs to be added to Prisma schema
     async getNotifications(page = 1, limit = 20) {
-        // Stub implementation - returns empty until model is added
-        return { notifications: [], total: 0, page, limit };
+        const skip = (page - 1) * limit;
+        const [notifications, total] = await Promise.all([
+            this.prisma.notification.findMany({
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.notification.count()
+        ]);
+        return { notifications, total, page, limit };
     }
 
     async getRecentNotifications() {
-        return { notifications: [], unreadCount: 0 };
+        const notifications = await this.prisma.notification.findMany({
+            take: 5,
+            orderBy: { createdAt: 'desc' },
+        });
+        return { notifications, unreadCount: 0 };
     }
 
     async sendNotification(data: any) {
-        return {
-            id: `notification_${Date.now()}`,
-            title: data.title,
-            message: data.message,
-            type: data.type || 'ALL',
-            targetAudience: data.targetAudience || 'ALL',
-            status: data.scheduledFor ? 'SCHEDULED' : 'SENT',
-            scheduledFor: data.scheduledFor || null,
-            sentAt: data.scheduledFor ? null : new Date(),
-            createdAt: new Date(),
-            recipientCount: 0,
-        };
+        return this.prisma.notification.create({
+            data: {
+                title: data.title,
+                message: data.message,
+                type: data.type || 'ALL',
+                targetAudience: data.targetAudience || 'ALL',
+                status: data.scheduledFor ? 'SCHEDULED' : 'SENT',
+                scheduledFor: data.scheduledFor ? new Date(data.scheduledFor) : null,
+                sentAt: data.scheduledFor ? null : new Date(),
+            }
+        });
     }
 
     // ===== REPORTS =====
@@ -487,7 +541,7 @@ export class AdminService {
         let slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         slug = `${slug}-${Date.now().toString().slice(-6)}`;
 
-        return this.prisma.article.create({
+        return (this.prisma.article as any).create({
             data: {
                 title: data.title,
                 slug,
@@ -503,7 +557,7 @@ export class AdminService {
     }
 
     async updateArticle(id: string, data: any) {
-        return this.prisma.article.update({
+        return (this.prisma.article as any).update({
             where: { id },
             data: {
                 title: data.title,
@@ -546,19 +600,31 @@ export class AdminService {
                 take: 100
             });
 
-            return {
-                users: users.map(u => ({
+            // Parallel fetch stats for each user
+            const userStats = await Promise.all(users.map(async (u) => {
+                const [prayerCount, candleCount, totalSpent] = await Promise.all([
+                    this.prisma.prayerAction.count({ where: { userId: u.id } }),
+                    this.prisma.prayerCandle.count({ where: { userId: u.id } }),
+                    this.prisma.purchaseEvent.aggregate({
+                        where: { userId: u.id, status: 'COMPLETED' },
+                        _sum: { amount: true }
+                    })
+                ]);
+
+                return {
                     id: u.id,
                     email: u.email,
                     name: `${u.firstName || ''} ${u.lastName || ''}`.trim(),
                     subscriptionTier: u.subscriptionTier,
-                    prayerCount: 0,
-                    candleCount: 0,
-                    totalSpent: 0,
+                    prayerCount,
+                    candleCount,
+                    totalSpent: (totalSpent._sum.amount || 0) / 100, // Convert cents to dollars
                     createdAt: u.createdAt,
                     lastActive: u.lastLoginAt,
-                }))
-            };
+                };
+            }));
+
+            return { users: userStats };
         } catch (err) {
             return { users: [] };
         }
@@ -663,10 +729,10 @@ export class AdminService {
             ]);
 
             return {
-                carts: carts.map(cart => ({
+                carts: await Promise.all(carts.map(async cart => ({
                     ...cart,
-                    cartValue: this.calculateCartValue(cart.data as any),
-                })),
+                    cartValue: await this.calculateCartValue(cart.data as any),
+                }))),
                 total,
                 page,
                 totalPages: Math.ceil(total / limit),
@@ -710,7 +776,7 @@ export class AdminService {
 
             return {
                 ...cart,
-                cartValue: this.calculateCartValue(cart.data as any),
+                cartValue: await this.calculateCartValue(cart.data as any),
                 items: this.parseCartItems(cart.data as any),
             };
         } catch (err) {
@@ -749,7 +815,7 @@ export class AdminService {
             const cart = await this.prisma.abandonedCart.findUnique({ where: { id } });
             if (!cart) return { success: false, error: 'Cart not found' };
 
-            const cartValue = this.calculateCartValue(cart.data as any);
+            const cartValue = await this.calculateCartValue(cart.data as any);
             const items = this.parseCartItems(cart.data as any);
 
             // Update reminder count
@@ -813,22 +879,137 @@ export class AdminService {
         }
     }
 
+    // ===== AD MANAGEMENT =====
+    async getAdContainers() {
+        return (this.prisma as any).adContainer.findMany({
+            orderBy: { sectionKey: 'asc' }
+        });
+    }
+
+    async upsertAdContainer(data: any) {
+        const { id, ...adData } = data;
+        
+        if (id) {
+            return (this.prisma as any).adContainer.update({
+                where: { id },
+                data: {
+                    ...adData,
+                    updatedAt: new Date()
+                }
+            });
+        }
+
+        return (this.prisma as any).adContainer.create({
+            data: {
+                ...adData,
+                updatedAt: new Date()
+            }
+        });
+    }
+
+    async deleteAdContainer(id: string) {
+        return (this.prisma as any).adContainer.delete({
+            where: { id }
+        });
+    }
+
+    // ===== OFFERINGS MANAGEMENT =====
+    async getOfferingsStats() {
+        const [massCount, candleCount, bouquetCount, donationCount] = await Promise.all([
+            this.prisma.massOffering.count({ where: { status: 'PAID' as any } }),
+            this.prisma.prayerCandle.count({ where: { paymentStatus: 'COMPLETED' } }),
+            this.prisma.spiritualBouquet.count({ where: { paymentStatus: 'COMPLETED' } }),
+            this.prisma.platformDonation.count({ where: { status: 'COMPLETED' } }),
+        ]);
+
+        return { massCount, candleCount, bouquetCount, donationCount };
+    }
+
+    async getMassOfferings(page = 1, limit = 20, search?: string) {
+        const skip = (page - 1) * limit;
+        const where = search ? {
+            OR: [
+                { intention: { contains: search, mode: 'insensitive' as const } },
+                { name: { contains: search, mode: 'insensitive' as const } },
+            ]
+        } : {};
+
+        return this.prisma.massOffering.findMany({
+            where,
+            skip,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+
+    async getCandles(page = 1, limit = 20, search?: string) {
+        const skip = (page - 1) * limit;
+        const where = search ? {
+            OR: [
+                { intention: { contains: search, mode: 'insensitive' as const } },
+                { name: { contains: search, mode: 'insensitive' as const } },
+            ]
+        } : {};
+
+        return this.prisma.prayerCandle.findMany({
+            where,
+            skip,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+
+    async getDonations(page = 1, limit = 20, search?: string) {
+        const skip = (page - 1) * limit;
+        const where = search ? {
+            OR: [
+                { email: { contains: search, mode: 'insensitive' as const } },
+            ]
+        } : {};
+
+        return this.prisma.platformDonation.findMany({
+            where,
+            skip,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+
+    async getSpiritualBouquets(page = 1, limit = 20, search?: string) {
+        const skip = (page - 1) * limit;
+        const where = search ? {
+            OR: [
+                { recipientName: { contains: search, mode: 'insensitive' as const } },
+                { creatorName: { contains: search, mode: 'insensitive' as const } },
+            ]
+        } : {};
+
+        return this.prisma.spiritualBouquet.findMany({
+            where,
+            skip,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+
     // Helper: Calculate cart value from cart data
-    private calculateCartValue(data: any): { items: { name: string; price: number }[]; total: number } {
+    private async calculateCartValue(data: any): Promise<{ items: { name: string; price: number }[]; total: number }> {
         const items: { name: string; price: number }[] = [];
         let total = 0;
 
         if (!data) return { items, total };
 
+        // Fetch current app settings for real pricing
+        const settings = await this.getSettings();
+
         // Handle different cart types
         if (data.duration) {
-            // Candle pricing
+            // Candle pricing from settings
             const candlePrices: Record<string, number> = {
-                ONE_DAY: 0,
-                THREE_DAYS: 2.99,
-                SEVEN_DAYS: 5.99,
-                FOURTEEN_DAYS: 9.99,
-                THIRTY_DAYS: 14.99,
+                ONE_DAY: settings.candleOneDayPrice / 100,
+                THREE_DAYS: settings.candleThreeDayPrice / 100,
+                SEVEN_DAYS: settings.candleSevenDayPrice / 100,
+                THIRTY_DAYS: settings.candleThirtyDayPrice / 100,
             };
             const price = candlePrices[data.duration] || 0;
             items.push({ name: `Candle (${data.duration})`, price });
@@ -836,13 +1017,13 @@ export class AdminService {
         }
 
         if (data.massType) {
-            // Mass offering pricing
+            // Mass offering pricing from settings
             const massPrices: Record<string, number> = {
-                regular: 10,
-                expedited: 25,
-                novena: 50,
-                gregorian: 500,
-                perpetual: 1000,
+                regular: settings.massRegularPrice / 100,
+                expedited: settings.massExpeditedPrice / 100,
+                novena: settings.massNovenaPrice / 100,
+                gregorian: settings.massGregorianPrice / 100,
+                perpetual: settings.massPerpetualPrice / 100,
             };
             const price = massPrices[data.massType] || 0;
             items.push({ name: `Mass Offering (${data.massType})`, price });

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Tabs, Tag, Button, Modal, Form, Input, DatePicker, message, Card } from 'antd';
+import { Table, Tabs, Tag, Button, Modal, Form, Input, DatePicker, message, Card, Space } from 'antd';
 import { CheckCircleOutlined, ScheduleOutlined } from '@ant-design/icons';
 import { api } from '../utils/api';
 import dayjs from 'dayjs';
@@ -39,11 +39,10 @@ export default function MassOfferingsManagement() {
         try {
             const statusParams = activeTab === 'ALL' ? '' : `?status=${activeTab}`;
             const { data } = await api.get(`/mass-offerings/admin/all${statusParams}`);
-            // Ensure data is array
-            setOfferings(Array.isArray(data) ? data : data.data || []);
+            setOfferings(data.offerings || data || []);
         } catch (error) {
             console.error(error);
-            // message.error('Failed to fetch offerings'); 
+            message.error('Failed to fetch offerings');
         } finally {
             setLoading(false);
         }
@@ -109,9 +108,9 @@ export default function MassOfferingsManagement() {
             key: 'intention',
             render: (_: any, r: MassOffering) => (
                 <div>
-                    <div className="font-medium">{r.intention}</div>
-                    {r.inMemoryOf && <div className="text-xs text-gray-500">In Memory: {r.inMemoryOf}</div>}
-                    <div className="text-xs text-gray-400">By: {r.offeredBy || r.name}</div>
+                    <div style={{ fontWeight: 500 }}>{r.intention}</div>
+                    {r.inMemoryOf && <div style={{ fontSize: 12, color: '#64748b' }}>In Memory: {r.inMemoryOf}</div>}
+                    <div style={{ fontSize: 12, color: '#94a3b8' }}>By: {r.offeredBy || r.name}</div>
                 </div>
             )
         },
@@ -128,7 +127,9 @@ export default function MassOfferingsManagement() {
             key: 'status',
             render: (status: string) => {
                 let color = 'default';
-                if (status === 'COMPLETED') color = 'success';
+                if (status === 'OFFERED') color = 'success';
+                if (status === 'SCHEDULED') color = 'processing';
+                if (status === 'ASSIGNED') color = 'cyan';
                 if (status === 'PAID') color = 'warning';
                 if (status === 'PENDING_PAYMENT') color = 'error';
                 return <Tag color={color}>{status}</Tag>;
@@ -148,16 +149,16 @@ export default function MassOfferingsManagement() {
             title: 'Actions',
             key: 'actions',
             render: (_: any, r: MassOffering) => (
-                <div className="space-x-2">
+                <Space>
                     {r.status !== 'PENDING_PAYMENT' && (
                         <Button size="small" icon={<ScheduleOutlined />} onClick={() => handleSchedule(r)}>
                             Schedule
                         </Button>
                     )}
-                    {r.status !== 'COMPLETED' && r.status !== 'PENDING_PAYMENT' && (
+                    {r.status !== 'OFFERED' && r.status !== 'PENDING_PAYMENT' && (
                         <Button size="small" type="primary" icon={<CheckCircleOutlined />} onClick={() => handleMarkOffered(r.id)} />
                     )}
-                </div>
+                </Space>
             )
         }
     ];
@@ -166,7 +167,8 @@ export default function MassOfferingsManagement() {
         { key: 'ALL', label: 'All' },
         { key: 'PENDING_PAYMENT', label: 'Unpaid' },
         { key: 'PAID', label: 'To Schedule' },
-        { key: 'COMPLETED', label: 'Offered' },
+        { key: 'SCHEDULED', label: 'Scheduled' },
+        { key: 'OFFERED', label: 'Offered' },
     ];
 
     return (

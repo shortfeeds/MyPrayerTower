@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, Form, Input, Switch, Button, message, Divider, Alert, Row, Col } from 'antd';
 import { SaveOutlined, SettingOutlined } from '@ant-design/icons';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
+import { api } from '../utils/api';
 
 export function Settings() {
     const [form] = Form.useForm();
@@ -16,9 +16,7 @@ export function Settings() {
     const fetchSettings = async () => {
         try {
             setLoading(true);
-            const res = await fetch(`${API_URL}/admin/settings`);
-            if (!res.ok) throw new Error('Failed to fetch settings');
-            const data = await res.json();
+            const { data } = await api.get('/admin/settings');
             form.setFieldsValue(data);
         } catch (err) {
             message.error('Failed to load settings');
@@ -30,13 +28,7 @@ export function Settings() {
     const handleSave = async (values: any) => {
         try {
             setSaving(true);
-            const res = await fetch(`${API_URL}/admin/settings`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(values),
-            });
-
-            if (!res.ok) throw new Error('Failed to save settings');
+            await api.post('/admin/settings', values);
             message.success('Settings updated successfully');
         } catch (err) {
             message.error('Failed to save settings');

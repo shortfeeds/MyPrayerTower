@@ -28,6 +28,7 @@ export function Login() {
             const data = await res.json();
             if (data.accessToken) {
                 localStorage.setItem('token', data.accessToken);
+                localStorage.setItem('user', JSON.stringify(data.user));
                 message.success('Welcome back!');
                 navigate('/dashboard', { replace: true });
             } else {

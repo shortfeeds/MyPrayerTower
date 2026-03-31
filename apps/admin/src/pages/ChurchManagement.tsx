@@ -31,6 +31,8 @@ interface Church {
 const churchTypes = ['Cathedral', 'Basilica', 'Parish', 'Chapel', 'Shrine', 'Monastery', 'Abbey', 'Mission'];
 const denominations = ['Roman Catholic', 'Eastern Catholic', 'Orthodox', 'Anglican', 'Lutheran', 'Methodist', 'Baptist', 'Presbyterian', 'Non-denominational'];
 
+import { api } from '../utils/api';
+
 export function ChurchManagement() {
     const [churches, setChurches] = useState<Church[]>([]);
     const [loading, setLoading] = useState(true);
@@ -40,14 +42,6 @@ export function ChurchManagement() {
     const [activeTab, setActiveTab] = useState('all');
     const [form] = Form.useForm();
 
-    const getAuthHeaders = () => {
-        const token = localStorage.getItem('token');
-        return {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        };
-    };
-
     useEffect(() => {
         fetchChurches();
     }, []);
@@ -55,20 +49,8 @@ export function ChurchManagement() {
     const fetchChurches = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API_URL}/churches?limit=100`, { headers: getAuthHeaders() });
-            if (res.ok) {
-                const data = await res.json();
-                setChurches(data.churches || data || []);
-            } else {
-                // Fallback to mock data
-                setChurches([
-                    { id: '1', name: 'St. Patrick\'s Cathedral', slug: 'st-patricks-cathedral', city: 'New York', country: 'USA', state: 'NY', type: 'Cathedral', denomination: 'Roman Catholic', isVerified: true, viewCount: 15420, createdAt: '2024-01-01T00:00:00Z' },
-                    { id: '2', name: 'Holy Name of Jesus Church', slug: 'holy-name-jesus', city: 'New York', country: 'USA', state: 'NY', type: 'Parish', denomination: 'Roman Catholic', isVerified: true, viewCount: 8320, createdAt: '2024-02-15T00:00:00Z' },
-                    { id: '3', name: 'Church of St. Francis of Assisi', slug: 'st-francis-assisi', city: 'New York', country: 'USA', state: 'NY', type: 'Parish', denomination: 'Roman Catholic', isVerified: false, viewCount: 5210, createdAt: '2024-03-20T00:00:00Z' },
-                    { id: '4', name: 'Our Lady of Guadalupe', slug: 'our-lady-guadalupe', city: 'Los Angeles', country: 'USA', state: 'CA', type: 'Parish', denomination: 'Roman Catholic', isVerified: false, viewCount: 3100, createdAt: '2024-04-10T00:00:00Z' },
-                    { id: '5', name: 'Westminster Abbey', slug: 'westminster-abbey', city: 'London', country: 'UK', type: 'Abbey', denomination: 'Anglican', isVerified: true, viewCount: 25000, createdAt: '2024-01-05T00:00:00Z' },
-                ]);
-            }
+            const res = await api.get(`/admin/churches?search=${searchText}&limit=100`);
+            setChurches(res.data.churches || res.data || []);
         } catch (err) {
             console.error('Failed to fetch churches:', err);
             message.error('Failed to load churches');
@@ -91,67 +73,52 @@ export function ChurchManagement() {
 
     const handleDelete = async (id: string) => {
         try {
-            await fetch(`${API_URL}/admin/churches/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
-            setChurches(prev => prev.filter(c => c.id !== id));
+            await api.delete(`/admin/churches/${id}`);
             message.success('Church deleted successfully');
+            fetchChurches();
         } catch (err) {
-            setChurches(prev => prev.filter(c => c.id !== id));
-            message.success('Church deleted successfully');
+            message.error('Failed to delete church');
         }
     };
 
     const toggleVerification = async (church: Church) => {
         try {
-            await fetch(`${API_URL}/admin/churches/${church.id}`, {
-                method: 'PUT',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ isVerified: !church.isVerified })
-            });
-            setChurches(prev => prev.map(c => c.id === church.id ? { ...c, isVerified: !c.isVerified } : c));
+            await api.put(`/admin/churches/${church.id}`, { isVerified: !church.isVerified });
             message.success(`Church ${church.isVerified ? 'unverified' : 'verified'} successfully`);
+            fetchChurches();
         } catch (err) {
-            setChurches(prev => prev.map(c => c.id === church.id ? { ...c, isVerified: !c.isVerified } : c));
-            message.success(`Church ${church.isVerified ? 'unverified' : 'verified'} successfully`);
+            message.error('Failed to update verification status');
         }
     };
 
     const unverifyAll = async () => {
         try {
-            await fetch(`${API_URL}/admin/churches/unverify-all`, { method: 'POST', headers: getAuthHeaders() });
-            setChurches(prev => prev.map(c => ({ ...c, isVerified: false })));
+            await api.post('/admin/churches/unverify-all');
             message.success('All churches have been unverified');
+            fetchChurches();
         } catch (err) {
-            setChurches(prev => prev.map(c => ({ ...c, isVerified: false })));
-            message.success('All churches have been unverified');
+            message.error('Failed to unverify all churches');
         }
     };
 
     const handleSubmit = async (values: any) => {
         try {
+            const data = {
+                ...values,
+                latitude: values.latitude ? parseFloat(values.latitude) : undefined,
+                longitude: values.longitude ? parseFloat(values.longitude) : undefined,
+            };
+
             if (editingChurch) {
-                // Update
-                await fetch(`${API_URL}/admin/churches/${editingChurch.id}`, {
-                    method: 'PUT',
-                    headers: getAuthHeaders(),
-                    body: JSON.stringify(values)
-                });
-                setChurches(prev => prev.map(c => c.id === editingChurch.id ? { ...c, ...values } : c));
+                await api.put(`/admin/churches/${editingChurch.id}`, data);
                 message.success('Church updated successfully');
             } else {
-                // Create
-                const newChurch: Church = {
-                    id: Date.now().toString(),
-                    slug: values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-                    ...values,
-                    isVerified: false,
-                    viewCount: 0,
-                    createdAt: new Date().toISOString(),
-                };
-                setChurches(prev => [newChurch, ...prev]);
+                await api.post('/admin/churches', data);
                 message.success('Church created successfully');
             }
             setModalVisible(false);
             form.resetFields();
+            fetchChurches();
         } catch (err) {
             message.error('Failed to save church');
         }

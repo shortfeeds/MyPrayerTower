@@ -31,3 +31,9 @@ coverage/
 # Security
 firebase-service-account.json
 **/firebase-service-account.json
+
+# Android Binaries
+android-twa/jdk17/
+android-twa/jdk17.zip
+android-twa/.gradle/
+android-twa/local.properties

@@ -1,7 +1,10 @@
-'use client';
-
 import { useState, useEffect } from 'react';
-import { TeamOutlined, HeartOutlined, EnvironmentOutlined, DollarOutlined, RiseOutlined, BarChartOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Statistic, Progress, Radio, Space, Table, Spin, message, Typography } from 'antd';
+import { TeamOutlined, HeartOutlined, EnvironmentOutlined, DollarOutlined, BarChartOutlined, GlobalOutlined } from '@ant-design/icons';
+import { api } from '../utils/api';
+import dayjs from 'dayjs';
+
+const { Title, Text } = Typography;
 
 interface ChartData {
     label: string;
@@ -29,42 +32,33 @@ export default function AnalyticsDashboard() {
     const fetchAllData = async () => {
         setLoading(true);
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
-            const headers = {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            };
+            const days = dateRange === '7d' ? 7 : dateRange === '30d' ? 30 : 90;
 
             const [statsRes, heatmapRes, categoriesRes, geoRes, revenueRes] = await Promise.all([
-                fetch(`${API_URL}/analytics/stats`, { headers }),
-                fetch(`${API_URL}/analytics/heatmap?days=${dateRange === '7d' ? 7 : dateRange === '30d' ? 30 : 90}`, { headers }),
-                fetch(`${API_URL}/analytics/categories`, { headers }),
-                fetch(`${API_URL}/analytics/geo`, { headers }),
-                fetch(`${API_URL}/analytics/revenue`, { headers })
+                api.get('/analytics/stats'),
+                api.get(`/analytics/heatmap?days=${days}`),
+                api.get('/analytics/categories'),
+                api.get('/analytics/geo'),
+                api.get('/analytics/revenue')
             ]);
 
-            if (statsRes.ok && revenueRes.ok) {
-                const statsData = await statsRes.json();
-                const revenueData = await revenueRes.json();
-                setStats({
-                    totalUsers: statsData.totalUsers,
-                    totalChurches: statsData.totalChurches,
-                    totalPrayers: statsData.totalPrayers,
-                    totalDonations: revenueData.totalDonations, // In cents
-                    monthlyNewUsers: statsData.monthlyNewUsers
-                });
-            }
+            setStats({
+                totalUsers: statsRes.data.totalUsers || 0,
+                totalChurches: statsRes.data.totalChurches || 0,
+                totalPrayers: statsRes.data.totalPrayers || 0,
+                totalDonations: revenueRes.data.totalDonations || 0,
+                monthlyNewUsers: statsRes.data.monthlyNewUsers || 0
+            });
 
-            if (heatmapRes.ok) {
-                const data = await heatmapRes.json();
-                // Transform to chart data format if needed, simplistic mapping for now
-                setPrayerHeatmap(data.map((d: any) => ({
-                    label: new Date(d.date).toLocaleDateString(undefined, { weekday: 'short' }),
+            if (heatmapRes.data) {
+                setPrayerHeatmap(heatmapRes.data.map((d: any) => ({
+                    label: dayjs(d.date).format('ddd'),
                     value: d.count
-                })).slice(-7)); // Show last 7 entries for the bar chart visualization
+                })).slice(-7));
             }
 
-            if (categoriesRes.ok) {
-                const data = await categoriesRes.json();
+            if (categoriesRes.data) {
+                const data = categoriesRes.data;
                 const total = data.reduce((sum: number, c: any) => sum + c.count, 0);
                 setTopCategories(data.map((c: any) => ({
                     name: c.category,
@@ -73,13 +67,13 @@ export default function AnalyticsDashboard() {
                 })));
             }
 
-            if (geoRes.ok) {
-                const data = await geoRes.json();
-                setGeographicData(data);
+            if (geoRes.data) {
+                setGeographicData(geoRes.data);
             }
 
         } catch (error) {
             console.error('Failed to fetch analytics:', error);
+            message.error('Failed to load some analytics data');
         } finally {
             setLoading(false);
         }
@@ -87,120 +81,138 @@ export default function AnalyticsDashboard() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-gray-500">Loading analytics...</p>
-                </div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <Spin size="large" tip="Loading platform analytics..." />
             </div>
         );
     }
 
+    const geoColumns = [
+        { title: 'Country', dataIndex: 'country', key: 'country' },
+        { title: 'Churches', dataIndex: 'churches', key: 'churches', render: (val: number) => val.toLocaleString() },
+        { 
+            title: 'Coverage', 
+            key: 'coverage', 
+            render: (_: any, record: any) => (
+                <Progress percent={Math.round((record.churches / stats.totalChurches) * 100)} size="small" />
+            ) 
+        }
+    ];
+
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analytics Dashboard</h1>
-                        <p className="text-gray-500">Platform insights and metrics</p>
-                    </div>
-                    <div className="flex gap-2 bg-white dark:bg-gray-800 p-1 rounded-lg shadow-sm">
-                        {(['7d', '30d', '90d'] as const).map((range) => (
-                            <button
-                                key={range}
-                                onClick={() => setDateRange(range)}
-                                className={`px-4 py-2 rounded-md font-medium ${dateRange === range
-                                    ? 'bg-primary-600 text-white'
-                                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                    }`}
-                            >
-                                {range}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+        <div style={{ padding: 24 }}>
+            <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+                <Col>
+                    <Title level={2} style={{ margin: 0 }}>Analytics Dashboard</Title>
+                    <Text type="secondary">Platform insights and metrics</Text>
+                </Col>
+                <Col>
+                    <Radio.Group value={dateRange} onChange={e => setDateRange(e.target.value)} buttonStyle="solid">
+                        <Radio.Button value="7d">7 Days</Radio.Button>
+                        <Radio.Button value="30d">30 Days</Radio.Button>
+                        <Radio.Button value="90d">90 Days</Radio.Button>
+                    </Radio.Group>
+                </Col>
+            </Row>
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    {[
-                        { label: 'Total Users', value: stats.totalUsers.toLocaleString(), icon: TeamOutlined, color: 'text-blue-500', trend: `+${stats.monthlyNewUsers} this month` },
-                        { label: 'Churches', value: stats.totalChurches.toLocaleString(), icon: EnvironmentOutlined, color: 'text-green-500', trend: 'Global' },
-                        { label: 'Prayers', value: stats.totalPrayers.toLocaleString(), icon: HeartOutlined, color: 'text-red-500', trend: 'Approved' },
-                        { label: 'Donations', value: `$${(stats.totalDonations / 100).toLocaleString()}`, icon: DollarOutlined, color: 'text-amber-500', trend: 'Total Revenue' },
-                    ].map((stat, i) => (
-                        <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                            <div className="flex items-center justify-between mb-4">
-                                <stat.icon className={`w-8 h-8 ${stat.color}`} />
-                                <span className="text-gray-400 text-xs font-medium flex items-center gap-1">
-                                    {stat.trend}
-                                </span>
-                            </div>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                            <p className="text-sm text-gray-500">{stat.label}</p>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+                <Col xs={24} sm={12} lg={6}>
+                    <Card bordered={false} className="stat-card">
+                        <Statistic
+                            title="Total Users"
+                            value={stats.totalUsers}
+                            prefix={<TeamOutlined style={{ color: '#1890ff' }} />}
+                            valueStyle={{ color: '#1890ff' }}
+                        />
+                        <div style={{ marginTop: 8 }}>
+                            <Text type="success">+{stats.monthlyNewUsers} this month</Text>
                         </div>
-                    ))}
-                </div>
+                    </Card>
+                </Col>
+                <Col xs={24} sm={12} lg={6}>
+                    <Card bordered={false}>
+                        <Statistic
+                            title="Total Churches"
+                            value={stats.totalChurches}
+                            prefix={<EnvironmentOutlined style={{ color: '#52c41a' }} />}
+                            valueStyle={{ color: '#52c41a' }}
+                        />
+                        <Text type="secondary">Verified locations</Text>
+                    </Card>
+                </Col>
+                <Col xs={24} sm={12} lg={6}>
+                    <Card bordered={false}>
+                        <Statistic
+                            title="Prayer Requests"
+                            value={stats.totalPrayers}
+                            prefix={<HeartOutlined style={{ color: '#ff4d4f' }} />}
+                            valueStyle={{ color: '#ff4d4f' }}
+                        />
+                        <Text type="secondary">Moderated & Approved</Text>
+                    </Card>
+                </Col>
+                <Col xs={24} sm={12} lg={6}>
+                    <Card bordered={false}>
+                        <Statistic
+                            title="Total Revenue"
+                            value={stats.totalDonations / 100}
+                            precision={2}
+                            prefix={<DollarOutlined style={{ color: '#faad14' }} />}
+                            valueStyle={{ color: '#faad14' }}
+                        />
+                        <Text type="secondary">Donations & Offerings</Text>
+                    </Card>
+                </Col>
+            </Row>
 
-                <div className="grid md:grid-cols-2 gap-6 mb-8">
-                    {/* Prayer Activity Chart */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                            <BarChartOutlined className="w-5 h-5 text-primary-500" />
-                            Prayer Activity (Last 7 Active Days)
-                        </h3>
-                        {prayerHeatmap.length > 0 ? (
-                            <div className="flex items-end justify-between h-48 gap-4">
-                                {prayerHeatmap.map((day, i) => (
-                                    <div key={i} className="flex-1 flex flex-col items-center">
-                                        <div
-                                            className="w-full bg-gradient-to-t from-primary-600 to-primary-400 rounded-t-lg transition-all"
-                                            style={{ height: `${Math.min(100, Math.max(10, (day.value / 100) * 100))}%` }}
-                                        />
-                                        <span className="text-xs text-gray-500 mt-2">{day.label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="h-48 flex items-center justify-center text-gray-400">No activity data</div>
-                        )}
-                    </div>
-
-                    {/* Top Categories */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Top Prayer Categories</h3>
-                        <div className="space-y-4">
+            <Row gutter={[16, 16]}>
+                <Col xs={24} lg={12}>
+                    <Card title={<span><BarChartOutlined /> Prayer Activity (Last 7 Days)</span>} bordered={false} style={{ height: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', height: 200, paddingTop: 20 }}>
+                            {prayerHeatmap.map((day, i) => (
+                                <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                                    <div style={{ 
+                                        width: '60%', 
+                                        backgroundColor: '#1890ff', 
+                                        borderRadius: '4px 4px 0 0',
+                                        height: `${Math.max(10, (day.value / (Math.max(...prayerHeatmap.map(d => d.value)) || 1)) * 150)}px`,
+                                        transition: 'height 0.3s'
+                                    }} />
+                                    <Text style={{ marginTop: 8 }}>{day.label}</Text>
+                                    <Text strong>{day.value}</Text>
+                                </div>
+                            ))}
+                            {prayerHeatmap.length === 0 && <Text type="secondary">No recent activity data</Text>}
+                        </div>
+                    </Card>
+                </Col>
+                <Col xs={24} lg={12}>
+                    <Card title="Top Prayer Categories" bordered={false} style={{ height: '100%' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                             {topCategories.map((cat, i) => (
                                 <div key={i}>
-                                    <div className="flex items-center justify-between mb-1">
-                                        <span className="text-gray-700 dark:text-gray-300">{cat.name}</span>
-                                        <span className="text-sm text-gray-500">{cat.count.toLocaleString()}</span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                                        <Text>{cat.name}</Text>
+                                        <Text type="secondary">{cat.count.toLocaleString()}</Text>
                                     </div>
-                                    <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-primary-500 to-purple-500 rounded-full"
-                                            style={{ width: `${cat.percent}%` }}
-                                        />
-                                    </div>
+                                    <Progress percent={cat.percent} strokeColor={{ '0%': '#1890ff', '100%': '#722ed1' }} />
                                 </div>
                             ))}
                         </div>
-                    </div>
-                </div>
-
-                {/* Geographic Distribution */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Churches by Country</h3>
-                    <div className="grid grid-cols-5 gap-4">
-                        {geographicData.map((country, i) => (
-                            <div key={i} className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{country.churches.toLocaleString()}</p>
-                                <p className="text-sm text-gray-500 mt-1">{country.country}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+                    </Card>
+                </Col>
+                <Col span={24}>
+                    <Card title={<span><GlobalOutlined /> Geographic Distribution</span>} bordered={false}>
+                        <Table 
+                            dataSource={geographicData} 
+                            columns={geoColumns} 
+                            pagination={false} 
+                            rowKey="country"
+                            size="middle"
+                        />
+                    </Card>
+                </Col>
+            </Row>
         </div>
     );
 }

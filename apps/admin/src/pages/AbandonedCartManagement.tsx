@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import {
     Card,
@@ -32,8 +30,8 @@ import {
     ClockCircleOutlined,
     SendOutlined,
 } from '@ant-design/icons';
+import { api } from '../utils/api';
 
-const { Search } = Input;
 const { Text, Title } = Typography;
 
 interface AbandonedCart {
@@ -60,9 +58,7 @@ interface CartStats {
     conversionRate: string;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-
-export default function AbandonedCartManagement() {
+export function AbandonedCartManagement() {
     const [carts, setCarts] = useState<AbandonedCart[]>([]);
     const [stats, setStats] = useState<CartStats | null>(null);
     const [loading, setLoading] = useState(true);
@@ -87,40 +83,12 @@ export default function AbandonedCartManagement() {
                 ...(filters.type && { type: filters.type }),
                 ...(filters.converted && { converted: filters.converted }),
             });
-            const res = await fetch(`${API_BASE}/admin/abandoned-carts?${params}`);
-            const data = await res.json();
+            const { data } = await api.get(`/admin/abandoned-carts?${params}`);
             setCarts(data.carts || []);
             setTotal(data.total || 0);
         } catch (err) {
             console.error('Failed to fetch carts:', err);
-            // Mock data for development
-            setCarts([
-                {
-                    id: '1',
-                    type: 'CANDLE',
-                    email: 'john@example.com',
-                    name: 'John Doe',
-                    step: 'payment',
-                    data: { duration: 'SEVEN_DAYS', intention: 'For my family' },
-                    reminderCount: 1,
-                    converted: false,
-                    createdAt: new Date().toISOString(),
-                    cartValue: { items: [{ name: 'Candle (7 Days)', price: 5.99 }], total: 5.99 },
-                },
-                {
-                    id: '2',
-                    type: 'MASS',
-                    email: 'jane@example.com',
-                    name: 'Jane Smith',
-                    step: 'details',
-                    data: { massType: 'novena', intention: 'For healing' },
-                    reminderCount: 0,
-                    converted: false,
-                    createdAt: new Date(Date.now() - 86400000).toISOString(),
-                    cartValue: { items: [{ name: 'Mass Offering (novena)', price: 50 }], total: 50 },
-                },
-            ]);
-            setTotal(2);
+            message.error('Failed to load abandoned carts');
         } finally {
             setLoading(false);
         }
@@ -128,30 +96,21 @@ export default function AbandonedCartManagement() {
 
     const fetchStats = async () => {
         try {
-            const res = await fetch(`${API_BASE}/admin/abandoned-carts/stats`);
-            const data = await res.json();
+            const { data } = await api.get('/admin/abandoned-carts/stats');
             setStats(data);
         } catch (err) {
-            setStats({ total: 15, today: 3, converted: 5, pending: 7, conversionRate: '33.3' });
+            console.error('Failed to fetch stats:', err);
         }
     };
 
     const handleSendReminder = async (id: string, method: 'email' | 'push' | 'both') => {
         try {
-            const res = await fetch(`${API_BASE}/admin/abandoned-carts/${id}/remind`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: method === 'email' || method === 'both',
-                    push: method === 'push' || method === 'both',
-                }),
+            await api.post(`/admin/abandoned-carts/${id}/remind`, {
+                email: method === 'email' || method === 'both',
+                push: method === 'push' || method === 'both',
             });
-            if (res.ok) {
-                message.success(`Reminder sent successfully via ${method}`);
-                fetchCarts();
-            } else {
-                message.error('Failed to send reminder');
-            }
+            message.success(`Reminder sent successfully via ${method}`);
+            fetchCarts();
         } catch (err) {
             message.error('Failed to send reminder');
         }
@@ -163,12 +122,11 @@ export default function AbandonedCartManagement() {
             return;
         }
         try {
-            const res = await fetch(`${API_BASE}/admin/abandoned-carts/bulk-remind`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ids: selectedRowKeys, email: true, push: true }),
+            const { data } = await api.post('/admin/abandoned-carts/bulk-remind', {
+                ids: selectedRowKeys,
+                email: true,
+                push: true
             });
-            const data = await res.json();
             message.success(`Sent ${data.sent} reminders`);
             setSelectedRowKeys([]);
             fetchCarts();
@@ -179,14 +137,10 @@ export default function AbandonedCartManagement() {
 
     const handleMarkConverted = async (id: string) => {
         try {
-            const res = await fetch(`${API_BASE}/admin/abandoned-carts/${id}/convert`, {
-                method: 'PATCH',
-            });
-            if (res.ok) {
-                message.success('Marked as converted');
-                fetchCarts();
-                fetchStats();
-            }
+            await api.put(`/admin/abandoned-carts/${id}/convert`);
+            message.success('Marked as converted');
+            fetchCarts();
+            fetchStats();
         } catch (err) {
             message.error('Failed to update');
         }
@@ -194,14 +148,10 @@ export default function AbandonedCartManagement() {
 
     const handleDelete = async (id: string) => {
         try {
-            const res = await fetch(`${API_BASE}/admin/abandoned-carts/${id}`, {
-                method: 'DELETE',
-            });
-            if (res.ok) {
-                message.success('Cart deleted');
-                fetchCarts();
-                fetchStats();
-            }
+            await api.delete(`/admin/abandoned-carts/${id}`);
+            message.success('Cart deleted');
+            fetchCarts();
+            fetchStats();
         } catch (err) {
             message.error('Failed to delete');
         }

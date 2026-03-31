@@ -39,6 +39,8 @@ const categories = [
     'Church News',
 ];
 
+import { api } from '../utils/api';
+
 export function Articles() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);
@@ -47,14 +49,6 @@ export function Articles() {
     const [editingArticle, setEditingArticle] = useState<Article | null>(null);
     const [form] = Form.useForm();
 
-    const getAuthHeaders = () => {
-        const token = localStorage.getItem('token');
-        return {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        };
-    };
-
     useEffect(() => {
         fetchArticles();
     }, []);
@@ -62,24 +56,12 @@ export function Articles() {
     const fetchArticles = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API_URL}/admin/articles`, { headers: getAuthHeaders() });
-            if (res.ok) {
-                const data = await res.json();
-                setArticles(data.articles || data || []);
-            } else {
-                // Fallback to mock data if API returns error
-                console.warn('Articles API not available, using mock data');
-                setArticles([
-                    { id: '1', title: 'The Power of Daily Prayer', slug: 'power-of-daily-prayer', content: 'Lorem ipsum...', excerpt: 'Discover the transformative power of daily prayer in your life.', category: 'Prayers', status: 'PUBLISHED', author: 'Admin', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), views: 1250 },
-                    { id: '2', title: 'Saint of the Month: St. Francis', slug: 'saint-francis', content: 'Lorem ipsum...', excerpt: 'Learn about the life and teachings of St. Francis of Assisi.', category: 'Saints', status: 'PUBLISHED', author: 'Admin', createdAt: new Date(Date.now() - 86400000).toISOString(), updatedAt: new Date().toISOString(), views: 890 },
-                    { id: '3', title: 'Upcoming Easter Celebrations', slug: 'easter-2024', content: 'Lorem ipsum...', excerpt: 'Join us for special Easter services and celebrations.', category: 'Announcements', status: 'DRAFT', author: 'Admin', createdAt: new Date(Date.now() - 172800000).toISOString(), updatedAt: new Date().toISOString(), views: 0 },
-                ]);
-            }
+            const { data } = await api.get('/admin/articles');
+            // Handle both simple array and paginated result { articles: [], total: 0 }
+            setArticles(Array.isArray(data) ? data : (data.articles || []));
         } catch (err) {
             console.error('Failed to fetch articles:', err);
             message.error('Failed to load articles');
-            // Fallback to empty array on network error
-            setArticles([]);
         } finally {
             setLoading(false);
         }
@@ -99,50 +81,45 @@ export function Articles() {
 
     const handleDelete = async (id: string) => {
         try {
-            await fetch(`${API_URL}/admin/articles/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+            await api.delete(`/admin/articles/${id}`);
             setArticles(prev => prev.filter(a => a.id !== id));
             message.success('Article deleted successfully');
         } catch (err) {
-            // Still update UI on error for demo purposes
-            setArticles(prev => prev.filter(a => a.id !== id));
-            message.success('Article deleted successfully');
+            message.error('Failed to delete article');
         }
     };
 
     const handleSubmit = async (values: any) => {
         try {
+            // Generate slug if missing
+            if (!values.slug) {
+                values.slug = values.title.toLowerCase()
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/\s+/g, '-');
+            }
+
             if (editingArticle) {
                 // Update
-                await fetch(`${API_URL}/admin/articles/${editingArticle.id}`, {
-                    method: 'PUT',
-                    headers: getAuthHeaders(),
-                    body: JSON.stringify(values)
-                });
-                setArticles(prev => prev.map(a => a.id === editingArticle.id ? { ...a, ...values, updatedAt: new Date().toISOString() } : a));
+                const { data } = await api.put(`/admin/articles/${editingArticle.id}`, values);
+                setArticles(prev => prev.map(a => a.id === editingArticle.id ? data : a));
                 message.success('Article updated successfully');
             } else {
                 // Create
-                const res = await fetch(`${API_URL}/admin/articles`, {
-                    method: 'POST',
-                    headers: getAuthHeaders(),
-                    body: JSON.stringify(values)
-                });
-                let newArticle: Article;
-                if (res.ok) {
-                    newArticle = await res.json();
-                } else {
-                    // Fallback for when API is unavailable
-                    newArticle = {
-                        id: Date.now().toString(),
-                        ...values,
-                        slug: values.title.toLowerCase().replace(/\s+/g, '-'),
-                        author: 'Admin',
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                        views: 0,
-                    };
+                const userStr = localStorage.getItem('user');
+                const user = userStr ? JSON.parse(userStr) : null;
+                
+                if (!user?.id) {
+                    message.error('You must be logged in to create articles');
+                    return;
                 }
-                setArticles(prev => [newArticle, ...prev]);
+
+                const payload = {
+                    ...values,
+                    authorId: user.id
+                };
+
+                const { data } = await api.post('/admin/articles', payload);
+                setArticles(prev => [data, ...prev]);
                 message.success('Article created successfully');
             }
             setModalVisible(false);

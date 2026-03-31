@@ -1,14 +1,14 @@
 generator client {
   provider        = "prisma-client-js"
   binaryTargets   = ["native", "rhel-openssl-3.0.x"]
-  
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-  
+  schemas   = ["public", "auth"]
 }
 
 model AdminUser {
@@ -24,6 +24,7 @@ model AdminUser {
   createdNotifications Notification[]
 
   @@index([email])
+  @@schema("public")
 }
 
 model AppSettings {
@@ -119,6 +120,22 @@ model AppSettings {
   memorialBouquetLegacyPrice   Int @default(29900) // $299.00 - Legacy Remembrance
   
   updatedAt           DateTime @updatedAt
+
+  @@schema("public")
+}
+
+model AdContainer {
+  id            String   @id @default(uuid())
+  sectionKey    String   @unique // e.g. "HOME_BANNER", "PRAYER_WALL_NATIVE"
+  description   String?
+  adType        AdType   @default(BANNER)
+  androidUnitId String?
+  iosUnitId     String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@schema("public")
 }
 
 model BibleProgress {
@@ -132,6 +149,7 @@ model BibleProgress {
 
   @@unique([userId, book, chapter, version])
   @@index([userId])
+  @@schema("public")
 }
 
 model CanonLaw {
@@ -143,6 +161,7 @@ model CanonLaw {
   CanonLawSection CanonLawSection[]
 
   @@index([number])
+  @@schema("public")
 }
 
 model CanonLawSection {
@@ -153,6 +172,7 @@ model CanonLawSection {
   CanonLaw      CanonLaw @relation(fields: [canonLawId], references: [id], onDelete: Cascade)
 
   @@index([canonLawId])
+  @@schema("public")
 }
 
 model Cardinal {
@@ -171,6 +191,7 @@ model Cardinal {
 
   @@index([country])
   @@index([papalConclaveEligible])
+  @@schema("public")
 }
 
 model CatechismParagraph {
@@ -186,6 +207,7 @@ model CatechismParagraph {
   @@index([inBrief])
   @@index([number])
   @@index([sectionId])
+  @@schema("public")
 }
 
 model CatechismSection {
@@ -202,6 +224,7 @@ model CatechismSection {
   @@unique([partNumber, sectionNumber, chapterNumber, articleNumber])
   @@index([partNumber])
   @@index([sortOrder])
+  @@schema("public")
 }
 
 model Church {
@@ -264,6 +287,7 @@ model Church {
   @@index([latitude, longitude])
   @@index([name])
   @@index([slug])
+  @@schema("public")
 }
 
 model ChurchAdmin {
@@ -287,6 +311,7 @@ model ChurchAdmin {
   @@unique([churchId, userId])
   @@index([churchId])
   @@index([userId])
+  @@schema("public")
 }
 
 model ChurchAnnouncement {
@@ -310,6 +335,7 @@ model ChurchAnnouncement {
 
   @@index([churchId])
   @@index([isPublished, publishedAt])
+  @@schema("public")
 }
 
 model ChurchClaim {
@@ -344,6 +370,7 @@ model ChurchClaim {
   @@index([churchId])
   @@index([status])
   @@index([userId])
+  @@schema("public")
 }
 
 model ChurchEvent {
@@ -368,6 +395,7 @@ model ChurchEvent {
 
   @@index([churchId])
   @@index([startDate])
+  @@schema("public")
 }
 
 model ChurchFollower {
@@ -384,6 +412,7 @@ model ChurchFollower {
   @@unique([churchId, userId])
   @@index([churchId])
   @@index([userId])
+  @@schema("public")
 }
 
 model ChurchImage {
@@ -397,6 +426,7 @@ model ChurchImage {
   Church    Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
 
   @@index([churchId])
+  @@schema("public")
 }
 
 model ChurchStaff {
@@ -414,6 +444,7 @@ model ChurchStaff {
   Church    Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
 
   @@index([churchId])
+  @@schema("public")
 }
 
 model ChurchSubscription {
@@ -435,6 +466,7 @@ model ChurchSubscription {
 
   @@index([isActive])
   @@index([tier])
+  @@schema("public")
 }
 
 model DailyQuote {
@@ -450,6 +482,7 @@ model DailyQuote {
 
   @@index([category])
   @@index([date])
+  @@schema("public")
 }
 
 model DailyReading {
@@ -470,6 +503,7 @@ model DailyReading {
   createdAt        DateTime @default(now())
 
   @@index([date])
+  @@schema("public")
 }
 
 model DevotionalPoint {
@@ -483,6 +517,7 @@ model DevotionalPoint {
 
   @@unique([book, number])
   @@index([book, number])
+  @@schema("public")
 }
 
 model Diocese {
@@ -509,6 +544,7 @@ model Diocese {
 
   @@index([country])
   @@index([region])
+  @@schema("public")
 }
 
 model GIRMItem {
@@ -519,6 +555,7 @@ model GIRMItem {
   updatedAt DateTime
 
   @@index([number])
+  @@schema("public")
 }
 
 model Ministry {
@@ -549,6 +586,7 @@ model Ministry {
 
   @@index([state, city])
   @@index([type])
+  @@schema("public")
 }
 
 model NewsArticle {
@@ -568,33 +606,35 @@ model NewsArticle {
   @@index([category])
   @@index([publishedAt], map: "news_published_at_idx")
   @@index([source])
+  @@schema("public")
 }
 
 model Article {
-  id            String        @id @default(cuid())
-  title         String
-  slug          String        @unique
-  content       String        @db.Text
-  excerpt       String?       @db.Text
-  category      String
-  status        ArticleStatus @default(DRAFT)
-  authorId      String
-  author        User          @relation(fields: [authorId], references: [id])
-  featuredImage String?
-  views         Int           @default(0)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  content     String   @db.Text
+  excerpt     String?  @db.Text
+  category    String?
+  coverImage  String?
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  authorId    String?
+  author      User?    @relation("ArticleAuthor", fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   
   @@index([slug])
   @@index([category])
-  @@index([status])
   @@index([authorId])
+  @@schema("public")
 }
 
 enum ArticleStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
+  @@schema("public")
 }
 
 model UserNotification {
@@ -611,6 +651,7 @@ model UserNotification {
 
   @@index([isRead])
   @@index([userId])
+  @@schema("public")
 }
 
 model NewsletterSubscriber {
@@ -625,6 +666,7 @@ model NewsletterSubscriber {
   @@index([email])
   @@index([isActive])
   @@index([subscribedAt])
+  @@schema("public")
 }
 
 model PrayerAction {
@@ -638,6 +680,7 @@ model PrayerAction {
   @@unique([prayerRequestId, userId])
   @@index([prayerRequestId])
   @@index([userId])
+  @@schema("public")
 }
 
 model PrayerLibraryCategory {
@@ -655,6 +698,7 @@ model PrayerLibraryCategory {
   children                    PrayerLibraryCategory[] @relation("PrayerLibraryCategoryToPrayerLibraryCategory")
 
   @@index([parentId])
+  @@schema("public")
 }
 
 model PrayerRequest {
@@ -691,6 +735,7 @@ model PrayerRequest {
   @@index([visibility])
   @@index([createdAt])
   @@index([churchId])
+  @@schema("public")
 }
 
 model PrayerUpdate {
@@ -701,6 +746,7 @@ model PrayerUpdate {
   PrayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
 
   @@index([prayerRequestId])
+  @@schema("public")
 }
 
 model SacramentRecord {
@@ -723,6 +769,7 @@ model SacramentRecord {
   @@index([status])
   @@index([type])
   @@index([userId])
+  @@schema("public")
 }
 
 model Saint {
@@ -750,6 +797,7 @@ model Saint {
   @@index([feastMonth, feastDayOfMonth])
   @@index([name])
   @@index([slug])
+  @@schema("public")
 }
 
 model Session {
@@ -764,6 +812,7 @@ model Session {
 
   @@index([token])
   @@index([userId])
+  @@schema("public")
 }
 
 model SponsoredContent {
@@ -803,6 +852,7 @@ model SponsoredContent {
   @@index([placement, isActive])
   @@index([startDate, endDate])
   @@index([adSource, isActive])
+  @@schema("public")
 }
 
 model SyncLog {
@@ -823,6 +873,7 @@ model SyncLog {
   @@index([source])
   @@index([startedAt])
   @@index([status])
+  @@schema("public")
 }
 
 model User {
@@ -852,8 +903,11 @@ model User {
   googlePlaySubscriptionId                   String?
   googlePlayOrderId                          String?
   homeChurchId                               String?
+  role                                       UserRole          @default(USER)
+  isBanned                                   Boolean           @default(false)
+  bannedReason                               String?
   createdAt                                  DateTime          @default(now())
-  updatedAt                                  DateTime
+  updatedAt                                  DateTime          @updatedAt
   lastLoginAt                                DateTime?
   lastConfessionAt                           DateTime?
   lastStreakUpdate                           DateTime?
@@ -931,7 +985,7 @@ model User {
   MemorialOffering                           MemorialOffering[]
   MemorialGuestbook                          MemorialGuestbook[]
   filedReports                               Report[]
-  articles                                   Article[]
+  articles                                   Article[]         @relation("ArticleAuthor")
   novenaParticipations                       NovenaParticipation[]
   
   // Telegram
@@ -942,6 +996,7 @@ model User {
   @@index([createdAt])
   @@index([subscriptionTier])
   deviceTokens                               DeviceToken[]
+  @@schema("public")
 }
 
 model UserBlock {
@@ -955,6 +1010,7 @@ model UserBlock {
   @@unique([userId, blockedUserId])
   @@index([blockedUserId])
   @@index([userId])
+  @@schema("public")
 }
 
 model UserReport {
@@ -973,6 +1029,7 @@ model UserReport {
   @@index([reportedUserId])
   @@index([reporterId])
   @@index([status])
+  @@schema("public")
 }
 
 model Prayer {
@@ -990,6 +1047,7 @@ model Prayer {
   @@index([slug])
   @@index([is_active])
   @@index([category])
+  @@schema("public")
 }
 
 // =========================================
@@ -1019,6 +1077,7 @@ model PrayerChallenge {
   
   @@index([type, isActive])
   @@index([slug])
+  @@schema("public")
 }
 
 model UserChallenge {
@@ -1040,6 +1099,7 @@ model UserChallenge {
   @@index([userId])
   @@index([challengeId])
   @@index([status])
+  @@schema("public")
 }
 
 model ChallengeCheckIn {
@@ -1053,6 +1113,7 @@ model ChallengeCheckIn {
   
   @@unique([userChallengeId, day])
   @@index([userChallengeId])
+  @@schema("public")
 }
 
 model UserAchievement {
@@ -1069,6 +1130,7 @@ model UserAchievement {
   
   @@unique([userId, achievementId])
   @@index([userId])
+  @@schema("public")
 }
 
 model Leaderboard {
@@ -1082,6 +1144,7 @@ model Leaderboard {
   
   @@unique([userId, period])
   @@index([period, score(sort: Desc)])
+  @@schema("public")
 }
 
 model UserDailyGoal {
@@ -1093,6 +1156,7 @@ model UserDailyGoal {
   examenGoal      Boolean  @default(false)
   
   User            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@schema("public")
 }
 
 // =========================================
@@ -1113,6 +1177,7 @@ model PrayerPartnership {
   @@unique([user1Id, user2Id])
   @@index([user1Id])
   @@index([user2Id])
+  @@schema("public")
 }
 
 model PrayerComment {
@@ -1128,6 +1193,7 @@ model PrayerComment {
   
   @@index([prayerRequestId])
   @@index([userId])
+  @@schema("public")
 }
 
 model PrayerFollowing {
@@ -1140,6 +1206,7 @@ model PrayerFollowing {
   PrayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
   
   @@unique([userId, prayerRequestId])
+  @@schema("public")
 }
 
 // =========================================
@@ -1159,6 +1226,7 @@ model ExamenEntry {
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@index([userId, date])
+  @@schema("public")
 }
 
 model ConfessionLog {
@@ -1173,6 +1241,7 @@ model ConfessionLog {
   Church        Church?  @relation(fields: [churchId], references: [id])
   
   @@index([userId])
+  @@schema("public")
 }
 
 // =========================================
@@ -1205,6 +1274,7 @@ model UserReminder {
   User        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@index([userId])
+  @@schema("public")
 }
 
 // =========================================
@@ -1239,6 +1309,7 @@ model PrayerCandle {
   
   @@index([isActive, expiresAt])
   @@index([userId])
+  @@schema("public")
 }
 
 model CandlePrayer {
@@ -1253,6 +1324,7 @@ model CandlePrayer {
   @@unique([candleId, userId])
   @@index([candleId])
   @@index([userId])
+  @@schema("public")
 }
 
 model SpiritualBouquet {
@@ -1287,6 +1359,7 @@ model SpiritualBouquet {
   
   @@index([creatorId])
   @@index([sendDate])
+  @@schema("public")
 }
 
 // =========================================
@@ -1319,6 +1392,7 @@ model MassPartner {
   MassOffering    MassOffering[]
   
   @@index([isActive])
+  @@schema("public")
 }
 
 // Mass Offering - Centralized system where MPT receives funds
@@ -1402,6 +1476,7 @@ model MassOffering {
   @@index([celebrationDate])
   @@index([createdAt])
   @@index([orderNumber])
+  @@schema("public")
 }
 
 // Enhanced Donation model for centralized donations
@@ -1458,6 +1533,7 @@ model PlatformDonation {
   @@index([email])
   @@index([isRecurring])
   @@index([createdAt])
+  @@schema("public")
 }
 
 // Prayer Partner and other subscription plans
@@ -1499,6 +1575,7 @@ model PrayerSubscription {
   @@index([userId])
   @@index([status])
   @@index([plan])
+  @@schema("public")
 }
 
 // =========================================
@@ -1512,6 +1589,7 @@ enum MassOfferingType {
   GREGORIAN         // 30 consecutive Masses - $250
   PERPETUAL         // Enrolled forever in daily Masses - $100
   MONTHLY_CLUB      // Included with subscription
+  @@schema("public")
 }
 
 enum IntentionCategory {
@@ -1550,6 +1628,7 @@ enum IntentionCategory {
   // General
   SPECIAL_INTENTION
   OTHER
+  @@schema("public")
 }
 
 enum MassOfferingStatus {
@@ -1561,6 +1640,7 @@ enum MassOfferingStatus {
   COMPLETED         // All notifications sent, complete
   CANCELLED         // Cancelled
   REFUNDED          // Refunded
+  @@schema("public")
 }
 
 enum DonationTier {
@@ -1572,12 +1652,14 @@ enum DonationTier {
   PATRON            // $500 - Patron
   CORNERSTONE       // $1000+ - Cornerstone
   CUSTOM            // Any amount
+  @@schema("public")
 }
 
 enum PrayerPlan {
   PRAYER_PARTNER    // $9.99/month - 1 Mass included
   FAMILY_PLAN       // $19.99/month - 3 Masses included
   PATRON_CIRCLE     // $49.99/month - Unlimited Masses
+  @@schema("public")
 }
 
 enum SubscriptionStatus {
@@ -1586,6 +1668,7 @@ enum SubscriptionStatus {
   CANCELLED
   PAUSED
   EXPIRED
+  @@schema("public")
 }
 
 enum AdType {
@@ -1593,11 +1676,13 @@ enum AdType {
   NATIVE
   NEWSLETTER
   FEATURED
+  @@schema("public")
 }
 
 enum AdSource {
   OFFLINE     // Custom sponsor image/link managed in admin
   GOOGLE      // Google AdMob (mobile) or AdSense (web)
+  @@schema("public")
 }
 
 enum AdminRole {
@@ -1605,6 +1690,14 @@ enum AdminRole {
   ADMIN
   MODERATOR
   CONTENT_EDITOR
+  @@schema("public")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
+  @@schema("public")
 }
 
 enum ChurchAdminRole {
@@ -1612,6 +1705,7 @@ enum ChurchAdminRole {
   ADMIN
   EDITOR
   VIEWER
+  @@schema("public")
 }
 
 enum ChurchTier {
@@ -1620,6 +1714,7 @@ enum ChurchTier {
   PRO
   CATHEDRAL
   DIOCESE
+  @@schema("public")
 }
 
 enum ChurchType {
@@ -1632,6 +1727,7 @@ enum ChurchType {
   ABBEY
   MISSION
   OTHER
+  @@schema("public")
 }
 
 enum ClaimStatus {
@@ -1642,6 +1738,7 @@ enum ClaimStatus {
   UNDER_REVIEW
   APPROVED
   REJECTED
+  @@schema("public")
 }
 
 enum DioceseType {
@@ -1652,6 +1749,7 @@ enum DioceseType {
   PREFECTURE
   ORDINARIATE
   OTHER
+  @@schema("public")
 }
 
 enum EventType {
@@ -1665,6 +1763,7 @@ enum EventType {
   SOCIAL
   VOLUNTEER
   OTHER
+  @@schema("public")
 }
 
 enum MinistryType {
@@ -1677,6 +1776,7 @@ enum MinistryType {
   YOUTH_GROUP
   SUPPORT_GROUP
   OTHER
+  @@schema("public")
 }
 
 enum ModerationStatus {
@@ -1685,6 +1785,7 @@ enum ModerationStatus {
   REJECTED
   ON_HOLD
   ARCHIVED
+  @@schema("public")
 }
 
 enum UserNotificationType {
@@ -1700,6 +1801,7 @@ enum UserNotificationType {
   PRAYER_PARTNER_REQUEST
   PRAYER_PARTNER_ACCEPTED
   CLAIM_STATUS
+  @@schema("public")
 }
 
 enum PrayerCategory {
@@ -1713,6 +1815,7 @@ enum PrayerCategory {
   SPIRITUAL
   WORLD
   OTHER
+  @@schema("public")
 }
 
 enum PrayerVisibility {
@@ -1720,6 +1823,7 @@ enum PrayerVisibility {
   ANONYMOUS
   CHURCH_ONLY
   PRIVATE
+  @@schema("public")
 }
 
 enum ReportReason {
@@ -1729,6 +1833,7 @@ enum ReportReason {
   IMPERSONATION
   MALICIOUS_LINKS
   OTHER
+  @@schema("public")
 }
 
 enum ReportStatus {
@@ -1737,6 +1842,7 @@ enum ReportStatus {
   DISMISSED
   WARNED
   SUSPENDED
+  @@schema("public")
 }
 
 enum SacramentStatus {
@@ -1747,6 +1853,7 @@ enum SacramentStatus {
   RECORDED
   CERTIFIED
   CANCELLED
+  @@schema("public")
 }
 
 enum SacramentType {
@@ -1758,6 +1865,7 @@ enum SacramentType {
   ANOINTING_OF_THE_SICK
   FUNERAL
   RCIA_INITIATION
+  @@schema("public")
 }
 
 enum SubscriptionTier {
@@ -1765,6 +1873,7 @@ enum SubscriptionTier {
   PLUS
   PREMIUM
   LIFETIME
+  @@schema("public")
 }
 
 enum SyncStatus {
@@ -1772,6 +1881,7 @@ enum SyncStatus {
   COMPLETED
   FAILED
   CANCELLED
+  @@schema("public")
 }
 
 // =========================================
@@ -1787,12 +1897,14 @@ enum ChallengeType {
   DIVINE_MERCY
   STATIONS
   CUSTOM
+  @@schema("public")
 }
 
 enum ChallengeStatus {
   IN_PROGRESS
   COMPLETED
   ABANDONED
+  @@schema("public")
 }
 
 enum AchievementTier {
@@ -1800,6 +1912,7 @@ enum AchievementTier {
   SILVER
   GOLD
   SAINT
+  @@schema("public")
 }
 
 enum PartnershipStatus {
@@ -1807,6 +1920,7 @@ enum PartnershipStatus {
   ACTIVE
   DECLINED
   ENDED
+  @@schema("public")
 }
 
 enum ReminderType {
@@ -1817,6 +1931,7 @@ enum ReminderType {
   EXAMEN
   CONFESSION
   CUSTOM
+  @@schema("public")
 }
 
 enum CandleDuration {
@@ -1825,6 +1940,7 @@ enum CandleDuration {
   SEVEN_DAYS
   FOURTEEN_DAYS
   THIRTY_DAYS
+  @@schema("public")
 }
 
 enum PaymentSource {
@@ -1833,6 +1949,7 @@ enum PaymentSource {
   GOOGLE_PLAY
   APPLE_APPSTORE
   STRIPE
+  @@schema("public")
 }
 
 // =========================================
@@ -1878,6 +1995,7 @@ model PurchaseEvent {
   @@index([purchaseToken])
   @@index([productId])
   @@index([status])
+  @@schema("public")
 }
 
 // =========================================
@@ -1887,6 +2005,7 @@ model PurchaseEvent {
 enum MemorialTier {
   BASIC
   PREMIUM
+  @@schema("public")
 }
 
 enum MemorialOfferingType {
@@ -1903,6 +2022,7 @@ enum MemorialOfferingType {
   SPIRITUAL_BOUQUET_HEAVENLY
   SPIRITUAL_BOUQUET_ETERNAL
   SPIRITUAL_BOUQUET_LEGACY
+  @@schema("public")
 }
 
 model Memorial {
@@ -1953,6 +2073,7 @@ model Memorial {
   @@index([slug])
   @@index([isPublic])
   @@index([createdAt])
+  @@schema("public")
 }
 
 model MemorialOffering {
@@ -1983,6 +2104,7 @@ model MemorialOffering {
   @@index([userId])
   @@index([createdAt])
   @@index([type])
+  @@schema("public")
 }
 
 model MemorialGuestbook {
@@ -2006,6 +2128,7 @@ model MemorialGuestbook {
   
   @@index([memorialId])
   @@index([createdAt])
+  @@schema("public")
 }
 
 model MemorialPhoto {
@@ -2024,6 +2147,7 @@ model MemorialPhoto {
   
   @@index([memorialId])
   @@index([sortOrder])
+  @@schema("public")
 }
 
 model AbandonedCart {
@@ -2047,6 +2171,7 @@ model AbandonedCart {
   @@index([email])
   @@index([createdAt])
   @@index([converted])
+  @@schema("public")
 }
 
 // =========================================
@@ -2073,6 +2198,7 @@ model Report {
   @@index([status])
   @@index([targetType, targetId])
   @@index([reporterId])
+  @@schema("public")
 }
 
 // =========================================
@@ -2092,6 +2218,7 @@ model ContactSubmission {
   
   @@index([email])
   @@index([status])
+  @@schema("public")
 }
 
 model Testimony {
@@ -2113,6 +2240,7 @@ model Testimony {
   @@index([userId])
   @@index([status])
   @@index([isFeatured])
+  @@schema("public")
 }
 
 model TestimonyUpvote {
@@ -2125,6 +2253,7 @@ model TestimonyUpvote {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([testimonyId, userId])
+  @@schema("public")
 }
 
 // =========================================
@@ -2143,6 +2272,7 @@ model PrayerGroup {
   members     PrayerGroupMember[]
   prayers     GroupPrayer[]
   invites     PrayerGroupInvite[]
+  @@schema("public")
 }
 
 model PrayerGroupMember {
@@ -2157,6 +2287,7 @@ model PrayerGroupMember {
 
   @@index([groupId])
   @@index([userId])
+  @@schema("public")
 }
 
 model PrayerGroupInvite {
@@ -2171,6 +2302,7 @@ model PrayerGroupInvite {
   group     PrayerGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
   inviter   User        @relation("SentInvites", fields: [inviterId], references: [id], onDelete: Cascade)
   invitee   User        @relation("ReceivedInvites", fields: [inviteeId], references: [id], onDelete: Cascade)
+  @@schema("public")
 }
 
 model GroupPrayer {
@@ -2185,6 +2317,7 @@ model GroupPrayer {
   
   @@index([groupId])
   @@index([userId])
+  @@schema("public")
 }
 
 model UserBadge {
@@ -2195,6 +2328,7 @@ model UserBadge {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@schema("public")
 }
 
 model Donation {
@@ -2216,6 +2350,7 @@ model Donation {
   @@index([churchId])
   @@index([userId])
   @@index([status])
+  @@schema("public")
 }
 
 model DailyDevotional {
@@ -2232,6 +2367,7 @@ model DailyDevotional {
   updatedAt          DateTime @updatedAt
 
   @@index([publishDate])
+  @@schema("public")
 }
 
 model SystemSetting {
@@ -2239,6 +2375,7 @@ model SystemSetting {
   value       String   @db.Text
   description String?
   updatedAt   DateTime @updatedAt
+  @@schema("public")
 }
 
 model PrayerPartner {
@@ -2256,6 +2393,7 @@ model PrayerPartner {
   @@index([requesterId])
   @@index([receiverId])
   @@index([status])
+  @@schema("public")
 }
 
 enum PrayerPartnerStatus {
@@ -2263,6 +2401,7 @@ enum PrayerPartnerStatus {
   ACCEPTED
   REJECTED
   BLOCKED
+  @@schema("public")
 }
 
 
@@ -2280,6 +2419,7 @@ model Pilgrimage {
   
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  @@schema("public")
 }
 
 
@@ -2302,6 +2442,7 @@ model Notification {
   
   createdBy   String?
   createdByUser AdminUser? @relation(fields: [createdBy], references: [id])
+  @@schema("public")
 }
 
 model NotificationReceiver {
@@ -2320,6 +2461,7 @@ model NotificationReceiver {
   @@unique([notificationId, userId])
   @@index([userId])
   @@index([status])
+  @@schema("public")
 }
 
 enum NotificationType {
@@ -2327,6 +2469,7 @@ enum NotificationType {
   EMAIL
   IN_APP
   ALL
+  @@schema("public")
 }
 
 enum NotificationAudience {
@@ -2334,6 +2477,7 @@ enum NotificationAudience {
   PREMIUM
   FREE
   SPECIFIC
+  @@schema("public")
 }
 
 enum NotificationStatus {
@@ -2342,6 +2486,7 @@ enum NotificationStatus {
   SENT
   CANCELLED
   FAILED
+  @@schema("public")
 }
 
 enum DeliveryStatus {
@@ -2350,6 +2495,7 @@ enum DeliveryStatus {
   DELIVERED
   READ
   FAILED
+  @@schema("public")
 }
 
 model DeviceToken {
@@ -2365,6 +2511,7 @@ model DeviceToken {
 
   @@index([userId])
   @@index([platform])
+  @@schema("public")
 }
 
 
@@ -2396,6 +2543,7 @@ model DailyContent {
   
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  @@schema("public")
 }
 
 // =========================================
@@ -2425,6 +2573,7 @@ model Novena {
   updatedAt       DateTime @updatedAt
   
   participations  NovenaParticipation[]
+  @@schema("public")
 }
 
 model NovenaParticipation {
@@ -2441,6 +2590,7 @@ model NovenaParticipation {
   @@unique([novenaId, userId])
   @@index([novenaId])
   @@index([userId])
+  @@schema("public")
 }
 
 
@@ -2472,6 +2622,7 @@ model TelegramUser {
   updatedAt        DateTime  @updatedAt
   
   TelegramInteraction TelegramInteraction[]
+  @@schema("public")
 }
 
 model TelegramInteraction {
@@ -2482,5 +2633,6 @@ model TelegramInteraction {
   createdAt      DateTime     @default(now())
   
   TelegramUser   TelegramUser @relation(fields: [telegramUserId], references: [id], onDelete: Cascade)
+  @@schema("public")
 }
 

@@ -161,8 +161,8 @@ export class AdminController {
     }
 
     @Post('articles')
-    async createArticle(@Body() data: any) {
-        return this.adminService.createArticle(data);
+    async createArticle(@Body() data: any, @Request() req) {
+        return this.adminService.createArticle(data, req.user?.userId || 'admin');
     }
 
     @Put('articles/:id')
@@ -371,5 +371,21 @@ export class AdminController {
     @Delete('abandoned-carts/:id')
     async deleteAbandonedCart(@Param('id') id: string) {
         return this.adminService.deleteAbandonedCart(id);
+    }
+
+    // ===== AD MANAGEMENT =====
+    @Get('ads')
+    async getAdContainers() {
+        return this.adminService.getAdContainers();
+    }
+
+    @Post('ads')
+    async upsertAdContainer(@Body() data: any) {
+        return this.adminService.upsertAdContainer(data);
+    }
+
+    @Delete('ads/:id')
+    async deleteAdContainer(@Param('id') id: string) {
+        return this.adminService.deleteAdContainer(id);
     }
 }
