@@ -6,7 +6,6 @@ export interface AdUnit {
     androidUnitId?: string;
     iosUnitId?: string;
     webUnitId?: string;
-    platforms: string[];
 }
 
 interface AdState {

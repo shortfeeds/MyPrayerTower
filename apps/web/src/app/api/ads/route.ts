@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
                 androidUnitId: true,
                 iosUnitId: true,
                 webUnitId: true,
-                platforms: true,
             }
         });
 

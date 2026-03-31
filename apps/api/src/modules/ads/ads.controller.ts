@@ -16,7 +16,6 @@ export class AdsController {
                 androidUnitId: true,
                 iosUnitId: true,
                 webUnitId: true,
-                platforms: true,
             }
         });
     }
