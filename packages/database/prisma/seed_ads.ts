@@ -3,64 +3,38 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log('Seeding ad containers...');
+    console.log('Seeding simplified global ad containers...');
 
     const ads = [
         {
-            sectionKey: 'HOME_TOP_BANNER',
-            description: 'Top banner on the home page',
+            sectionKey: 'GLOBAL_BANNER',
+            description: 'Standard banner ads (Top, Bottom, Sidebar)',
             adType: 'BANNER',
             isActive: true,
         },
         {
-            sectionKey: 'ARTICLE_LIST_NATIVE',
-            description: 'Native ad in article lists (Home, Blog, etc.)',
+            sectionKey: 'GLOBAL_NATIVE',
+            description: 'Native inline ads (Article feeds, Lists)',
             adType: 'NATIVE',
             isActive: true,
         },
         {
-            sectionKey: 'ARTICLE_DETAIL_BOTTOM',
-            description: 'Banner at the bottom of blog articles',
-            adType: 'BANNER',
-            isActive: true,
-        },
-        {
-            sectionKey: 'PRAYER_WALL_BANNER',
-            description: 'Banner at the top of the Prayer Wall',
-            adType: 'BANNER',
-            isActive: true,
-        },
-        {
-            sectionKey: 'BIBLE_READING_BOTTOM',
-            description: 'Banner at the bottom of Bible reading pages',
-            adType: 'BANNER',
-            isActive: true,
-        },
-        {
-            sectionKey: 'DAILY_READING_BOTTOM',
-            description: 'Banner at the bottom of Daily Readings',
-            adType: 'BANNER',
-            isActive: true,
-        },
-        {
-            sectionKey: 'CHURCH_LIST_NATIVE',
-            description: 'Native ad in the Church directory list',
-            adType: 'NATIVE',
-            isActive: true,
-        },
-        {
-            sectionKey: 'CATECHISM_SIDEBAR',
-            description: 'Sidebar ad in the Catechism section',
-            adType: 'BANNER',
-            isActive: true,
-        },
-        {
-            sectionKey: 'PRAYER_SUBMIT_INTERSTITIAL',
-            description: 'Full-screen ad after submitting a prayer (TWA Only)',
+            sectionKey: 'GLOBAL_INTERSTITIAL',
+            description: 'Full-screen transitions (e.g. Prayer Submission - TWA only)',
             adType: 'INTERSTITIAL',
             isActive: true,
         }
     ];
+
+    // Optional: Delete old complex seed data
+    const oldKeys = [
+        'HOME_TOP_BANNER', 'ARTICLE_LIST_NATIVE', 'ARTICLE_DETAIL_BOTTOM',
+        'PRAYER_WALL_BANNER', 'BIBLE_READING_BOTTOM', 'DAILY_READING_BOTTOM',
+        'CHURCH_LIST_NATIVE', 'CATECHISM_SIDEBAR', 'PRAYER_SUBMIT_INTERSTITIAL'
+    ];
+    await (prisma as any).adContainer.deleteMany({
+        where: { sectionKey: { in: oldKeys } }
+    });
 
     for (const ad of ads) {
         await (prisma as any).adContainer.upsert({
@@ -74,7 +48,7 @@ async function main() {
         });
     }
 
-    console.log('Ad containers seeded successfully.');
+    console.log('Global Ad containers seeded successfully.');
 }
 
 main()

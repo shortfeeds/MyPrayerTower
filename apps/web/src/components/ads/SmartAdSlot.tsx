@@ -112,16 +112,10 @@ export function SmartAdSlot({
 
     // Map SmartAdSlot params to DB sectionKeys
     const getSectionKey = () => {
-        if (page === 'home' && position === 'top') return 'HOME_TOP_BANNER';
-        if (page === 'home' && position === 'inline') return 'ARTICLE_LIST_NATIVE';
-        if (page === 'blog' && position === 'bottom') return 'ARTICLE_DETAIL_BOTTOM';
-        if (page === 'blog' && position === 'inline') return 'ARTICLE_LIST_NATIVE';
-        if (page === 'prayer-wall' && position === 'top') return 'PRAYER_WALL_BANNER';
-        if (page === 'bible' && position === 'bottom') return 'BIBLE_READING_BOTTOM';
-        if (page === 'readings' && position === 'bottom') return 'DAILY_READING_BOTTOM';
-        if (page === 'churches' && position === 'inline') return 'CHURCH_LIST_NATIVE';
-        if (page === 'catechism' && position === 'sidebar') return 'CATECHISM_SIDEBAR';
-        return null;
+        if (position === 'inline') {
+            return 'GLOBAL_NATIVE';
+        }
+        return 'GLOBAL_BANNER';
     };
 
     const sectionKey = getSectionKey();

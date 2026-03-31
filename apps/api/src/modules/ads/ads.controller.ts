@@ -22,16 +22,21 @@ export class AdsController {
     @Get('seed')
     async seedAds() {
         const ads = [
-            { sectionKey: 'HOME_TOP_BANNER', description: 'Top banner on the home page', adType: 'BANNER' },
-            { sectionKey: 'ARTICLE_LIST_NATIVE', description: 'Native ad in article lists', adType: 'NATIVE' },
-            { sectionKey: 'ARTICLE_DETAIL_BOTTOM', description: 'Banner at the bottom of blog articles', adType: 'BANNER' },
-            { sectionKey: 'PRAYER_WALL_BANNER', description: 'Banner at the top of the Prayer Wall', adType: 'BANNER' },
-            { sectionKey: 'BIBLE_READING_BOTTOM', description: 'Banner at the bottom of Bible reading pages', adType: 'BANNER' },
-            { sectionKey: 'DAILY_READING_BOTTOM', description: 'Banner at the bottom of Daily Readings', adType: 'BANNER' },
-            { sectionKey: 'CHURCH_LIST_NATIVE', description: 'Native ad in the Church directory list', adType: 'NATIVE' },
-            { sectionKey: 'CATECHISM_SIDEBAR', description: 'Sidebar ad in the Catechism section', adType: 'BANNER' },
-            { sectionKey: 'PRAYER_SUBMIT_INTERSTITIAL', description: 'Full-screen ad after submitting a prayer (TWA Only)', adType: 'INTERSTITIAL' }
+            { sectionKey: 'GLOBAL_BANNER', description: 'Standard banner ads (Top, Bottom, Sidebar)', adType: 'BANNER' },
+            { sectionKey: 'GLOBAL_NATIVE', description: 'Native inline ads (Article feeds, Lists)', adType: 'NATIVE' },
+            { sectionKey: 'GLOBAL_INTERSTITIAL', description: 'Full-screen transitions (e.g. Prayer Submission - TWA only)', adType: 'INTERSTITIAL' }
         ];
+
+        // Delete old keys to clean up admin panel
+        const oldKeys = [
+            'HOME_TOP_BANNER', 'ARTICLE_LIST_NATIVE', 'ARTICLE_DETAIL_BOTTOM',
+            'PRAYER_WALL_BANNER', 'BIBLE_READING_BOTTOM', 'DAILY_READING_BOTTOM',
+            'CHURCH_LIST_NATIVE', 'CATECHISM_SIDEBAR', 'PRAYER_SUBMIT_INTERSTITIAL'
+        ];
+        
+        await (this.prisma as any).adContainer.deleteMany({
+            where: { sectionKey: { in: oldKeys } }
+        });
 
         let createdCount = 0;
         for (const ad of ads) {
@@ -42,6 +47,6 @@ export class AdsController {
             }
         }
 
-        return { message: `Seeded ${createdCount} new ad units.`, total: ads.length };
+        return { message: `Seeded ${createdCount} new global ad units. Old temporary templates removed.`, total: ads.length };
     }
 }
