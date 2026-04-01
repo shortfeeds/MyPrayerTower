@@ -265,16 +265,23 @@ async function RecentActivity() {
 }
 
 async function SystemStatus() {
+    let dbStatus = 'operational';
+    try {
+        await db.$queryRaw`SELECT 1`;
+    } catch (e) {
+        dbStatus = 'error';
+    }
+
     const [pendingReports, pendingClaims] = await Promise.all([
         db.userReport.count({ where: { status: 'PENDING' } }),
         db.churchClaim.count({ where: { status: 'PENDING' } })
     ]);
 
     const statuses = [
-        { name: 'API Server', status: 'operational', uptime: '99.9%' },
-        { name: 'Database', status: 'operational', uptime: '99.99%' },
-        { name: 'CDN', status: 'operational', uptime: '100%' },
-        { name: 'RSS Sync', status: 'active', lastRun: '12m ago' },
+        { name: 'API Server', status: process.env.NODE_ENV === 'production' ? 'operational' : 'development', uptime: 'Healthy' },
+        { name: 'Database', status: dbStatus, uptime: dbStatus === 'operational' ? 'Connected' : 'Disconnected' },
+        { name: 'CDN (Vercel)', status: 'operational', uptime: 'Active' },
+        { name: 'User Reports', status: pendingReports > 0 ? 'attention' : 'operational', count: pendingReports },
     ];
 
     return (
@@ -298,10 +305,10 @@ async function SystemStatus() {
                 {statuses.map(s => (
                     <div key={s.name} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                         <div className="flex items-center gap-3">
-                            <div className={`w-2.5 h-2.5 rounded-full ${s.status === 'operational' || s.status === 'active' ? 'bg-green-500' : 'bg-yellow-500'} ${s.status === 'active' ? 'animate-pulse' : ''}`} />
+                            <div className={`w-2.5 h-2.5 rounded-full ${s.status === 'operational' || s.status === 'development' ? 'bg-green-500' : s.status === 'attention' ? 'bg-yellow-500' : 'bg-red-500'}`} />
                             <span className="font-medium text-gray-900">{s.name}</span>
                         </div>
-                        <span className="text-sm text-gray-500">{s.uptime || s.lastRun}</span>
+                        <span className="text-sm text-gray-500">{s.uptime}</span>
                     </div>
                 ))}
             </div>

@@ -89,9 +89,8 @@ const menuItems: MenuItem[] = [
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (val: boolean) => void }) {
     const pathname = usePathname();
-    const [isOpen, setIsOpen] = useState(false);
     const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
 
     const toggleMenu = (name: string) => {
@@ -107,9 +106,7 @@ export function AdminSidebar() {
     useEffect(() => {
         const fetchReportCount = async () => {
             try {
-                // Determine API base URL - safely handle environment
-                const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-                const res = await fetch(`${API_BASE}/admin/reports?status=PENDING&limit=1`);
+                const res = await fetch('/api/admin/reports?status=PENDING&limit=1');
                 if (res.ok) {
                     const data = await res.json();
                     setReportCount(data.total || 0);
@@ -134,14 +131,6 @@ export function AdminSidebar() {
 
     return (
         <>
-            {/* Mobile Menu Button */}
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-gray-900 text-white rounded-xl shadow-lg"
-            >
-                {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-
             {/* Sidebar Overlay */}
             {isOpen && (
                 <div
@@ -153,34 +142,44 @@ export function AdminSidebar() {
             {/* Sidebar */}
             <aside className={`
                 fixed lg:sticky top-0 left-0 h-screen w-72 bg-[#0F172A] text-white border-r border-gray-800
-                transform transition-transform duration-300 z-50 overflow-y-auto
+                transform transition-transform duration-300 z-50 flex flex-col overflow-hidden
                 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
-                <div className="p-6">
-                    <Link href="/" className="flex items-center gap-2 mb-10">
-                        <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
-                            <Flame className="w-5 h-5 text-white" />
+                {/* Custom Scrollbar Styling */}
+                <style jsx global>{`
+                    .admin-sidebar-scroll::-webkit-scrollbar {
+                        display: none;
+                    }
+                    .admin-sidebar-scroll {
+                        -ms-overflow-style: none;  /* IE and Edge */
+                        scrollbar-width: none;  /* Firefox */
+                    }
+                `}</style>
+                <div className="p-4 mb-0">
+                    <Link href="/" className="flex items-center gap-3 px-2">
+                        <div className="w-9 h-9 bg-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                            <Flame className="w-6 h-6 text-white" />
                         </div>
-                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-500">
+                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-500 tracking-tight">
                             PrayerTower
                         </span>
                     </Link>
                 </div>
 
                 {/* Search */}
-                <div className="p-4">
+                <div className="px-4 py-2">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                         <input
                             type="text"
                             placeholder="Search..."
-                            className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500"
+                            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500"
                         />
                     </div>
                 </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+                {/* Navigation - Non-scrollable Section */}
+                <nav className="flex-1 p-2 space-y-0.5 overflow-hidden">
                     {menuItems.map((item) => {
                         const Icon = item.icon;
                         const active = isActive(item.href);
@@ -190,56 +189,60 @@ export function AdminSidebar() {
                         return (
                             <div key={item.name}>
                                 {hasChildren ? (
-                                    <button
-                                        onClick={() => toggleMenu(item.name)}
-                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all ${active
-                                            ? 'bg-amber-500/10 text-amber-400'
-                                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <Icon className="w-5 h-5" />
+                                        <button
+                                            onClick={() => toggleMenu(item.name)}
+                                            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all ${active
+                                                ? 'bg-amber-500/10 text-amber-400'
+                                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+                                                    <Icon className="w-5 h-5 text-inherit" />
+                                                </div>
+                                                <span className="font-medium">{item.name}</span>
+                                            </div>
+                                            <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href={item.href}
+                                            onClick={() => setIsOpen(false)}
+                                            className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all ${active
+                                                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/25'
+                                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                                }`}
+                                        >
+                                            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+                                                <Icon className="w-5 h-5 text-inherit" />
+                                            </div>
                                             <span className="font-medium">{item.name}</span>
-                                        </div>
-                                        <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                                    </button>
-                                ) : (
-                                    <Link
-                                        href={item.href}
-                                        onClick={() => setIsOpen(false)}
-                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${active
-                                            ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/25'
-                                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                                            }`}
-                                    >
-                                        <Icon className="w-5 h-5" />
-                                        <span className="font-medium">{item.name}</span>
-                                        {item.badge && item.badge > 0 && (
-                                            <span className="ml-auto px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
-                                                {item.badge}
-                                            </span>
-                                        )}
-                                    </Link>
-                                )}
+                                            {item.badge && item.badge > 0 && (
+                                                <span className="ml-auto px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full">
+                                                    {item.badge}
+                                                </span>
+                                            )}
+                                        </Link>
+                                    )}
 
-                                {/* Submenu */}
-                                {hasChildren && isExpanded && (
-                                    <div className="ml-4 pl-4 border-l border-gray-700 space-y-1 mt-1">
-                                        {item.children!.map(child => (
-                                            <Link
-                                                key={child.href}
-                                                href={child.href}
-                                                onClick={() => setIsOpen(false)}
-                                                className={`block px-4 py-2 rounded-lg text-sm transition-colors ${pathname === child.href
-                                                    ? 'bg-gray-800 text-amber-400'
-                                                    : 'text-gray-500 hover:text-white hover:bg-gray-800/50'
-                                                    }`}
-                                            >
-                                                {child.name}
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
+                                    {/* Submenu */}
+                                    {hasChildren && isExpanded && (
+                                        <div className="ml-[1rem] pl-4 border-l border-gray-700/50 space-y-0.5 mt-0.5">
+                                            {item.children!.map(child => (
+                                                <Link
+                                                    key={child.href}
+                                                    href={child.href}
+                                                    onClick={() => setIsOpen(false)}
+                                                    className={`block px-3 py-1.5 rounded-lg text-xs transition-colors ${pathname === child.href
+                                                        ? 'bg-amber-500/20 text-amber-400 font-medium'
+                                                        : 'text-gray-400/80 hover:text-white hover:bg-gray-800/50'
+                                                        }`}
+                                                >
+                                                    {child.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
                             </div>
                         );
                     })}
@@ -247,13 +250,13 @@ export function AdminSidebar() {
 
                 {/* User Section */}
                 <div className="p-4 border-t border-gray-800">
-                    <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-xl">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                            <span className="text-white font-bold text-sm">SA</span>
+                    <div className="flex items-center gap-3 p-2 bg-gray-800/50 rounded-xl">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-xs">SA</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="font-medium text-white text-sm truncate">Super Admin</p>
-                            <p className="text-xs text-gray-500 truncate">admin@myprayertower.com</p>
+                            <p className="font-medium text-white text-xs truncate">Super Admin</p>
+                            <p className="text-[10px] text-gray-500 truncate">admin@myprayertower.com</p>
                         </div>
                     </div>
                     <button

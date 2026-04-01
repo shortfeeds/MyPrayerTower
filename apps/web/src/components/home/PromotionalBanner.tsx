@@ -150,10 +150,10 @@ export function AppDownloadBanner() {
                             📱 MOBILE APP
                         </span>
                         <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
-                            Take Your Faith <span className="text-emerald-400">Everywhere</span>
+                            Carry God's Word <span className="text-emerald-400">Everywhere</span>
                         </h2>
-                        <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
-                            Download the MyPrayerTower app and carry your prayers, readings, and spiritual journal with you.
+                        <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto italic">
+                            Let us walk together in faith. Receive daily inspiration and join a global community of prayer whenever you go.
                         </p>
 
                         <div className="flex flex-wrap justify-center gap-4">
@@ -168,7 +168,7 @@ export function AppDownloadBanner() {
                                     <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 11.944 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
                                 </svg>
                                 <div className="text-left">
-                                    <div className="text-xs text-blue-100">Join on</div>
+                                    <div className="text-xs text-blue-100">Pray with us on</div>
                                     <div className="text-sm font-bold">Telegram</div>
                                 </div>
                             </a>
@@ -184,7 +184,7 @@ export function AppDownloadBanner() {
                                     <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
                                 </svg>
                                 <div className="text-left">
-                                    <div className="text-xs text-gray-500">Get it on</div>
+                                    <div className="text-xs text-gray-500">Daily Divine Word</div>
                                     <div className="text-sm font-bold">Google Play</div>
                                 </div>
                             </a>

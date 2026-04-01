@@ -30,16 +30,18 @@ export function DailyPrayerCTA() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                        <Link
-                            href="/"
+                        <a
+                            href="https://play.google.com/store/apps/details?id=com.myprayertower.myprayertower_app"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="inline-flex items-center justify-center gap-2 bg-gold-500 hover:bg-gold-400 text-sacred-900 font-bold py-3 px-6 rounded-full transition-colors shadow-lg shadow-gold-500/20"
                         >
                             <Smartphone className="w-5 h-5" />
                             Download App
-                        </Link>
+                        </a>
 
                         <a
-                            href="https://t.me/MyPrayerTower"
+                            href="https://t.me/MyPrayerTowerBot"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-6 rounded-full transition-colors border border-white/10 backdrop-blur-sm"

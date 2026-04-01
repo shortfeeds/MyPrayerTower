@@ -20,6 +20,8 @@ export default function AdminRevenueReportsPage() {
         avgOrderValue: 0,
         topOfferingType: '-',
         topDonationTier: '-',
+        massBreakdown: [],
+        donationBreakdown: []
     });
 
     useEffect(() => {
@@ -213,29 +215,27 @@ export default function AdminRevenueReportsPage() {
                 <div className="bg-white rounded-xl p-6 shadow-sm border">
                     <h2 className="font-bold text-lg text-gray-900 mb-4">Mass Offerings by Type</h2>
                     <div className="space-y-3">
-                        {[
-                            { type: 'Perpetual Enrollment', count: 45, revenue: 450000, percent: 55 },
-                            { type: 'Gregorian Masses', count: 12, revenue: 300000, percent: 20 },
-                            { type: 'Novena of Masses', count: 28, revenue: 210000, percent: 15 },
-                            { type: 'Single Mass', count: 85, revenue: 127500, percent: 8 },
-                            { type: 'Expedited Mass', count: 8, revenue: 20000, percent: 2 },
-                        ].map((item, i) => (
+                        {stats.massBreakdown.length > 0 ? stats.massBreakdown.map((item, i) => (
                             <div key={i} className="flex items-center justify-between">
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between mb-1">
-                                        <span className="font-medium">{item.type}</span>
+                                        <span className="font-medium">{item.type.replace(/_/g, ' ')}</span>
                                         <span className="text-sm text-gray-500">{item.count} orders</span>
                                     </div>
                                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-amber-500 rounded-full"
-                                            style={{ width: `${item.percent}%` }}
+                                            style={{ width: `${(item.amount / (stats.massOfferingsRevenue || 1)) * 100}%` }}
                                         />
                                     </div>
                                 </div>
-                                <span className="ml-4 font-bold text-green-600">{formatCurrency(item.revenue)}</span>
+                                <span className="ml-4 font-bold text-amber-600">{formatCurrency(item.amount)}</span>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="py-8 text-center text-gray-400 text-sm italic">
+                                No mass offerings recorded in this period
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -243,30 +243,27 @@ export default function AdminRevenueReportsPage() {
                 <div className="bg-white rounded-xl p-6 shadow-sm border">
                     <h2 className="font-bold text-lg text-gray-900 mb-4">Donations by Tier</h2>
                     <div className="space-y-3">
-                        {[
-                            { tier: '💎 Patron ($500)', count: 8, revenue: 400000, percent: 40 },
-                            { tier: '🌟 Benefactor ($250)', count: 15, revenue: 375000, percent: 25 },
-                            { tier: '👼 Guardian ($100)', count: 32, revenue: 320000, percent: 20 },
-                            { tier: '⛪ Supporter ($50)', count: 45, revenue: 225000, percent: 10 },
-                            { tier: '📿 Rosary ($20)', count: 28, revenue: 56000, percent: 3 },
-                            { tier: '🕯️ Candle ($10)', count: 42, revenue: 42000, percent: 2 },
-                        ].map((item, i) => (
+                        {stats.donationBreakdown.length > 0 ? stats.donationBreakdown.map((item, i) => (
                             <div key={i} className="flex items-center justify-between">
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between mb-1">
-                                        <span className="font-medium">{item.tier}</span>
+                                        <span className="font-medium">{item.type.replace(/_/g, ' ')}</span>
                                         <span className="text-sm text-gray-500">{item.count} donors</span>
                                     </div>
                                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-rose-500 rounded-full"
-                                            style={{ width: `${item.percent}%` }}
+                                            style={{ width: `${(item.amount / (stats.donationsRevenue || 1)) * 100}%` }}
                                         />
                                     </div>
                                 </div>
-                                <span className="ml-4 font-bold text-green-600">{formatCurrency(item.revenue)}</span>
+                                <span className="ml-4 font-bold text-rose-600">{formatCurrency(item.amount)}</span>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="py-8 text-center text-gray-400 text-sm italic">
+                                No donations recorded in this period
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -52,7 +52,7 @@ export function LanguageSwitcher({ id = 'google_translate_element' }: LanguageSw
         if (!document.getElementById(scriptId)) {
             const script = document.createElement('script');
             script.id = scriptId;
-            script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+            script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
             script.async = true;
             document.body.appendChild(script);
         }

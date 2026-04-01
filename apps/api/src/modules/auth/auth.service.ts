@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
+import { randomUUID } from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 
@@ -29,6 +30,7 @@ export class AuthService {
         // Create user
         const user = await this.prisma.user.create({
             data: {
+                id: randomUUID(),
                 email: dto.email.toLowerCase(),
                 passwordHash,
                 firstName: dto.firstName,

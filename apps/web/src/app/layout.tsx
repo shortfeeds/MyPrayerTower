@@ -14,6 +14,8 @@ import { CookieConsent } from '@/components/CookieConsent';
 import { SkipToContent } from '@/components/ui/SkipToContent';
 import { SpiritualJourneyProvider } from '@/components/journey/SpiritualJourneyProvider';
 import { PricingProvider } from '@/contexts/PricingContext';
+import { headers } from 'next/headers';
+import { AudioProvider } from '@/components/audio/AudioContext';
 
 // Self-hosted fonts for performance
 const inter = Inter({
@@ -124,14 +126,15 @@ export const viewport = {
     themeColor: '#0a1835',
 };
 
-
-import { AudioProvider } from '@/components/audio/AudioContext';
-
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const headersList = await headers();
+    const pathname = headersList.get('x-pathname') || '';
+    const isAdminPage = pathname.startsWith('/admin') || pathname.startsWith('/church-dashboard');
+
     return (
         <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
             <head>
@@ -151,14 +154,20 @@ export default function RootLayout({
                         <SpiritualJourneyProvider>
                             <PricingProvider>
                                 <SkipToContent />
-                                <Header />
-                                <main id="main-content" className="flex-1 w-full">{children}</main>
-                                <Footer />
+                                {!isAdminPage && <Header />}
+                                <main id="main-content" className={isAdminPage ? "" : "flex-1 w-full"}>
+                                    {children}
+                                </main>
+                                {!isAdminPage && <Footer />}
 
-                                {/* Global Engagement Components */}
-                                <GlobalEngagement />
-                                <BackToTop />
-                                <CookieConsent />
+                                {!isAdminPage && (
+                                    <>
+                                        {/* Global Engagement Components */}
+                                        <GlobalEngagement />
+                                        <BackToTop />
+                                        <CookieConsent />
+                                    </>
+                                )}
 
                                 {/* Structured Data */}
                                 <Script
@@ -232,4 +241,3 @@ export default function RootLayout({
         </html>
     );
 }
-

@@ -43,8 +43,7 @@ export function AdminHeader({ user, onMenuClick }: AdminHeaderProps) {
 
     const fetchNotifications = async () => {
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/notifications?limit=5`);
+            const res = await fetch('/api/admin/notifications?limit=5');
             if (res.ok) {
                 const data = await res.json();
                 setNotifications(data.notifications || []);
@@ -66,10 +65,14 @@ export function AdminHeader({ user, onMenuClick }: AdminHeaderProps) {
     };
 
     return (
-        <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-30">
+        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-gray-200/50 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 transition-all duration-300">
             <div className="flex items-center gap-4 lg:hidden">
                 {/* Mobile menu trigger */}
-                <button onClick={onMenuClick} className="p-2 -ml-2 text-gray-600">
+                <button
+                    onClick={onMenuClick}
+                    className="p-2 -ml-2 text-gray-700 hover:bg-gray-100/50 rounded-xl transition-colors active:scale-95"
+                    aria-label="Open sidebar"
+                >
                     <Menu className="w-6 h-6" />
                 </button>
             </div>

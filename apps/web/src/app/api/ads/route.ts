@@ -36,10 +36,17 @@ export async function GET(request: NextRequest) {
         return response;
     } catch (error: any) {
         console.error('Ads API Error:', error);
+        // Robust fallback to prevent page crashes
         return NextResponse.json({
-            error: 'Failed to fetch ads',
             ads: [],
-            placementsMatrix: {}
-        }, { status: 500 });
+            placementsMatrix: {},
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Database unavailable'
+        }, { 
+            status: 200, // Return 200 with empty data to avoid client-side fetch errors
+            headers: {
+                'Cache-Control': 'no-store, max-age=0'
+            }
+        });
     }
+
 }

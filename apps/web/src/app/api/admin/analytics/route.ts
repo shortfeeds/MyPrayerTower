@@ -35,7 +35,9 @@ const getAnalytics = unstable_cache(
             totalPrayers,
             pendingPrayers,
             totalAds,
-            activeAds
+            activeAds,
+            totalOfferings,
+            totalDonations
         ] = await Promise.all([
             db.user.count(),
             db.user.count({ where: { createdAt: { gte: startDate } } }),
@@ -44,8 +46,40 @@ const getAnalytics = unstable_cache(
             db.prayerRequest.count(),
             db.prayerRequest.count({ where: { status: 'PENDING' } }),
             db.sponsoredContent.count(),
-            db.sponsoredContent.count({ where: { isActive: true } })
+            db.sponsoredContent.count({ where: { isActive: true } }),
+            db.massOffering.count({ where: { status: 'PAID' } }),
+            db.platformDonation.count({ where: { status: 'COMPLETED' } })
         ]);
+
+        // Financial data (Offerings and Platform Donations)
+        const revenueStats = await Promise.all([
+            db.massOffering.aggregate({
+                where: { status: 'PAID' },
+                _sum: { amount: true }
+            }),
+            db.platformDonation.aggregate({
+                where: { status: 'COMPLETED' },
+                _sum: { amount: true }
+            })
+        ]);
+
+        const totalRevenue = (revenueStats[0]._sum.amount || 0) + (revenueStats[1]._sum.amount || 0);
+
+        const salesGrowth = await db.$queryRaw`
+            SELECT date, SUM(count)::int as count FROM (
+                SELECT DATE("createdAt") as date, COUNT(*)::int as count 
+                FROM "MassOffering" 
+                WHERE "status" = 'PAID' AND "createdAt" >= ${startDate}
+                GROUP BY DATE("createdAt")
+                UNION ALL
+                SELECT DATE("createdAt") as date, COUNT(*)::int as count 
+                FROM "PlatformDonation" 
+                WHERE "status" = 'COMPLETED' AND "createdAt" >= ${startDate}
+                GROUP BY DATE("createdAt")
+            ) s
+            GROUP BY date
+            ORDER BY date ASC
+        ` as { date: Date, count: number }[];
 
         // Ad performance
         const adStats = await db.sponsoredContent.aggregate({
@@ -66,13 +100,21 @@ const getAnalytics = unstable_cache(
                 totalAds,
                 activeAds,
                 totalImpressions: adStats._sum.impressions || 0,
-                totalClicks: adStats._sum.clicks || 0
+                totalClicks: adStats._sum.clicks || 0,
+                totalOfferings,
+                totalDonations,
+                totalRevenue,
+                totalSales: totalOfferings + totalDonations
             },
             userGrowth: userGrowth.map(item => ({
                 date: new Date(item.date).toISOString(),
                 count: Number(item.count)
             })),
             prayerActivity: prayerActivity.map(item => ({
+                date: new Date(item.date).toISOString(),
+                count: Number(item.count)
+            })),
+            salesGrowth: salesGrowth.map(item => ({
                 date: new Date(item.date).toISOString(),
                 count: Number(item.count)
             }))

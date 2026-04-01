@@ -1,9 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { jwtVerify } from 'jose';
+import { cookies } from 'next/headers';
+
+const JWT_SECRET = new TextEncoder().encode(
+    process.env.JWT_SECRET || 'default-secret-key-change-this-in-prod'
+);
+
+async function verifyAdmin() {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('admin_session')?.value;
+
+    if (!token) return false;
+
+    try {
+        const { payload } = await jwtVerify(token, JWT_SECRET);
+        return payload.isAdmin === true;
+    } catch (error) {
+        return false;
+    }
+}
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+    if (!(await verifyAdmin())) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
@@ -14,13 +38,13 @@ export async function GET(request: NextRequest) {
         const where: any = { status };
 
         const [reports, total] = await Promise.all([
-            db.report.findMany({
+            db.userReport.findMany({
                 where,
                 skip,
                 take: limit,
                 orderBy: { createdAt: 'desc' },
                 include: {
-                    reporter: {
+                    User_UserReport_reporterIdToUser: {
                         select: {
                             id: true,
                             displayName: true,
@@ -29,24 +53,24 @@ export async function GET(request: NextRequest) {
                     }
                 }
             }),
-            db.report.count({ where })
+            db.userReport.count({ where })
         ]);
 
         return NextResponse.json({
             reports: reports.map(r => ({
                 id: r.id,
                 reason: r.reason,
-                description: r.description || r.details,
+                description: r.details,
                 status: r.status,
                 createdAt: r.createdAt.toISOString(),
-                reporter: r.reporter ? {
-                    id: r.reporter.id,
-                    name: r.reporter.displayName || 'User',
-                    email: r.reporter.email
+                reporter: r.User_UserReport_reporterIdToUser ? {
+                    id: r.User_UserReport_reporterIdToUser.id,
+                    name: r.User_UserReport_reporterIdToUser.displayName || 'User',
+                    email: r.User_UserReport_reporterIdToUser.email
                 } : null,
-                targetType: r.targetType,
-                targetId: r.targetId,
-                type: 'CONTENT_REPORT' // Frontend uses for badge
+                targetType: 'USER', // UserReport is specifically for users
+                targetId: r.reportedUserId,
+                type: 'USER_REPORT'
             })),
             total,
             page,

@@ -1,9 +1,7 @@
-import { AdminSidebar } from '@/components/admin/AdminSidebar';
-import { AdminHeader } from '@/components/admin/AdminHeader';
-import { Bell, Search, Menu } from 'lucide-react';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { jwtVerify } from 'jose';
+import { AdminLayoutContent } from '@/components/admin/AdminLayoutContent';
 
 const JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || 'default-secret-key-change-this-in-prod'
@@ -28,7 +26,6 @@ async function verifyAdminSession() {
     }
 }
 
-// Check if the current path is the login page
 async function isLoginPage() {
     const headersList = await headers();
     const pathname = headersList.get('x-pathname') || '';
@@ -56,17 +53,8 @@ export default async function AdminLayout({
     }
 
     return (
-        <div className="flex min-h-screen bg-gray-50">
-            <AdminSidebar />
-            <div className="flex-1 min-w-0 flex flex-col">
-                {/* Top Header Bar */}
-                <AdminHeader user={session} />
-
-                {/* Main Content */}
-                <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
-                    {children}
-                </main>
-            </div>
-        </div>
+        <AdminLayoutContent user={session}>
+            {children}
+        </AdminLayoutContent>
     );
 }

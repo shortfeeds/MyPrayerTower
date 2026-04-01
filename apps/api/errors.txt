@@ -1,0 +1,26 @@
+src/modules/ai/ai-suggestions.service.ts(52,17): error TS2322: Type '{ category: { name: { contains: string; mode: "insensitive"; }; }; }[] | undefined' is not assignable to type 'PrayerWhereInput[] | undefined'.
+  Type '{ category: { name: { contains: string; mode: "insensitive"; }; }; }[]' is not assignable to type 'PrayerWhereInput[]'.
+    Type '{ category: { name: { contains: string; mode: "insensitive"; }; }; }' is not assignable to type 'PrayerWhereInput'.
+      Types of property 'category' are incompatible.
+        Type '{ name: { contains: string; mode: "insensitive"; }; }' is not assignable to type 'string | StringFilter<"Prayer"> | undefined'.
+src/modules/ai/ai-suggestions.service.ts(60,24): error TS2353: Object literal may only specify known properties, and 'viewCount' does not exist in type 'PrayerOrderByWithRelationInput | PrayerOrderByWithRelationInput[]'.
+src/modules/ai/ai-suggestions.service.ts(64,9): error TS2322: Type '{ id: bigint; title: string; category: any; reason: string; confidence: number; }[]' is not assignable to type 'PrayerSuggestion[]'.
+  Type '{ id: bigint; title: string; category: any; reason: string; confidence: number; }' is not assignable to type 'PrayerSuggestion'.
+    Types of property 'id' are incompatible.
+      Type 'bigint' is not assignable to type 'string'.
+src/modules/ai/ai-suggestions.service.ts(68,44): error TS2339: Property 'name' does not exist on type 'string'.
+src/modules/ai/ai-suggestions.service.ts(69,62): error TS2339: Property 'name' does not exist on type 'string'.
+src/modules/ai/ai-suggestions.service.ts(70,71): error TS2339: Property 'name' does not exist on type 'string'.
+src/modules/ai/ai-suggestions.service.ts(88,17): error TS2322: Type 'number' is not assignable to type 'string | StringNullableFilter<"Saint"> | null | undefined'.
+src/modules/ai/ai-suggestions.service.ts(104,22): error TS2353: Object literal may only specify known properties, and 'isPublished' does not exist in type 'PrayerWhereInput'.
+src/modules/ai/ai-suggestions.service.ts(105,24): error TS2353: Object literal may only specify known properties, and 'viewCount' does not exist in type 'PrayerOrderByWithRelationInput | PrayerOrderByWithRelationInput[]'.
+src/modules/ai/ai-suggestions.service.ts(111,17): error TS2322: Type 'bigint' is not assignable to type 'string'.
+src/modules/ai/ai-suggestions.service.ts(113,45): error TS2339: Property 'name' does not exist on type 'string'.
+src/modules/ai/ai-suggestions.service.ts(159,22): error TS2322: Type 'string' is not assignable to type 'number | bigint | undefined'.
+src/modules/ai/ai-suggestions.service.ts(167,23): error TS2322: Type 'string' is not assignable to type 'number | bigint | NestedBigIntFilter<"Prayer"> | undefined'.
+src/modules/ai/ai-suggestions.service.ts(168,36): error TS2551: Property 'categoryId' does not exist on type '{ id: bigint; slug: string | null; title: string; content: string; category: string; category_label: string | null; tags: string[]; is_active: boolean | null; created_at: Date | null; }'. Did you mean 'category'?
+src/modules/ai/ai-suggestions.service.ts(172,24): error TS2353: Object literal may only specify known properties, and 'viewCount' does not exist in type 'PrayerOrderByWithRelationInput | PrayerOrderByWithRelationInput[]'.
+src/modules/analytics/analytics.controller.ts(3,28): error TS2307: Cannot find module '../../guards/roles.guard' or its corresponding type declarations.
+src/modules/analytics/analytics.controller.ts(4,23): error TS2307: Cannot find module '../../decorators/roles.decorator' or its corresponding type declarations.
+src/modules/analytics/analytics.controller.ts(5,10): error TS2305: Module '"@prisma/client"' has no exported member 'Role'.
+src/modules/analytics/analytics.service.ts(141,67): error TS2820: Type '"free"' is not assignable to type 'SubscriptionTier | NestedEnumSubscriptionTierFilter<"User"> | undefined'. Did you mean '"FREE"'?

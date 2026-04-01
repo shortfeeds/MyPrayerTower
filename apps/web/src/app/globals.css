@@ -200,6 +200,7 @@ body {
 html {
   background-color: #ffffff;
   color: #0f172a;
+  scroll-behavior: smooth;
 }
 
 html.dark {
@@ -211,7 +212,36 @@ body {
   font-family: var(--font-inter), system-ui, sans-serif;
   background-color: inherit;
   color: inherit;
+  -webkit-font-smoothing: antialiased;
+  
+  /* Native App Feel: Disable generic web behaviors */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  overscroll-behavior-y: none; /* Disables "pull-to-refresh" bounce in some browsers */
 }
+
+/* Re-enable selection for inputs, textareas, and specific selectable items */
+input, textarea, [contenteditable="true"], .selectable {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Premium Dashboard UI */
+.admin-card {
+  @apply bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm transition-all duration-300;
+}
+
+.admin-card:hover {
+  @apply shadow-md border-blue-500/20 -translate-y-0.5;
+}
+
+
+.admin-glass {
+  @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-white/5;
+}
+
 
 /* ========================================
    SEMANTIC DARK MODE UTILITIES
@@ -715,7 +745,7 @@ body {
 
   a,
   button {
-    -webkit-tap-highlight-color: rgba(212, 175, 55, 0.1);
+    -webkit-tap-highlight-color: transparent;
   }
 }
 

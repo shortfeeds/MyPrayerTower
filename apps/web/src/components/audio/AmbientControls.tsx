@@ -11,7 +11,7 @@ export function AmbientControls() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="fixed bottom-24 right-6 z-40">
+        <div className="fixed bottom-24 right-6 z-50">
             <AnimatePresence>
                 {isOpen && (
                     <motion.div

@@ -33,7 +33,7 @@ const CORE_ACTIONS = [
         icon: Heart,
         title: 'Eternal Memorials',
         description: 'Create lasting tributes for loved ones who have passed.',
-        cta: 'Honor Your Loved Ones',
+        cta: 'Honor Loved Ones',
         href: '/memorials',
         color: 'from-rose-500 to-pink-600',
         bgColor: 'from-rose-50 to-pink-50 dark:from-rose-950/50 dark:to-pink-950/50',
@@ -65,7 +65,7 @@ export function CoreActions() {
                     </p>
                 </div>
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto items-stretch">
                     {CORE_ACTIONS.map((action, idx) => (
                         <motion.div
                             key={action.id}
@@ -73,7 +73,7 @@ export function CoreActions() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.1 }}
                             viewport={{ once: true }}
-                            className={`relative bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 border border-gray-100 dark:border-slate-700 hover:border-gold-500/30 transition-all duration-500 group overflow-hidden`}
+                            className={`relative bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 border border-gray-100 dark:border-slate-700 hover:border-gold-500/30 transition-all duration-500 group overflow-hidden flex flex-col`}
                         >
                             {/* Subtle Background Accent */}
                             <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${action.color} opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500 rounded-bl-full`} />
@@ -92,7 +92,7 @@ export function CoreActions() {
 
                             <Link
                                 href={action.href}
-                                className={`inline-flex items-center justify-center w-full py-3.5 bg-gradient-to-r ${action.color} text-white font-bold rounded-2xl shadow-[0_10px_20px_rgba(0,0,0,0.1)] group-hover:shadow-[0_15px_30px_rgba(0,0,0,0.15)] transform active:scale-95 transition-all text-sm`}
+                                className={`inline-flex items-center justify-center w-full py-3.5 bg-gradient-to-r ${action.color} text-white font-bold rounded-2xl shadow-[0_10px_20px_rgba(0,0,0,0.1)] group-hover:shadow-[0_15px_30px_rgba(0,0,0,0.15)] transform active:scale-95 transition-all text-sm mt-auto`}
                             >
                                 {action.cta}
                             </Link>

@@ -11,7 +11,9 @@ import {
     BarChart3,
     Activity,
     Globe,
-    Clock
+    Clock,
+    DollarSign,
+    CreditCard
 } from 'lucide-react';
 import { db } from '@/lib/db';
 
@@ -29,7 +31,9 @@ async function OverviewStats() {
         totalPrayers,
         newPrayersThisWeek,
         adImpressions,
-        adClicks
+        adClicks,
+        offeringRevenue,
+        donationRevenue
     ] = await Promise.all([
         db.user.count(),
         db.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
@@ -38,28 +42,37 @@ async function OverviewStats() {
         db.prayerRequest.count(),
         db.prayerRequest.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
         db.sponsoredContent.aggregate({ _sum: { impressions: true } }),
-        db.sponsoredContent.aggregate({ _sum: { clicks: true } })
+        db.sponsoredContent.aggregate({ _sum: { clicks: true } }),
+        db.massOffering.aggregate({ where: { status: 'PAID' }, _sum: { amount: true } }),
+        db.platformDonation.aggregate({ where: { status: 'COMPLETED' }, _sum: { amount: true } })
     ]);
 
+    const totalRevenueCents = (offeringRevenue._sum.amount || 0) + (donationRevenue._sum.amount || 0);
+    const totalRevenue = totalRevenueCents / 100;
+
     const stats = [
-        { label: 'Total Users', value: totalUsers, change: `+${newUsersThisMonth} this month`, icon: Users, color: 'text-blue-600' },
-        { label: 'Churches', value: totalChurches, change: 'Active listings', icon: Church, color: 'text-indigo-600' },
-        { label: 'Saints', value: totalSaints, change: 'In database', icon: Crown, color: 'text-amber-600' },
-        { label: 'Prayer Requests', value: totalPrayers, change: `+${newPrayersThisWeek} this week`, icon: Heart, color: 'text-rose-600' },
-        { label: 'Ad Impressions', value: adImpressions._sum.impressions || 0, change: 'Total views', icon: Eye, color: 'text-green-600' },
-        { label: 'Ad Clicks', value: adClicks._sum.clicks || 0, change: 'Total clicks', icon: MousePointer, color: 'text-purple-600' },
+        { label: 'Total Users', value: totalUsers.toLocaleString(), change: `+${newUsersThisMonth} this month`, icon: Users, color: 'text-blue-600' },
+        { label: 'Revenue', value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totalRevenue), change: 'Total platform sales', icon: DollarSign, color: 'text-emerald-600' },
+        { label: 'Prayer Requests', value: totalPrayers.toLocaleString(), change: `+${newPrayersThisWeek} this week`, icon: Heart, color: 'text-rose-600' },
+        { label: 'Churches', value: totalChurches.toLocaleString(), change: 'Active listings', icon: Church, color: 'text-indigo-600' },
+        { label: 'Saints', value: totalSaints.toLocaleString(), change: 'In database', icon: Crown, color: 'text-amber-600' },
+        { label: 'Ad Clicks', value: (adClicks._sum.clicks || 0).toLocaleString(), change: 'Total engagement', icon: MousePointer, color: 'text-purple-600' },
     ];
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
             {stats.map(stat => (
-                <div key={stat.label} className="bg-white rounded-xl p-5 border border-gray-100">
-                    <div className="flex items-center gap-2 mb-2">
-                        <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                        <span className="text-sm text-gray-500">{stat.label}</span>
+                <div key={stat.label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                    <div className="flex items-center gap-2 mb-3">
+                        <div className={`p-2 rounded-lg bg-gray-50`}>
+                            <stat.icon className={`w-4 h-4 ${stat.color}`} />
+                        </div>
+                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{stat.label}</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value.toLocaleString()}</p>
-                    <p className="text-xs text-gray-400 mt-1">{stat.change}</p>
+                    <p className="text-2xl font-bold text-gray-900 tracking-tight">{stat.value}</p>
+                    <p className="text-[10px] font-medium text-gray-400 mt-2 flex items-center gap-1 uppercase">
+                        {stat.change}
+                    </p>
                 </div>
             ))}
         </div>
@@ -90,29 +103,31 @@ async function UserGrowthChart() {
     const maxCount = Math.max(...months.map(m => m.count), 1);
 
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-6">
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h3 className="font-bold text-gray-900">User Growth</h3>
-                    <p className="text-sm text-gray-500">New registrations per month</p>
+                    <h3 className="text-lg font-bold text-gray-900">User Growth</h3>
+                    <p className="text-sm text-gray-400 mt-0.5">New registrations per month</p>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-green-600">
-                    <TrendingUp className="w-4 h-4" />
-                    Growing
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-full text-xs font-semibold">
+                    <TrendingUp className="w-3.5 h-3.5" />
+                    <span>Active Growth</span>
                 </div>
             </div>
 
-            <div className="flex items-end gap-4 h-48">
+            <div className="flex items-end gap-3 sm:gap-4 h-48 px-2">
                 {months.map((month, i) => (
-                    <div key={i} className="flex-1 flex flex-col items-center">
-                        <div className="w-full flex flex-col items-center">
-                            <span className="text-sm font-medium text-gray-900 mb-2">{month.count}</span>
+                    <div key={i} className="flex-1 flex flex-col items-center group">
+                        <div className="w-full flex flex-col items-center relative">
+                            <span className="absolute -top-7 text-[10px] font-bold text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white px-1.5 py-0.5 rounded">
+                                {month.count}
+                            </span>
                             <div
-                                className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg transition-all hover:from-blue-600 hover:to-blue-500"
+                                className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-lg transition-all duration-300 group-hover:from-blue-700 group-hover:to-blue-500 shadow-sm"
                                 style={{ height: `${(month.count / maxCount) * 160}px`, minHeight: '8px' }}
                             />
                         </div>
-                        <span className="text-xs text-gray-500 mt-2">{month.name}</span>
+                        <span className="text-[10px] font-bold text-gray-400 mt-3 uppercase tracking-tighter">{month.name}</span>
                     </div>
                 ))}
             </div>

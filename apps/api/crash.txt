@@ -1,0 +1,3 @@
+ΓÇëERR_PNPM_NO_SCRIPTΓÇë Missing script: start:dev
+
+Command "start:dev" not found. Did you mean "pnpm run start:prod"?

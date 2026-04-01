@@ -2,6 +2,15 @@
 
 import { db } from '@/lib/db';
 import { startOfMonth, subMonths, format, startOfDay, subDays } from 'date-fns';
+ 
+// Hard Reset Date for Fresh App Start (April 2026)
+const REVENUE_START_DATE = new Date('2026-04-01T00:00:00Z');
+
+export interface RevenueBreakdown {
+    type: string;
+    amount: number;
+    count: number;
+}
 
 export interface RevenueStats {
     totalRevenue: number;
@@ -12,6 +21,8 @@ export interface RevenueStats {
     avgOrderValue: number;
     topOfferingType: string;
     topDonationTier: string;
+    massBreakdown: RevenueBreakdown[];
+    donationBreakdown: RevenueBreakdown[];
 }
 
 export interface RevenueData {
@@ -24,66 +35,93 @@ export interface RevenueData {
 
 export async function getRevenueStats(): Promise<RevenueStats> {
     try {
-        // 1. Fetch Aggregates from Real Tables
-        const [massStats, donationStats, subStats, candleStats] = await Promise.all([
+        // 1. Fetch Aggregates and Breakdowns in Parallel for Maximum Speed
+        const [
+            massStats, 
+            donationStats, 
+            subStats, 
+            candleStats,
+            massGroups,
+            donationGroups
+        ] = await Promise.all([
             db.massOffering.aggregate({
-                where: { status: 'PAID' }, // Changed paymentStatus to status for MassOffering based on common schema pattern
+                where: { status: 'PAID', createdAt: { gte: REVENUE_START_DATE } },
                 _sum: { amount: true },
                 _count: true
             }),
-            db.donation.aggregate({
-                where: { status: 'COMPLETED' },
+            db.platformDonation.aggregate({
+                where: { status: 'COMPLETED', createdAt: { gte: REVENUE_START_DATE } },
                 _sum: { amount: true },
                 _count: true
             }),
             db.purchaseEvent.aggregate({
-                where: { status: 'COMPLETED', productType: 'subscription' },
+                where: { status: 'COMPLETED', productType: 'subscription', purchasedAt: { gte: REVENUE_START_DATE } },
                 _sum: { amount: true },
                 _count: true
             }),
             db.prayerCandle.aggregate({
-                where: { paymentStatus: 'PAID' },
+                where: { paymentStatus: 'PAID', litAt: { gte: REVENUE_START_DATE } },
                 _sum: { amount: true },
                 _count: true
+            }),
+            db.massOffering.groupBy({
+                by: ['offeringType'],
+                where: { status: 'PAID', createdAt: { gte: REVENUE_START_DATE } },
+                _sum: { amount: true },
+                _count: { offeringType: true },
+                orderBy: { _sum: { amount: 'desc' } }
+            }),
+            db.platformDonation.groupBy({
+                by: ['tier'],
+                where: { status: 'COMPLETED', createdAt: { gte: REVENUE_START_DATE } },
+                _sum: { amount: true },
+                _count: { tier: true },
+                orderBy: { _sum: { amount: 'desc' } }
             })
         ]);
 
-        // 2. Fetch Mass Offering Breakdown
-        const topMassType = await db.massOffering.groupBy({
-            by: ['offeringType'],
-            where: { status: 'PAID' },
-            _count: { offeringType: true },
-            orderBy: {
-                _count: { offeringType: 'desc' }
-            },
-            take: 1
-        });
-
-        // 3. Fetch Donation Tier Breakdown
-        // Assuming PlatformDonation or similar has tier. The new code uses 'Donation' model
-        // which might be simpler. Let's inspect if Donation has tiers.
-        // If not, we skip grouping or return placeholder.
-        // For now, let's skip grouping on Donation to avoid error if tier is missing on 'Donation'.
-        // Only PlatformDonation had Tiers in the schema view usually.
-        // Let's stick to safe defaults.
-
-        const massRevenue = massStats._sum.amount || 0;
-        const donationRevenue = (donationStats._sum.amount || 0) + (candleStats._sum.amount || 0);
-        const subscriptionRevenue = subStats._sum.amount || 0;
+        const massRevenue = massStats._sum?.amount || 0;
+        const donationRevenue = (donationStats._sum?.amount || 0) + (candleStats._sum?.amount || 0);
+        const subscriptionRevenue = subStats._sum?.amount || 0;
 
         const totalRevenue = massRevenue + donationRevenue + subscriptionRevenue;
         const totalOrders = (massStats._count || 0) + (donationStats._count || 0) + (candleStats._count || 0) + (subStats._count || 0);
         const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+
+        // Map Mass Breakdowns
+        const massBreakdown: RevenueBreakdown[] = massGroups.map(g => ({
+            type: String(g.offeringType || 'Unknown'),
+            amount: g._sum?.amount || 0,
+            count: g._count?.offeringType || 0
+        }));
+
+        // Map Donation Breakdowns
+        const donationBreakdown: RevenueBreakdown[] = donationGroups.map(g => ({
+            type: String(g.tier || 'Custom'),
+            amount: g._sum?.amount || 0,
+            count: g._count?.tier || 0
+        }));
+
+        // Add Candle breakdown to donations if not present
+        if (candleStats._count > 0) {
+            donationBreakdown.push({
+                type: 'VIRTUAL_CANDLE',
+                amount: candleStats._sum?.amount || 0,
+                count: candleStats._count || 0
+            });
+        }
 
         return {
             totalRevenue,
             massOfferingsRevenue: massRevenue,
             donationsRevenue: donationRevenue,
             subscriptionsRevenue: subscriptionRevenue,
-            growthPercent: 0,
+            growthPercent: 0, // Calculated separately if needed
             avgOrderValue,
-            topOfferingType: (topMassType as any)[0]?.offeringType || 'Standard Mass',
-            topDonationTier: 'Custom Amount'
+            topOfferingType: massBreakdown[0]?.type || 'N/A',
+            topDonationTier: donationBreakdown[0]?.type || 'N/A',
+            massBreakdown,
+            donationBreakdown
         };
 
     } catch (error) {
@@ -96,7 +134,9 @@ export async function getRevenueStats(): Promise<RevenueStats> {
             growthPercent: 0,
             avgOrderValue: 0,
             topOfferingType: 'N/A',
-            topDonationTier: 'N/A'
+            topDonationTier: 'N/A',
+            massBreakdown: [],
+            donationBreakdown: []
         };
     }
 }
@@ -118,22 +158,25 @@ export async function getRevenueChartData(period: '7d' | '30d' | '90d' | '12m' |
             dateFormat = 'MMM yyyy';
         }
 
+        // Ensure we never start before the Global Reset Date
+        const effectiveStartDate = startDate < REVENUE_START_DATE ? REVENUE_START_DATE : startDate;
+ 
         // Fetch all raw records since startDate
         const [masses, donations, candles, subs] = await Promise.all([
             db.massOffering.findMany({
-                where: { createdAt: { gte: startDate }, status: 'PAID' },
+                where: { createdAt: { gte: effectiveStartDate }, status: 'PAID' },
                 select: { createdAt: true, amount: true }
             }),
             db.donation.findMany({
-                where: { createdAt: { gte: startDate }, status: 'COMPLETED' },
+                where: { createdAt: { gte: effectiveStartDate }, status: 'COMPLETED' },
                 select: { createdAt: true, amount: true }
             }),
             db.prayerCandle.findMany({
-                where: { litAt: { gte: startDate }, paymentStatus: 'PAID' },
+                where: { litAt: { gte: effectiveStartDate }, paymentStatus: 'PAID' },
                 select: { litAt: true, amount: true }
             }),
             db.purchaseEvent.findMany({
-                where: { purchasedAt: { gte: startDate }, status: 'COMPLETED' },
+                where: { purchasedAt: { gte: effectiveStartDate }, status: 'COMPLETED' },
                 select: { purchasedAt: true, amount: true }
             })
         ]);

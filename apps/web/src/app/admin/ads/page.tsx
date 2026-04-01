@@ -20,8 +20,6 @@ interface Advertisement {
     startDate: string | null;
     endDate: string | null;
     platforms: string[];
-    androidAdUnitId: string;
-    iosAdUnitId: string;
     createdAt: string;
 }
 
@@ -31,6 +29,7 @@ const POSITIONS = ['top', 'sidebar', 'inline', 'bottom'];
 export default function AdminAdsPage() {
     const [ads, setAds] = useState<Advertisement[]>([]);
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [editingAd, setEditingAd] = useState<Advertisement | null>(null);
     const [formData, setFormData] = useState({
@@ -46,22 +45,23 @@ export default function AdminAdsPage() {
         isActive: true,
         startDate: '',
         endDate: '',
-        platforms: ['web', 'android', 'ios'],
-        androidAdUnitId: '',
-        iosAdUnitId: ''
+        platforms: ['web', 'android', 'ios']
     });
 
     useEffect(() => {
+        setMounted(true);
         fetchAds();
     }, []);
 
     const fetchAds = async () => {
         try {
+            console.log('📡 Fetching ads from /api/admin/ads...');
             const res = await fetch('/api/admin/ads');
             const data = await res.json();
+            console.log('✅ Ads received:', data);
             setAds(data.ads || []);
         } catch (err) {
-            console.error('Failed to fetch ads:', err);
+            console.error('❌ Failed to fetch ads:', err);
         } finally {
             setLoading(false);
         }
@@ -125,9 +125,7 @@ export default function AdminAdsPage() {
             isActive: true,
             startDate: '',
             endDate: '',
-            platforms: ['web', 'android', 'ios'],
-            androidAdUnitId: '',
-            iosAdUnitId: ''
+            platforms: ['web', 'android', 'ios']
         });
     };
 
@@ -146,9 +144,7 @@ export default function AdminAdsPage() {
             isActive: ad.isActive,
             startDate: ad.startDate || '',
             endDate: ad.endDate || '',
-            platforms: (ad as any).platforms || ['web', 'android', 'ios'],
-            androidAdUnitId: (ad as any).androidAdUnitId || '',
-            iosAdUnitId: (ad as any).iosAdUnitId || ''
+            platforms: (ad as any).platforms || ['web', 'android', 'ios']
         });
         setShowForm(true);
     };
@@ -162,44 +158,48 @@ export default function AdminAdsPage() {
     const offlineAds = ads.filter(a => a.adSource !== 'GOOGLE');
     const googleAds = ads.filter(a => a.adSource === 'GOOGLE');
 
+    if (!mounted) return null;
+
     return (
         <div>
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Advertisements</h1>
                     <p className="text-gray-500 mt-1">Manage offline sponsors and Google AdMob/AdSense ads</p>
                 </div>
                 <button
                     onClick={() => { resetForm(); setEditingAd(null); setShowForm(true); }}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-xl transition-all active:scale-95 shadow-lg shadow-amber-600/20"
                 >
                     <Plus className="w-5 h-5" />
-                    Add New Ad
+                    <span>Add New Ad</span>
                 </button>
             </div>
 
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-                <div className="bg-white rounded-xl p-5 border border-gray-200">
-                    <p className="text-sm text-gray-500">Total Ads</p>
-                    <p className="text-3xl font-bold text-gray-900">{ads.length}</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Ads</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-1">{ads.length}</p>
                 </div>
-                <div className="bg-white rounded-xl p-5 border border-gray-200">
-                    <p className="text-sm text-gray-500">Offline Sponsors</p>
-                    <p className="text-3xl font-bold text-purple-600">{offlineAds.length}</p>
+                <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Sponsors</p>
+                    <p className="text-3xl font-bold text-purple-600 mt-1">{offlineAds.length}</p>
                 </div>
-                <div className="bg-white rounded-xl p-5 border border-gray-200">
-                    <p className="text-sm text-gray-500">Google Ads</p>
-                    <p className="text-3xl font-bold text-blue-600">{googleAds.length}</p>
+                <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Google</p>
+                    <p className="text-3xl font-bold text-amber-600 mt-1">{googleAds.length}</p>
                 </div>
-                <div className="bg-white rounded-xl p-5 border border-gray-200">
-                    <p className="text-sm text-gray-500">Total Impressions</p>
-                    <p className="text-3xl font-bold text-emerald-600">{ads.reduce((sum, a) => sum + a.impressions, 0).toLocaleString()}</p>
+                <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Views</p>
+                    <p className="text-xl font-bold text-emerald-600 mt-2">{ads.reduce((sum, a) => sum + a.impressions, 0).toLocaleString()}</p>
                 </div>
-                <div className="bg-white rounded-xl p-5 border border-gray-200">
-                    <p className="text-sm text-gray-500">Total Clicks</p>
-                    <p className="text-3xl font-bold text-amber-600">{ads.reduce((sum, a) => sum + a.clicks, 0).toLocaleString()}</p>
+                <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">CTR</p>
+                    <p className="text-xl font-bold text-blue-600 mt-2">
+                        {getCTR(ads.reduce((sum, a) => sum + a.clicks, 0), ads.reduce((sum, a) => sum + a.impressions, 0))}
+                    </p>
                 </div>
             </div>
 
@@ -250,8 +250,8 @@ export default function AdminAdsPage() {
                         </tbody>
                     </table>
                 </div>
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                    <p className="text-sm text-blue-800">
+                <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-100">
+                    <p className="text-sm text-amber-800">
                         <strong>💡 Tip:</strong> Create Google AdSense units: Top Banner (728×90), Sidebar (300×250), In-Feed (Fluid)
                     </p>
                 </div>
@@ -307,7 +307,7 @@ export default function AdminAdsPage() {
                                                 {ad.adSource === 'GOOGLE' ? (
                                                     <p className="text-xs text-gray-500">Unit: {ad.googleAdUnitId || 'Not set'}</p>
                                                 ) : ad.linkUrl && (
-                                                    <a href={ad.linkUrl} target="_blank" rel="noopener" className="text-xs text-blue-600 hover:underline flex items-center gap-1">
+                                                    <a href={ad.linkUrl} target="_blank" rel="noopener" className="text-xs text-amber-600 hover:underline flex items-center gap-1">
                                                         {ad.linkUrl.substring(0, 30)}...
                                                         <ExternalLink className="w-3 h-3" />
                                                     </a>
@@ -339,7 +339,7 @@ export default function AdminAdsPage() {
                                         <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded">
                                             {ad.page}
                                         </span>
-                                        <span className="inline-block px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded ml-1">
+                                        <span className="inline-block px-2 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded ml-1">
                                             {ad.position}
                                         </span>
                                         {ad.priority > 0 && (
@@ -376,7 +376,7 @@ export default function AdminAdsPage() {
                                             </button>
                                             <button
                                                 onClick={() => openEditForm(ad)}
-                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
                                                 title="Edit"
                                             >
                                                 <Edit2 className="w-4 h-4" />
@@ -474,32 +474,8 @@ export default function AdminAdsPage() {
                                                 required
                                             />
                                             <p className="text-xs text-gray-500 mt-1">
-                                                For web: Use AdSense Slot ID
+                                                For web: Use AdSense Slot ID. For TWA/App: Use AdMob Unit ID.
                                             </p>
-                                        </div>
-                                        <div className="col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Android Unit ID
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={formData.androidAdUnitId}
-                                                onChange={(e) => setFormData({ ...formData, androidAdUnitId: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono"
-                                                placeholder="ca-app-pub-..."
-                                            />
-                                        </div>
-                                        <div className="col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                iOS Unit ID
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={formData.iosAdUnitId}
-                                                onChange={(e) => setFormData({ ...formData, iosAdUnitId: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono"
-                                                placeholder="ca-app-pub-..."
-                                            />
                                         </div>
                                         <div className="col-span-2">
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Target Platforms</label>
@@ -627,25 +603,29 @@ export default function AdminAdsPage() {
 
                                 <div></div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date (Optional)</label>
-                                    <input
-                                        type="date"
-                                        value={formData.startDate}
-                                        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
+                                {formData.adSource === 'OFFLINE' && (
+                                    <>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date (Optional)</label>
+                                            <input
+                                                type="date"
+                                                value={formData.startDate}
+                                                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            />
+                                        </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">End Date (Optional)</label>
-                                    <input
-                                        type="date"
-                                        value={formData.endDate}
-                                        onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">End Date (Optional)</label>
+                                            <input
+                                                type="date"
+                                                value={formData.endDate}
+                                                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            />
+                                        </div>
+                                    </>
+                                )}
 
                                 <div className="col-span-2">
                                     <label className="flex items-center gap-3 cursor-pointer">
@@ -670,7 +650,7 @@ export default function AdminAdsPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-xl transition-all active:scale-95 shadow-lg shadow-amber-600/20"
                                 >
                                     <Save className="w-4 h-4" />
                                     {editingAd ? 'Update Ad' : 'Create Ad'}

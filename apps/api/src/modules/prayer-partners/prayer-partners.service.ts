@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import { NotificationType, PrayerPartnerStatus } from '@prisma/client';
+import { NotificationType, PrayerPartnerStatus, NotificationAudience } from '@prisma/client';
 
 @Injectable()
 export class PrayerPartnersService {
@@ -60,12 +60,18 @@ export class PrayerPartnersService {
         });
 
         // Notify receiver
-        await this.notifications.createNotification({
-            userId: receiver.id,
-            type: NotificationType.PRAYER_PARTNER_REQUEST, // Ensure this enum exists or map to correct one
+        const notification = await this.notifications.create({
             title: 'New Prayer Partner Request',
-            body: `${request.requester.firstName} wants to be your prayer partner.`,
-            data: { requestId: request.id },
+            message: `${request.requester.firstName} wants to be your prayer partner.`,
+            type: NotificationType.IN_APP,
+            targetAudience: NotificationAudience.SPECIFIC,
+        });
+        await this.prisma.notificationReceiver.create({
+            data: {
+                notificationId: notification.id,
+                userId: receiver.id,
+                status: 'PENDING'
+            }
         });
 
         return request;
@@ -90,12 +96,18 @@ export class PrayerPartnersService {
 
         if (accept) {
             // Notify requester
-            await this.notifications.createNotification({
-                userId: request.requesterId,
-                type: NotificationType.PRAYER_PARTNER_ACCEPTED, // Ensure enum matches
+            const notification = await this.notifications.create({
                 title: 'Prayer Partner Accepted',
-                body: `${request.receiver.firstName} accepted your request.`,
-                data: { partnerId: updated.id },
+                message: `${request.receiver.firstName} accepted your request.`,
+                type: NotificationType.IN_APP,
+                targetAudience: NotificationAudience.SPECIFIC,
+            });
+            await this.prisma.notificationReceiver.create({
+                data: {
+                    notificationId: notification.id,
+                    userId: request.requesterId,
+                    status: 'PENDING'
+                }
             });
         }
 
