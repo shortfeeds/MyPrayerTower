@@ -178,8 +178,8 @@ export function AdminSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen
                     </div>
                 </div>
 
-                {/* Navigation - Non-scrollable Section */}
-                <nav className="flex-1 p-2 space-y-0.5 overflow-hidden">
+                {/* Navigation - Scrollable Section */}
+                <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto admin-sidebar-scroll">
                     {menuItems.map((item) => {
                         const Icon = item.icon;
                         const active = isActive(item.href);
