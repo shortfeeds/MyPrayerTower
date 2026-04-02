@@ -9,13 +9,14 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GlobalEngagement } from '@/components/GlobalEngagement';
-import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/CookieConsent';
 import { SkipToContent } from '@/components/ui/SkipToContent';
 import { SpiritualJourneyProvider } from '@/components/journey/SpiritualJourneyProvider';
 import { PricingProvider } from '@/contexts/PricingContext';
 import { headers } from 'next/headers';
-import { AudioProvider } from '@/components/audio/AudioContext';
+import dynamic from 'next/dynamic';
+
+const BackToTop = dynamic(() => import('@/components/ui/BackToTop').then(m => m.BackToTop), { ssr: false });
 
 // Self-hosted fonts for performance
 const inter = Inter({
@@ -150,7 +151,6 @@ export default async function RootLayout({
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
                 <ThemeProvider>
-                    <AudioProvider>
                         <SpiritualJourneyProvider>
                             <PricingProvider>
                                 <SkipToContent />
@@ -223,7 +223,6 @@ export default async function RootLayout({
                                 />
                             </PricingProvider>
                         </SpiritualJourneyProvider>
-                    </AudioProvider>
                 </ThemeProvider>
 
                 <Analytics />

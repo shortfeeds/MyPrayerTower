@@ -2,12 +2,14 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Heart, Plus, Search, Flame, Flower, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
 import { SACRED_COPY } from '@/lib/sacred-copy';
 import { getMemorials } from '@/app/actions/memorials';
 import { Memorial } from '@/lib/types/memorials';
 import { MemorialCard } from './_components/memorial-card';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
+
+// ISR: cache memorials listing for 1 hour
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
     title: 'Eternal Memorials | MyPrayerTower',

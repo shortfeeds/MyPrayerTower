@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { cookies } from 'next/headers';
 import { ArrowRight } from 'lucide-react';
 import { CoreActions } from '@/components/home/CoreActions';
 import { SocialReassurance } from '@/components/home/SocialReassurance';
@@ -11,7 +10,6 @@ import { DailyFocus } from '@/components/home/DailyFocus';
 import { ParticleBackground } from '@/components/ui/ParticleBackground';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { AppDownloadBanner } from '@/components/home/PromotionalBanner';
-import { PersonalizedHome } from '@/components/dashboard/PersonalizedHome';
 import { MemorialsBanner } from '@/components/home/MemorialsBanner';
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay } from '@/app/actions/home';
 import { WelcomeGreeting } from '@/components/home/WelcomeGreeting';
@@ -213,13 +211,10 @@ async function LoggedOutHomePage() {
     );
 }
 
+// ISR: revalidate every hour — homepage was previously SSR on every request due to cookies()
+export const revalidate = 3600;
+
 export default async function Home() {
-    const session = cookies().get('user_session');
-
-    if (session) {
-        return <PersonalizedHome />;
-    }
-
     return (
         <>
             <JsonLd<any> data={{

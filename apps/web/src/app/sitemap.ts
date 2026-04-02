@@ -4,7 +4,10 @@ import { NOVENAS } from '@/lib/novenas';
 import { getAllGuides, getAllPosts } from '@/lib/content';
 
 const baseUrl = 'https://myprayertower.com';
-const CHUNK_SIZE = 10000; // Large chunk size for sitemap logic
+
+// ISR: cache sitemap for 24 hours — previously regenerated on every crawl request,
+// querying 20,000+ churches + all saints + all prayers each time
+export const revalidate = 86400;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const staticRoutes = [

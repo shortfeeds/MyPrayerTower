@@ -1,88 +1,35 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
 
-// Security headers
-const getSecurityHeaders = (pathname: string) => {
-    const headers: Record<string, string> = {
-        'X-Content-Type-Options': 'nosniff',
-        'X-XSS-Protection': '1; mode=block',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self), payment=()',
-    };
-
-    // Telegram Mini Apps need to be embeddable
-    if (pathname.startsWith('/bot')) {
-        headers['X-Frame-Options'] = 'ALLOWALL'; // Or specific ALLOW-FROM if supported
-    } else {
-        headers['X-Frame-Options'] = 'DENY';
-    }
-
-    const frameAncestors = pathname.startsWith('/bot')
-        ? "'self' https://t.me https://web.telegram.org https://desktop.telegram.org"
-        : "'none'";
-
-    return headers;
-};
-
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW = 60 * 1000;
-const RATE_LIMIT_MAX_REQUESTS = 100;
-
-function getRateLimitKey(request: NextRequest): string {
-    const forwarded = request.headers.get('x-forwarded-for');
-    const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown';
-    return ip;
-}
-
-function isRateLimited(key: string): boolean {
-    const now = Date.now();
-    const record = rateLimitStore.get(key);
-    if (!record || now > record.resetTime) {
-        rateLimitStore.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-        return false;
-    }
-    if (record.count >= RATE_LIMIT_MAX_REQUESTS) {
-        return true;
-    }
-    record.count++;
-    return false;
-}
+/**
+ * Optimized middleware:
+ * - Narrowed matcher to only routes that need processing (/admin, /dashboard, /journey, /api)
+ * - Removed broken in-memory rate limiter (doesn't work in edge/serverless — each invocation gets fresh memory)
+ * - Pre-imported jose instead of dynamic import() on every request
+ * - Removed security headers that can be set in next.config.js headers() instead
+ */
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
-
-    if (
-        pathname.startsWith('/_next') ||
-        pathname.startsWith('/static') ||
-        pathname.startsWith('/api/telegram/webhook') ||
-        pathname.includes('.') ||
-        pathname === '/favicon.ico'
-    ) {
-        return NextResponse.next();
-    }
-
-
-
-    if (pathname.startsWith('/api/')) {
-        const rateLimitKey = getRateLimitKey(request);
-        if (isRateLimited(rateLimitKey)) {
-            return new NextResponse(
-                JSON.stringify({ error: 'Too many requests. Please try again later.' }),
-                { status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': '60' } }
-            );
-        }
-    }
-
     const response = NextResponse.next();
 
     // Add pathname header for server components to detect current route
     response.headers.set('x-pathname', pathname);
 
-    const headers = getSecurityHeaders(pathname);
-    Object.entries(headers).forEach(([key, value]) => {
-        response.headers.set(key, value);
-    });
+    // Security headers (lightweight — no CSP here, that's in next.config.js)
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    response.headers.set('X-XSS-Protection', '1; mode=block');
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
+    // Telegram Mini Apps need to be embeddable
+    if (pathname.startsWith('/bot')) {
+        response.headers.set('X-Frame-Options', 'ALLOWALL');
+    } else {
+        response.headers.set('X-Frame-Options', 'DENY');
+    }
+
+    // API CORS
     if (pathname.startsWith('/api/')) {
         response.headers.set('Access-Control-Allow-Origin', '*');
         response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -91,7 +38,7 @@ export async function middleware(request: NextRequest) {
 
     // Admin Authentication
     if (pathname.startsWith('/admin')) {
-        if (pathname === '/admin/login' || pathname.startsWith('/_next')) {
+        if (pathname === '/admin/login') {
             return response;
         }
 
@@ -107,7 +54,7 @@ export async function middleware(request: NextRequest) {
             const secret = new TextEncoder().encode(
                 process.env.JWT_SECRET || 'default-secret-key-change-this-in-prod'
             );
-            const { payload } = await import('jose').then(m => m.jwtVerify(token, secret));
+            const { payload } = await jwtVerify(token, secret);
 
             if (!payload || !payload.isAdmin) {
                 throw new Error('Unauthorized');
@@ -120,11 +67,8 @@ export async function middleware(request: NextRequest) {
     }
 
     // User & Parish Dashboard Authentication
-    // Protects /dashboard (Parish) and /journey (User)
     if (pathname.startsWith('/dashboard') || pathname.startsWith('/journey')) {
         const userToken = request.cookies.get('user_session')?.value;
-        // In local dev/mock auth, we might just look for existence, or verify a JWT.
-        // Assuming simple cookie check for now as per admin logic or existing auth lib.
 
         if (!userToken) {
             const url = request.nextUrl.clone();
@@ -138,8 +82,14 @@ export async function middleware(request: NextRequest) {
     return response;
 }
 
+// CRITICAL: Only run middleware on routes that actually need auth or headers
+// Previously this matched nearly every route, causing ~1.3M edge requests/month
 export const config = {
     matcher: [
-        '/((?!_next/static|_next/image|favicon.ico|manifest.json|robots.txt|sitemap.*|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|css|js|woff2?)).*)',
+        '/admin/:path*',
+        '/dashboard/:path*',
+        '/journey/:path*',
+        '/api/:path*',
+        '/bot/:path*',
     ],
 };
