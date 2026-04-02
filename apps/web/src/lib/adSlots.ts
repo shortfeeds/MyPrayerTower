@@ -11,23 +11,23 @@
 export const AD_SLOTS = {
     // Homepage ads
     home: {
-        banner: process.env.NEXT_PUBLIC_ADSENSE_HOME_BANNER || '',
-        sidebar: process.env.NEXT_PUBLIC_ADSENSE_HOME_SIDEBAR || '',
-        inline: process.env.NEXT_PUBLIC_ADSENSE_HOME_INLINE || '',
+        banner: process.env.NEXT_PUBLIC_ADSENSE_HOME_BANNER || '2324777328',
+        sidebar: process.env.NEXT_PUBLIC_ADSENSE_HOME_SIDEBAR || '5549367155',
+        inline: process.env.NEXT_PUBLIC_ADSENSE_HOME_INLINE || '7054020518',
     },
 
     // Prayer Library ads
     prayers: {
-        top: process.env.NEXT_PUBLIC_ADSENSE_PRAYERS_TOP || '',
-        sidebar: process.env.NEXT_PUBLIC_ADSENSE_PRAYERS_SIDEBAR || '',
-        inline: process.env.NEXT_PUBLIC_ADSENSE_PRAYERS_INLINE || '',
+        top: process.env.NEXT_PUBLIC_ADSENSE_PRAYERS_TOP || '2324777328',
+        sidebar: process.env.NEXT_PUBLIC_ADSENSE_PRAYERS_SIDEBAR || '5549367155',
+        inline: process.env.NEXT_PUBLIC_ADSENSE_PRAYERS_INLINE || '7054020518',
     },
 
     // Saints pages ads
     saints: {
-        top: process.env.NEXT_PUBLIC_ADSENSE_SAINTS_TOP || '',
-        sidebar: process.env.NEXT_PUBLIC_ADSENSE_SAINTS_SIDEBAR || '',
-        inline: process.env.NEXT_PUBLIC_ADSENSE_SAINTS_INLINE || '',
+        top: process.env.NEXT_PUBLIC_ADSENSE_SAINTS_TOP || '2324777328',
+        sidebar: process.env.NEXT_PUBLIC_ADSENSE_SAINTS_SIDEBAR || '5549367155',
+        inline: process.env.NEXT_PUBLIC_ADSENSE_SAINTS_INLINE || '7054020518',
     },
 
     // Bible pages ads
@@ -109,7 +109,7 @@ export function getAdSlot(page: keyof typeof AD_SLOTS, position: string): string
  * Check if ads are enabled (client ID exists)
  */
 export function isAdsEnabled(): boolean {
-    return !!process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+    return !!(process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924');
 }
 
 /**
