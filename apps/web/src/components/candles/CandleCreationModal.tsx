@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Flame, ChevronRight, Lock, CheckCircle, Smartphone } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { type PayPalSuccessDetails } from '@/components/PayPalCheckout';
-import { lightVirtualCandle } from '@/app/actions/spiritual';
+import { lightVirtualCandle, lightBulkCandles } from '@/app/actions/spiritual';
 
 // Dynamic import for PayPal
 const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
@@ -37,7 +37,9 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
-        intention: '',
+        intentions: [''] as string[],
+        quantity: 1,
+        useSameIntention: true,
         name: '',
         isAnonymous: false,
         duration: 'ONE_DAY',
@@ -59,7 +61,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                 data: {
                     ...formData,
                     tier: selectedTier.label,
-                    price: selectedTier.price
+                    price: selectedTier.price * formData.quantity
                 },
                 step: step === 3 ? 'payment' : 'details',
                 source: 'WEB'
@@ -86,9 +88,36 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
     });
 
     const selectedTier = durations.find(d => d.value === formData.duration) || durations[0];
+    const totalPrice = selectedTier.price * formData.quantity;
+    const totalPriceDisplay = formatPrice(totalPrice);
+
+    const handleQuantityChange = (newQty: number) => {
+        const qty = Math.max(1, Math.min(10, newQty));
+        setFormData(prev => {
+            const newIntentions = [...prev.intentions];
+            if (qty > prev.intentions.length) {
+                // Add empty strings for new slots
+                for (let i = prev.intentions.length; i < qty; i++) {
+                    newIntentions.push('');
+                }
+            } else if (qty < prev.intentions.length) {
+                // Trim the array
+                newIntentions.splice(qty);
+            }
+            return { ...prev, quantity: qty, intentions: newIntentions };
+        });
+    };
+
+    const updateIntention = (index: number, val: string) => {
+        setFormData(prev => {
+            const next = [...prev.intentions];
+            next[index] = val;
+            return { ...prev, intentions: next };
+        });
+    };
 
     const handleSubmit = async () => {
-        if (selectedTier.price === 0) {
+        if (totalPrice === 0) {
             // Free candle
             // Sacred Pause Start
             setIsSacredPausing(true);
@@ -98,9 +127,14 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
             await new Promise(resolve => setTimeout(resolve, 2500));
 
             try {
+                // Prepare intentions based on toggle
+                const finalIntentions = formData.useSameIntention
+                    ? Array(formData.quantity).fill(formData.intentions[0])
+                    : formData.intentions;
+
                 // Call API
-                await lightVirtualCandle({
-                    intention: formData.intention,
+                await lightBulkCandles({
+                    intentions: finalIntentions,
                     isAnonymous: formData.isAnonymous,
                     duration: formData.duration as any,
                     name: formData.isAnonymous ? 'Anonymous' : formData.name
@@ -131,8 +165,13 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         try {
-            await lightVirtualCandle({
-                intention: formData.intention,
+            // Prepare intentions based on toggle
+            const finalIntentions = formData.useSameIntention
+                ? Array(formData.quantity).fill(formData.intentions[0])
+                : formData.intentions;
+
+            await lightBulkCandles({
+                intentions: finalIntentions,
                 isAnonymous: formData.isAnonymous,
                 duration: formData.duration as any,
                 name: formData.isAnonymous ? 'Anonymous' : formData.name,
@@ -193,15 +232,70 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                         {step === 1 && (
                             <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
                                 <div className="space-y-4">
+                                    {/* Quantity Selector */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Your Intention</label>
-                                        <textarea
-                                            value={formData.intention}
-                                            onChange={(e) => setFormData({ ...formData, intention: e.target.value })}
-                                            placeholder="I pray for..."
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition-all min-h-[100px] text-gray-900 bg-white placeholder-gray-400"
-                                        />
+                                        <label className="block text-sm font-medium text-gray-700 mb-2 font-serif italic">How many candles would you like to light?</label>
+                                        <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-xl w-fit">
+                                            <button
+                                                onClick={() => handleQuantityChange(formData.quantity - 1)}
+                                                className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg text-gray-600 hover:border-amber-400 transition-colors shadow-sm"
+                                            >
+                                                -
+                                            </button>
+                                            <span className="font-bold text-lg w-6 text-center text-gray-900">{formData.quantity}</span>
+                                            <button
+                                                onClick={() => handleQuantityChange(formData.quantity + 1)}
+                                                className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg text-gray-600 hover:border-amber-400 transition-colors shadow-sm"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
                                     </div>
+
+                                    {formData.quantity > 1 && (
+                                        <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl border border-amber-100">
+                                            <input
+                                                type="checkbox"
+                                                id="sameIntention"
+                                                checked={formData.useSameIntention}
+                                                onChange={(e) => setFormData({ ...formData, useSameIntention: e.target.checked })}
+                                                className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500"
+                                            />
+                                            <label htmlFor="sameIntention" className="text-sm font-medium text-amber-900">
+                                                Use the same intention for all {formData.quantity} candles
+                                            </label>
+                                        </div>
+                                    )}
+
+                                    <div className="space-y-3">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            {formData.useSameIntention ? 'Your Prayer Intention' : 'Prayer Intentions'}
+                                        </label>
+
+                                        {formData.useSameIntention ? (
+                                            <textarea
+                                                value={formData.intentions[0]}
+                                                onChange={(e) => updateIntention(0, e.target.value)}
+                                                placeholder="I pray for..."
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition-all min-h-[100px] text-gray-900 bg-white placeholder-gray-400"
+                                            />
+                                        ) : (
+                                            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                                {Array.from({ length: formData.quantity }).map((_, idx) => (
+                                                    <div key={idx} className="relative">
+                                                        <span className="absolute left-3 top-3 text-[10px] uppercase font-bold text-gray-300">Candle {idx + 1}</span>
+                                                        <textarea
+                                                            value={formData.intentions[idx] || ''}
+                                                            onChange={(e) => updateIntention(idx, e.target.value)}
+                                                            placeholder={`Intention for candle ${idx + 1}...`}
+                                                            className="w-full px-4 pt-8 pb-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition-all min-h-[80px] text-gray-900 bg-white placeholder-gray-400 text-sm"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
                                         <input
@@ -224,7 +318,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                                     </div>
                                     <button
                                         onClick={() => setStep(2)}
-                                        disabled={!formData.intention}
+                                        disabled={!formData.intentions[0]}
                                         className="w-full py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     >
                                         Next
@@ -243,10 +337,18 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                                     </p>
                                 </div>
 
-                                <h4 className="font-semibold text-gray-900 mb-1 text-base">Select Your Offering</h4>
-                                <p className="text-xs text-gray-500 mb-4">
-                                    {SACRED_COPY.candleFlow.noObligation}
-                                </p>
+                                <div className="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h4 className="font-semibold text-gray-900 text-base">Select Your Offering</h4>
+                                        <p className="text-xs text-gray-500">
+                                            {SACRED_COPY.candleFlow.noObligation}
+                                        </p>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-[10px] uppercase font-bold text-gray-400">Quantity</div>
+                                        <div className="text-amber-600 font-bold">{formData.quantity}x</div>
+                                    </div>
+                                </div>
 
                                 <div className="space-y-2 mb-4">
                                     {durations.map((tier) => {
@@ -316,9 +418,10 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                                     </button>
                                     <button
                                         onClick={handleSubmit}
-                                        className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-bold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 hover:-translate-y-0.5 transition-all"
+                                        className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-bold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 hover:-translate-y-0.5 transition-all flex flex-col items-center justify-center gap-0.5"
                                     >
-                                        {selectedTier.price === 0 ? 'Light Candle' : 'Make Offering'}
+                                        <span>{totalPrice === 0 ? 'Light Candles' : 'Make Offering'}</span>
+                                        {totalPrice > 0 && <span className="text-[10px] opacity-80 font-normal">Total: {totalPriceDisplay}</span>}
                                     </button>
                                 </div>
 
@@ -338,14 +441,14 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                                     </div>
                                     <h4 className="font-serif font-bold text-xl text-gray-900 mb-1">Secure Offering</h4>
                                     <p className="text-gray-500 text-sm">
-                                        Your offering of <span className="font-semibold text-gray-900">{selectedTier.priceDisplay}</span> helps sustain this sanctuary.
+                                        Your offering of <span className="font-semibold text-gray-900">{totalPriceDisplay}</span> helps sustain this sanctuary.
                                     </p>
                                 </div>
 
                                 <div className="min-h-[150px] relative z-0">
                                     <PayPalCheckout
-                                        amount={selectedTier.price}
-                                        description="Virtual Candle"
+                                        amount={totalPrice}
+                                        description={`${formData.quantity}x Virtual Candle Offering`}
                                         onSuccess={handlePayPalSuccess}
                                         onError={(err) => setError(err.message)}
                                     />
@@ -370,10 +473,10 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                                                 <Flame className="w-8 h-8 text-amber-600 animate-pulse" />
                                             </div>
                                             <h3 className="text-2xl font-serif font-bold text-gray-900 mb-2 animate-fade-in">
-                                                Lighting your candle...
+                                                Lighting your {formData.quantity > 1 ? 'candles' : 'candle'}...
                                             </h3>
                                             <p className="text-gray-500 font-medium animate-fade-in delay-75">
-                                                May your prayer rise like incense.
+                                                May your {formData.quantity > 1 ? 'prayers' : 'prayer'} rise like incense.
                                             </p>
                                         </>
                                     ) : (
@@ -382,23 +485,19 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                                                 <CheckCircle className="w-8 h-8 text-green-600" />
                                             </div>
                                             <h3 className="text-2xl font-serif font-bold text-gray-900 mb-2 animate-fade-in">
-                                                Candle Lit
+                                                {formData.quantity > 1 ? 'Candles' : 'Candle'} Lit
                                             </h3>
                                             <p className="text-gray-500 font-medium animate-fade-in delay-75">
-                                                Your intention shines in our chapel.
+                                                Your {formData.quantity > 1 ? 'intentions shine' : 'intention shines'} in our chapel.
                                             </p>
                                         </>
                                     )}
                                 </div>
                             </div>
                         )}
-
-                        {/* Old Loading Overlay (Deprecated)
-                        {loading && ( ... )} */}
                     </div>
                 </motion.div>
             </div>
         </AnimatePresence>
     );
 }
-

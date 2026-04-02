@@ -7,8 +7,6 @@ import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { useAdStore } from '@/store/useAdStore';
-import { AmbientControls } from '@/components/audio/AmbientControls';
-
 /**
  * Global engagement components that appear across the site
  * Includes social proof toasts, push notification prompts, and floating buttons
@@ -40,9 +38,6 @@ export function GlobalEngagement() {
 
             {/* Floating prayer action button (mobile only) */}
             <FloatingPrayerButton href="/prayers" label="Pray" />
-
-            {/* Atmospheric Sound Controls */}
-            <AmbientControls />
         </>
     );
 }

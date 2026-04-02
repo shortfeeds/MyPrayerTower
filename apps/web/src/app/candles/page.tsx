@@ -226,17 +226,38 @@ export default function CandlesPage() {
                 // If no candles from DB, use sample data
                 if (mapped.length === 0) {
                     const sampleCandles: Candle[] = [
-                        // 30-day Divine Cathedral
+                        // 30-day Divine Cathedral (+3 more as requested)
                         { id: 'sample-1', userName: 'Maria S.', intention: 'For my mother\'s healing from cancer', remainingHours: 720, prayerCount: 342, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'US' },
                         { id: 'sample-2', userName: 'Anonymous', intention: 'Thanksgiving for answered prayers', remainingHours: 650, prayerCount: 289, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'MX' },
+                        { id: 'sample-1c', userName: 'Elena R.', intention: 'For the souls of my departed grandparents', remainingHours: 710, prayerCount: 156, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'IT' },
+                        { id: 'sample-2c', userName: 'Joseph K.', intention: 'Blessing for our new parish building', remainingHours: 690, prayerCount: 204, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'PH' },
+                        { id: 'sample-3c', userName: 'Anonymous', intention: 'For the global return to faith', remainingHours: 680, prayerCount: 188, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS' },
 
-                        // 14-day Blessed Marian
+                        // 14-day Blessed Marian (+8 more as requested)
                         { id: 'sample-3', userName: 'John M.', intention: 'Guidance for my family during difficult times', remainingHours: 310, prayerCount: 156, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'CA' },
                         { id: 'sample-4', userName: 'Sarah K.', intention: 'For peace in our troubled world', remainingHours: 280, prayerCount: 198, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'GB' },
+                        { id: 's-m-1', userName: 'Catherine B.', intention: 'Under Mary\'s mantle for my children', remainingHours: 330, prayerCount: 45, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'IE' },
+                        { id: 's-m-2', userName: 'Anonymous', intention: 'To overcome my current anxiety', remainingHours: 320, prayerCount: 67, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                        { id: 's-m-3', userName: 'Paul S.', intention: 'For a successful surgery next week', remainingHours: 315, prayerCount: 32, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'US' },
+                        { id: 's-m-4', userName: 'Mary L.', intention: 'In honor of the Immaculate Heart', remainingHours: 300, prayerCount: 89, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'PT' },
+                        { id: 's-m-5', userName: 'Anonymous', intention: 'For the conversion of my spouse', remainingHours: 290, prayerCount: 54, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                        { id: 's-m-6', userName: 'Robert T.', intention: 'Safe travel for my daughter', remainingHours: 270, prayerCount: 23, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'AU' },
+                        { id: 's-m-7', userName: 'Sofia G.', intention: 'For all expectant mothers', remainingHours: 260, prayerCount: 112, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'AR' },
+                        { id: 's-m-8', userName: 'Anonymous', intention: 'Gratitude for graces received', remainingHours: 250, prayerCount: 76, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
 
-                        // 7-day Sacred Altar
+                        // 7-day Sacred Altar (+8 more as requested)
                         { id: 'sample-6', userName: 'Anonymous', intention: 'Blessings for my new job', remainingHours: 120, prayerCount: 64, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
                         { id: 'sample-7', userName: 'Emily W.', intention: 'For the souls in purgatory', remainingHours: 98, prayerCount: 112, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 's-a-1', userName: 'Mark D.', intention: 'In reparation for sins', remainingHours: 160, prayerCount: 22, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 's-a-2', userName: 'Anne P.', intention: 'For my godchildren\'s faith', remainingHours: 155, prayerCount: 34, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 's-a-3', userName: 'Anonymous', intention: 'For the holy souls of priests', remainingHours: 150, prayerCount: 56, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 's-a-4', userName: 'Francis X.', intention: 'Success of the local mission', remainingHours: 145, prayerCount: 18, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 's-a-5', userName: 'Teresa M.', intention: 'For the terminally ill', remainingHours: 140, prayerCount: 92, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 's-a-6', userName: 'Anonymous', intention: 'For the Unity of the Church', remainingHours: 130, prayerCount: 41, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 's-a-7', userName: 'Benedict L.', intention: 'For holy vocations', remainingHours: 125, prayerCount: 120, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 's-a-8', userName: 'Anonymous', intention: 'Internal peace and clarity', remainingHours: 110, prayerCount: 15, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 's-a-9', userName: 'Leticia V.', intention: 'For the conversion of sailors', remainingHours: 168, prayerCount: 45, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                        { id: 's-a-10', userName: 'Anonymous', intention: 'For the unborn babies', remainingHours: 165, prayerCount: 230, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
 
                         // 3-day Devotion Votive
                         { id: 'sample-8', userName: 'Michael P.', intention: 'Help with finding employment', remainingHours: 65, prayerCount: 43, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },
@@ -280,7 +301,7 @@ export default function CandlesPage() {
                 // On error, still load sample data
                 // On error, still load sample data
                 const sampleCandles: Candle[] = [
-                    // Royal (30 Days) - 10 items
+                    // Royal (30 Days) - 13 items (+3)
                     { id: 's-r1', userName: 'Maria S.', intention: 'For my mother\'s healing', remainingHours: 720, prayerCount: 342, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'US' },
                     { id: 's-r2', userName: 'Joseph B.', intention: 'Thanksgiving for answered prayers', remainingHours: 650, prayerCount: 289, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'MX' },
                     { id: 's-r3', userName: 'Sarah L.', intention: 'For peace in the world', remainingHours: 500, prayerCount: 450, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'CA' },
@@ -291,8 +312,11 @@ export default function CandlesPage() {
                     { id: 's-r8', userName: 'Anonymous', intention: 'Healing of past wounds', remainingHours: 200, prayerCount: 150, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS' },
                     { id: 's-r9', userName: 'David M.', intention: 'For the sick and suffering', remainingHours: 150, prayerCount: 220, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'IE' },
                     { id: 's-r10', userName: 'Anne W.', intention: 'Protection for my children', remainingHours: 100, prayerCount: 410, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS', country: 'GB' },
+                    { id: 's-r11', userName: 'Christopher G.', intention: 'Strength for the clergy', remainingHours: 715, prayerCount: 88, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS' },
+                    { id: 's-r12', userName: 'Anonymous', intention: 'For the persecuted Church', remainingHours: 700, prayerCount: 142, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS' },
+                    { id: 's-r13', userName: 'Monica H.', intention: 'Thanksgiving for life', remainingHours: 685, prayerCount: 56, tier: 'premium', litAt: new Date().toISOString(), duration: 'THIRTY_DAYS' },
 
-                    // Premium (14 Days) - 10 items
+                    // Premium (14 Days) - 18 items (+8)
                     { id: 's-p1', userName: 'John M.', intention: 'Guidance for my family', remainingHours: 310, prayerCount: 156, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'CA' },
                     { id: 's-p2', userName: 'Peter R.', intention: 'For a safe journey', remainingHours: 300, prayerCount: 90, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'US' },
                     { id: 's-p3', userName: 'Lucia F.', intention: 'Success in exams', remainingHours: 280, prayerCount: 110, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'IT' },
@@ -303,8 +327,16 @@ export default function CandlesPage() {
                     { id: 's-p8', userName: 'Anonymous', intention: 'For a private intention', remainingHours: 180, prayerCount: 75, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
                     { id: 's-p9', userName: 'Rebecca N.', intention: 'For clarity and wisdom', remainingHours: 160, prayerCount: 115, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'NZ' },
                     { id: 's-p10', userName: 'James P.', intention: 'Thanksgiving for blessings', remainingHours: 140, prayerCount: 200, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS', country: 'US' },
+                    { id: 's-p11', userName: 'Anonymous', intention: 'Finding my purpose', remainingHours: 330, prayerCount: 12, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                    { id: 's-p12', userName: 'Martha J.', intention: 'Healing for my friend', remainingHours: 325, prayerCount: 44, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                    { id: 's-p13', userName: 'Anonymous', intention: 'Grace to forgive', remainingHours: 320, prayerCount: 18, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                    { id: 's-p14', userName: 'Leo K.', intention: 'Protection of the unborn', remainingHours: 315, prayerCount: 130, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                    { id: 's-p15', userName: 'Luciana M.', intention: 'Our Lady of Sorrows, pray for us', remainingHours: 310, prayerCount: 65, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                    { id: 's-p16', userName: 'Anonymous', intention: 'Peace in my heart', remainingHours: 300, prayerCount: 29, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                    { id: 's-p17', userName: 'Thomas S.', intention: 'Safe delivery for my wife', remainingHours: 290, prayerCount: 52, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
+                    { id: 's-p18', userName: 'Anonymous', intention: 'Divine Mercy, I trust in You', remainingHours: 280, prayerCount: 400, tier: 'premium', litAt: new Date().toISOString(), duration: 'FOURTEEN_DAYS' },
 
-                    // Taper (7 Days) - 10 items
+                    // Taper (7 Days) - 18 items (+8)
                     { id: 's-t1', userName: 'David R.', intention: 'For my son\'s safe return', remainingHours: 145, prayerCount: 87, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS', country: 'US' },
                     { id: 's-t2', userName: 'Emily W.', intention: 'For the lonely', remainingHours: 140, prayerCount: 60, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS', country: 'GB' },
                     { id: 's-t3', userName: 'Anonymous', intention: 'Forgiveness of sins', remainingHours: 135, prayerCount: 95, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
@@ -315,6 +347,14 @@ export default function CandlesPage() {
                     { id: 's-t8', userName: 'Sofia M.', intention: 'For my marriage', remainingHours: 110, prayerCount: 112, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS', country: 'AR' },
                     { id: 's-t9', userName: 'Leo B.', intention: 'Peace of mind', remainingHours: 105, prayerCount: 88, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS', country: 'BE' },
                     { id: 's-t10', userName: 'Catherine P.', intention: 'For a sick friend', remainingHours: 100, prayerCount: 134, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS', country: 'IE' },
+                    { id: 's-t11', userName: 'Anonymous', intention: 'Clarity in decision making', remainingHours: 165, prayerCount: 11, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                    { id: 's-t12', userName: 'Gabriel F.', intention: 'For my godchildren', remainingHours: 160, prayerCount: 22, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                    { id: 's-t13', userName: 'Anonymous', intention: 'To find true faith', remainingHours: 155, prayerCount: 33, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                    { id: 's-t14', userName: 'Raphael S.', intention: 'Strength for the travel', remainingHours: 150, prayerCount: 44, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                    { id: 's-t15', userName: 'Elizabeth R.', intention: 'For the Holy Father', remainingHours: 145, prayerCount: 55, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                    { id: 's-t16', userName: 'Anonymous', intention: 'Patience at work', remainingHours: 140, prayerCount: 66, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                    { id: 's-t17', userName: 'Sebastian K.', intention: 'Healing of eyes', remainingHours: 135, prayerCount: 77, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
+                    { id: 's-t18', userName: 'Anonymous', intention: 'Protection from evil', remainingHours: 130, prayerCount: 88, tier: 'premium', litAt: new Date().toISOString(), duration: 'SEVEN_DAYS' },
 
                     // Votive (3 Days) - 10 items
                     { id: 's-v1', userName: 'Michael P.', intention: 'Help with employment', remainingHours: 65, prayerCount: 43, tier: 'standard', litAt: new Date().toISOString(), duration: 'THREE_DAYS' },

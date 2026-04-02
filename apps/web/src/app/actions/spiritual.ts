@@ -149,6 +149,67 @@ export async function lightVirtualCandle(data: {
     }
 }
 
+// Light multiple virtual candles (bulk creation)
+export async function lightBulkCandles(data: {
+    intentions: string[];
+    name?: string;
+    email?: string;
+    isAnonymous?: boolean;
+    duration: 'ONE_DAY' | 'THREE_DAYS' | 'SEVEN_DAYS' | 'FOURTEEN_DAYS' | 'THIRTY_DAYS';
+    paymentId?: string;
+}) {
+    const user = await getUserFromCookie();
+    const days = DURATION_DAYS[data.duration] || 1;
+    const price = DURATION_PRICES[data.duration] || 0;
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + days);
+
+    try {
+        const results = [];
+        const isFree = price === 0;
+        const isPaid = !!data.paymentId || isFree;
+
+        // Process each intention
+        for (const intention of data.intentions) {
+            // Moderation Check
+            const moderation = moderateContent(intention);
+            if (!moderation.isValid) {
+                // If one fails, we continue with others for bulk, but log the failure
+                console.warn('Moderation failed for one intention in bulk request:', moderation.reason);
+                continue;
+            }
+
+            const candle = await prisma.prayerCandle.create({
+                data: {
+                    userId: user?.id,
+                    intention: intention,
+                    name: data.isAnonymous ? null : (data.name || user?.firstName || null),
+                    email: data.email || user?.email,
+                    isAnonymous: data.isAnonymous ?? true,
+                    amount: price,
+                    duration: data.duration,
+                    expiresAt,
+                    paymentId: data.paymentId,
+                    paymentStatus: isPaid ? 'PAID' : 'PENDING',
+                    isActive: true,
+                    litAt: new Date()
+                }
+            });
+            results.push(candle);
+        }
+
+        if (results.length > 0) {
+            await notifyIndexNow('/candles');
+        }
+
+        return { success: true, count: results.length, candles: results };
+    } catch (error) {
+        console.error('Error lighting bulk candles:', error);
+        return { success: false, error: 'Failed to light candles' };
+    }
+}
+
 // Create a virtual candle (initiates payment - legacy/alternative flow)
 export async function createVirtualCandle(data: {
     intention: string;
