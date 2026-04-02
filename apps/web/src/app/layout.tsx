@@ -9,15 +9,13 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GlobalEngagement } from '@/components/GlobalEngagement';
+import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/CookieConsent';
 import { SkipToContent } from '@/components/ui/SkipToContent';
 import { SpiritualJourneyProvider } from '@/components/journey/SpiritualJourneyProvider';
 import { PricingProvider } from '@/contexts/PricingContext';
 import { headers } from 'next/headers';
 import { AudioProvider } from '@/components/audio/AudioContext';
-import dynamic from 'next/dynamic';
-
-const BackToTop = dynamic(() => import('@/components/ui/BackToTop').then(m => m.BackToTop), { ssr: false });
 
 // Self-hosted fonts for performance
 const inter = Inter({
@@ -133,7 +131,7 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const headersList = headers(); // Next.js 14 sync call
+    const headersList = await headers();
     const pathname = headersList.get('x-pathname') || '';
     const isAdminPage = pathname.startsWith('/admin') || pathname.startsWith('/church-dashboard');
 

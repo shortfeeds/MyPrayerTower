@@ -14,9 +14,6 @@ interface Props {
     };
 }
 
-// ISR: saints data rarely changes, cache for 24 hours
-export const revalidate = 86400;
-
 // SSG for all saints
 export async function generateStaticParams() {
     // Limit to popular saints or all if list is manageable. 

@@ -23,10 +23,11 @@ export type VirtualCandle = {
     amount: number;
 };
 
-// Internal cached fetcher (Server only)
-const getCachedActiveCandles = unstable_cache(
+// Get active candles for display - Optimized & Cached
+export const getActiveCandles = unstable_cache(
     async (): Promise<VirtualCandle[]> => {
         const now = new Date();
+
         const candles = await db.prayerCandle.findMany({
             where: {
                 isActive: true,
@@ -36,12 +37,21 @@ const getCachedActiveCandles = unstable_cache(
             orderBy: { litAt: 'desc' },
             take: 500,
             select: {
-                id: true, intention: true, isAnonymous: true, name: true,
-                country: true, duration: true, litAt: true, expiresAt: true,
-                isActive: true, prayerCount: true, amount: true
+                id: true,
+                intention: true,
+                isAnonymous: true,
+                name: true,
+                country: true,
+                duration: true,
+                litAt: true,
+                expiresAt: true,
+                isActive: true,
+                prayerCount: true,
+                amount: true
             }
         });
 
+        // Cast duration string to string (it's an enum in Prisma but string in TS type here usually works or needs casting)
         return candles.map(c => ({
             ...c,
             duration: c.duration as string
@@ -50,11 +60,6 @@ const getCachedActiveCandles = unstable_cache(
     ['active-candles'],
     { revalidate: 60, tags: ['candles'] }
 );
-
-// Public Server Action (Callable from client useEffect)
-export async function getActiveCandles() {
-    return await getCachedActiveCandles();
-}
 
 export async function getPublicCandleStats() {
     const realCount = await db.prayerCandle.count({

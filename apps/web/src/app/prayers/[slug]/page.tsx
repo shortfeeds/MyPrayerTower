@@ -17,17 +17,6 @@ interface Props {
     };
 }
 
-// ISR: prayer text is static content, cache for 24 hours
-export const revalidate = 86400;
-
-// Pre-build the most popular prayers at build time
-export async function generateStaticParams() {
-    const { prayers } = await getLibraryPrayers(1, 50);
-    return prayers
-        .filter(p => p.slug)
-        .map(p => ({ slug: p.slug! }));
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const prayer = await getPrayerBySlug(params.slug);
 
