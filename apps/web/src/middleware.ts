@@ -7,17 +7,24 @@ import { jwtVerify } from 'jose';
  * - Narrowed matcher to only routes that need processing (/admin, /dashboard, /journey, /api)
  * - Removed broken in-memory rate limiter (doesn't work in edge/serverless — each invocation gets fresh memory)
  * - Pre-imported jose instead of dynamic import() on every request
- * - Removed security headers that can be set in next.config.js headers() instead
+ * - Correctly sets x-pathname on the request so it can be read by Server Components via headers()
  */
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
-    const response = NextResponse.next();
-
+    const requestHeaders = new Headers(request.headers);
+    
     // Add pathname header for server components to detect current route
-    response.headers.set('x-pathname', pathname);
+    // CRITICAL: Must be on the request, not response, for headers() to see it
+    requestHeaders.set('x-pathname', pathname);
 
     // Security headers (lightweight — no CSP here, that's in next.config.js)
+    const response = NextResponse.next({
+        request: {
+            headers: requestHeaders,
+        },
+    });
+
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-XSS-Protection', '1; mode=block');
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
@@ -83,13 +90,17 @@ export async function middleware(request: NextRequest) {
 }
 
 // CRITICAL: Only run middleware on routes that actually need auth or headers
-// Previously this matched nearly every route, causing ~1.3M edge requests/month
+// Added '/' to matcher so it can correctly detect ISR homepage vs admin without per-request overhead
 export const config = {
     matcher: [
+        '/',
         '/admin/:path*',
         '/dashboard/:path*',
         '/journey/:path*',
         '/api/:path*',
         '/bot/:path*',
+        '/saints/:slug*',
+        '/prayers/:slug*',
+        '/memorials/:path*'
     ],
 };

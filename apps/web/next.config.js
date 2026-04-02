@@ -182,16 +182,6 @@ const nextConfig = {
                     },
                 ],
             },
-            {
-                // HTML pages: use stale-while-revalidate to reduce origin transfers
-                source: '/((?!api|_next|static|.*\\..*).*)',
-                headers: [
-                    {
-                        key: 'Cache-Control',
-                        value: 'public, s-maxage=60, stale-while-revalidate=600',
-                    },
-                ],
-            },
         ];
     },
 

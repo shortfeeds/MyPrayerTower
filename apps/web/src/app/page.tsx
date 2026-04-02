@@ -20,27 +20,6 @@ import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { YouTubeChannelSection } from '@/components/home/YouTubeChannelSection';
 import { fetchYouTubeVideos } from '@/lib/youtube';
 
-async function AsyncDailyFocus() {
-    try {
-        const liturgicalData = await getLiturgicalData();
-        const [reading, saint] = await Promise.all([
-            getDailyReading(),
-            getSaintOfTheDay(liturgicalData.celebrations?.[0]?.name)
-        ]);
-
-        return (
-            <DailyFocus
-                reading={reading || undefined}
-                saint={saint || undefined}
-                date={liturgicalData.date}
-                liturgicalColor={liturgicalData.seasonColor}
-            />
-        );
-    } catch (error) {
-        console.error('Failed to load Daily Focus:', error);
-        return null;
-    }
-}
 
 /**
  * LoggedOutHomePage
