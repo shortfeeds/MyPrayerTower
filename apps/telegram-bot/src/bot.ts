@@ -1,14 +1,16 @@
 import { Bot, GrammyError, HttpError } from "grammy";
 import "dotenv/config";
-import { startCommand } from "./commands/start";
+import { startCommand, showMainMenu } from "./commands/start";
 import { helpCommand } from "./commands/help";
 import { readingCommand } from "./commands/reading";
 import { saintCommand } from "./commands/saint";
 import { prayCommand } from "./commands/pray";
 import { wallCommand, handlePrayCallback } from "./commands/wall";
+import { inviteCommand } from "./commands/invite";
 import { streakCommand } from "./commands/streak";
-import { findOrCreateUser, updateStreak } from "./services/user.service";
+import { findOrCreateUser, updateStreak, updateUserPreference } from "./services/user.service";
 import { setupScheduler } from "./services/scheduler";
+import { trackEvent } from "./services/analytics";
 
 // Create an instance of the `Bot` class and pass your bot token to it.
 const token = process.env.BOT_TOKEN;
@@ -28,10 +30,15 @@ bot.use(async (ctx, next) => {
         await findOrCreateUser(ctx.from.id, ctx.from.username)
             .catch(err => console.error(`Error ensuring user ${ctx.from?.id}:`, err));
 
-        // 2. Update Streak (Fire and forget to not block)
-        // We do this AFTER ensuring creation so updateStreak finds the user
-        updateStreak(ctx.from.id)
-            .catch(err => console.error(`Error updating streak for ${ctx.from?.id}:`, err));
+        // 2. Update Streak
+        try {
+            const result = await updateStreak(ctx.from.id);
+            if (result?.justIncreased) {
+                await ctx.reply(`🔥 *${result.streak} Day Prayer Streak!* Keep going!`, { parse_mode: "Markdown" });
+            }
+        } catch (err) {
+            console.error(`Error updating streak for ${ctx.from?.id}:`, err);
+        }
     }
 
     await next();

@@ -1,26 +1,64 @@
 import prisma from "./db";
 
-export const findOrCreateUser = async (telegramId: number | bigint, username?: string) => {
+export const findOrCreateUser = async (telegramId: number | bigint, username?: string, referredByCode?: string) => {
     const telegramIdBigInt = BigInt(telegramId);
 
     try {
-        const user = await prisma.telegramUser.upsert({
-            where: { telegramId: telegramIdBigInt },
-            update: {
-                telegramUsername: username,
-                lastActiveDate: new Date(),
-            },
-            create: {
-                telegramId: telegramIdBigInt,
-                telegramUsername: username,
-                lastActiveDate: new Date(),
-            },
+        let user = await prisma.telegramUser.findUnique({
+            where: { telegramId: telegramIdBigInt }
         });
+
+        if (user) {
+            // Update existing user
+            user = await prisma.telegramUser.update({
+                where: { telegramId: telegramIdBigInt },
+                data: {
+                    telegramUsername: username,
+                    lastActiveDate: new Date(),
+                },
+            });
+        } else {
+            // Create new user
+            const referralCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+            let referredById: string | undefined;
+
+            if (referredByCode) {
+                const referrer = await prisma.telegramUser.findUnique({
+                    where: { referralCode: referredByCode }
+                });
+                if (referrer) {
+                    referredById = referrer.id;
+                }
+            }
+
+            user = await prisma.telegramUser.create({
+                data: {
+                    telegramId: telegramIdBigInt,
+                    telegramUsername: username,
+                    referralCode: referralCode,
+                    referredById: referredById,
+                    lastActiveDate: new Date(),
+                },
+            });
+            console.log(`New user created: ${telegramIdBigInt} (Referral: ${referralCode})`);
+        }
         return user;
     } catch (error) {
         console.error("Error finding or creating user:", error);
-        // In case of error (e.g. DB connection), return null or throw
         return null;
+    }
+};
+
+export const updateUserPreference = async (telegramId: number | bigint, preference: string) => {
+    try {
+        await prisma.telegramUser.update({
+            where: { telegramId: BigInt(telegramId) },
+            data: { preference }
+        });
+        return true;
+    } catch (error) {
+        console.error("Error updating user preference:", error);
+        return false;
     }
 };
 

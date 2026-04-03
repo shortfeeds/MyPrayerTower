@@ -35,6 +35,23 @@ ${prayer.content.length > 300 ? prayer.content.substring(0, 300) + "..." : praye
             });
         }
 
+        // After listing prayers, show global CTA
+        const ctaMessage = `
+🕯 *Would you like to light a candle for your intentions?*
+
+"I am the light of the world. Whoever follows me will not walk in darkness, but will have the light of life." (John 8:12)
+`;
+
+        const ctaKeyboard = new InlineKeyboard()
+            .url("🕯 Light a Candle", "https://myprayertower.com/candles")
+            .text("🙏 Submit Prayer", "pray").row()
+            .text("🏠 Main Menu", "start");
+
+        await ctx.reply(ctaMessage, {
+            parse_mode: "Markdown",
+            reply_markup: ctaKeyboard,
+        });
+
     } catch (error) {
         console.error("Error in wall command:", error);
         await ctx.reply("Sorry, I couldn't load the Prayer Wall right now.");
@@ -61,9 +78,9 @@ export const handlePrayCallback = async (ctx: Context) => {
                 await ctx.answerCallbackQuery({ text: "You have already prayed for this intention. 🙏" });
             } else {
                 await ctx.answerCallbackQuery({ text: "Prayer recorded! Thank you. 🕊️" });
-
-                // Optionally update the message to show new count, but that requires re-fetching or passing count
-                // For MVP, just acknowledging is fine.
+                
+                // Task 8: respond with encouragement
+                await ctx.reply("🙏 God sees your prayer. Stay faithful.");
             }
         } else {
             await ctx.answerCallbackQuery({ text: "Failed to record prayer. Please try again." });

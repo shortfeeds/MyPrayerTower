@@ -1,27 +1,57 @@
 import { Context, InlineKeyboard } from "grammy";
+import { findOrCreateUser } from "../services/user.service";
+import { trackEvent } from "../services/analytics";
 
 export const startCommand = async (ctx: Context) => {
+    const userId = ctx.from?.id;
+    if (!userId) return;
+
+    // Handle referral if present
+    const startPayload = ctx.match as string;
+    await findOrCreateUser(userId, ctx.from?.username, startPayload);
+    
+    // Track event
+    await trackEvent(userId, "start", { referral: startPayload });
+
     const welcomeMessage = `
-Welcome to *My Prayer Tower* ✝️
+🙏 *Welcome to My Prayer Tower* ✝️
 
-Your daily companion for prayer, reading, and spiritual growth.
+"Come to me, all you who are weary and burdened, and I will give you rest." (Matthew 11:28)
 
-*Here's what I can do for you:*
-📖 *Daily Reading* - Get today's Mass readings
-😇 *Saint of the Day* - Learn about today's saint
-🙏 *Prayer Request* - Submit an intention to our wall
-🕯️ *Light a Candle* - Offer a virtual candle
+I am your spiritual assistant, here to walk with you in faith. Whether you seek peace, healing, or guidance, let us turn to God together.
 
-_Select an option below to get started:_
+*How can I serve your spirit today?*
+Please select your primary prayer focus so I can better guide you:
+`;
+
+    const prefKeyboard = new InlineKeyboard()
+        .text("💙 Peace", "pref_peace")
+        .text("❤️ Healing", "pref_healing").row()
+        .text("💼 Work", "pref_work")
+        .text("👨‍👩‍👧 Family", "pref_family").row()
+        .text("🙏 General", "pref_general");
+
+    await ctx.reply(welcomeMessage, {
+        parse_mode: "Markdown",
+        reply_markup: prefKeyboard,
+    });
+};
+
+export const showMainMenu = async (ctx: Context) => {
+    const mainMenuMessage = `
+✨ *Main Menu*
+
+Choose a path for your spiritual growth today:
 `;
 
     const keyboard = new InlineKeyboard()
-        .text("📖 Today's Reading", "reading").row()
-        .text("😇 Saint of the Day", "saint").row()
-        .url("🙏 Prayer Wall", "https://myprayertower.com/prayer-wall")
-        .url("🕯️ Light a Candle", "https://myprayertower.com/candles");
+        .text("🙏 Daily Prayer", "daily_prayer").row()
+        .text("📖 Reading", "reading").row()
+        .url("📿 Rosary", "https://myprayertower.com/rosary").row()
+        .text("🕊️ Prayer Wall", "wall").row()
+        .url("🕯️ Light Candle", "https://myprayertower.com/candles");
 
-    await ctx.reply(welcomeMessage, {
+    await ctx.reply(mainMenuMessage, {
         parse_mode: "Markdown",
         reply_markup: keyboard,
     });

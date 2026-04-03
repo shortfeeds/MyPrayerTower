@@ -1,13 +1,16 @@
-import { Context } from "grammy";
+import { Context, InlineKeyboard } from "grammy";
 import { updateStreak } from "../services/user.service";
-import prisma from "../services/db";
+import { trackEvent } from "../services/analytics";
 
 export const streakCommand = async (ctx: Context) => {
-    if (!ctx.from) return;
+    const userId = ctx.from?.id;
+    if (!userId) return;
 
     try {
+        await trackEvent(userId, "streak_check");
+
         // Force an update/check when they run the command
-        const result = await updateStreak(ctx.from.id);
+        const result = await updateStreak(userId);
 
         if (!result) {
             await ctx.reply("I couldn't retrieve your streak at this moment.");
@@ -27,7 +30,15 @@ export const streakCommand = async (ctx: Context) => {
             message += "Incredible dedication! You are a pillar of prayer. 🕊️";
         }
 
-        await ctx.reply(message, { parse_mode: "Markdown" });
+        const keyboard = new InlineKeyboard()
+            .text("🙏 Daily Prayer", "daily_prayer").row()
+            .url("🕯️ Light a Candle", "https://myprayertower.com/candles")
+            .text("🏠 Main Menu", "start");
+
+        await ctx.reply(message, { 
+            parse_mode: "Markdown",
+            reply_markup: keyboard
+        });
 
     } catch (error) {
         console.error("Error in streak command:", error);
