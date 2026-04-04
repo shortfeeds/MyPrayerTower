@@ -192,6 +192,7 @@ export function Header() {
                                     <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${learnOpen ? 'rotate-180 opacity-100' : ''}`} />
                                 </button>
                             </div>
+
                         </nav>
 
                         {isAuthenticated && (
@@ -320,11 +321,11 @@ export function Header() {
                                 <div className="p-2 rounded-lg bg-sacred-100 dark:bg-sacred-800 text-sacred-600">
                                     <Home className="w-5 h-5" />
                                 </div>
-                                My Prayer Corner
-                            </Link>
+                                </Link>
                         )}
 
-                        <p className="px-4 text-xs uppercase tracking-wider text-gray-400 mb-2 mt-4">Explore Series</p>
+                        <p className="px-4 text-xs uppercase tracking-wider text-gray-400 mb-2 mt-4 text-balance">Explore Series</p>
+
 
                         {/* 1. PRAY */}
                         <div className="rounded-xl overflow-hidden">

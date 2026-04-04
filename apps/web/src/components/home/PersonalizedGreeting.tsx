@@ -61,7 +61,7 @@ export function PersonalizedGreeting({
                             </div>
                         )}
                     </div>
-                    <p className="text-gray-600">{displayDate}</p>
+                    <p suppressHydrationWarning className="text-gray-600">{displayDate}</p>
                 </div>
 
                 {/* Right: Progress and Check-in */}

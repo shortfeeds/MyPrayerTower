@@ -49,7 +49,7 @@ export function WelcomeGreeting() {
         <div className="flex flex-col items-center animate-fade-in-up">
             <div className="flex items-center gap-2 mb-3 px-3 py-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-sm">
                 <greeting.icon className="w-4 h-4 text-gold-400" />
-                <span className="text-xs font-medium tracking-widest uppercase text-gold-200/80">
+                <span suppressHydrationWarning className="text-xs font-medium tracking-widest uppercase text-gold-200/80">
                     {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
                 </span>
             </div>

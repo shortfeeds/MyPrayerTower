@@ -14,24 +14,35 @@ export function BibleReader() {
 
     // Fetch passage when book/chapter changes
     useEffect(() => {
+        let isMounted = true;
         const fetchChapter = async () => {
-            setLoading(true);
-            setError('');
             try {
-                // Fetch the entire chapter
+                setLoading(true);
+                setError('');
+                console.log('Fetching Bible passage:', currentBook, currentChapter);
                 const response = await getBiblePassage(`${currentBook} ${currentChapter}`);
-                setData(response);
+                console.log('Bible response:', response);
+                if (isMounted) {
+                    setData(response);
+                }
             } catch (err) {
-                console.error('Bible fetch error:', err);
-                setError('Failed to load scripture. Please check your connection.');
+                if (isMounted) {
+                    console.error('Bible fetch error:', err);
+                    setError('Failed to load scripture. Please check your connection.');
+                }
             } finally {
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         };
 
         fetchChapter();
         // Scroll to top on change
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        return () => { isMounted = false; };
     }, [currentBook, currentChapter]);
 
     const handleNextChapter = () => {

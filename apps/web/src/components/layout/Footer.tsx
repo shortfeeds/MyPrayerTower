@@ -84,6 +84,27 @@ function NewsletterForm() {
     );
 }
 
+// Helper for hydration-safe link
+function BlogFooterLink() {
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => setMounted(true), []);
+
+    if (!mounted) return (
+        <span className="hover:text-gold-400 transition-colors cursor-pointer">
+            Blog
+        </span>
+    );
+
+    return (
+        <Link
+            href="/blog"
+            className="hover:text-gold-400 transition-colors"
+        >
+            Blog
+        </Link>
+    );
+}
+
 export function Footer() {
     const [currentYear, setCurrentYear] = React.useState(2026);
     const pathname = usePathname();
@@ -199,6 +220,9 @@ export function Footer() {
                                 <li><Link href="/saints" className="hover:text-gold-400 transition-colors">Saints & Feasts</Link></li>
                                 <li><Link href="/catechism" className="hover:text-gold-400 transition-colors">Catechism</Link></li>
                                 <li><Link href="/calendar" className="hover:text-gold-400 transition-colors">Liturgical Calendar</Link></li>
+                                <li>
+                                    <BlogFooterLink />
+                                </li>
                                 <li><Link href="/churches" className="hover:text-gold-400 transition-colors">Find a Church</Link></li>
                                 <li><Link href="/watch" className="hover:text-gold-400 transition-colors">Watch</Link></li>
                                 <li><Link href="/glossary" className="hover:text-gold-400 transition-colors">Glossary</Link></li>
