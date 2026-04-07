@@ -8,8 +8,11 @@ import { CandleCreationModal } from '@/components/candles/CandleCreationModal';
 import { PrayerCompletionModal } from '@/components/prayer/PrayerCompletionModal';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Heart, Clock, Crown, Star, Sparkles } from 'lucide-react';
+import { Flame, Heart, Clock, Crown, Star, Sparkles, ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useAppMode } from '@/contexts/AppModeContext';
+import { trackHubAction } from '@/lib/analytics';
 
 // Candle tier types
 type CandleTier = 'free' | 'basic' | 'standard' | 'premium';
@@ -193,6 +196,7 @@ export default function CandlesPage() {
     const [loading, setLoading] = useState(true);
     const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
     const [prayerCompleteOpen, setPrayerCompleteOpen] = useState(false);
+    const { isNativeApp } = useAppMode();
 
     useEffect(() => {
         const fetchCandles = async () => {
@@ -452,13 +456,16 @@ export default function CandlesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-gray-100 selection:bg-amber-500/30">
+        <div className={`min-h-screen bg-black text-gray-100 selection:bg-amber-500/30 font-sans ${isNativeApp ? 'bg-[#0a0612]' : ''}`}>
             {/* Header / Hero */}
-            <div className="relative border-b border-neutral-800 bg-neutral-950 pt-24 pb-16 overflow-hidden">
+            <div className={`relative border-b border-neutral-800 pt-24 pb-16 overflow-hidden ${isNativeApp ? 'bg-[#120821]' : 'bg-neutral-950'}`}>
                 <div className="absolute inset-0 bg-gradient-to-b from-amber-900/5 to-transparent" />
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-1/2 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none" />
 
                 <div className="container mx-auto px-4 relative z-10 text-center">
+                    <Link href={isNativeApp ? "/app" : "/"} className={`inline-flex items-center gap-2 mb-8 transition-colors ${isNativeApp ? 'text-[#d4af37] active:scale-95' : 'text-neutral-400 hover:text-white'}`}>
+                        <ChevronLeft className="w-4 h-4" /> {isNativeApp ? "Back to Sanctuary" : "Back to Home"}
+                    </Link>
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-900/30 border border-amber-800/50 text-amber-400 text-xs font-bold uppercase tracking-widest mb-6">
                         <Flame className="w-3.5 h-3.5" />
                         Sacred Light
@@ -560,7 +567,10 @@ export default function CandlesPage() {
             <CandleCreationModal
                 isOpen={isCreationModalOpen}
                 onClose={() => setIsCreationModalOpen(false)}
-                onSuccess={() => window.location.reload()}
+                onSuccess={() => {
+                    trackHubAction('candle_lit_success', 'Revenue');
+                    window.location.reload();
+                }}
             />
 
             {/* Floating Action Button for Mobile/Quick Access */}

@@ -1,9 +1,9 @@
 {
     "name": "My Prayer Tower",
     "short_name": "PrayerTower",
-    "theme_color": "#0a1835",
-    "background_color": "#0a1835",
-    "display": "standalone",
+    "theme_color": "#0a0612",
+    "background_color": "#0a0612",
+    "display": "fullscreen",
     "orientation": "portrait",
     "scope": "/",
     "start_url": "/",

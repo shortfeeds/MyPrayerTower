@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Heart, Loader2 } from 'lucide-react';
+import { Heart, Loader2, Camera, X } from 'lucide-react';
 import { createMemorial } from '@/app/actions/memorials';
 import { useRouter } from 'next/navigation';
 
@@ -18,10 +18,26 @@ export default function CreateMemorialPage() {
         deathDate: '',
         biography: '',
         photoUrl: '',
+        imagePreview: null as string | null,
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({
+                    ...prev,
+                    imagePreview: reader.result as string,
+                    photoUrl: 'uploaded-local-image' // Placeholder for actual upload logic
+                }));
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -95,9 +111,32 @@ export default function CreateMemorialPage() {
                                 />
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Cover Photo URL</label>
-                                <Input name="photoUrl" placeholder="https://example.com/photo.jpg" value={formData.photoUrl} onChange={handleChange} />
+                            <div className="space-y-4">
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Memorial Photo</label>
+                                
+                                {formData.imagePreview ? (
+                                    <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800 group">
+                                        <img src={formData.imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                        <button 
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, imagePreview: null, photoUrl: '' }))}
+                                            className="absolute top-4 right-4 bg-black/50 backdrop-blur-md text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-2xl cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all">
+                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <div className="w-12 h-12 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mb-4">
+                                                <Camera className="w-6 h-6" />
+                                            </div>
+                                            <p className="mb-2 text-sm text-gray-700 dark:text-gray-300 font-bold">Tap to upload photo</p>
+                                            <p className="text-xs text-gray-500">Camera or Gallery (JPEG, PNG)</p>
+                                        </div>
+                                        <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                                    </label>
+                                )}
                             </div>
 
                             <div className="pt-4">

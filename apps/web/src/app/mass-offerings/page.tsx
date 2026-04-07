@@ -6,6 +6,8 @@ import { ChevronLeft, Cross, Heart, Calendar, Users, Check, Loader2, Info, Spark
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SACRED_COPY } from '@/lib/sacred-copy';
+import { useAppMode } from '@/contexts/AppModeContext';
+import { trackHubAction } from '@/lib/analytics';
 
 const PayPalCheckout = dynamic(
     () => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout),
@@ -124,6 +126,7 @@ export default function MassOfferingsPage() {
             await new Promise(resolve => setTimeout(resolve, 2000));
 
             setHasSuccess(true);
+            trackHubAction('mass_offering_success', 'Revenue');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
             console.error('Mass offering error:', error);
@@ -138,30 +141,30 @@ export default function MassOfferingsPage() {
         }
     }, []);
 
+    const { isNativeApp } = useAppMode();
+
     return (
-        <div className="min-h-screen bg-slate-50 font-sans">
+        <div className={`min-h-screen font-sans ${isNativeApp ? 'bg-[#0a0612]' : 'bg-slate-50'}`}>
             {/* Immersive Header */}
-            <div className="relative bg-indigo-900 text-white pb-32 overflow-hidden">
+            <div className={`relative pb-32 overflow-hidden ${isNativeApp ? 'bg-[#120821]' : 'bg-indigo-900 text-white'}`}>
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544211604-faed3810ea38?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center opacity-20 transform scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/40 via-indigo-900/80 to-slate-50" />
+                <div className={`absolute inset-0 ${isNativeApp ? 'bg-gradient-to-b from-[#120821]/40 via-[#120821]/80 to-[#0a0612]' : 'bg-gradient-to-b from-indigo-900/40 via-indigo-900/80 to-slate-50'}`} />
 
                 <div className="container mx-auto px-4 pt-8 md:pt-16 relative z-10 text-center">
-                    <Link href="/" className="inline-flex items-center gap-2 text-indigo-200 hover:text-white mb-8 transition-colors">
-                        <ChevronLeft className="w-4 h-4" /> Back to Sanctuary
+                    <Link href={isNativeApp ? "/app" : "/"} className={`inline-flex items-center gap-2 mb-8 transition-colors ${isNativeApp ? 'text-[#d4af37] active:scale-95' : 'text-indigo-200 hover:text-white'}`}>
+                        <ChevronLeft className="w-4 h-4" /> {isNativeApp ? "Back to Sanctuary" : "Back to Home"}
                     </Link>
-
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-800/50 backdrop-blur border border-indigo-700 text-indigo-200 text-sm font-medium mb-6">
-                            <Cross className="w-3.5 h-3.5 text-indigo-400" /> Sacred Tradition
-                        </div>
-                        <h1 className="font-serif text-4xl md:text-6xl font-bold mb-6">
-                            Request a <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-pink-200">Holy Mass</span>
-                        </h1>
-                        <p className="text-lg md:text-xl text-indigo-100 max-w-2xl mx-auto mb-8 font-light leading-relaxed">
-                            Complete the greatest prayer of the Church. Have the Holy Sacrifice offered for your loved ones,
-                            living or deceased, through our network of faithful priests.
-                        </p>
-                    </motion.div>
+                    <div className="flex flex-col items-center justify-center gap-4 mb-4">
+                      <div className={`p-3 rounded-2xl ${isNativeApp ? 'bg-[#d4af37]/20 shadow-[0_0_20px_rgba(212,175,55,0.2)]' : 'bg-white/10'}`}>
+                        <Church className={`w-8 h-8 ${isNativeApp ? 'text-[#d4af37]' : 'text-white'}`} />
+                      </div>
+                    </div>
+                    <h1 className={`text-4xl md:text-5xl font-serif font-black mb-4 drop-shadow-xl ${isNativeApp ? 'text-white' : 'text-white'}`}>
+                      {SACRED_COPY.massPage.title}
+                    </h1>
+                    <p className={`text-lg max-w-2xl mx-auto leading-relaxed ${isNativeApp ? 'text-white/60' : 'text-indigo-100'}`}>
+                      {SACRED_COPY.massPage.subtitle}
+                    </p>
                 </div>
             </div>
 

@@ -213,8 +213,10 @@ body {
   background-color: inherit;
   color: inherit;
   -webkit-font-smoothing: antialiased;
-  
-  /* Native App Feel: Disable generic web behaviors */
+}
+
+/* Native App Feel: Disable generic web behaviors only when in app mode */
+body.app-mode-active {
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -223,7 +225,10 @@ body {
 }
 
 /* Re-enable selection for inputs, textareas, and specific selectable items */
-input, textarea, [contenteditable="true"], .selectable {
+body.app-mode-active input, 
+body.app-mode-active textarea, 
+body.app-mode-active [contenteditable="true"], 
+body.app-mode-active .selectable {
   -webkit-user-select: text;
   user-select: text;
 }
@@ -530,18 +535,18 @@ h6 {
 
 /* ==================== RESPONSIVE LAYOUT UTILITIES ==================== */
 
-/* Safe area padding for mobile devices with notches/home indicators */
+/* Optimized Safe Area Utilities for Android/iOS TWA */
 .pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
 }
 
 .pt-safe {
-  padding-top: env(safe-area-inset-top, 0px);
+  padding-top: max(1rem, env(safe-area-inset-top, 0px));
 }
 
 .px-safe {
-  padding-left: env(safe-area-inset-left, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
 }
 
 /* Full viewport height accounting for mobile browser chrome */
@@ -600,9 +605,9 @@ h6 {
 
 /* Main content area with proper spacing for fixed header/footer */
 main {
-  padding-top: 64px;
+  padding-top: calc(64px + env(safe-area-inset-top, 0px));
   /* Header height */
-  padding-bottom: 80px;
+  padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
   /* Mobile bottom nav height */
 }
 

@@ -37,9 +37,9 @@ export function FloatingPrayerButton({
             }
         }
 
-        // Show FAB after scroll
+        // Show FAB after scroll or immediate for App Mode
         const handleScroll = () => {
-            setIsVisible(window.scrollY > 200);
+            setIsVisible(true); // Forced visible for the hub audit
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -56,30 +56,22 @@ export function FloatingPrayerButton({
     if (!enabled || isDismissed || !isVisible) return null;
 
     return (
-        <div className="fixed bottom-48 right-6 z-[60] flex flex-col items-end gap-2">
-            {/* Dismiss button */}
-            <button
-                onClick={handleDismiss}
-                className="p-1.5 bg-gray-800/80 rounded-full text-white/60 hover:text-white transition-colors"
-                aria-label="Dismiss"
-            >
-                <X size={14} />
-            </button>
+        <div className="fixed bottom-32 md:bottom-8 right-6 z-[60] flex flex-col items-end gap-2 drop-shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+            {/* Dismiss button removed for Hub persistency */}
 
-            {/* Main FAB */}
             <Link
                 href={href}
                 className="
-                    flex items-center gap-2 px-5 py-3
-                    bg-gradient-to-r from-gold-500 to-amber-500
-                    text-white font-bold rounded-full
-                    shadow-lg fab-pulse
-                    hover:from-gold-400 hover:to-amber-400
+                    flex items-center gap-3 px-6 py-4
+                    bg-[#d4af37] text-[#0a0612] font-black
+                    rounded-full shadow-[0_8px_32px_rgba(212,175,55,0.4)]
+                    hover:scale-105 active:scale-95
                     transition-all duration-300
-                    transform hover:scale-105
+                    border border-[#d4af37]/50
+                    uppercase tracking-[0.1em] text-xs
                 "
             >
-                <Flame size={20} className="animate-pulse" />
+                <Flame size={18} className="animate-pulse" />
                 <span>{label}</span>
             </Link>
         </div>

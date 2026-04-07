@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { Inter, Merriweather, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
@@ -11,10 +12,11 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GlobalEngagement } from '@/components/GlobalEngagement';
 import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/CookieConsent';
+import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
 import { SkipToContent } from '@/components/ui/SkipToContent';
 import { SpiritualJourneyProvider } from '@/components/journey/SpiritualJourneyProvider';
 import { PricingProvider } from '@/contexts/PricingContext';
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
 import { AudioProvider } from '@/components/audio/AudioContext';
 
 // Self-hosted fonts for performance
@@ -123,7 +125,7 @@ export const viewport = {
     maximumScale: 5,
     userScalable: true,
     viewportFit: 'cover',
-    themeColor: '#0a1835',
+    themeColor: '#0a0612',
 };
 
 export default async function RootLayout({
@@ -134,6 +136,8 @@ export default async function RootLayout({
     const headersList = await headers();
     const pathname = headersList.get('x-pathname') || '';
     const isAdminPage = pathname.startsWith('/admin') || pathname.startsWith('/church-dashboard');
+    const isAppMode = cookies().has('is_twa') || headersList.get('host')?.includes('localhost') || headersList.get('host')?.includes('127.0.0.1');
+    const hideWebChrome = isAdminPage || isAppMode;
 
     return (
         <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
@@ -148,19 +152,19 @@ export default async function RootLayout({
                 <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
                 <link rel="dns-prefetch" href="https://www.google-analytics.com" />
             </head>
-            <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300">
+            <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300" suppressHydrationWarning>
                 <ThemeProvider>
                     <AudioProvider>
                         <SpiritualJourneyProvider>
                             <PricingProvider>
                                 <SkipToContent />
-                                {!isAdminPage && <Header />}
-                                <main id="main-content" className={isAdminPage ? "" : "flex-1 w-full"}>
+                                {!hideWebChrome && <Header />}
+                                <main id="main-content" className={hideWebChrome ? "" : "flex-1 w-full"}>
                                     {children}
                                 </main>
-                                {!isAdminPage && <Footer />}
+                                {!hideWebChrome && <Footer />}
 
-                                {!isAdminPage && (
+                                {!hideWebChrome && (
                                     <>
                                         {/* Global Engagement Components */}
                                         <GlobalEngagement />
@@ -237,6 +241,13 @@ export default async function RootLayout({
                     crossOrigin="anonymous"
                     strategy="lazyOnload"
                 />
+                {/* Shared Mobile Nav for TWA/App Mode */}
+                {hideWebChrome && (
+                    <>
+                        <FloatingPrayerButton href="/prayers" label="Pray Now" enabled={true} />
+                        <MobileBottomNav />
+                    </>
+                )}
             </body>
         </html>
     );

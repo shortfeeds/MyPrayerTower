@@ -61,6 +61,38 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+    // --- TWA / Android App Detection ---
+    const userAgent = request.headers.get('user-agent') || '';
+    const isTwaSource = request.nextUrl.searchParams.get('source') === 'twa';
+    const hasTwaCookie = request.cookies.has('is_twa');
+    // Common TWA indicators usually don't have a specific UA but we look for our param
+    const isApp = isTwaSource || hasTwaCookie;
+
+    if (isTwaSource && !hasTwaCookie) {
+        // We'll set the cookie on the response later
+    }
+
+    // Redirect root to /app if inside native app
+    if (isApp && pathname === '/') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/app';
+        // Maintain the source parameter if it's there
+        if (!url.searchParams.has('source')) {
+            url.searchParams.set('source', 'twa');
+        }
+        const resp = NextResponse.redirect(url);
+        resp.cookies.set('is_twa', '1', { path: '/', maxAge: 60 * 60 * 24 * 365 });
+        return resp;
+    }
+
+    // [v7.2] Strict Non-App User Redirect
+    // If user is accessing /app directly from a standard browser, redirect to main site
+    // Bypass this block for local development so you aren't kicked off localhost
+    const isLocal = request.nextUrl.hostname === 'localhost' || request.nextUrl.hostname === '127.0.0.1';
+    
+    if (pathname === '/app' && !isApp && !isLocal) {
+        return NextResponse.redirect('https://www.myprayertower.com');
+    }
 
 
     if (pathname.startsWith('/api/')) {
@@ -73,13 +105,24 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    const response = NextResponse.next();
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-pathname', pathname);
+
+    const response = NextResponse.next({
+        request: {
+            headers: requestHeaders,
+        },
+    });
+
+    if (isTwaSource && !hasTwaCookie) {
+        response.cookies.set('is_twa', '1', { path: '/', maxAge: 60 * 60 * 24 * 365 });
+    }
 
     // Add pathname header for server components to detect current route
     response.headers.set('x-pathname', pathname);
 
-    const headers = getSecurityHeaders(pathname);
-    Object.entries(headers).forEach(([key, value]) => {
+    const secHeaders = getSecurityHeaders(pathname);
+    Object.entries(secHeaders).forEach(([key, value]) => {
         response.headers.set(key, value);
     });
 

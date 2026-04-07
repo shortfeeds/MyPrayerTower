@@ -27,35 +27,33 @@ export function CookieConsent() {
     if (!isVisible) return null;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/95 backdrop-blur border-t border-stone-200 shadow-lg animate-in slide-in-from-bottom">
-            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-sm text-stone-600 text-center sm:text-left">
-                    <p>
-                        We use cookies to enhance your spiritual journey and improve our website.
-                        By continuing, you agree to our{' '}
-                        <Link href="/privacy" className="text-stone-900 underline hover:text-stone-700">
-                            Privacy Policy
-                        </Link>.
-                    </p>
+        <div className="fixed bottom-24 left-4 right-4 z-[200] p-6 bg-[#0a0612]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl animate-in slide-in-from-bottom duration-500">
+            <div className="flex flex-col gap-5">
+                <div className="flex items-start justify-between gap-4">
+                    <div className="text-sm text-white/80 leading-relaxed">
+                        <p className="font-bold text-[#d4af37] mb-1 uppercase tracking-widest text-[10px]">Privacy & Sanctuary</p>
+                        <p>
+                            We use cookies to enhance your spiritual journey. 
+                            By continuing, you agree to our{' '}
+                            <Link href="/privacy" className="text-[#d4af37] underline font-bold">
+                                Privacy Policy
+                            </Link>.
+                        </p>
+                    </div>
                 </div>
+                
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={handleDecline}
-                        className="px-4 py-2 text-sm text-stone-600 hover:text-stone-900 font-medium transition-colors"
-                    >
-                        Decline
-                    </button>
-                    <button
                         onClick={handleAccept}
-                        className="px-6 py-2 text-sm bg-stone-900 text-white rounded-full hover:bg-stone-800 transition-colors shadow-sm"
+                        className="flex-1 bg-[#d4af37] text-[#0a0612] py-3 rounded-xl font-black text-xs uppercase tracking-widest active:scale-95 transition-all shadow-lg"
                     >
                         Accept
                     </button>
                     <button
-                        onClick={() => setIsVisible(false)}
-                        className="p-1 text-stone-400 hover:text-stone-600 sm:hidden"
+                        onClick={handleDecline}
+                        className="flex-1 border border-white/10 text-white/50 py-3 rounded-xl font-bold text-xs uppercase tracking-widest active:scale-95 transition-all"
                     >
-                        <X className="w-4 h-4" />
+                        Reject
                     </button>
                 </div>
             </div>

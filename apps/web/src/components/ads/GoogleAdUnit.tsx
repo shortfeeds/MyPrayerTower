@@ -64,13 +64,6 @@ export function GoogleAdUnit({
 
     return (
         <div className={`adsense-container relative overflow-hidden flex items-center justify-center ${className}`} style={{ minHeight: '100px', ...style }}>
-            {isDev && (
-                <div className="absolute inset-0 bg-blue-500/10 border border-dashed border-blue-500 flex items-center justify-center pointer-events-none z-10">
-                    <span className="bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded font-mono">
-                        {isAdMob ? 'AdMob' : 'AdSense'}: {slot}
-                    </span>
-                </div>
-            )}
             <ins
                 ref={adRef}
                 className="adsbygoogle"

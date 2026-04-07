@@ -22,8 +22,8 @@ plugins {
 
 def twaManifest = [
     applicationId: 'com.myprayertower.myprayertower_app',
-    hostName: 'myprayertower.com', // The domain being opened in the TWA.
-    launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
+    hostName: 'www.myprayertower.com', // The domain being opened in the TWA.
+    launchUrl: '/app?source=twa', // The start path for the TWA. Must be relative to the domain.
     name: 'My Prayer Tower', // The application name.
     launcherName: 'PrayerTower', // The name shown on the Android Launcher.
     themeColor: '#0A1835', // The color used for the status bar.
@@ -56,9 +56,9 @@ android {
     defaultConfig {
         applicationId "com.myprayertower.myprayertower_app"
         minSdkVersion 21
-        targetSdkVersion 35
-        versionCode 28
-        versionName "28"
+        targetSdkVersion 34
+        versionCode 32
+        versionName "32"
 
         // The name for the application
         resValue "string", "appName", twaManifest.name
@@ -76,12 +76,12 @@ android {
             // The URL the Web Manifest for the Progressive Web App that the TWA points to. This
             // is used by Chrome OS and Meta Quest to open the Web version of the PWA instead of
             // the TWA, as it will probably give a better user experience for non-mobile devices.
-            resValue "string", "webManifestUrl", 'https://myprayertower.com/manifest.json'
+            resValue "string", "webManifestUrl", 'https://www.myprayertower.com/manifest.json'
         
 
         
             // This is used by Meta Quest.
-            resValue "string", "fullScopeUrl", 'https://myprayertower.com/'
+            resValue "string", "fullScopeUrl", 'https://www.myprayertower.com/'
         
 
         
@@ -161,11 +161,7 @@ android {
     }
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
+// toolchain removed to use system Java
 
 android {
     lintOptions {

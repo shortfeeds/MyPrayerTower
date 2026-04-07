@@ -15,6 +15,7 @@ import { GlobalSearch } from '@/components/search/GlobalSearch';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useAuth } from '@/hooks/useAuth';
 import { MegaMenu, PRAY_MENU, OFFER_MENU, LEARN_MENU } from './MegaMenu';
+import { useAppMode } from '@/contexts/AppModeContext';
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,6 +34,7 @@ export function Header() {
     const locateRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const { isAuthenticated, user, signOut } = useAuth();
+    const appModeCtx = useAppMode();
 
     useEffect(() => {
         setMounted(true);
@@ -107,172 +109,212 @@ export function Header() {
     const isActive = (path: string) => pathname?.startsWith(path);
     return (
         <>
-            <header
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${mounted && scrolled
-                    ? 'bg-sacred-900/95 backdrop-blur-xl shadow-2xl shadow-black/20 py-2'
-                    : 'bg-sacred-900/95 backdrop-blur-xl shadow-xl shadow-black/10 py-3'
-                    }`}
-            >
-                {/* Global Google Translate Element (Hidden) */}
-                <div id="google_translate_element" className="hidden absolute" />
+            {(mounted && appModeCtx.isNativeApp) ? (
+                // --- NATIVE APP MODE TOP BAR ---
+                <header className="fixed top-0 left-0 right-0 z-50 bg-sacred-950 text-white shadow-xl pt-safe select-none">
+                    {/* Global Google Translate Element (Hidden) */}
+                    <div id="google_translate_element" className="hidden absolute" />
 
-                <div className="container mx-auto px-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between w-full px-4 h-full">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-xl" aria-label="MyPrayerTower Home">
-                            <div className="w-10 h-10 rounded-xl overflow-hidden transition-all duration-500 transform group-hover:scale-110 relative">
+                        <Link href={appModeCtx.isNativeApp ? "/app" : "/"} className="flex items-center gap-2 group focus:outline-none" aria-label="MyPrayerTower Home">
+                            <div className="w-8 h-8 rounded-lg overflow-hidden relative">
                                 <Image
                                     src="/icon.png"
                                     alt="MyPrayerTower Logo"
                                     fill
                                     className="object-cover"
-                                    sizes="40px"
+                                    sizes="32px"
                                 />
                             </div>
-                            <div className="flex flex-col">
-                                <span className="font-serif font-bold text-lg leading-tight text-white">
-                                    MyPrayerTower
-                                </span>
-                                <span className="text-[10px] uppercase tracking-wider font-medium text-gray-300">
-                                    Catholic Services
-                                </span>
-                            </div>
+                            <span className="font-serif font-bold text-lg leading-tight text-white">
+                                MyPrayerTower
+                            </span>
                         </Link>
 
-                        {/* Desktop Nav - Clean & Professional */}
-                        <nav className="hidden lg:flex items-center gap-1 p-1.5 bg-black/40 backdrop-blur-md rounded-full">
-
-                            {/* 1. PRAY */}
-                            <div className="relative" ref={prayRef}>
-                                <button
-                                    onClick={() => { setPrayOpen(!prayOpen); setOfferOpen(false); setLearnOpen(false); }}
-                                    aria-expanded={prayOpen}
-                                    aria-haspopup="true"
-                                    className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${prayOpen
-                                        ? 'bg-liturgy text-white shadow-lg glow-liturgy'
-                                        : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent hover:border-liturgy'
-                                        }`}
-                                >
-                                    <Sparkles className={`w-3.5 h-3.5 ${prayOpen ? 'text-white' : 'text-gray-400 group-hover:text-liturgy'}`} />
-                                    Pray
-                                    <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${prayOpen ? 'rotate-180 opacity-100' : ''}`} />
-                                </button>
-                            </div>
-
-                            {/* 2. OFFER */}
-                            <div className="relative" ref={offerRef}>
-                                <button
-                                    onClick={() => { setOfferOpen(!offerOpen); setPrayOpen(false); setLearnOpen(false); }}
-                                    aria-expanded={offerOpen}
-                                    aria-haspopup="true"
-                                    className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${offerOpen
-                                        ? 'bg-amber-600 text-white'
-                                        : 'text-gray-300 hover:text-white hover:bg-white/5'
-                                        }`}
-                                >
-                                    <Heart className={`w-3.5 h-3.5 ${offerOpen ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
-                                    Offer
-                                    <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${offerOpen ? 'rotate-180 opacity-100' : ''}`} />
-                                </button>
-                            </div>
-
-                            {/* 3. LEARN */}
-                            <div className="relative" ref={learnRef}>
-                                <button
-                                    onClick={() => { setLearnOpen(!learnOpen); setPrayOpen(false); setOfferOpen(false); }}
-                                    aria-expanded={learnOpen}
-                                    aria-haspopup="true"
-                                    className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${learnOpen
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-300 hover:text-white hover:bg-white/5'
-                                        }`}
-                                >
-                                    <BookOpen className={`w-3.5 h-3.5 ${learnOpen ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
-                                    Learn
-                                    <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${learnOpen ? 'rotate-180 opacity-100' : ''}`} />
-                                </button>
-                            </div>
-
-                        </nav>
-
-                        {isAuthenticated && (
-                            <Link
-                                href="/journey"
-                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${isActive('/journey')
-                                    ? 'bg-white text-sacred-900 shadow-md'
-                                    : 'text-white hover:bg-white/20'
-                                    }`}
-                            >
-                                <Compass className={`w-4 h-4 ${isActive('/journey') ? 'text-gold-600' : ''}`} />
-                                My Prayer Corner
-                            </Link>
-                        )}
-
-
-                        {/* Right Actions */}
-                        <div className="hidden lg:flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                             <button
                                 onClick={() => setSearchOpen(true)}
-                                className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 focus:outline-none"
+                                className="text-gray-300 hover:text-white transition-colors focus:outline-none"
                                 aria-label="Search"
                             >
                                 <Search className="w-5 h-5" />
-                                <span className="hidden xl:inline text-xs bg-white/5 px-1.5 py-0.5 rounded border border-white/10 text-gray-400">⌘K</span>
                             </button>
-
-                            {/* Language Switcher */}
-                            <LanguageSwitcher id="google_translate_desktop" />
-
-                            {/* Theme Toggle Removed - Unified Mode */}
-
-                            {isAuthenticated ? (
-                                /* Authenticated User Menu */
-                                <div className="flex items-center gap-2">
-                                    <Link
-                                        href="/journey"
-                                        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors"
-                                    >
-                                        <User className="w-4 h-4" />
-                                        <span className="text-sm font-medium">My Sanctuary</span>
-                                    </Link>
-                                </div>
-                            ) : (
-                                /* Guest Actions */
-                                <div className="flex items-center gap-3">
-                                    <Link
-                                        href="/login"
-                                        className="px-5 py-2 text-sm font-medium text-white border border-white/30 hover:bg-white/10 hover:border-white/50 rounded-full transition-all focus:outline-none"
-                                    >
-                                        Sign In
-                                    </Link>
-                                    <Link
-                                        href="/register"
-                                        className="px-5 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white text-sm font-bold rounded-full shadow-lg hover:shadow-gold-500/30 transition-all transform hover:-translate-y-0.5 focus:outline-none"
-                                    >
-                                        Join
-                                    </Link>
-                                </div>
-                            )}
+                            <LanguageSwitcher id="google_translate_mobile_app" />
+                            <button
+                                className="text-white hover:text-gold-400 transition-colors focus:outline-none"
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                aria-label="Toggle menu"
+                            >
+                                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                            </button>
                         </div>
-
-                        {/* Mobile Menu Button */}
-                        <button
-                            className="lg:hidden p-2 text-white rounded-xl hover:bg-white/10 transition-colors"
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            aria-label="Toggle menu"
-                        >
-                            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                        </button>
                     </div>
-                </div>
+                </header>
+            ) : (
+                // --- STANDARD WEB HEADER ---
+                <header
+                    className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${mounted && scrolled
+                        ? 'bg-sacred-900/95 backdrop-blur-xl shadow-2xl shadow-black/20 py-2'
+                        : 'bg-sacred-900/95 backdrop-blur-xl shadow-xl shadow-black/10 py-3'
+                        }`}
+                >
+                    {/* Global Google Translate Element (Hidden) */}
+                    <div id="google_translate_element" className="hidden absolute" />
 
-                {/* Desktop Mega Menus - Positioned relative to the whole header for perfect centering */}
-                <div className="hidden lg:block absolute left-0 bottom-0 w-full">
-                    <MegaMenu config={PRAY_MENU} isOpen={prayOpen} onClose={() => setPrayOpen(false)} />
-                    <MegaMenu config={OFFER_MENU} isOpen={offerOpen} onClose={() => setOfferOpen(false)} />
-                    <MegaMenu config={LEARN_MENU} isOpen={learnOpen} onClose={() => setLearnOpen(false)} />
-                </div>
-            </header >
+                    <div className="container mx-auto px-4">
+                        <div className="flex items-center justify-between">
+                            {/* Logo */}
+                            <Link href="/" className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-xl" aria-label="MyPrayerTower Home">
+                                <div className="w-10 h-10 rounded-xl overflow-hidden transition-all duration-500 transform group-hover:scale-110 relative">
+                                    <Image
+                                        src="/icon.png"
+                                        alt="MyPrayerTower Logo"
+                                        fill
+                                        className="object-cover"
+                                        sizes="40px"
+                                    />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="font-serif font-bold text-lg leading-tight text-white">
+                                        MyPrayerTower
+                                    </span>
+                                    <span className="text-[10px] uppercase tracking-wider font-medium text-gray-300">
+                                        Catholic Services
+                                    </span>
+                                </div>
+                            </Link>
+
+                            {/* Desktop Nav - Clean & Professional */}
+                            <nav className="hidden lg:flex items-center gap-1 p-1.5 bg-black/40 backdrop-blur-md rounded-full">
+                                {/* 1. PRAY */}
+                                <div className="relative" ref={prayRef}>
+                                    <button
+                                        onClick={() => { setPrayOpen(!prayOpen); setOfferOpen(false); setLearnOpen(false); }}
+                                        aria-expanded={prayOpen}
+                                        aria-haspopup="true"
+                                        className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${prayOpen
+                                            ? 'bg-liturgy text-white shadow-lg glow-liturgy'
+                                            : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent hover:border-liturgy'
+                                            }`}
+                                    >
+                                        <Sparkles className={`w-3.5 h-3.5 ${prayOpen ? 'text-white' : 'text-gray-400 group-hover:text-liturgy'}`} />
+                                        Pray
+                                        <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${prayOpen ? 'rotate-180 opacity-100' : ''}`} />
+                                    </button>
+                                </div>
+
+                                {/* 2. OFFER */}
+                                <div className="relative" ref={offerRef}>
+                                    <button
+                                        onClick={() => { setOfferOpen(!offerOpen); setPrayOpen(false); setLearnOpen(false); }}
+                                        aria-expanded={offerOpen}
+                                        aria-haspopup="true"
+                                        className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${offerOpen
+                                            ? 'bg-amber-600 text-white'
+                                            : 'text-gray-300 hover:text-white hover:bg-white/5'
+                                            }`}
+                                    >
+                                        <Heart className={`w-3.5 h-3.5 ${offerOpen ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
+                                        Offer
+                                        <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${offerOpen ? 'rotate-180 opacity-100' : ''}`} />
+                                    </button>
+                                </div>
+
+                                {/* 3. LEARN */}
+                                <div className="relative" ref={learnRef}>
+                                    <button
+                                        onClick={() => { setLearnOpen(!learnOpen); setPrayOpen(false); setOfferOpen(false); }}
+                                        aria-expanded={learnOpen}
+                                        aria-haspopup="true"
+                                        className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${learnOpen
+                                            ? 'bg-blue-600 text-white'
+                                            : 'text-gray-300 hover:text-white hover:bg-white/5'
+                                            }`}
+                                    >
+                                        <BookOpen className={`w-3.5 h-3.5 ${learnOpen ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
+                                        Learn
+                                        <ChevronDown className={`w-3 h-3 transition-transform opacity-50 ${learnOpen ? 'rotate-180 opacity-100' : ''}`} />
+                                    </button>
+                                </div>
+                            </nav>
+
+                            {isAuthenticated && (
+                                <Link
+                                    href="/journey"
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${isActive('/journey')
+                                        ? 'bg-white text-sacred-900 shadow-md'
+                                        : 'text-white hover:bg-white/20'
+                                        }`}
+                                >
+                                    <Compass className={`w-4 h-4 ${isActive('/journey') ? 'text-gold-600' : ''}`} />
+                                    My Prayer Corner
+                                </Link>
+                            )}
+
+                            {/* Right Actions */}
+                            <div className="hidden lg:flex items-center gap-3">
+                                <button
+                                    onClick={() => setSearchOpen(true)}
+                                    className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 focus:outline-none"
+                                    aria-label="Search"
+                                >
+                                    <Search className="w-5 h-5" />
+                                    <span className="hidden xl:inline text-xs bg-white/5 px-1.5 py-0.5 rounded border border-white/10 text-gray-400">⌘K</span>
+                                </button>
+
+                                {/* Language Switcher */}
+                                <LanguageSwitcher id="google_translate_desktop" />
+
+                                {isAuthenticated ? (
+                                    /* Authenticated User Menu */
+                                    <div className="flex items-center gap-2">
+                                        <Link
+                                            href="/journey"
+                                            className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors"
+                                        >
+                                            <User className="w-4 h-4" />
+                                            <span className="text-sm font-medium">My Sanctuary</span>
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    /* Guest Actions */
+                                    <div className="flex items-center gap-3">
+                                        <Link
+                                            href="/login"
+                                            className="px-5 py-2 text-sm font-medium text-white border border-white/30 hover:bg-white/10 hover:border-white/50 rounded-full transition-all focus:outline-none"
+                                        >
+                                            Sign In
+                                        </Link>
+                                        <Link
+                                            href="/register"
+                                            className="px-5 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white text-sm font-bold rounded-full shadow-lg hover:shadow-gold-500/30 transition-all transform hover:-translate-y-0.5 focus:outline-none"
+                                        >
+                                            Join
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Mobile Menu Button */}
+                            <button
+                                className="lg:hidden p-2 text-white rounded-xl hover:bg-white/10 transition-colors"
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                aria-label="Toggle menu"
+                            >
+                                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Desktop Mega Menus - Positioned relative to the whole header for perfect centering */}
+                    <div className="hidden lg:block absolute left-0 bottom-0 w-full">
+                        <MegaMenu config={PRAY_MENU} isOpen={prayOpen} onClose={() => setPrayOpen(false)} />
+                        <MegaMenu config={OFFER_MENU} isOpen={offerOpen} onClose={() => setOfferOpen(false)} />
+                        <MegaMenu config={LEARN_MENU} isOpen={learnOpen} onClose={() => setLearnOpen(false)} />
+                    </div>
+                </header >
+            )}
 
             {/* Mobile Menu Overlay */}
             {

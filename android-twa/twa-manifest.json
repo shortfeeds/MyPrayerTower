@@ -12,7 +12,7 @@
   "navigationDividerColorDark": "#000000",
   "backgroundColor": "#0A1835",
   "enableNotifications": true,
-  "startUrl": "/",
+  "startUrl": "/app?source=twa",
   "iconUrl": "https://www.myprayertower.com/icon.png",
   "splashScreenFadeOutDuration": 0,
   "signingKey": {

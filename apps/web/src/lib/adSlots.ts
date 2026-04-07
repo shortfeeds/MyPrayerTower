@@ -16,6 +16,13 @@ export const AD_SLOTS = {
         inline: process.env.NEXT_PUBLIC_ADSENSE_HOME_INLINE || '7054020518',
     },
 
+    // Hub / App specific ads
+    app: {
+        banner: 'ca-app-pub-1009360672921924/8257353171',
+        native: 'ca-app-pub-1009360672921924/9865948318',
+        inline: 'ca-app-pub-1009360672921924/9865948318',
+    },
+
     // Prayer Library ads
     prayers: {
         top: process.env.NEXT_PUBLIC_ADSENSE_PRAYERS_TOP || '2324777328',
@@ -94,6 +101,8 @@ export const AD_SLOTS = {
     global: {
         anchor: process.env.NEXT_PUBLIC_ADSENSE_ANCHOR || '',
         interstitial: process.env.NEXT_PUBLIC_ADSENSE_INTERSTITIAL || '',
+        banner: 'ca-app-pub-1009360672921924/8257353171',
+        native: 'ca-app-pub-1009360672921924/9865948318',
     },
 } as const;
 
