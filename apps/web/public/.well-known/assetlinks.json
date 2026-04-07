@@ -8,7 +8,8 @@
       "namespace": "android_app",
       "package_name": "com.myprayertower.myprayertower_app",
       "sha256_cert_fingerprints": [
-        "27:FF:9E:14:1F:0B:6A:0D:32:AB:81:30:A7:0A:60:0D:5B:7E:1F:7D:76:7D:89:68:BD:76:98:C5:FA:51:C6:FC"
+        "27:FF:9E:14:1F:0B:6A:0D:32:AB:81:30:A7:0A:60:0D:5B:7E:1F:7D:76:7D:89:68:BD:76:98:C5:FA:51:C6:FC",
+        "7A:D9:6C:B9:6B:6B:AF:47:77:48:71:F0:82:44:FA:92:56:E7:D4:FC:6C:DE:F0:D8:EB:D8:43:D1:F7:5D:48:E8"
       ]
     }
   }

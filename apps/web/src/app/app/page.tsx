@@ -367,16 +367,16 @@ export default function SanctuaryHub() {
         <div className="px-6 mb-12">
           <div className="grid grid-cols-4 gap-4">
             {[
-              { icon: BookOpen, label: 'Readings', href: '/readings', bg: 'bg-indigo-500/20 border-indigo-500/30 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.15)]' },
-              { icon: Music, label: 'Rosary', href: '/prayers/rosary', bg: 'bg-amber-500/20 border-amber-500/30 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.15)]' },
-              { icon: Flame, label: 'Candle', href: '/candles', bg: 'bg-orange-500/20 border-orange-500/30 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.15)]' },
-              { icon: Heart, label: 'Prayers', href: '/prayers', bg: 'bg-rose-500/20 border-rose-500/30 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.15)]' },
+              { icon: BookOpen, label: 'Readings', href: '/readings', bg: 'bg-indigo-500/30 border-indigo-500/40 text-indigo-300 shadow-[0_4px_20px_rgba(99,102,241,0.25)]' },
+              { icon: Music, label: 'Rosary', href: '/prayers/rosary', bg: 'bg-amber-500/30 border-amber-500/40 text-amber-300 shadow-[0_4px_20px_rgba(245,158,11,0.25)]' },
+              { icon: Flame, label: 'Candle', href: '/candles', bg: 'bg-orange-500/30 border-orange-500/40 text-orange-300 shadow-[0_4px_20px_rgba(249,115,22,0.25)]' },
+              { icon: Heart, label: 'Prayers', href: '/prayers', bg: 'bg-rose-500/30 border-rose-500/40 text-rose-300 shadow-[0_4px_20px_rgba(244,63,94,0.25)]' },
             ].map((q, i) => (
               <Link key={i} href={q.href} className="flex flex-col items-center gap-2 active:scale-90 transition-transform group">
-                <div className={`w-14 h-14 ${q.bg} rounded-2xl flex items-center justify-center border group-hover:scale-105 transition-transform`}>
+                <div className={`w-14 h-14 ${q.bg} rounded-2xl flex items-center justify-center border group-hover:scale-105 transition-all duration-300`}>
                   <q.icon className="w-6 h-6" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/50 group-hover:text-white transition-colors">{q.label}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/60 group-hover:text-[#d4af37] transition-colors">{q.label}</span>
               </Link>
             ))}
           </div>
@@ -405,14 +405,14 @@ export default function SanctuaryHub() {
                         setShowComingSoon(true);
                       }
                     }}
-                    className="flex flex-col bg-white/4 border border-white/5 hover:border-[#d4af37]/20 rounded-2xl p-4 active:scale-95 transition-all relative overflow-hidden"
+                    className="flex flex-col bg-white/[0.12] border border-white/20 hover:border-[#d4af37]/50 rounded-2xl p-5 active:scale-95 transition-all relative overflow-hidden shadow-2xl"
                   >
-                    <div className={`w-10 h-10 ${f.color} rounded-xl flex items-center justify-center mb-3`}>
-                      <f.icon className="w-5 h-5" />
+                    <div className={`w-12 h-12 ${f.color} rounded-2xl flex items-center justify-center mb-4 shadow-lg border border-white/5`}>
+                      <f.icon className="w-6 h-6" />
                     </div>
-                    {f.badge && <span className="absolute top-2 right-2 text-[8px] font-black bg-[#d4af37] text-[#0a0612] px-1.5 py-0.5 rounded-full">{f.badge}</span>}
-                    <h4 className="text-white font-bold text-xs leading-none mb-1">{f.title}</h4>
-                    <p className="text-white/30 text-[10px] leading-snug line-clamp-2">{f.description}</p>
+                    {f.badge && <span className="absolute top-2 right-2 text-[9px] font-black bg-[#d4af37] text-[#0a0612] px-2 py-0.5 rounded-full shadow-md z-10">{f.badge}</span>}
+                    <h4 className="text-white font-black text-sm leading-tight mb-1.5 tracking-tight">{f.title}</h4>
+                    <p className="text-white/60 text-[11px] leading-relaxed line-clamp-2 font-medium">{f.description}</p>
                   </Link>
                 ))}
               </div>
