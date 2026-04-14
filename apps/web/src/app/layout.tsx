@@ -237,7 +237,12 @@ export default async function RootLayout({
                 {/* Google AdSense - Deferred to avoid render-blocking */}
                 <Script
                     id="google-adsense"
-                    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924'}`}
+                    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${(() => {
+                        const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924';
+                        if (clientId.includes('~')) return `ca-pub-${clientId.split('~')[0].replace('ca-app-pub-', '')}`;
+                        if (clientId.startsWith('ca-app-pub-')) return clientId.replace('ca-app-pub-', 'ca-pub-');
+                        return clientId.startsWith('ca-pub-') ? clientId : `ca-pub-${clientId}`;
+                    })()}`}
                     crossOrigin="anonymous"
                     strategy="lazyOnload"
                 />

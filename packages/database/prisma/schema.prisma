@@ -980,6 +980,8 @@ model User {
   
   // Purchase Events
   PurchaseEvent                              PurchaseEvent[]
+  failedPayments                             FailedPayment[]
+
   
   // Memorials
   Memorial                                   Memorial[]
@@ -2498,9 +2500,40 @@ enum DeliveryStatus {
   SENT
   DELIVERED
   READ
-  FAILED
   @@schema("public")
 }
+
+enum PaymentType {
+  DONATION
+  SUBSCRIPTION
+  CANDLE
+  MASS_OFFERING
+  MEMORIAL
+  BOUQUET
+  OTHER
+  @@schema("public")
+}
+
+model FailedPayment {
+  id              String      @id @default(cuid())
+  userId          String?
+  userEmail       String?
+  amount          Int?        // in cents
+  currency        String      @default("usd")
+  paymentType     PaymentType @default(OTHER)
+  failureReason   String      @db.Text
+  stripeSessionId String?
+  metadata        Json?
+  createdAt       DateTime    @default(now())
+
+  user            User?       @relation(fields: [userId], references: [id])
+
+  @@index([userEmail])
+  @@index([paymentType])
+  @@index([createdAt])
+  @@schema("public")
+}
+
 
 model DeviceToken {
   id        String   @id @default(cuid())

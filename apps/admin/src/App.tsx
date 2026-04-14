@@ -19,6 +19,8 @@ import { AdManagement } from './pages/AdManagement';
 import { UserReports } from './pages/UserReports';
 import SaintsManagement from './pages/SaintsManagement';
 import { AbandonedCartManagement } from './pages/AbandonedCartManagement';
+import { FailedPayments } from './pages/FailedPayments';
+
 
 function RequireAuth({ children }: { children: JSX.Element }) {
     const token = localStorage.getItem('token');
@@ -132,6 +134,11 @@ function App() {
             <Route path="/abandoned-carts" element={
                 <RequireAuth>
                     <Layout><AbandonedCartManagement /></Layout>
+                </RequireAuth>
+            } />
+            <Route path="/failed-payments" element={
+                <RequireAuth>
+                    <Layout><FailedPayments /></Layout>
                 </RequireAuth>
             } />
         </Routes>

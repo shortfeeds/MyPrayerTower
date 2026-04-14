@@ -27,6 +27,8 @@ import { PrayerPartnersModule } from './modules/prayer-partners/prayer-partners.
 import { PilgrimagesModule } from './modules/pilgrimages/pilgrimages.module';
 import { CartsModule } from './modules/carts/carts.module';
 import { MemorialsModule } from './modules/memorials/memorials.module';
+import { FailedPaymentsModule } from './modules/failed-payments/failed-payments.module';
+
 
 // Mass Offerings & Donations
 import { MassOfferingsModule } from './modules/mass-offerings/mass-offerings.module';
@@ -86,6 +88,7 @@ import { AdsModule } from './modules/ads/ads.module';
         PilgrimagesModule,
         CartsModule,
         MemorialsModule,
+        FailedPaymentsModule,
 
         // Mass Offerings & Donations (Centralized)
         MassOfferingsModule,

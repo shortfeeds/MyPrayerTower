@@ -7,17 +7,27 @@ export class AdsController {
 
     @Get()
     async getActiveAds() {
-        return (this.prisma as any).adContainer.findMany({
-            where: { isActive: true },
-            select: {
-                sectionKey: true,
-                adType: true,
-                description: true,
-                androidUnitId: true,
-                iosUnitId: true,
-                webUnitId: true,
-            }
-        });
+        const [ads, matrixSetting] = await Promise.all([
+            (this.prisma as any).adContainer.findMany({
+                where: { isActive: true },
+                select: {
+                    sectionKey: true,
+                    adType: true,
+                    description: true,
+                    androidUnitId: true,
+                    iosUnitId: true,
+                    webUnitId: true,
+                }
+            }),
+            this.prisma.systemSetting.findUnique({
+                where: { key: 'ad_placements_matrix' }
+            })
+        ]);
+
+        return {
+            ads,
+            placementsMatrix: matrixSetting ? JSON.parse(matrixSetting.value) : {}
+        };
     }
     @Get('seed')
     async seedAds() {

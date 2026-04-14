@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { directFetch } from '../lib/httpClient';
 
 export interface AdUnit {
     sectionKey: string;
@@ -34,7 +35,7 @@ export const useAdStore = create<AdState>((set, get) => ({
         
         set({ loading: true });
         try {
-            const response = await fetch('/api/ads');
+            const response = await directFetch('/api/ads');
             const data = await response.json();
             set({ 
                 ads: data.ads || [], 

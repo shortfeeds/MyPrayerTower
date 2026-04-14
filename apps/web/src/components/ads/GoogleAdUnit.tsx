@@ -57,9 +57,25 @@ export function GoogleAdUnit({
 
     if (!slot) return null;
 
+    // Helper to format client ID (must be ca-pub-XXXXX for web)
+    const formatAdClient = (clientId?: string) => {
+        if (!clientId) return 'ca-pub-1009360672921924';
+        // If it's accidentally an AdMob app ID, strip the ~ and switch to pub
+        if (clientId.includes('~')) {
+            const baseId = clientId.split('~')[0].replace('ca-app-pub-', '');
+            return `ca-pub-${baseId}`;
+        }
+        if (clientId.startsWith('ca-app-pub-')) {
+            return clientId.replace('ca-app-pub-', 'ca-pub-');
+        }
+        return clientId.startsWith('ca-pub-') ? clientId : `ca-pub-${clientId}`;
+    };
+
     // Detect if this is an AdMob ID (contains /) or AdSense ID (numeric)
     const isAdMob = slot.includes('/');
-    const adClient = isAdMob ? (slot.split('/')[0].startsWith('ca-app-pub-') ? slot.split('/')[0] : process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID) : process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+    const adClient = formatAdClient(
+        isAdMob ? (slot.split('/')[0].startsWith('ca-app-pub-') ? slot.split('/')[0] : process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID) : process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID
+    );
     const finalSlot = isAdMob ? slot.split('/')[1] : slot;
 
     return (

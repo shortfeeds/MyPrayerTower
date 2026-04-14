@@ -2,7 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SubscriptionTier } from '@prisma/client';
+import { SubscriptionTier, PaymentType } from '@prisma/client';
+import { FailedPaymentsService } from '../failed-payments/failed-payments.service';
 
 export interface CreateSubscriptionDto {
     userId: string;
@@ -72,6 +73,7 @@ export class PaymentService {
     constructor(
         private configService: ConfigService,
         private prisma: PrismaService,
+        private failedPaymentsService: FailedPaymentsService,
     ) {
         const stripeKey = this.configService.get('STRIPE_SECRET_KEY');
         if (stripeKey) {
@@ -191,6 +193,9 @@ export class PaymentService {
             case 'invoice.payment_failed':
                 await this.handlePaymentFailed(event.data.object as Stripe.Invoice);
                 break;
+            case 'checkout.session.async_payment_failed':
+                await this.handleCheckoutFailed(event.data.object as Stripe.Checkout.Session);
+                break;
         }
     }
 
@@ -263,6 +268,49 @@ export class PaymentService {
             });
 
             // TODO: Send email notification about failed payment
+            
+            // Log to FailedPayment table
+            await this.failedPaymentsService.log({
+                userId: user.id,
+                userEmail: user.email,
+                amount: invoice.amount_remaining,
+                currency: invoice.currency,
+                paymentType: PaymentType.SUBSCRIPTION,
+                failureReason: invoice.last_payment_error?.message || 'Payment failed',
+                metadata: {
+                    invoiceId: invoice.id,
+                    subscriptionId: invoice.subscription as string,
+                    errorCode: invoice.last_payment_error?.code,
+                }
+            });
+        }
+    }
+
+    private async handleCheckoutFailed(session: Stripe.Checkout.Session) {
+        const userId = session.metadata?.userId;
+        const planId = session.metadata?.planId;
+
+        if (!userId) return;
+
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: { id: true, email: true }
+        });
+
+        if (user) {
+            await this.failedPaymentsService.log({
+                userId: user.id,
+                userEmail: user.email,
+                amount: session.amount_total || 0,
+                currency: session.currency || 'usd',
+                paymentType: planId ? PaymentType.SUBSCRIPTION : PaymentType.OTHER,
+                failureReason: 'Checkout session payment failed',
+                stripeSessionId: session.id,
+                metadata: {
+                    planId,
+                    metadata: session.metadata,
+                }
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+export const revalidate = 3600; // 1 hour
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { ArrowRight } from 'lucide-react';
