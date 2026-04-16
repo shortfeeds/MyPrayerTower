@@ -44,7 +44,7 @@ export class PayPalWebhookController {
         const metadata = resource.custom_id || resource.reference_id;
         
         await this.failedPaymentsService.log({
-            userId: null, // We'd need to look this up via custom_id or email
+            userId: undefined, // We'd need to look this up via custom_id or email
             userEmail: resource.payer?.email_address || 'unknown@paypal.com',
             amount: Math.round(parseFloat(resource.amount?.value || '0') * 100),
             currency: resource.amount?.currency_code || 'USD',
@@ -64,7 +64,7 @@ export class PayPalWebhookController {
         const resource = event.resource;
         
         await this.failedPaymentsService.log({
-            userId: null,
+            userId: undefined,
             userEmail: resource.subscriber?.email_address || 'unknown@paypal.com',
             amount: Math.round(parseFloat(resource.billing_info?.last_payment?.amount?.value || '0') * 100),
             currency: resource.billing_info?.last_payment?.amount?.currency_code || 'USD',
