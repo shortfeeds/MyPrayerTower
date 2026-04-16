@@ -114,33 +114,72 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
     const menuItems = [
         { key: '/dashboard', icon: <DashboardOutlined />, label: <Link to="/dashboard">Dashboard</Link> },
+        
         {
-            key: '/prayers',
-            icon: <HeartOutlined />,
-            label: (
-                <Link to="/prayers" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>Prayer Moderation</span>
-                    {pendingCount > 0 && <Badge count={pendingCount} size="small" style={{ marginLeft: 8 }} />}
-                </Link>
-            )
+            key: 'financial-center',
+            icon: <DollarOutlined />,
+            label: 'Financial Center',
+            children: [
+                { key: '/donations', label: <Link to="/donations">Donations</Link> },
+                { key: '/mass-offerings', label: <Link to="/mass-offerings">Mass Offerings</Link> },
+                { key: '/failed-payments', label: <Link to="/failed-payments">Failed Payments</Link> },
+                { key: '/abandoned-carts', label: <Link to="/abandoned-carts">Abandoned Carts</Link> },
+                { key: '/analytics', label: <Link to="/analytics">Revenue Analytics</Link> },
+            ]
         },
-        { key: '/churches', icon: <BankOutlined />, label: <Link to="/churches">Church Management</Link> },
-        { key: '/mass-offerings', icon: <HeartOutlined />, label: <Link to="/mass-offerings">Mass Offerings</Link> },
-        { key: '/pilgrimages', icon: <EnvironmentOutlined />, label: <Link to="/pilgrimages">Pilgrimages</Link> },
-        { key: '/donations', icon: <DollarOutlined />, label: <Link to="/donations">Donations</Link> },
-        { key: '/failed-payments', icon: <ShoppingCartOutlined />, label: <Link to="/failed-payments">Failed Payments</Link> },
-        { key: '/abandoned-carts', icon: <ShoppingCartOutlined />, label: <Link to="/abandoned-carts">Abandoned Carts</Link> },
-        { key: '/memorials', icon: <TeamOutlined />, label: <Link to="/memorials">Memorials</Link> },
-        { key: '/saints', icon: <SafetyCertificateOutlined />, label: <Link to="/saints">Saints</Link> }, // Added Saints navigation item
-        { key: '/analytics', icon: <BarChartOutlined />, label: <Link to="/analytics">Analytics</Link> },
-        { key: '/articles', icon: <FileTextOutlined />, label: <Link to="/articles">Articles (CMS)</Link> },
-        { key: '/claims', icon: <SafetyCertificateOutlined />, label: <Link to="/claims">Claim Review</Link> },
-        { key: '/users', icon: <UserOutlined />, label: <Link to="/users">User Management</Link> },
-        { key: '/notifications', icon: <NotificationOutlined />, label: <Link to="/notifications">Notifications</Link> },
-        { key: '/reports', icon: <BarChartOutlined />, label: <Link to="/reports">Reports</Link> },
-        { key: '/ads', icon: <NotificationOutlined />, label: <Link to="/ads">Ads Management</Link> },
-        { key: '/sync', icon: <SyncOutlined />, label: <Link to="/sync">Sync Control</Link> },
-        { key: '/settings', icon: <SettingOutlined />, label: <Link to="/settings">Settings</Link> },
+
+        {
+            key: 'content-management',
+            icon: <FileTextOutlined />,
+            label: 'Content & Resources',
+            children: [
+                { key: '/articles', label: <Link to="/articles">Articles (CMS)</Link> },
+                { key: '/saints', label: <Link to="/saints">Saints Database</Link> },
+                { key: '/memorials', label: <Link to="/memorials">Memorials</Link> },
+                { key: '/pilgrimages', label: <Link to="/pilgrimages">Pilgrimages</Link> },
+            ]
+        },
+
+        {
+            key: 'engagement',
+            icon: <NotificationOutlined />,
+            label: 'Engagement & Ads',
+            children: [
+                { key: '/notifications', label: <Link to="/notifications">Notifications</Link> },
+                { key: '/ads', label: <Link to="/ads">Ads Management</Link> },
+                { key: '/reports', label: <Link to="/reports">User Reports</Link> },
+            ]
+        },
+
+        {
+            key: 'prayer-platform',
+            icon: <HeartOutlined />,
+            label: 'Prayer Platform',
+            children: [
+                {
+                    key: '/prayers',
+                    label: (
+                        <Link to="/prayers" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>Moderation</span>
+                            {pendingCount > 0 && <Badge count={pendingCount} size="small" />}
+                        </Link>
+                    )
+                },
+                { key: '/churches', label: <Link to="/churches">Church Directory</Link> },
+                { key: '/claims', label: <Link to="/claims">Church Claims</Link> },
+            ]
+        },
+
+        {
+            key: 'system-admin',
+            icon: <SettingOutlined />,
+            label: 'System Admin',
+            children: [
+                { key: '/users', icon: <UserOutlined />, label: <Link to="/users">User Management</Link> },
+                { key: '/sync', icon: <SyncOutlined />, label: <Link to="/sync">Sync Control</Link> },
+                { key: '/settings', icon: <SettingOutlined />, label: <Link to="/settings">System Settings</Link> },
+            ]
+        },
     ];
 
     const currentPathName = pathNameMap[location.pathname] || 'Dashboard';

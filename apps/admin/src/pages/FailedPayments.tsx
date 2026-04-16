@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Typography, Card, Space, Button, DatePicker, Select } from 'antd';
 import { ReloadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { api } from '../services/api';
+import { api } from '../utils/api';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -93,7 +93,7 @@ export const FailedPayments: React.FC = () => {
             ),
         },
         {
-            title: 'Stripe Session',
+            title: 'Transaction ID',
             dataIndex: 'stripeSessionId',
             key: 'stripeSessionId',
             render: (text: string) => text ? <Text copyable>{text}</Text> : '-',
