@@ -270,16 +270,21 @@ export class PaymentService {
             // TODO: Send email notification about failed payment
             
             // Log to FailedPayment table
+            const churchId = invoice.subscription ? 
+                (typeof invoice.subscription === 'string' ? null : (invoice.subscription as any).metadata?.churchId) : 
+                null;
+
             await this.failedPaymentsService.log({
                 userId: user.id,
                 userEmail: user.email,
                 amount: invoice.amount_remaining,
                 currency: invoice.currency,
-                paymentType: PaymentType.SUBSCRIPTION,
+                paymentType: churchId ? PaymentType.DONATION : PaymentType.SUBSCRIPTION,
                 failureReason: invoice.last_payment_error?.message || 'Payment failed',
                 metadata: {
                     invoiceId: invoice.id,
                     subscriptionId: invoice.subscription as string,
+                    churchId,
                     errorCode: invoice.last_payment_error?.code,
                 }
             });
@@ -298,16 +303,20 @@ export class PaymentService {
         });
 
         if (user) {
+            const churchId = session.metadata?.churchId;
+            const planId = session.metadata?.planId;
+
             await this.failedPaymentsService.log({
                 userId: user.id,
                 userEmail: user.email,
                 amount: session.amount_total || 0,
                 currency: session.currency || 'usd',
-                paymentType: planId ? PaymentType.SUBSCRIPTION : PaymentType.OTHER,
+                paymentType: churchId ? PaymentType.DONATION : (planId ? PaymentType.SUBSCRIPTION : PaymentType.OTHER),
                 failureReason: 'Checkout session payment failed',
                 stripeSessionId: session.id,
                 metadata: {
                     planId,
+                    churchId,
                     metadata: session.metadata,
                 }
             });
