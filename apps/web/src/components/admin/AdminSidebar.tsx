@@ -40,26 +40,16 @@ const menuItems: MenuItem[] = [
         href: '/admin/finance',
         icon: BarChart3,
         children: [
-            { name: 'Overview', href: '/admin/revenue' },
-            { name: 'Transactions', href: '/admin/finance/transactions' },
-            { name: 'Analytics', href: '/admin/finance/analytics' },
-        ]
-    },
-    {
-        name: 'Offerings',
-        href: '/admin/offerings',
-        icon: ShoppingBag,
-        children: [
-            { name: 'Dashboard', href: '/admin/offerings' },
+            { name: 'Revenue Overview', href: '/admin/revenue' },
+            { name: 'Donations', href: '/admin/offerings/donations' },
             { name: 'Mass Offerings', href: '/admin/offerings/mass-offerings' },
             { name: 'Virtual Candles', href: '/admin/offerings/candles' },
-            { name: 'Donations', href: '/admin/offerings/donations' },
-            { name: 'Spiritual Bouquets', href: '/admin/offerings/spiritual-bouquets' },
+            { name: 'Failed Payments', href: '/admin/finance/failed-payments' },
+            { name: 'Abandoned Carts', href: '/admin/abandoned-carts' },
         ]
     },
-    { name: 'Users', href: '/admin/users', icon: Users },
     {
-        name: 'CMS',
+        name: 'Content & Resources',
         href: '/admin/cms',
         icon: BookOpen,
         children: [
@@ -67,10 +57,11 @@ const menuItems: MenuItem[] = [
             { name: 'Prayers', href: '/admin/prayers' },
             { name: 'Readings', href: '/admin/readings' },
             { name: 'Articles', href: '/admin/articles' },
+            { name: 'Memorials', href: '/admin/memorials' },
         ]
     },
     {
-        name: 'Churches',
+        name: 'Churches & Community',
         href: '/admin/churches',
         icon: Church,
         children: [
@@ -79,13 +70,16 @@ const menuItems: MenuItem[] = [
             { name: 'Verified', href: '/admin/churches/verified' },
         ]
     },
-    // { name: 'Virtual Candles', href: '/admin/candles', icon: Flame },
-    // { name: 'Mass Offerings', href: '/admin/mass-offerings', icon: Heart },
-    { name: 'Memorials', href: '/admin/memorials', icon: Moon },
-    { name: 'Abandoned Carts', href: '/admin/abandoned-carts', icon: BookOpen },
-    { name: 'Advertisements', href: '/admin/ads', icon: Image },
-    { name: 'Moderation', href: '/admin/moderation', icon: Shield },
-    { name: 'Reports', href: '/admin/reports', icon: Bell },
+    {
+        name: 'Growth & Ads',
+        href: '/admin/ads',
+        icon: Image,
+        children: [
+            { name: 'Advertisements', href: '/admin/ads' },
+            { name: 'Moderation', href: '/admin/moderation' },
+            { name: 'Reports', href: '/admin/reports' },
+        ]
+    },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
