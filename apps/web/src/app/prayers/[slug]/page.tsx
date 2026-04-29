@@ -2,8 +2,9 @@ import { getPrayerBySlug, getLibraryPrayers } from '@/app/actions/prayer-library
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronLeft, Share2, Printer } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { PrayerInteractions } from '@/components/prayer/PrayerInteractions';
+import { ShareButtons } from '@/components/social/ShareButtons';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { RelatedContent } from '@/components/seo/RelatedContent';
 import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
@@ -125,9 +126,13 @@ export default async function PrayerPage({ params }: Props) {
                     </Link>
 
                     <div className="flex items-center gap-4">
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-all" title="Share">
-                            <Share2 className="w-5 h-5" />
-                        </button>
+                        <ShareButtons
+                            url={`/prayers/${params.slug}`}
+                            title={prayer.title}
+                            description={prayer.content.slice(0, 160)}
+                            contentType="prayer"
+                            variant="compact"
+                        />
                     </div>
                 </div>
             </div>
@@ -189,8 +194,22 @@ export default async function PrayerPage({ params }: Props) {
                         <PrayerInteractions
                             prayerId={prayer.id}
                             prayerTitle={prayer.title}
-                            // Mock count for engagement feel, real implementation would fetch relation count
                             initialCount={Math.floor(Math.random() * 50) + 10}
+                        />
+                    </div>
+
+                    {/* Share CTA */}
+                    <div className="mt-8 pt-6 border-t border-gray-100 text-center">
+                        <p className="text-gray-500 text-sm mb-4 font-serif italic">
+                            This prayer touched your heart? Share it with someone who needs it 🙏
+                        </p>
+                        <ShareButtons
+                            url={`/prayers/${params.slug}`}
+                            title={prayer.title}
+                            description={prayer.content.slice(0, 160)}
+                            contentType="prayer"
+                            label="Share This Prayer"
+                            variant="cta"
                         />
                     </div>
                 </div>

@@ -6,6 +6,7 @@ import { format, addDays, subDays, isToday } from 'date-fns';
 import Link from 'next/link';
 import { MassOfferingCTA } from '@/components/giving/MassOfferingCTA';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
+import { ShareButtons } from '@/components/social/ShareButtons';
 
 interface Reading {
     type: string;
@@ -297,6 +298,21 @@ export default function ReadingsPage() {
                                     Next
                                     <ChevronRight className="w-5 h-5" />
                                 </button>
+                            </div>
+
+                            {/* Share This Reading */}
+                            <div className="mt-8 text-center bg-green-50 rounded-2xl p-6 border border-green-100">
+                                <p className="text-green-800 text-sm mb-4 font-serif italic">
+                                    Today&apos;s Word from God spoke to my heart. Share it and let it bless others too 📖
+                                </p>
+                                <ShareButtons
+                                    url="/readings"
+                                    title={`Daily Mass Readings — ${formattedDate}`}
+                                    description={data?.readings?.[activeReading]?.citation || 'Catholic Daily Mass Readings'}
+                                    contentType="reading"
+                                    label="Share Today's Reading"
+                                    variant="cta"
+                                />
                             </div>
                         </>
                     ) : (

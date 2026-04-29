@@ -22,6 +22,7 @@ import { FEATURES, CATEGORIES, REVENUE_CARDS, type Feature, type Category } from
 import { AD_SLOTS } from '@/lib/adSlots';
 import { GoogleAdUnit } from '@/components/ads/GoogleAdUnit';
 import { trackHubAction } from '@/lib/analytics';
+import { ShareButtons } from '@/components/social/ShareButtons';
 
 // ─── Revenue Banners (Emotional pitching) ─────────────────────────────
 // Features moved to ./data/features.ts
@@ -447,6 +448,33 @@ export default function SanctuaryHub() {
             </section>
           ))}
         </div>
+
+        {/* ── Invite to Pray (Viral Growth) ── */}
+        <section className="px-6 mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-br from-[#d4af37]/20 via-[#d4af37]/10 to-transparent border border-[#d4af37]/30 rounded-3xl p-8 text-center relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#d4af37]/10 rounded-full blur-3xl" />
+            <div className="relative z-10">
+              <span className="text-4xl mb-4 block">❤️</span>
+              <h3 className="text-white font-black text-lg mb-2">Invite Your Loved Ones to Pray</h3>
+              <p className="text-white/60 text-xs mb-6 max-w-xs mx-auto leading-relaxed">
+                Faith grows stronger when shared. Invite your family and friends to join you on this sacred journey.
+              </p>
+              <ShareButtons
+                url="/app"
+                title="My Prayer Tower — Your Daily Catholic Companion"
+                description="Join me on My Prayer Tower! Pray the Rosary, light candles, read daily scriptures, and grow in faith together. Download the app and start your spiritual journey today."
+                contentType="general"
+                label="Invite to Pray ❤️"
+                variant="cta"
+              />
+            </div>
+          </motion.div>
+        </section>
 
         <footer className="mt-20 px-10 text-center pb-12">
             <div className="w-14 h-14 bg-[#d4af37]/20 border border-[#d4af37]/40 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(212,175,55,0.2)]">

@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronLeft, Calendar, User, BookOpen, Share2 } from 'lucide-react';
+import { ChevronLeft, Calendar, User, BookOpen } from 'lucide-react';
+import { ShareButtons } from '@/components/social/ShareButtons';
 import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { FAQModule, FAQItem } from '@/components/seo/FAQModule';
@@ -125,9 +126,13 @@ export default async function SaintPage({ params }: Props) {
                         All Saints
                     </Link>
                     <div className="flex items-center gap-4">
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-all" title="Share">
-                            <Share2 className="w-5 h-5" />
-                        </button>
+                        <ShareButtons
+                            url={`/saints/${params.slug}`}
+                            title={fullName}
+                            description={saint.shortBio || `Learn about the life of ${fullName}.`}
+                            contentType="saint"
+                            variant="compact"
+                        />
                     </div>
                 </div>
             </div>
@@ -217,6 +222,21 @@ export default async function SaintPage({ params }: Props) {
                             We are currently expanding our library. A detailed biography for {fullName} will be available soon.
                         </p>
                     )}
+                </div>
+
+                {/* Share CTA */}
+                <div className="mt-8 bg-white rounded-3xl p-8 shadow-sm border border-gray-100 text-center">
+                    <p className="text-gray-500 text-sm mb-4 font-serif italic">
+                        Inspire others with the story of {fullName} ✠️
+                    </p>
+                    <ShareButtons
+                        url={`/saints/${params.slug}`}
+                        title={fullName}
+                        description={saint.shortBio || `Learn about the life of ${fullName}.`}
+                        contentType="saint"
+                        label="Share This Saint's Story"
+                        variant="cta"
+                    />
                 </div>
 
                 {/* FAQ Section */}

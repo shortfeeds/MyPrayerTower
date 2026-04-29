@@ -49,7 +49,7 @@ export function ShareableCard({
     };
 
     const handleCopyText = async () => {
-        const text = `${title}\n\n${content}${subtitle ? `\n\n— ${subtitle}` : ''}\n\nShared from MyPrayerTower.com`;
+        const text = `🙏 ${title}\n\n${content}${subtitle ? `\n\n— ${subtitle}` : ''}\n\nShared from MyPrayerTower.com\n📲 Download the app: https://bit.ly/myprayertowerapp`;
         try {
             await navigator.clipboard.writeText(text);
             setCopied(true);
@@ -64,7 +64,7 @@ export function ShareableCard({
             try {
                 await navigator.share({
                     title,
-                    text: content,
+                    text: `${content}\n\n📲 Download My Prayer Tower: https://bit.ly/myprayertowerapp`,
                     url: window.location.href,
                 });
             } catch (error) {
@@ -139,7 +139,7 @@ export function ShareableCard({
                         `}>
                             MyPrayerTower.com
                         </span>
-                        <span className="text-xl">✝️</span>
+                        <span className="text-[10px] opacity-60">📲 bit.ly/myprayertowerapp</span>
                     </div>
                 </div>
             </div>
