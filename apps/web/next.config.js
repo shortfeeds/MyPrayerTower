@@ -98,7 +98,13 @@ const nextConfig = {
 
     // Image optimization
     images: {
-        domains: ['myprayertower.com', 'gcatholic.org', 'localhost', 'images.unsplash.com'],
+        domains: [
+            'myprayertower.com', 
+            'gcatholic.org', 
+            'localhost', 
+            'images.unsplash.com', 
+            'htgvilktnadnwlforyjt.supabase.co'
+        ],
         formats: ['image/avif', 'image/webp'],
         minimumCacheTTL: 31536000, // 1 year
         deviceSizes: [640, 750, 828, 1080], // Removed 1200 to save on optimization variety
