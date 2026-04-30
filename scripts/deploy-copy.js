@@ -37,6 +37,20 @@ try {
     console.log('Static folder not found, skipping.');
   }
 
+  // 3. Remove package.json to prevent Hostinger from running npm install
+  const rootPackageJson = path.join(standaloneDir, 'package.json');
+  const webPackageJson = path.join(targetWebDir, 'package.json');
+
+  if (fs.existsSync(rootPackageJson)) {
+    console.log('Removing root package.json to prevent Hostinger npm install loop...');
+    fs.unlinkSync(rootPackageJson);
+  }
+  
+  if (fs.existsSync(webPackageJson)) {
+    console.log('Removing web package.json to prevent Hostinger npm install loop...');
+    fs.unlinkSync(webPackageJson);
+  }
+
   console.log('Post-build copy completed successfully!');
 } catch (error) {
   console.error('Error during post-build copy:', error);
