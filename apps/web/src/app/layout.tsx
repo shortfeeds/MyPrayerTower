@@ -7,8 +7,7 @@ import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+
 import { GlobalEngagement } from '@/components/GlobalEngagement';
 import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/CookieConsent';
@@ -230,8 +229,7 @@ export default async function RootLayout({
                     </AudioProvider>
                 </ThemeProvider>
 
-                <Analytics />
-                <SpeedInsights />
+
                 <GoogleAnalytics gaId="G-1X6N63VWZH" />
 
                 {/* Google AdSense - Deferred to avoid render-blocking */}

@@ -1,24 +1,19 @@
 'use client';
 
-import { track } from '@vercel/analytics/react';
-
 /**
  * Unified Analytics Helper
- * Tracks events across Google Analytics 4 and Vercel Analytics
+ * Tracks events via Google Analytics 4
  */
 export const trackEvent = (eventName: string, params?: Record<string, any>) => {
   if (typeof window === 'undefined') return;
 
   try {
-    // 1. Google Analytics 4
+    // Google Analytics 4
     if ((window as any).gtag) {
       (window as any).gtag('event', eventName, params);
     }
 
-    // 2. Vercel Analytics
-    track(eventName, params);
-
-    // 3. Console for Dev
+    // Console for Dev
     if (process.env.NODE_ENV === 'development') {
       console.log(`[Analytics] ${eventName}`, params);
     }

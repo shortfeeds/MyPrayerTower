@@ -24,7 +24,7 @@ const getSecurityHeaders = (pathname: string) => {
     return headers;
 };
 
-// Rate limiting removed from middleware to save CPU cycles on Vercel Free Tier.
+// Rate limiting removed from middleware to save CPU cycles.
 // Recommendation: Use a dedicated service like Upstash for serverless rate limiting if needed.
 
 export async function middleware(request: NextRequest) {
@@ -106,8 +106,7 @@ export async function middleware(request: NextRequest) {
 
         try {
             // Lightweight token presence check is often enough at middleware level 
-            // if pages themselves do a proper verify. 
-            // For Vercel limit safety, we keep it simple here.
+            // if pages themselves do a proper verify.
             const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret-key');
             const { payload } = await import('jose').then(m => m.jwtVerify(token, secret));
             if (!payload || !payload.isAdmin) throw new Error();
