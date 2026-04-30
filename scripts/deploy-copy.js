@@ -5,7 +5,7 @@ const rootDir = process.cwd();
 const standaloneDir = path.join(rootDir, 'apps', 'web', '.next', 'standalone');
 const targetWebDir = path.join(standaloneDir, 'apps', 'web');
 
-console.log('Starting post-build consolidation...');
+console.log('Starting Root-Level Deployment Preparation...');
 
 try {
   // 1. Copy public directory into standalone
@@ -31,62 +31,36 @@ try {
     fs.cpSync(staticSrc, staticDest, { recursive: true });
   }
 
-  // 3. Consolidate everything into a root-level 'deploy-out' folder
-  const deployOutDir = path.join(rootDir, 'deploy-out');
-  
-  if (fs.existsSync(deployOutDir)) {
-    console.log('Cleaning existing deploy-out directory...');
-    fs.rmSync(deployOutDir, { recursive: true, force: true });
-  }
-  
-  console.log(`Consolidating final build to ${deployOutDir}...`);
-  fs.mkdirSync(deployOutDir, { recursive: true });
-  
-  // Copy everything from standalone to deploy-out
-  fs.cpSync(standaloneDir, deployOutDir, { recursive: true });
-
-  // 4. Create root proxy files in deploy-out
-  const finalServerJs = path.join(deployOutDir, 'server.js');
+  // 3. Create a ROOT-LEVEL server.js proxy
+  // This allows Hostinger to use "." as Output Directory and "server.js" as Entry Point
+  const rootServerJs = path.join(rootDir, 'server.js');
   const serverContent = `
-console.log('Starting Root Proxy Server...');
+/**
+ * HOSTINGER ROOT PROXY
+ * This file is created during build to point Hostinger to the standalone Next.js server.
+ */
+console.log('--- Starting Hostinger Root Proxy ---');
 console.log('CWD:', process.cwd());
-console.log('__dirname:', __dirname);
-console.log('PORT ENV:', process.env.PORT);
 console.log('NODE_ENV:', process.env.NODE_ENV);
-
-// Log all env keys (not values for security) to verify they are present
-console.log('Available Env Keys:', Object.keys(process.env).join(', '));
+console.log('PORT:', process.env.PORT);
 
 try {
-  console.log('Attempting to require ./apps/web/server.js...');
-  require('./apps/web/server.js');
-  console.log('Successfully loaded ./apps/web/server.js');
+  const standaloneServer = './apps/web/.next/standalone/apps/web/server.js';
+  console.log('Loading standalone server from:', standaloneServer);
+  require(standaloneServer);
+  console.log('Standalone server loaded successfully.');
 } catch (err) {
-  console.error('CRITICAL ERROR: Failed to load ./apps/web/server.js');
+  console.error('CRITICAL ERROR: Failed to load standalone server!');
   console.error(err);
   process.exit(1);
 }
 `;
-  fs.writeFileSync(finalServerJs, serverContent);
+  
+  console.log('Creating/Updating root-level server.js...');
+  fs.writeFileSync(rootServerJs, serverContent);
 
-  const finalPackageJson = path.join(deployOutDir, 'package.json');
-  const minimalPackageJson = {
-    name: "myprayertower-standalone",
-    version: "1.0.0",
-    scripts: {
-      start: "node server.js"
-    }
-  };
-  fs.writeFileSync(finalPackageJson, JSON.stringify(minimalPackageJson, null, 2));
-
-  // Remove the original standalone package.json if it exists in deploy-out to be safe
-  const rootPackageJson = path.join(deployOutDir, 'apps', 'web', 'package.json');
-  if (fs.existsSync(rootPackageJson)) {
-    fs.unlinkSync(rootPackageJson);
-  }
-
-  console.log('Post-build consolidation to /deploy-out completed successfully!');
+  console.log('Root-level preparation completed successfully!');
 } catch (error) {
-  console.error('Error during post-build copy:', error);
+  console.error('Error during deployment preparation:', error);
   process.exit(1);
 }
