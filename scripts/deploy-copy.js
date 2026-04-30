@@ -48,8 +48,19 @@ try {
   // 4. Create root proxy files in deploy-out
   const finalServerJs = path.join(deployOutDir, 'server.js');
   const serverContent = `
-// Proxy to the actual Next.js server
-require('./apps/web/server.js');
+console.log('Starting Root Proxy Server...');
+console.log('CWD:', process.cwd());
+console.log('__dirname:', __dirname);
+
+try {
+  console.log('Attempting to require ./apps/web/server.js...');
+  require('./apps/web/server.js');
+  console.log('Successfully loaded ./apps/web/server.js');
+} catch (err) {
+  console.error('CRITICAL ERROR: Failed to load ./apps/web/server.js');
+  console.error(err);
+  process.exit(1);
+}
 `;
   fs.writeFileSync(finalServerJs, serverContent);
 
