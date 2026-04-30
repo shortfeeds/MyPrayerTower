@@ -18,7 +18,8 @@
     "db:migrate": "pnpm --filter @mpt/database db:migrate",
     "db:push": "pnpm --filter @mpt/database db:push",
     "db:studio": "pnpm --filter @mpt/database db:studio",
-    "import:netministries": "npm run import:netministries --workspace=@mpt/scraper"
+    "import:netministries": "npm run import:netministries --workspace=@mpt/scraper",
+    "hostinger-deploy": "npx pnpm install --frozen-lockfile && npx pnpm prisma generate --schema=packages/database/prisma/schema.prisma && npx pnpm --filter @mpt/web build && cp -r apps/web/public apps/web/.next/standalone/apps/web/ && cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/"
   },
   "devDependencies": {
     "turbo": "^2.0.0",
