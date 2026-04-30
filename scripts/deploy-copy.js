@@ -51,6 +51,11 @@ try {
 console.log('Starting Root Proxy Server...');
 console.log('CWD:', process.cwd());
 console.log('__dirname:', __dirname);
+console.log('PORT ENV:', process.env.PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+
+// Log all env keys (not values for security) to verify they are present
+console.log('Available Env Keys:', Object.keys(process.env).join(', '));
 
 try {
   console.log('Attempting to require ./apps/web/server.js...');
