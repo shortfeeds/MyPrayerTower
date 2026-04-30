@@ -62,6 +62,16 @@ try {
     fs.unlinkSync(webPackageJson);
   }
 
+  // 4. Create a root-level server.js to simplify Hostinger's entry point
+  const rootServerJs = path.join(standaloneDir, 'server.js');
+  const serverContent = `
+// Proxy to the actual Next.js server
+require('./apps/web/server.js');
+`;
+
+  console.log('Creating root-level server.js proxy...');
+  fs.writeFileSync(rootServerJs, serverContent);
+
   console.log('Post-build copy completed successfully!');
 } catch (error) {
   console.error('Error during post-build copy:', error);
