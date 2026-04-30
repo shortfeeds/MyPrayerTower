@@ -98,6 +98,7 @@ const nextConfig = {
 
     // Image optimization
     images: {
+        unoptimized: true, // Crucial for Hostinger stability
         domains: [
             'myprayertower.com', 
             'gcatholic.org', 
@@ -105,29 +106,22 @@ const nextConfig = {
             'images.unsplash.com', 
             'htgvilktnadnwlforyjt.supabase.co'
         ],
-        formats: ['image/avif', 'image/webp'],
-        minimumCacheTTL: 31536000, // 1 year
-        deviceSizes: [640, 750, 828, 1080], // Removed 1200 to save on optimization variety
-        imageSizes: [16, 32, 48, 64, 96, 128, 256],
     },
 
-    // Experimental optimizations
-    experimental: {
-        optimizePackageImports: [
-            'lucide-react',
-            '@headlessui/react',
-            'framer-motion',
-            'date-fns',
-            'recharts',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-toast',
-        ],
-        serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
-        optimizeCss: true,
-        scrollRestoration: true,
-        webpackBuildWorker: true,
-        parallelServerBuildTraces: true,
+    // Redirects for legacy routes
+    async redirects() {
+        return [
+            {
+                source: '/obituaries',
+                destination: '/memorials',
+                permanent: true,
+            },
+            {
+                source: '/obituary',
+                destination: '/memorials',
+                permanent: true,
+            },
+        ];
     },
 
     // Headers for caching and SEO
