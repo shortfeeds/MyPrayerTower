@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+
 import { useState, useEffect, useRef } from 'react';
 import {
     Menu, X, Building, Heart, BookOpen, User, Star, Search,
@@ -119,12 +119,10 @@ export function Header() {
                         {/* Logo */}
                         <Link href={appModeCtx.isNativeApp ? "/app" : "/"} className="flex items-center gap-2 group focus:outline-none" aria-label="MyPrayerTower Home">
                             <div className="w-8 h-8 rounded-lg overflow-hidden relative">
-                                <Image
+                                <img
                                     src="/icon.png"
                                     alt="MyPrayerTower Logo"
-                                    fill
-                                    className="object-cover"
-                                    sizes="32px"
+                                    className="w-full h-full object-cover"
                                 />
                             </div>
                             <span className="font-serif font-bold text-lg leading-tight text-white">
@@ -166,13 +164,11 @@ export function Header() {
                         <div className="flex items-center justify-between">
                             {/* Logo */}
                             <Link href="/" className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-xl" aria-label="MyPrayerTower Home">
-                                <div className="w-10 h-10 rounded-xl overflow-hidden transition-all duration-500 transform group-hover:scale-110 relative">
-                                    <Image
+                                <div className="w-10 h-10 rounded-xl overflow-hidden transition-all duration-500 transform group-hover:scale-110">
+                                    <img
                                         src="/icon.png"
                                         alt="MyPrayerTower Logo"
-                                        fill
-                                        className="object-cover"
-                                        sizes="40px"
+                                        className="w-full h-full object-cover"
                                     />
                                 </div>
                                 <div className="flex flex-col">

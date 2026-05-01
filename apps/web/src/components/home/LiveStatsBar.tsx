@@ -28,8 +28,7 @@ export function LiveStatsBar() {
         const fetchStats = async () => {
             try {
                 console.log('Fetching stats from API...');
-                const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
-                const res = await fetch(`${API_BASE}/api/v1/stats`, { next: { revalidate: 30 } });
+                const res = await fetch('/api/v1/stats', { next: { revalidate: 30 } });
                 if (res.ok) {
                     const data = await res.json();
                     console.log('Stats received:', data);

@@ -1,14 +1,14 @@
 /**
  * Centralized Client-Side Fetcher
- * Points directly to the external API to bypass Vercel Proxy and save CPU/Request limits.
+ * Routes all API calls through the Next.js server's own /api routes.
+ * This avoids CORS issues by keeping all requests same-origin.
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
-
 export async function directFetch(path: string, options: RequestInit = {}) {
-    // If the path starts with /api, we replace it with the external URL + /api/v1
-    const cleanPath = path.startsWith('/api/') ? path.replace('/api/', '/api/v1/') : path;
-    const url = `${API_BASE_URL}${cleanPath}`;
+    // All client-side fetches go to the app's own Next.js API routes
+    // The path should already start with /api/ (e.g., /api/ads, /api/sponsored)
+    // No rewriting needed — the Next.js API routes handle the logic directly.
+    const url = path.startsWith('/') ? path : `/${path}`;
 
     return fetch(url, {
         ...options,

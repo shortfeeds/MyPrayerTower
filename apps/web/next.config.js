@@ -108,20 +108,23 @@ const nextConfig = {
         ],
     },
 
-    // Redirects for legacy routes
-    async redirects() {
-        return [
-            {
-                source: '/obituaries',
-                destination: '/memorials',
-                permanent: true,
-            },
-            {
-                source: '/obituary',
-                destination: '/memorials',
-                permanent: true,
-            },
-        ];
+    // Experimental optimizations
+    experimental: {
+        optimizePackageImports: [
+            'lucide-react',
+            '@headlessui/react',
+            'framer-motion',
+            'date-fns',
+            'recharts',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-toast',
+        ],
+        serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
+        optimizeCss: true,
+        scrollRestoration: true,
+        webpackBuildWorker: true,
+        parallelServerBuildTraces: true,
     },
 
     // Headers for caching and SEO
@@ -186,13 +189,16 @@ const nextConfig = {
     },
 
     async rewrites() {
+        // Use the Supabase URL directly for rewrites (server-side only)
+        // Do NOT use NEXT_PUBLIC_API_URL here as it may be set to '/api' which causes double-prefix
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'http://localhost:4000';
         return {
             beforeFiles: [],
             afterFiles: [],
             fallback: [
                 {
-                    source: '/api/:path*',
-                    destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/v1/:path*`,
+                    source: '/api/v1/:path*',
+                    destination: `${supabaseUrl}/api/v1/:path*`,
                 },
             ],
         };
@@ -200,6 +206,16 @@ const nextConfig = {
 
     async redirects() {
         return [
+            {
+                source: '/obituaries',
+                destination: '/memorials',
+                permanent: true,
+            },
+            {
+                source: '/obituary',
+                destination: '/memorials',
+                permanent: true,
+            },
             {
                 // Match all paths EXCEPT those starting with .well-known
                 source: '/:path((?!.well-known/).*)',
@@ -210,7 +226,7 @@ const nextConfig = {
                     },
                 ],
                 destination: 'https://www.myprayertower.com/:path*',
-                permanent: false, // Use true for a 308/301, false for a 307
+                permanent: false,
             },
         ];
     },
