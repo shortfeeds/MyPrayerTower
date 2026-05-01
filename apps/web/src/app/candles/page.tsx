@@ -9,7 +9,6 @@ import { PrayerCompletionModal } from '@/components/prayer/PrayerCompletionModal
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Heart, Clock, Crown, Star, Sparkles, ChevronLeft } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useAppMode } from '@/contexts/AppModeContext';
 import { trackHubAction } from '@/lib/analytics';
@@ -118,13 +117,11 @@ function CandleCard({ candle, onPray }: { candle: Candle; onPray: (id: string) =
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-amber-500/20 rounded-full blur-[60px] animate-pulse" />
                 )}
 
-                <Image
+                <img
                     src={tierConfig.image}
                     alt={tierConfig.label}
-                    fill
-                    className={`object-contain transition-transform duration-700 group-hover:scale-105 mix-blend-screen ${candle.duration === 'THIRTY_DAYS' ? 'p-0 scale-110' : 'p-4'
+                    className={`absolute inset-0 w-full h-full object-contain transition-transform duration-700 group-hover:scale-105 mix-blend-screen ${candle.duration === 'THIRTY_DAYS' ? 'p-0 scale-110' : 'p-4'
                         }`}
-                    sizes="(max-width: 768px) 50vw, 25vw"
                 />
 
                 {/* Additional Sparkles for Royal */}
