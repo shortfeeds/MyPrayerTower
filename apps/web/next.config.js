@@ -83,7 +83,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: 'standalone',
-    transpilePackages: ['@mpt/database', '@cashfreepayments/cashfree-js'],
+    transpilePackages: ['@mpt/database'],
     reactStrictMode: true,
     typescript: {
         ignoreBuildErrors: true,
@@ -173,14 +173,14 @@ const nextConfig = {
                         key: 'Content-Security-Policy',
                         value: [
                             "default-src 'self'",
-                            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.cashfree.com https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://ep2.adtrafficquality.google",
-                            "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://*.cashfree.com https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://ep2.adtrafficquality.google",
+                            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://ep2.adtrafficquality.google https://www.clarity.ms",
+                            "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google.com https://*.googletagmanager.com https://*.googlesyndication.com https://*.google-analytics.com https://*.googleadservices.com https://*.doubleclick.net https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://ep2.adtrafficquality.google https://www.clarity.ms",
 
                             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com",
                             "font-src 'self' https://fonts.gstatic.com",
-                            "img-src 'self' data: https: blob: https://*.paypal.com",
-                            "connect-src 'self' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google-analytics.com https://analytics.google.com https://*.doubleclick.net https://stats.g.doubleclick.net https://*.googlesyndication.com https://*.gstatic.com https://*.adtrafficquality.google https://*.supabase.co https://*.cashfree.com https://*.neon.tech https://bible-api.com https://translate.googleapis.com",
-                            "frame-src 'self' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google.com https://*.youtube.com https://*.vimeo.com https://*.doubleclick.net https://*.googlesyndication.com https://*.cashfree.com https://*.adtrafficquality.google",
+                            "img-src 'self' data: https: blob: https://*.paypal.com https://c.clarity.ms",
+                            "connect-src 'self' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google-analytics.com https://analytics.google.com https://*.doubleclick.net https://stats.g.doubleclick.net https://*.googlesyndication.com https://*.gstatic.com https://*.adtrafficquality.google https://*.supabase.co https://*.neon.tech https://bible-api.com https://translate.googleapis.com https://www.clarity.ms https://c.clarity.ms",
+                            "frame-src 'self' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google.com https://*.youtube.com https://*.vimeo.com https://*.doubleclick.net https://*.googlesyndication.com https://*.adtrafficquality.google",
                         ].join('; '),
                     },
                 ],
