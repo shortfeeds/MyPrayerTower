@@ -76,6 +76,7 @@ const menuItems: MenuItem[] = [
         icon: Image,
         children: [
             { name: 'Advertisements', href: '/admin/ads' },
+            { name: 'Quick Indexing (IndexNow)', href: '/admin/indexing' },
             { name: 'Moderation', href: '/admin/moderation' },
             { name: 'Reports', href: '/admin/reports' },
         ]

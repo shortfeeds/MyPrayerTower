@@ -15,6 +15,7 @@
     "db:push": "pnpm --filter @mpt/database db:push",
     "db:studio": "pnpm --filter @mpt/database db:studio",
     "import:netministries": "npm run import:netministries --workspace=@mpt/scraper",
+    "indexnow": "node scripts/submit-indexnow.js",
     "hostinger-deploy": "npx pnpm install --no-frozen-lockfile --shamefully-hoist && chmod -R +x node_modules/.pnpm/@prisma+engines* node_modules/@prisma/engines || true && npx pnpm prisma generate --schema=packages/database/prisma/schema.prisma && npx pnpm --filter @mpt/web build && node scripts/deploy-copy.js"
   },
   "devDependencies": {

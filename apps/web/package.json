@@ -5,9 +5,10 @@
     "scripts": {
         "postinstall": "prisma generate --schema=../../packages/database/prisma/schema.prisma",
         "dev": "next dev -p 3005",
-        "build": "npx prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
+        "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "indexnow": "node scripts/submit-indexnow.js"
     },
     "dependencies": {
         "@ducanh2912/next-pwa": "^10.2.9",

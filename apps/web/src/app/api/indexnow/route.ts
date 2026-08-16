@@ -1,97 +1,73 @@
 import { NextResponse } from 'next/server';
-
-const INDEXNOW_API_KEY = '565731002ad842e8bf184087dab6dc41';
-const INDEXNOW_ENDPOINTS = [
-    'https://api.indexnow.org/indexnow',
-    'https://www.bing.com/indexnow',
-];
-
-interface IndexNowSubmission {
-    url: string;
-    urlList?: string[];
-}
+import {
+    INDEXNOW_KEY,
+    INDEXNOW_HOST,
+    submitUrlToIndexNow,
+    submitUrlsToIndexNow,
+    pingSearchEngineSitemaps,
+} from '@/lib/indexnow';
 
 /**
- * IndexNow Auto-Submission Utility
- * 
- * Automatically submits URLs to search engines (Bing, Yandex, etc.)
- * when content is created or updated.
+ * GET /api/indexnow
+ * Check IndexNow status and key location
  */
-export async function submitToIndexNow({ url, urlList }: IndexNowSubmission) {
-    const host = 'www.myprayertower.com';
-
+export async function GET() {
+    const keyUrl = `https://${INDEXNOW_HOST}/${INDEXNOW_KEY}.txt`;
+    
+    let keyValid = false;
     try {
-        const payload = {
-            host,
-            key: INDEXNOW_API_KEY,
-            keyLocation: `https://${host}/${INDEXNOW_API_KEY}.txt`,
-            ...(urlList ? { urlList } : { url }),
-        };
-
-        // Submit to all endpoints for better coverage
-        const responses = await Promise.allSettled(
-            INDEXNOW_ENDPOINTS.map(endpoint =>
-                fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                })
-            )
-        );
-
-        const successful = responses.filter(r => r.status === 'fulfilled').length;
-
-        console.log(`[IndexNow] Submitted ${urlList ? urlList.length : 1} URL(s) to ${successful}/${INDEXNOW_ENDPOINTS.length} endpoints`);
-
-        return { success: true, submitted: successful };
-    } catch (error) {
-        console.error('[IndexNow] Submission failed:', error);
-        return { success: false, error };
+        const keyRes = await fetch(keyUrl, { cache: 'no-store' });
+        const keyText = await keyRes.text();
+        keyValid = keyRes.ok && keyText.trim() === INDEXNOW_KEY;
+    } catch {
+        keyValid = false;
     }
-}
 
-/**
- * Helper to submit single URL
- */
-export async function submitUrlToIndexNow(url: string) {
-    // Ensure URL starts with /
-    const path = url.startsWith('/') ? url : `/${url}`;
-    return submitToIndexNow({ url: `https://www.myprayertower.com${path}` });
-}
-
-/**
- * Helper to submit multiple URLs
- */
-export async function submitUrlsToIndexNow(urls: string[]) {
-    const fullUrls = urls.map(u => {
-        const path = u.startsWith('/') ? u : `/${u}`;
-        return `https://www.myprayertower.com${path}`;
+    return NextResponse.json({
+        host: INDEXNOW_HOST,
+        key: INDEXNOW_KEY,
+        keyUrl,
+        keyVerified: keyValid,
+        endpoints: [
+            'https://api.indexnow.org/indexnow',
+            'https://www.bing.com/indexnow',
+            'https://yandex.com/indexnow',
+        ],
     });
-    return submitToIndexNow({ urlList: fullUrls });
 }
 
 /**
- * API Route Handler for manual submissions
+ * POST /api/indexnow
+ * Submit specific URL or array of URLs to IndexNow
+ * Body: { url?: string, urls?: string[], pingSitemaps?: boolean }
  */
 export async function POST(request: Request) {
     try {
-        const { url, urls } = await request.json();
+        const body = await request.json();
+        const { url, urls, pingSitemaps } = body;
 
-        if (!url && (!urls || urls.length === 0)) {
+        if (!url && (!urls || !Array.isArray(urls) || urls.length === 0)) {
             return NextResponse.json(
-                { error: 'URL or URLs required' },
+                { error: 'Provide a valid "url" string or "urls" array' },
                 { status: 400 }
             );
         }
 
-        const result = url
-            ? await submitUrlToIndexNow(url)
-            : await submitUrlsToIndexNow(urls);
+        const targetUrls = urls || (url ? [url] : []);
+        const indexNowResult = await submitUrlsToIndexNow(targetUrls);
 
-        return NextResponse.json(result);
-    } catch (error) {
+        let sitemapPings;
+        if (pingSitemaps) {
+            sitemapPings = await pingSearchEngineSitemaps();
+        }
+
+        return NextResponse.json({
+            ...indexNowResult,
+            ...(sitemapPings ? { sitemapPings } : {}),
+        });
+    } catch (error: any) {
         return NextResponse.json(
-            { error: 'Submission failed', details: error },
+            { error: 'Submission failed', details: error?.message || String(error) },
             { status: 500 }
         );
     }
