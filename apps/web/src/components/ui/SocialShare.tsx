@@ -103,7 +103,7 @@ export function SocialShare({ url, title, description = '', variant = 'button', 
     if (variant === 'inline') {
         return (
             <div className={`flex flex-wrap items-center gap-2 ${className}`}>
-                <span className="text-sm text-gray-500 mr-1">Share:</span>
+                <span className="text-sm text-gray-500 mr-1">Invite to Pray:</span>
                 <a
                     href={shareLinks.facebook}
                     target="_blank"
@@ -141,7 +141,7 @@ export function SocialShare({ url, title, description = '', variant = 'button', 
                 className={`flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-sacred-600 hover:bg-sacred-50 rounded-xl transition-colors ${className}`}
             >
                 <Share2 className="w-5 h-5" />
-                <span className="text-sm font-medium">Share</span>
+                <span className="text-sm font-medium">Invite to Pray</span>
             </button>
 
             {/* Share Modal */}
@@ -149,7 +149,7 @@ export function SocialShare({ url, title, description = '', variant = 'button', 
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowShareModal(false)}>
                     <div className="bg-white rounded-2xl w-full max-w-sm p-6 animate-scale-in" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-bold text-gray-900">Share</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Share the Blessing</h3>
                             <button onClick={() => setShowShareModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                                 <X className="w-5 h-5 text-gray-500" />
                             </button>

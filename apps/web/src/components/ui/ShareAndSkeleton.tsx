@@ -75,7 +75,7 @@ export function SharePrayerCard({ prayer, onClose }: ShareCardProps) {
                     <p className="mt-2 text-white/60 text-xs">myprayertower.com</p>
                 </div>
 
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Share Prayer Request</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Invite Others to Pray</h3>
 
                 <div className="grid grid-cols-2 gap-3">
                     {shareOptions.map((option) => (

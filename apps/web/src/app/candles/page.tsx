@@ -12,6 +12,7 @@ import { Flame, Heart, Clock, Crown, Star, Sparkles, ChevronLeft } from 'lucide-
 import Link from 'next/link';
 import { useAppMode } from '@/contexts/AppModeContext';
 import { trackHubAction } from '@/lib/analytics';
+import Script from 'next/script';
 
 // Candle tier types
 type CandleTier = 'free' | 'basic' | 'standard' | 'premium';
@@ -596,6 +597,30 @@ export default function CandlesPage() {
                 onClose={() => setPrayerCompleteOpen(false)}
             />
 
+            {/* Structured Data for LLMs */}
+            <Script
+                id="schema-candles"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'Service',
+                        name: 'Virtual Prayer Candles',
+                        provider: {
+                            '@type': 'Organization',
+                            name: 'MyPrayerTower'
+                        },
+                        description: 'Light a virtual candle for your prayer intentions. Your candle will burn brightly for the global Catholic community to see and join in prayer.',
+                        offers: [
+                            { '@type': 'Offer', name: 'Divine Cathedral (30 Days)', price: '0', priceCurrency: 'USD' },
+                            { '@type': 'Offer', name: 'Blessed Marian (14 Days)', price: '0', priceCurrency: 'USD' },
+                            { '@type': 'Offer', name: 'Sacred Altar (7 Days)', price: '0', priceCurrency: 'USD' },
+                            { '@type': 'Offer', name: 'Devotion Votive (3 Days)', price: '0', priceCurrency: 'USD' },
+                            { '@type': 'Offer', name: 'Humble Prayer (1 Day)', price: '0', priceCurrency: 'USD' }
+                        ]
+                    })
+                }}
+            />
         </div>
     );
 }

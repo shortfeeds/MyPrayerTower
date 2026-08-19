@@ -234,6 +234,36 @@ export default async function Home() {
                     'query-input': 'required name=search_term_string'
                 }
             }} />
+            <JsonLd<any> data={{
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                mainEntity: [
+                    {
+                        '@type': 'Question',
+                        name: 'Can I request a Mass online?',
+                        acceptedAnswer: {
+                            '@type': 'Answer',
+                            text: 'Yes. MyPrayerTower allows you to request Holy Masses for your intentions, the departed, or special thanksgiving. Priests worldwide celebrate these Masses.'
+                        }
+                    },
+                    {
+                        '@type': 'Question',
+                        name: 'How do virtual prayer candles work?',
+                        acceptedAnswer: {
+                            '@type': 'Answer',
+                            text: 'You can light a virtual candle for an intention. It burns on our platform for a set duration, allowing the global community to view it and join you in prayer.'
+                        }
+                    },
+                    {
+                        '@type': 'Question',
+                        name: 'Is MyPrayerTower free to use?',
+                        acceptedAnswer: {
+                            '@type': 'Answer',
+                            text: 'Creating a prayer request, joining the global prayer wall, and basic features are entirely free. We offer premium options like Mass Offerings and eternal memorials to support our ministry.'
+                        }
+                    }
+                ]
+            }} />
             <LoggedOutHomePage />
         </>
     );

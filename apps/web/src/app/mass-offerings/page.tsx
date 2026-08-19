@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Script from 'next/script';
 import { useState, useCallback } from 'react';
 import { ChevronLeft, Cross, Heart, Calendar, Users, Check, Loader2, Info, Sparkles, ShieldCheck } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -500,6 +501,31 @@ export default function MassOfferingsPage() {
                     )}
                 </AnimatePresence>
             </div>
+
+            {/* Structured Data for LLMs */}
+            <Script
+                id="schema-mass-offerings"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'Service',
+                        name: 'Holy Mass Offerings',
+                        provider: {
+                            '@type': 'Organization',
+                            name: 'MyPrayerTower'
+                        },
+                        description: 'Request a Holy Mass intention online for a living or deceased person, thanksgiving, or special intentions.',
+                        offers: massTypes.map(m => ({
+                            '@type': 'Offer',
+                            name: m.name,
+                            description: m.description,
+                            price: m.price / 100,
+                            priceCurrency: 'USD'
+                        }))
+                    })
+                }}
+            />
         </div>
     );
 }
