@@ -240,8 +240,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/database
       '@next/third-parties':
-        specifier: ^16.1.1
-        version: 16.1.1(next@14.1.0)(react@18.2.0)
+        specifier: 14.1.0
+        version: 14.1.0(next@14.1.0)(react@18.2.0)
       '@paypal/react-paypal-js':
         specifier: ^8.9.2
         version: 8.9.2(react-dom@18.3.1)(react@18.2.0)
@@ -4560,11 +4560,11 @@ packages:
     dev: false
     optional: true
 
-  /@next/third-parties@16.1.1(next@14.1.0)(react@18.2.0):
-    resolution: {integrity: sha512-i3NWXWiNpXGaUi6vGDrK7rC5qLhuCmuhD1BeaOh4Ma8piUBeUhOjEa1UfpVndeC3JcqWXPaYzqO1Hd1U6hql/w==}
+  /@next/third-parties@14.1.0(next@14.1.0)(react@18.2.0):
+    resolution: {integrity: sha512-f55SdvQ1WWxi4mb5QqtYQh5wRzbm1XaeP7s39DPn4ks3re+n9VlFccbMxBRHqkE62zAyIKmvkUB2cByT/gugGA==}
     peerDependencies:
-      next: ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0-beta.0
-      react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+      next: ^13.0.0 || ^14.0.0
+      react: ^18.2.0
     dependencies:
       next: 14.1.0(@babel/core@7.28.5)(react-dom@18.3.1)(react@18.2.0)
       react: 18.2.0
