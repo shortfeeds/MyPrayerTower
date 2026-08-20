@@ -237,8 +237,8 @@ importers:
         specifier: ^3.3.0
         version: 3.10.0(react-hook-form@7.69.0)
       '@mpt/database':
-        specifier: file:../../packages/database
-        version: file:packages/database(prisma@5.22.0)
+        specifier: workspace:*
+        version: link:../../packages/database
       '@next/third-parties':
         specifier: 14.1.0
         version: 14.1.0(next@14.1.0)(react@18.2.0)
@@ -14985,15 +14985,4 @@ packages:
 
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
-    dev: false
-
-  file:packages/database(prisma@5.22.0):
-    resolution: {directory: packages/database, type: directory}
-    id: file:packages/database
-    name: '@mpt/database'
-    requiresBuild: true
-    dependencies:
-      '@prisma/client': 5.22.0(prisma@5.22.0)
-    transitivePeerDependencies:
-      - prisma
     dev: false
