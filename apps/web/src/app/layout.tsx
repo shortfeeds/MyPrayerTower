@@ -1,6 +1,8 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { GoogleAnalyticsTracker } from '@/components/analytics/GoogleAnalyticsTracker';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { Inter, Merriweather, Playfair_Display } from 'next/font/google';
 import './globals.css';
@@ -154,6 +156,9 @@ export default async function RootLayout({
                 <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
                 <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
                 <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+                {/* AI / LLM Knowledge Discovery standard */}
+                <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM Knowledge Base" />
+                <link rel="alternate" type="text/plain" href="/llms-full.txt" title="Full LLM Knowledge Base" />
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300" suppressHydrationWarning>
                 <ThemeProvider>
@@ -233,6 +238,10 @@ export default async function RootLayout({
                     </AudioProvider>
                 </ThemeProvider>
 
+
+                <Suspense fallback={null}>
+                    <GoogleAnalyticsTracker />
+                </Suspense>
 
                 <GoogleAnalytics gaId="G-1X6N63VWZH" />
 
