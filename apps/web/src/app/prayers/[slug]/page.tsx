@@ -34,11 +34,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: prayer.content.slice(0, 160),
         keywords: prayer.tags,
         alternates: {
-            canonical: `https://myprayertower.com/prayers/${params.slug}`
+            canonical: `https://www.myprayertower.com/prayers/${params.slug}`
         },
         openGraph: {
             title: title,
             description: prayer.content.slice(0, 160),
+            url: `https://www.myprayertower.com/prayers/${params.slug}`,
             type: 'article',
             publishedTime: new Date().toISOString(), // In real app, use updated_at
             authors: ['MyPrayerTower'],

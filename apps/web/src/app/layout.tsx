@@ -40,14 +40,14 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL('https://myprayertower.com'),
+    metadataBase: new URL('https://www.myprayertower.com'),
     title: {
         default: 'MyPrayerTower | Catholic Prayer & Church Finder App',
         template: '%s | MyPrayerTower'
     },
     description: 'Join the global Catholic community. Find Mass times, submit prayer intentions, light virtual candles, and deepen your faith with daily readings and rosary.',
     keywords: ['Catholic App', 'Mass Times Near Me', 'Online Prayer Request', 'Virtual Candles', 'Catholic Daily Readings', 'Rosary Audio', 'Confession Guide', 'Saints of the Day'],
-    authors: [{ name: 'MyPrayerTower Team', url: 'https://myprayertower.com' }],
+    authors: [{ name: 'MyPrayerTower Team', url: 'https://www.myprayertower.com' }],
     creator: 'MyPrayerTower',
     publisher: 'MyPrayerTower',
     alternates: {
@@ -105,9 +105,13 @@ export const metadata: Metadata = {
         creator: '@myprayertower',
         images: ['/opengraph-image'],
     },
-    category: 'Lifestyle',
     verification: {
         google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'google-site-verification-code',
+        other: {
+            'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || 'bing-verification-code',
+            'yandex-verification': process.env.NEXT_PUBLIC_YANDEX_SITE_VERIFICATION || '',
+            'baidu-site-verification': process.env.NEXT_PUBLIC_BAIDU_SITE_VERIFICATION || '',
+        },
     },
     appleWebApp: {
         title: 'MyPrayerTower',

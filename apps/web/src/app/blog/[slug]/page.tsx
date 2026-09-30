@@ -21,7 +21,7 @@ interface Props {
     };
 }
 
-const BASE_URL = 'https://myprayertower.com';
+const BASE_URL = 'https://www.myprayertower.com';
 
 export async function generateStaticParams() {
     const posts = await getAllPosts();

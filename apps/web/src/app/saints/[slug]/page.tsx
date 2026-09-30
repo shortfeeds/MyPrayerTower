@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             description: saint.shortBio || `Learn about the life of ${fullName}.`,
             images: saint.imageUrl ? [saint.imageUrl] : undefined,
             type: 'article',
-            url: `https://myprayertower.com/saints/${params.slug}`,
+            url: `https://www.myprayertower.com/saints/${params.slug}`,
         },
         twitter: {
             card: 'summary_large_image',
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             images: saint.imageUrl ? [saint.imageUrl] : undefined,
         },
         alternates: {
-            canonical: `/saints/${params.slug}`,
+            canonical: `https://www.myprayertower.com/saints/${params.slug}`,
         }
     };
 }

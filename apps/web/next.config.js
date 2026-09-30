@@ -224,7 +224,7 @@ const nextConfig = {
                     },
                 ],
                 destination: 'https://www.myprayertower.com/:path*',
-                permanent: false,
+                permanent: true,
             },
         ];
     },

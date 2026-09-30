@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title: novena.name,
             description: novena.description,
             type: 'article',
-            url: `https://myprayertower.com/novenas/${novena.id}`,
+            url: `https://www.myprayertower.com/novenas/${novena.id}`,
             images: [`/images/novenas/${novena.id}.jpg`], // Placeholder
         },
         twitter: {
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             images: [`/images/novenas/${novena.id}.jpg`],
         },
         alternates: {
-            canonical: `/novenas/${novena.id}`,
+            canonical: `https://www.myprayertower.com/novenas/${novena.id}`,
         }
     };
 }
