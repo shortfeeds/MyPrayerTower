@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSaintOfToday } from '@/lib/saints';
 import { getReadings } from '@/lib/readings';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 86400; // Cache for 24 hours on Edge CDN
 
 export async function GET() {
     try {
@@ -23,6 +23,8 @@ export async function GET() {
                 text: "The Lord is my shepherd; I shall not want.",
                 author: "Psalm 23"
             }
+        }, {
+            headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' }
         });
 
     } catch (error) {

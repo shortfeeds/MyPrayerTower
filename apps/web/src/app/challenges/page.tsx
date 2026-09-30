@@ -3,7 +3,7 @@ import { Trophy, Users, Calendar, Star, ChevronRight, Flame, Target, Crown } fro
 import { getChallenges } from '@/app/actions/challenges';
 import { Suspense } from 'react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // 1 hour ISR
 
 const challengeTypeColors: Record<string, string> = {
     ROSARY: 'from-rose-500 to-rose-600',

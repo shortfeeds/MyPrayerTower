@@ -3,7 +3,7 @@ import { Crown, Trophy, Medal, Award, ChevronLeft, Flame, Star } from 'lucide-re
 import { getLeaderboard } from '@/app/actions/challenges';
 import { Suspense } from 'react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 1800; // 30 mins ISR
 
 export const metadata = {
     title: 'Prayer Leaderboard | MyPrayerTower',

@@ -1,9 +1,7 @@
 import Link from 'next/link';
 import { ChevronLeft, Users, Heart, MessageCircle, UserPlus, Shield, HeartHandshake } from 'lucide-react';
 import { getUserFromCookie } from '@/lib/auth';
-import { PrismaClient } from '@mpt/database';
-
-const prisma = new PrismaClient();
+import { db as prisma } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 

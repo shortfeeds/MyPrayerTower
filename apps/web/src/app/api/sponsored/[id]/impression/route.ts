@@ -1,16 +1,14 @@
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@mpt/database';
-
-const prisma = new PrismaClient();
+import { db } from '@/lib/db';
 
 export async function POST(
     request: NextRequest,
     { params }: { params: { id: string } }
 ) {
     try {
-        await prisma.sponsoredContent.update({
+        await db.sponsoredContent.update({
             where: { id: params.id },
             data: { impressions: { increment: 1 } },
         });

@@ -20,6 +20,8 @@ export async function GET() {
                     reference: dailyContent.readingReference || '',
                     text: dailyContent.readingText || ''
                 }
+            }, {
+                headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' }
             });
         }
 
@@ -33,6 +35,8 @@ export async function GET() {
                 reference: 'Matthew 5:1-12', // Beatitudes as a nice default
                 text: 'Seeing the crowds, he went up on the mountain, and when he sat down, his disciples came to him...'
             }
+        }, {
+            headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' }
         });
 
     } catch (error) {
@@ -43,6 +47,8 @@ export async function GET() {
                 reference: 'Matthew 5:3-10',
                 text: 'Blessed are the poor in spirit...'
             }
+        }, {
+            headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' }
         });
     }
 }

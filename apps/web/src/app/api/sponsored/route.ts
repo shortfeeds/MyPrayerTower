@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Cache on Vercel Edge CDN for 1 hour
 
 export async function GET(request: NextRequest) {
     try {
@@ -81,6 +81,10 @@ export async function GET(request: NextRequest) {
                 linkUrl: content.linkUrl,
                 advertiser: content.advertiser
             } : null
+        }, {
+            headers: {
+                'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400'
+            }
         });
     } catch (error: any) {
         console.error('[Sponsored API] FATAL ERROR:', error);

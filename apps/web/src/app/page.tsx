@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 export const revalidate = 3600; // 1 hour
 import Link from 'next/link';
-import { cookies } from 'next/headers';
 import { ArrowRight } from 'lucide-react';
 import { CoreActions } from '@/components/home/CoreActions';
 import { SocialReassurance } from '@/components/home/SocialReassurance';
@@ -12,7 +11,7 @@ import { DailyFocus } from '@/components/home/DailyFocus';
 import { ParticleBackground } from '@/components/ui/ParticleBackground';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { AppDownloadBanner } from '@/components/home/PromotionalBanner';
-import { PersonalizedHome } from '@/components/dashboard/PersonalizedHome';
+import { HomeSessionWrapper } from '@/components/home/HomeSessionWrapper';
 import { MemorialsBanner } from '@/components/home/MemorialsBanner';
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay } from '@/app/actions/home';
 import { WelcomeGreeting } from '@/components/home/WelcomeGreeting';
@@ -215,14 +214,8 @@ async function LoggedOutHomePage() {
 }
 
 export default async function Home() {
-    const session = cookies().get('user_session');
-
-    if (session) {
-        return <PersonalizedHome />;
-    }
-
     return (
-        <>
+        <HomeSessionWrapper>
             <JsonLd<any> data={{
                 '@context': 'https://schema.org',
                 '@type': 'WebSite',
@@ -265,6 +258,6 @@ export default async function Home() {
                 ]
             }} />
             <LoggedOutHomePage />
-        </>
+        </HomeSessionWrapper>
     );
 }
