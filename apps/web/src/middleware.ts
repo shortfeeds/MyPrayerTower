@@ -46,17 +46,12 @@ export async function middleware(request: NextRequest) {
     const hasTwaCookie = request.cookies.has('is_twa');
     const isApp = isTwaSource || hasTwaCookie;
 
-    // Redirect root to /app if inside native app
-    if (isApp && pathname === '/') {
+    // Redirect root to /app ONLY if launched from native app with ?source=twa
+    if (isTwaSource && pathname === '/') {
         const url = request.nextUrl.clone();
         url.pathname = '/app';
-        if (!url.searchParams.has('source')) {
-            url.searchParams.set('source', 'twa');
-        }
         const resp = NextResponse.redirect(url);
-        if (!hasTwaCookie) {
-            resp.cookies.set('is_twa', '1', { path: '/', maxAge: 60 * 60 * 24 * 365 });
-        }
+        resp.cookies.set('is_twa', '1', { path: '/app', maxAge: 60 * 60 * 24 * 365 });
         return resp;
     }
 
@@ -76,7 +71,10 @@ export async function middleware(request: NextRequest) {
     });
 
     if (isTwaSource && !hasTwaCookie) {
-        response.cookies.set('is_twa', '1', { path: '/', maxAge: 60 * 60 * 24 * 365 });
+        response.cookies.set('is_twa', '1', { path: '/app', maxAge: 60 * 60 * 24 * 365 });
+    } else if (!isTwaSource && hasTwaCookie && pathname !== '/app') {
+        // Clear root-level stale TWA cookie so standard web navigation is never polluted
+        response.cookies.delete('is_twa');
     }
 
     // Add headers only for HTML pages/API to save bytes

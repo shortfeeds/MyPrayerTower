@@ -17,7 +17,7 @@ import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
 import { SkipToContent } from '@/components/ui/SkipToContent';
 import { SpiritualJourneyProvider } from '@/components/journey/SpiritualJourneyProvider';
 import { PricingProvider } from '@/contexts/PricingContext';
-import { headers, cookies } from 'next/headers';
+import { headers } from 'next/headers';
 import { AudioProvider } from '@/components/audio/AudioContext';
 
 // Self-hosted fonts for performance
@@ -141,8 +141,8 @@ export default async function RootLayout({
     const headersList = await headers();
     const pathname = headersList.get('x-pathname') || '';
     const isAdminPage = pathname.startsWith('/admin') || pathname.startsWith('/church-dashboard');
-    const isAppMode = cookies().has('is_twa') || headersList.get('host')?.includes('localhost') || headersList.get('host')?.includes('127.0.0.1');
-    const hideWebChrome = isAdminPage || isAppMode;
+    const isDedicatedAppPage = pathname === '/app' || pathname.startsWith('/app/');
+    const hideWebChrome = isAdminPage || isDedicatedAppPage;
 
     return (
         <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
@@ -273,7 +273,7 @@ export default async function RootLayout({
                     strategy="lazyOnload"
                 />
                 {/* Shared Mobile Nav for TWA/App Mode */}
-                {hideWebChrome && (
+                {isDedicatedAppPage && (
                     <>
                         <FloatingPrayerButton href="/prayers" label="Pray Now" enabled={true} />
                         <MobileBottomNav />
