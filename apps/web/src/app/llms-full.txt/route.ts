@@ -45,16 +45,17 @@ Biographies, patronages, and feast days of holy men and women recognized by the 
     try {
         const saints = await db.saint.findMany({
             take: 100,
-            select: { name: true, slug: true, feastDay: true, patronage: true, shortBio: true }
+            select: { name: true, slug: true, feastMonth: true, feastDayOfMonth: true, patronOf: true, biography: true }
         });
 
         if (saints && saints.length > 0) {
             for (const saint of saints) {
+                const feast = (saint.feastMonth && saint.feastDayOfMonth) ? `Month ${saint.feastMonth}, Day ${saint.feastDayOfMonth}` : 'Commemorated';
                 markdown += `### ${saint.name}
 - URL: ${baseUrl}/saints/${saint.slug}
-- Feast Day: ${saint.feastDay}
-- Patron Of: ${saint.patronage || 'The faithful'}
-- Summary: ${saint.shortBio || ''}
+- Feast Day: ${feast}
+- Patron Of: ${saint.patronOf || 'The faithful'}
+- Summary: ${saint.biography ? saint.biography.slice(0, 250).replace(/\r?\n/g, ' ') + '...' : ''}
 
 `;
             }
