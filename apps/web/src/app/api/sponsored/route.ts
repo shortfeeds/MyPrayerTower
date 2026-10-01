@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
-export const revalidate = 3600; // Cache on Vercel Edge CDN for 1 hour
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
     try {
