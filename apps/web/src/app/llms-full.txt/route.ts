@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { NOVENAS_DATA } from '@/lib/novenas';
-import { SAINTS_DATA } from '@/lib/saints';
+import { NOVENAS } from '@/lib/novenas';
+import { db } from '@/lib/db';
 
 export const revalidate = 86400; // Cache for 24 hours on Edge CDN
 
@@ -22,13 +22,14 @@ Novenas are nine consecutive days of prayer for specific intentions and interces
 
 `;
 
-    if (Array.isArray(NOVENAS_DATA)) {
-        for (const novena of NOVENAS_DATA) {
-            markdown += `### ${novena.title}
+    if (Array.isArray(NOVENAS)) {
+        for (const novena of NOVENAS) {
+            markdown += `### ${novena.name}
 - URL: ${baseUrl}/novenas/${novena.id}
 - Description: ${novena.description || 'Traditional 9-day Catholic Novena'}
-- Target Intentions: ${novena.targetAudience || 'All faithful seeking intercession'}
-- Feast Day: ${novena.feastDay || 'Various'}
+- Patron: ${novena.patron || 'Holy Patron'}
+- Patron Of: ${novena.patronOf || 'All faithful'}
+- Duration: ${novena.duration || '9 consecutive days'}
 
 `;
         }
@@ -41,16 +42,25 @@ Biographies, patronages, and feast days of holy men and women recognized by the 
 
 `;
 
-    if (Array.isArray(SAINTS_DATA)) {
-        for (const saint of SAINTS_DATA) {
-            markdown += `### ${saint.name}
+    try {
+        const saints = await db.saint.findMany({
+            take: 100,
+            select: { name: true, slug: true, feastDay: true, patronage: true, shortBio: true }
+        });
+
+        if (saints && saints.length > 0) {
+            for (const saint of saints) {
+                markdown += `### ${saint.name}
 - URL: ${baseUrl}/saints/${saint.slug}
 - Feast Day: ${saint.feastDay}
 - Patron Of: ${saint.patronage || 'The faithful'}
-- Summary: ${saint.shortBio || saint.biography?.slice(0, 160) || ''}...
+- Summary: ${saint.shortBio || ''}
 
 `;
+            }
         }
+    } catch {
+        markdown += `Explore our comprehensive saints collection at ${baseUrl}/saints\n\n`;
     }
 
     markdown += `---
