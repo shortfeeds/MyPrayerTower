@@ -10,7 +10,7 @@ declare global {
     }
 }
 
-export const GA_TRACKING_ID = 'G-1X6N63VWZH';
+export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-XHPBKVZBZH';
 
 /**
  * Detect client platform (Web vs Android TWA vs Standalone PWA)

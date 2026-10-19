@@ -251,7 +251,7 @@ export default async function RootLayout({
                     <GoogleAnalyticsTracker />
                 </Suspense>
 
-                <GoogleAnalytics gaId="G-1X6N63VWZH" />
+                <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || "G-XHPBKVZBZH"} />
 
                 {/* Microsoft Clarity - Session replay & Heatmaps */}
                 <Script

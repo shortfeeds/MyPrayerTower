@@ -66,7 +66,7 @@ export function GoogleAnalyticsTracker() {
                 page_referrer: referrer,
                 platform_type: platformType,
                 app_mode: isTwa || isPwa ? 'app' : 'web',
-                send_to: 'G-1X6N63VWZH',
+                send_to: process.env.NEXT_PUBLIC_GA_ID || 'G-XHPBKVZBZH',
             });
 
             // Check if user arrived from an AI engine
