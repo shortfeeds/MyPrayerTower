@@ -52,6 +52,11 @@ export function GoogleAnalyticsTracker() {
             ? `${window.location.origin}${previousPathRef.current}` 
             : (initialReferrerRef.current || document.referrer || '(direct)');
 
+        // Determine platform: TWA app vs PWA vs browser web
+        const isTwa = typeof window !== 'undefined' && (document.referrer.includes('android-app://') || window.location.search.includes('source=twa'));
+        const isPwa = typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone);
+        const platformType = isTwa ? 'android_twa' : isPwa ? 'standalone_pwa' : 'web_browser';
+
         // Log page_view to GA4
         if (window.gtag) {
             window.gtag('event', 'page_view', {
@@ -59,6 +64,8 @@ export function GoogleAnalyticsTracker() {
                 page_path: url,
                 page_title: currentTitle,
                 page_referrer: referrer,
+                platform_type: platformType,
+                app_mode: isTwa || isPwa ? 'app' : 'web',
                 send_to: 'G-1X6N63VWZH',
             });
 

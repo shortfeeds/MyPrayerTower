@@ -41,9 +41,9 @@ const menuItems: MenuItem[] = [
         icon: BarChart3,
         children: [
             { name: 'Revenue Overview', href: '/admin/revenue' },
-            { name: 'Donations', href: '/admin/offerings/donations' },
-            { name: 'Mass Offerings', href: '/admin/offerings/mass-offerings' },
-            { name: 'Virtual Candles', href: '/admin/offerings/candles' },
+            { name: 'Donations', href: '/admin/donations' },
+            { name: 'Mass Offerings', href: '/admin/mass-offerings' },
+            { name: 'Virtual Candles', href: '/admin/candles' },
             { name: 'Failed Payments', href: '/admin/finance/failed-payments' },
             { name: 'Abandoned Carts', href: '/admin/abandoned-carts' },
         ]

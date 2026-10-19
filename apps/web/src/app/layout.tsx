@@ -87,25 +87,27 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'MyPrayerTower | Connect, Pray, Grow',
         description: 'The #1 Catholic App for Mass times, prayer requests, and daily spiritual growth. Join thousands of faithful users today.',
-        url: 'https://myprayertower.com',
+        url: 'https://www.myprayertower.com',
         siteName: 'MyPrayerTower',
         locale: 'en_US',
         type: 'website',
         images: [
             {
-                url: '/opengraph-image',
+                url: 'https://www.myprayertower.com/og-image.jpg',
+                secureUrl: 'https://www.myprayertower.com/og-image.jpg',
                 width: 1200,
                 height: 630,
+                type: 'image/jpeg',
                 alt: 'MyPrayerTower - Connect, Pray, Grow',
             },
         ],
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'MyPrayerTower',
+        title: 'MyPrayerTower | Connect, Pray, Grow',
         description: 'Find churches, request prayers, and grow in faith with the #1 Catholic App.',
         creator: '@myprayertower',
-        images: ['/opengraph-image'],
+        images: ['https://www.myprayertower.com/og-image.jpg'],
     },
     verification: {
         google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'google-site-verification-code',
@@ -159,6 +161,12 @@ export default async function RootLayout({
                 {/* AI / LLM Knowledge Discovery standard */}
                 <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM Knowledge Base" />
                 <link rel="alternate" type="text/plain" href="/llms-full.txt" title="Full LLM Knowledge Base" />
+                <script
+                    id="browser-process-shim"
+                    dangerouslySetInnerHTML={{
+                        __html: 'window.process=window.process||{env:{}};',
+                    }}
+                />
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300" suppressHydrationWarning>
                 <ThemeProvider>
@@ -255,7 +263,7 @@ export default async function RootLayout({
                                 c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
                                 t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
                                 y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-                            })(window, document, "clarity", "script", process.env.NEXT_PUBLIC_CLARITY_ID || "q5z9c3y1k8");
+                            })(window, document, "clarity", "script", ${JSON.stringify(process.env.NEXT_PUBLIC_CLARITY_ID || "q5z9c3y1k8")});
                         `,
                     }}
                 />

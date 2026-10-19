@@ -31,6 +31,7 @@ const sections: SettingSection[] = [
     { id: 'general', name: 'General', icon: Settings, description: 'App name, branding, and basic settings' },
     { id: 'pricing', name: 'Pricing', icon: DollarSign, description: 'Mass offerings and subscription prices' },
     { id: 'features', name: 'Features', icon: Zap, description: 'Enable or disable app features' },
+    { id: 'cleanup', name: 'Database & Cleanup', icon: Shield, description: 'Purge dummy records and clean database' },
 ];
 
 export default function AdminSettingsPage() {
@@ -39,6 +40,28 @@ export default function AdminSettingsPage() {
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [cleaning, setCleaning] = useState(false);
+    const [cleanResult, setCleanResult] = useState<any>(null);
+
+    const handleCleanDummyData = async () => {
+        if (!confirm('Are you sure you want to permanently delete all test and dummy data from the database? Real content (Saints, Churches, Prayers, Admin users) will be strictly preserved.')) {
+            return;
+        }
+        setCleaning(true);
+        try {
+            const res = await fetch('/api/admin/clean-dummy', { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                setCleanResult(data.results);
+            } else {
+                alert('Failed to clean: ' + (data.error || 'Unknown error'));
+            }
+        } catch (err: any) {
+            alert('Error cleaning data: ' + err.message);
+        } finally {
+            setCleaning(false);
+        }
+    };
 
     // Settings that match AppSettings model in database
     const [settings, setSettings] = useState({
@@ -681,6 +704,42 @@ export default function AdminSettingsPage() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                    )}
+
+                    {activeSection === 'cleanup' && (
+                        <div className="space-y-6">
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900">Database Cleanup & Maintenance</h3>
+                                <p className="text-sm text-gray-500">Purge mock, sample, or dummy test records while strictly preserving live content</p>
+                            </div>
+
+                            <div className="p-6 bg-amber-50/70 rounded-2xl border border-amber-200">
+                                <h4 className="font-bold text-amber-900 mb-2">Safe Purge Policy</h4>
+                                <p className="text-sm text-amber-700 leading-relaxed mb-4">
+                                    This operation removes all test records across candles, donations, mass offerings, and prayer requests. Your super admin accounts, saints collection, church database, and official Catholic prayers are 100% protected and preserved.
+                                </p>
+                                <button
+                                    onClick={handleCleanDummyData}
+                                    disabled={cleaning}
+                                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-50"
+                                >
+                                    {cleaning ? 'Purging Dummy Data...' : 'Purge All Dummy & Test Data'}
+                                </button>
+                            </div>
+
+                            {cleanResult && (
+                                <div className="p-6 bg-green-50 rounded-2xl border border-green-200">
+                                    <h4 className="font-bold text-green-900 mb-2">Cleanup Complete!</h4>
+                                    <ul className="text-sm text-green-800 space-y-1">
+                                        <li>Dummy Candles Removed: {cleanResult.deletedCandles}</li>
+                                        <li>Dummy Donations Removed: {cleanResult.deletedDonations}</li>
+                                        <li>Dummy Mass Offerings Removed: {cleanResult.deletedMassOfferings}</li>
+                                        <li>Dummy Prayer Requests Removed: {cleanResult.deletedPrayers}</li>
+                                        <li>Test Users Removed: {cleanResult.deletedUsers}</li>
+                                    </ul>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

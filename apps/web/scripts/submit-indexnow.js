@@ -44,6 +44,7 @@ const STATIC_ROUTES = [
     '/dioceses',
     '/divine-office',
     '/dmca',
+    '/donate',
     '/encyclicals',
     '/events',
     '/examen',

@@ -215,6 +215,41 @@ const nextConfig = {
                 permanent: true,
             },
             {
+                source: '/privacy-policy',
+                destination: '/privacy',
+                permanent: true,
+            },
+            {
+                source: '/terms-of-service',
+                destination: '/terms',
+                permanent: true,
+            },
+            {
+                source: '/terms-and-conditions',
+                destination: '/terms',
+                permanent: true,
+            },
+            {
+                source: '/terms-of-use',
+                destination: '/terms',
+                permanent: true,
+            },
+            {
+                source: '/refund-policy',
+                destination: '/refunds',
+                permanent: true,
+            },
+            {
+                source: '/cancellation-policy',
+                destination: '/refunds',
+                permanent: true,
+            },
+            {
+                source: '/cookie-policy',
+                destination: '/cookies',
+                permanent: true,
+            },
+            {
                 // Match all paths EXCEPT those starting with .well-known
                 source: '/:path((?!.well-known/).*)',
                 has: [

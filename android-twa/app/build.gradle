@@ -55,10 +55,10 @@ android {
     namespace "com.myprayertower.myprayertower_app"
     defaultConfig {
         applicationId "com.myprayertower.myprayertower_app"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 36
-        versionCode 34
-        versionName "34"
+        versionCode 35
+        versionName "35"
 
         // The name for the application
         resValue "string", "appName", twaManifest.name
@@ -153,6 +153,8 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {

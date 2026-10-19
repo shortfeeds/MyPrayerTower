@@ -16,6 +16,11 @@ function AppStoreButton({ store }: { store: 'telegram' | 'google' }) {
             <Link
                 href="https://play.google.com/store/apps/details?id=com.myprayertower.myprayertower_app"
                 target="_blank"
+                onClick={() => {
+                    if (typeof window !== 'undefined' && window.gtag) {
+                        window.gtag('event', 'app_download_click', { platform: 'android', event_category: 'acquisition' });
+                    }
+                }}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg group hover:bg-gray-800 transition-all font-medium text-white shadow-lg active:scale-95"
             >
                 <div className="p-1 rounded-full bg-white/10 group-hover:bg-white/20 transition-all">
@@ -30,16 +35,21 @@ function AppStoreButton({ store }: { store: 'telegram' | 'google' }) {
     }
     return (
         <a 
-            href="https://t.me/MyPrayerTowerBot"
+            href="https://t.me/myprayertower"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => {
+                if (typeof window !== 'undefined' && window.gtag) {
+                    window.gtag('event', 'telegram_join_click', { channel: 't.me/myprayertower', event_category: 'social_channel' });
+                }
+            }}
             className="flex items-center gap-2 px-4 py-2 bg-[#229ED9] rounded-lg group hover:bg-[#1E8BC1] transition-all font-medium text-white shadow-lg active:scale-95"
         >
             <div className="p-1 rounded-full bg-white/10 group-hover:bg-white/20 transition-all">
                 <Send className="w-4 h-4" />
             </div>
             <div className="flex flex-col items-start leading-none text-left">
-                <span className="text-[10px] opacity-70 font-normal">OPEN ON</span>
+                <span className="text-[10px] opacity-70 font-normal">JOIN CHANNEL</span>
                 <span className="text-sm font-bold tracking-tight">Telegram</span>
             </div>
         </a>
@@ -110,7 +120,7 @@ export function Footer() {
         { icon: InstagramIcon, label: 'Instagram', href: 'https://www.instagram.com/myprayertower/' },
         { icon: ThreadsIcon, label: 'Threads', href: 'https://www.threads.net/@myprayertower' },
         { icon: PinterestIcon, label: 'Pinterest', href: 'https://www.pinterest.com/myprayertower/' },
-        { icon: Send, label: 'Telegram', href: 'https://t.me/MyPrayerTowerBot' },
+        { icon: Send, label: 'Telegram', href: 'https://t.me/myprayertower' },
     ];
 
     if (pathname && (pathname.startsWith('/admin') || pathname.startsWith('/church-dashboard') || pathname.startsWith('/bot'))) {
@@ -132,7 +142,7 @@ export function Footer() {
                             </p>
                             <div className="flex gap-2">
                                 {socialLinks.map((s) => (
-                                    <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-lg hover:border-gold-500 hover:text-gold-400 transition-all">
+                                    <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-lg hover:border-gold-500 hover:text-gold-400 transition-all" aria-label={s.label}>
                                         <s.icon className="w-4 h-4" />
                                     </a>
                                 ))}
@@ -183,6 +193,16 @@ export function Footer() {
                     <p className="text-gray-500 text-sm">Your digital sanctuary for global prayer.</p>
                 </div>
                 <NewsletterForm />
+                <div className="mt-8 flex justify-center gap-3">
+                    {socialLinks.map((s) => (
+                        <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-lg hover:border-gold-500 hover:text-gold-400 text-gray-400 transition-all" aria-label={s.label}>
+                            <s.icon className="w-4 h-4" />
+                        </a>
+                    ))}
+                </div>
+                <div className="mt-6 flex justify-center">
+                    <AppStoreButton store="telegram" />
+                </div>
                 <div className="mt-12 text-center text-[10px] text-gray-600 uppercase tracking-widest leading-relaxed">
                     <p>May peace remain with you.</p>
                     <p className="mt-2">© {currentYear} MyPrayerTower</p>
