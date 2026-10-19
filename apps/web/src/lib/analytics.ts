@@ -126,3 +126,17 @@ export function trackAppDownloadClick(platform: 'android' | 'ios' | 'telegram') 
         event_label: `Download ${platform}`
     });
 }
+
+/**
+ * Engagement: Hub Action Click
+ */
+export function trackHubAction(action: string, category: string = 'General') {
+    trackEvent(action, {
+        action_name: action,
+        category,
+        event_category: category,
+        event_label: action
+    });
+}
+
+
