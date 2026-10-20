@@ -21,6 +21,7 @@
   <a href="https://www.youtube.com/@myprayertower">YouTube</a> •
   <a href="https://twitter.com/MyPrayerTower">X (Twitter)</a> •
   <a href="https://www.instagram.com/myprayertower/">Instagram</a> •
+  <a href="https://www.tiktok.com/@myprayertower">TikTok</a> •
   <a href="https://www.threads.net/@myprayertower">Threads</a> •
   <a href="https://www.pinterest.com/myprayertower/">Pinterest</a>
 </p>

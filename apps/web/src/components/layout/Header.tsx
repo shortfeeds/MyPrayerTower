@@ -10,7 +10,7 @@ import {
     Flame, Gift, CreditCard
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon } from '@/components/common/SocialIcons';
+import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon, TikTokIcon } from '@/components/common/SocialIcons';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useAuth } from '@/hooks/useAuth';
@@ -503,7 +503,8 @@ export function Header() {
                                 <a href="https://www.facebook.com/myprayertower" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#1877f2] text-white rounded-lg hover:opacity-90 transition-opacity"><Facebook className="w-5 h-5" /></a>
                                 <a href="https://www.youtube.com/@myprayertower" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#ff0000] text-white rounded-lg hover:opacity-90 transition-opacity"><Youtube className="w-5 h-5" /></a>
                                 <a href="https://twitter.com/MyPrayerTower" target="_blank" rel="noopener noreferrer" className="p-2 bg-black text-white rounded-lg hover:opacity-90 transition-opacity"><TwitterIcon className="w-5 h-5" /></a>
-                                <a href="https://www.instagram.com/myprayertower/" target="_blank" rel="noopener noreferrer" className="p-2 bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] text-white rounded-lg hover:opacity-90 transition-opacity"><InstagramIcon className="w-5 h-5" /></a>
+                                <a href="https://www.instagram.com/myprayertower/" target="_blank" rel="noopener noreferrer" className="p-2 bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] text-white rounded-lg hover:opacity-90 transition-opacity" aria-label="Instagram"><InstagramIcon className="w-5 h-5" /></a>
+                                <a href="https://www.tiktok.com/@myprayertower" target="_blank" rel="noopener noreferrer" className="p-2 bg-black text-white rounded-lg hover:opacity-90 transition-opacity" aria-label="TikTok"><TikTokIcon className="w-5 h-5" /></a>
                                 <a href="https://www.threads.net/@myprayertower" target="_blank" rel="noopener noreferrer" className="p-2 bg-black text-white rounded-lg hover:opacity-90 transition-opacity"><ThreadsIcon className="w-5 h-5" /></a>
                                 <a href="https://www.pinterest.com/myprayertower/" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#E60023] text-white rounded-lg hover:opacity-90 transition-opacity"><PinterestIcon className="w-5 h-5" /></a>
                             </div>

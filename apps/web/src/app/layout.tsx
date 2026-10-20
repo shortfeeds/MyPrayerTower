@@ -210,6 +210,7 @@ export default async function RootLayout({
                                                         'https://www.youtube.com/@myprayertower',
                                                         'https://twitter.com/MyPrayerTower',
                                                         'https://www.instagram.com/myprayertower/',
+                                                        'https://www.tiktok.com/@myprayertower',
                                                         'https://www.threads.net/@myprayertower',
                                                         'https://www.pinterest.com/myprayertower/'
                                                     ],
