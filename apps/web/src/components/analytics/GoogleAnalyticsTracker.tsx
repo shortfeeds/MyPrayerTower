@@ -57,27 +57,36 @@ export function GoogleAnalyticsTracker() {
         const isPwa = typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone);
         const platformType = isTwa ? 'android_twa' : isPwa ? 'standalone_pwa' : 'web_browser';
 
-        // Log page_view to GA4
-        if (window.gtag) {
-            window.gtag('event', 'page_view', {
-                page_location: window.location.href,
-                page_path: url,
-                page_title: currentTitle,
-                page_referrer: referrer,
-                platform_type: platformType,
-                app_mode: isTwa || isPwa ? 'app' : 'web',
-                send_to: process.env.NEXT_PUBLIC_GA_ID || 'G-XHPBKVZBZH',
-            });
+        const gaId = (process.env.NEXT_PUBLIC_GA_ID || 'G-XHPBKVZBZH').trim();
 
-            // Check if user arrived from an AI engine
-            const aiEngine = identifyAiReferrer(referrer);
-            if (aiEngine) {
-                window.gtag('event', 'ai_search_visit', {
-                    ai_engine: aiEngine,
-                    landing_page: url,
-                    referrer_url: referrer,
-                });
-            }
+        // Ensure gtag queue is always available
+        window.dataLayer = window.dataLayer || [];
+        if (!window.gtag) {
+            window.gtag = function () {
+                window.dataLayer?.push(arguments);
+            };
+        }
+
+        // Log page_view to GA4
+        window.gtag('event', 'page_view', {
+            page_location: window.location.href,
+            page_path: url,
+            page_title: currentTitle,
+            page_referrer: referrer,
+            platform_type: platformType,
+            app_mode: isTwa || isPwa ? 'app' : 'web',
+            send_to: gaId,
+        });
+
+        // Check if user arrived from an AI engine
+        const aiEngine = identifyAiReferrer(referrer);
+        if (aiEngine) {
+            window.gtag('event', 'ai_search_visit', {
+                ai_engine: aiEngine,
+                landing_page: url,
+                referrer_url: referrer,
+                send_to: gaId,
+            });
         }
 
         previousPathRef.current = url;

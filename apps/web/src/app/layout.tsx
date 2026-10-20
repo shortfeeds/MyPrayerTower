@@ -145,6 +145,7 @@ export default async function RootLayout({
     const isAdminPage = pathname.startsWith('/admin') || pathname.startsWith('/church-dashboard');
     const isDedicatedAppPage = pathname === '/app' || pathname.startsWith('/app/');
     const hideWebChrome = isAdminPage || isDedicatedAppPage;
+    const gaId = (process.env.NEXT_PUBLIC_GA_ID || 'G-XHPBKVZBZH').trim();
 
     return (
         <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
@@ -251,7 +252,27 @@ export default async function RootLayout({
                     <GoogleAnalyticsTracker />
                 </Suspense>
 
-                <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || "G-XHPBKVZBZH"} />
+                {/* Google tag (gtag.js) */}
+                <Script
+                    id="google-tag-manager"
+                    strategy="afterInteractive"
+                    src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+                />
+                <Script
+                    id="google-analytics-init"
+                    strategy="afterInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            window.dataLayer = window.dataLayer || [];
+                            function gtag(){dataLayer.push(arguments);}
+                            window.gtag = gtag;
+                            gtag('js', new Date());
+                            gtag('config', '${gaId}', {
+                                send_page_view: true
+                            });
+                        `,
+                    }}
+                />
 
                 {/* Microsoft Clarity - Session replay & Heatmaps */}
                 <Script
