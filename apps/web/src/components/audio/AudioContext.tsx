@@ -26,19 +26,19 @@ export const TRACKS: AudioTrack[] = [
     {
         id: 'gregorian-chant',
         name: 'Gregorian Chant (Kyrie)',
-        url: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Kyrie_eleison_Xii.ogg',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/7/7d/Kyrie_Eleison_Orbis_Factor.ogg',
         category: 'chant'
     },
     {
         id: 'ambient-rain',
         name: 'Wind in the Cloister',
-        url: 'https://actions.google.com/sounds/v1/water/rain_on_roof.ogg',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Rain_%281%29.ogg',
         category: 'ambient'
     },
     {
         id: 'sacred-organ',
         name: 'Cathedral Organ',
-        url: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Bach_Toccata_and_Fugue_in_D_Minor.ogg',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/b/be/Toccata_et_Fugue_BWV565.ogg',
         category: 'instrumental'
     }
 ];

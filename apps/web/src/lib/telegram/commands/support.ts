@@ -19,7 +19,7 @@ export const supportCommand = async (ctx: Context) => {
     const keyboard = new InlineKeyboard()
         .url("📤 Share with Friends", shareUrl).row()
         .url("💝 Give an Offering", "https://myprayertower.com/donate").row()
-        .url("📺 Subscribe on YouTube", "https://www.youtube.com/myprayertower").row()
+        .url("📺 Subscribe on YouTube", "https://www.youtube.com/@myprayertower").row()
         .url("🌐 Visit Website", "https://myprayertower.com").row()
         .text("🏠 Back to Menu", "cmd_start");
 
