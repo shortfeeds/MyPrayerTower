@@ -8,6 +8,8 @@ import { GlobalEngagement } from '@/components/GlobalEngagement';
 import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/CookieConsent';
 import { SkipToContent } from '@/components/ui/SkipToContent';
+import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 
 interface LayoutChromeProps {
     children: React.ReactNode;
@@ -21,9 +23,17 @@ export function LayoutChrome({ children }: LayoutChromeProps) {
 
     if (hideWebChrome) {
         return (
-            <main id="main-content">
-                {children}
-            </main>
+            <>
+                <main id="main-content">
+                    {children}
+                </main>
+                {isDedicatedAppPage && (
+                    <>
+                        <FloatingPrayerButton href="/prayers" label="Pray Now" enabled={true} />
+                        <MobileBottomNav />
+                    </>
+                )}
+            </>
         );
     }
 

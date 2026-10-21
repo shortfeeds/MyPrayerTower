@@ -3,13 +3,11 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { GoogleAnalyticsTracker } from '@/components/analytics/GoogleAnalyticsTracker';
-import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { Inter, Merriweather, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { LayoutChrome } from '@/components/layout/LayoutChrome';
 
-import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
 import { SpiritualJourneyProvider } from '@/components/journey/SpiritualJourneyProvider';
 import { PricingProvider } from '@/contexts/PricingContext';
 import { AudioProvider } from '@/components/audio/AudioContext';
@@ -280,12 +278,7 @@ export default function RootLayout({
                     strategy="lazyOnload"
                 />
                 {/* Shared Mobile Nav for TWA/App Mode */}
-                {isDedicatedAppPage && (
-                    <>
-                        <FloatingPrayerButton href="/prayers" label="Pray Now" enabled={true} />
-                        <MobileBottomNav />
-                    </>
-                )}
+                
             </body>
         </html>
     );
