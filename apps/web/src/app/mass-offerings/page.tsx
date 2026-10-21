@@ -161,10 +161,10 @@ export default function MassOfferingsPage() {
                       </div>
                     </div>
                     <h1 className={`text-4xl md:text-5xl font-serif font-black mb-4 drop-shadow-xl ${isNativeApp ? 'text-white' : 'text-white'}`}>
-                      {SACRED_COPY.massPage.title}
+                      {SACRED_COPY.massPage?.title || "Holy Mass Intentions"}
                     </h1>
                     <p className={`text-lg max-w-2xl mx-auto leading-relaxed ${isNativeApp ? 'text-white/60' : 'text-indigo-100'}`}>
-                      {SACRED_COPY.massPage.subtitle}
+                      {SACRED_COPY.massPage?.subtitle || "Have a Holy Mass offered for your intentions, loved ones, or in thanksgiving."}
                     </p>
                 </div>
             </div>

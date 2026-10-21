@@ -45,6 +45,12 @@ export const SACRED_COPY = {
         transparency: "Your offering supports our partner monasteries and keeps this ministry sustainable."
     },
 
+    // Mass Page
+    massPage: {
+        title: "Holy Mass Intentions",
+        subtitle: "Have a Holy Mass offered for your intentions, loved ones, or in thanksgiving."
+    },
+
     // Memorials
     memorials: {
         remembered: "This intention is remembered.",
