@@ -1,3 +1,4 @@
+export const revalidate = 3600;
 import { getLibraryPrayers, getPrayerCategories } from '@/app/actions/prayer-library';
 import { PrayerSearch, PrayerFilter, Pagination } from '@/components/library/LibraryControls';
 import Link from 'next/link';

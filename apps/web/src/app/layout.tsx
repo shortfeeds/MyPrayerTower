@@ -6,18 +6,12 @@ import { GoogleAnalyticsTracker } from '@/components/analytics/GoogleAnalyticsTr
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { Inter, Merriweather, Playfair_Display } from 'next/font/google';
 import './globals.css';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { LayoutChrome } from '@/components/layout/LayoutChrome';
 
-import { GlobalEngagement } from '@/components/GlobalEngagement';
-import { BackToTop } from '@/components/ui/BackToTop';
-import { CookieConsent } from '@/components/CookieConsent';
 import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
-import { SkipToContent } from '@/components/ui/SkipToContent';
 import { SpiritualJourneyProvider } from '@/components/journey/SpiritualJourneyProvider';
 import { PricingProvider } from '@/contexts/PricingContext';
-import { headers } from 'next/headers';
 import { AudioProvider } from '@/components/audio/AudioContext';
 
 // Self-hosted fonts for performance
@@ -135,16 +129,11 @@ export const viewport = {
     themeColor: '#0a0612',
 };
 
-export default async function RootLayout({
+export default function RootLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const headersList = await headers();
-    const pathname = headersList.get('x-pathname') || '';
-    const isAdminPage = pathname.startsWith('/admin') || pathname.startsWith('/church-dashboard');
-    const isDedicatedAppPage = pathname === '/app' || pathname.startsWith('/app/');
-    const hideWebChrome = isAdminPage || isDedicatedAppPage;
     const gaId = (process.env.NEXT_PUBLIC_GA_ID || 'G-XHPBKVZBZH').trim();
 
     return (
@@ -174,21 +163,9 @@ export default async function RootLayout({
                     <AudioProvider>
                         <SpiritualJourneyProvider>
                             <PricingProvider>
-                                <SkipToContent />
-                                {!hideWebChrome && <Header />}
-                                <main id="main-content" className={hideWebChrome ? "" : "flex-1 w-full"}>
+                                <LayoutChrome>
                                     {children}
-                                </main>
-                                {!hideWebChrome && <Footer />}
-
-                                {!hideWebChrome && (
-                                    <>
-                                        {/* Global Engagement Components */}
-                                        <GlobalEngagement />
-                                        <BackToTop />
-                                        <CookieConsent />
-                                    </>
-                                )}
+                                </LayoutChrome>
 
                                 {/* Structured Data */}
                                 <Script

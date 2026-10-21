@@ -1,3 +1,4 @@
+export const revalidate = 3600;
 import { Headphones, ExternalLink, Clock, Star, Mic } from 'lucide-react';
 
 interface Podcast {

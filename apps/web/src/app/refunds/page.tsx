@@ -1,3 +1,4 @@
+export const revalidate = 86400; // Cache for 24 hours (0 CPU on Vercel CDN)
 'use client';
 
 import Link from 'next/link';

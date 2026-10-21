@@ -1,3 +1,4 @@
+export const revalidate = 86400; // Cache for 24 hours (0 CPU on Vercel CDN)
 import { Heart, Globe, Shield, Church, BookOpen, Star, Users } from 'lucide-react';
 import Link from 'next/link';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';

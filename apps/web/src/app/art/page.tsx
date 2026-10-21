@@ -1,3 +1,4 @@
+export const revalidate = 86400;
 import { Palette, ExternalLink, MapPin, Calendar } from 'lucide-react';
 import Image from 'next/image';
 

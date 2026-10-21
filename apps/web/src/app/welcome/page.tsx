@@ -1,3 +1,4 @@
+export const revalidate = 86400;
 import Link from 'next/link';
 import { Heart, BookOpen, Building2, Users, Sparkles, Star, ArrowRight, Check } from 'lucide-react';
 import type { Metadata } from 'next';

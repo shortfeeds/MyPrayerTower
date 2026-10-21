@@ -1,3 +1,4 @@
+export const revalidate = 86400; // Cache for 24 hours (0 CPU on Vercel CDN)
 
 import { Metadata } from 'next';
 import { BookOpen, Disc, Calendar, Star, Heart } from 'lucide-react';

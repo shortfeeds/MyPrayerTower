@@ -1,3 +1,4 @@
+export const revalidate = 3600; // Cache for 1 hour
 import { Play, MapPin, Globe } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';

@@ -1,3 +1,4 @@
+export const revalidate = 86400; // Cache for 24 hours (0 CPU on Vercel CDN)
 import { BibleReader } from '@/components/bible/BibleReader';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { Metadata } from 'next';
