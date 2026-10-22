@@ -4,12 +4,12 @@ export const revalidate = 86400; // Cache for 24 hours
 
 export async function GET() {
     const baseUrl = 'https://www.myprayertower.com';
-    let prayers: { slug: string; updatedAt?: Date | null }[] = [];
+    let prayers: { slug: string; created_at?: Date | null }[] = [];
 
     try {
         prayers = await db.prayer.findMany({
             where: { is_active: true, slug: { not: null } },
-            select: { slug: true, updatedAt: true },
+            select: { slug: true, created_at: true },
             take: 5000,
             orderBy: { title: 'asc' }
         });
@@ -30,7 +30,7 @@ export async function GET() {
           (p) => `
   <url>
     <loc>${baseUrl}/prayers/${p.slug}</loc>
-    <lastmod>${new Date(p.updatedAt || new Date()).toISOString()}</lastmod>
+    <lastmod>${new Date(p.created_at || new Date()).toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`
