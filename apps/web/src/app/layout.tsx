@@ -166,10 +166,9 @@ export default function RootLayout({
                                 </LayoutChrome>
 
                                 {/* Structured Data */}
-                                <Script
+                                <script
                                     id="schema-org"
                                     type="application/ld+json"
-                                    strategy="worker"
                                     dangerouslySetInnerHTML={{
                                         __html: JSON.stringify({
                                             '@context': 'https://schema.org',
@@ -217,7 +216,7 @@ export default function RootLayout({
                                             ]
                                         }),
                                     }}
-                                />
+                                ></script>
                             </PricingProvider>
                         </SpiritualJourneyProvider>
                     </AudioProvider>

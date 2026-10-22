@@ -18,7 +18,7 @@ export function PromotionalBanner({ variant = 'generic' }: PromotionalBannerProp
             title: 'Pray the Rosary Daily',
             description: 'Join thousands praying the Rosary together with our guided audio experience.',
             cta: 'Start Praying',
-            ctaLink: '/prayers/rosary',
+            ctaLink: '/rosary',
             gradient: 'from-indigo-600 via-purple-600 to-pink-600',
             icon: Sparkles,
             bgPattern: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)',

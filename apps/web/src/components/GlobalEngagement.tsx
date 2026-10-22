@@ -3,6 +3,7 @@
 import { SocialProofToast } from '@/components/engagement/SocialProofToast';
 import { PushNotificationPrompt } from '@/components/engagement/PushNotificationPrompt';
 import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
+import { PwaInstallBanner } from '@/components/pwa/PwaInstallBanner';
 
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
@@ -38,6 +39,9 @@ export function GlobalEngagement() {
 
             {/* Floating prayer action button (mobile only) */}
             <FloatingPrayerButton href="/prayers" label="Pray" />
+
+            {/* PWA Home Screen install prompt */}
+            <PwaInstallBanner />
         </>
     );
 }

@@ -14,6 +14,7 @@ import { TableOfContents } from '@/components/blog/TableOfContents';
 import { FloatingShareBar } from '@/components/blog/FloatingShareBar';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { BlogAnalytics } from '@/components/analytics/BlogAnalytics';
+import { BlogNewsletterForm } from '@/components/blog/BlogNewsletterForm';
 
 interface Props {
     params: {
@@ -314,27 +315,8 @@ export default async function BlogPostPage({ params }: Props) {
                                 </div>
                             </div>
 
-                            {/* Newsletter Signup - High Conversion */}
-                            <div className="bg-white border-2 border-gold-500/10 rounded-3xl p-8 shadow-sm relative overflow-hidden">
-                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gold-600 mb-4">
-                                    <Mail className="w-3.5 h-3.5" />
-                                    Daily Grace
-                                </div>
-                                <h4 className="font-serif font-bold text-lg mb-4 text-gray-900">Spiritual Nourishment</h4>
-                                <p className="text-[11px] text-gray-400 mb-6 leading-relaxed">
-                                    Join 5,000+ faithful receiving daily reflections and prayer alerts.
-                                </p>
-                                <form className="space-y-3">
-                                    <input 
-                                        type="email" 
-                                        placeholder="your@email.com" 
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-xs focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 outline-none transition-all"
-                                    />
-                                    <button className="w-full bg-sacred-950 text-white font-black text-[10px] py-4 rounded-xl hover:bg-gold-500 transition-all uppercase tracking-widest">
-                                        Subscribe
-                                    </button>
-                                </form>
-                            </div>
+                            {/* Newsletter Signup - Reactive Client Component */}
+                            <BlogNewsletterForm />
 
                             {/* Table of Contents */}
                             <div className="px-2">

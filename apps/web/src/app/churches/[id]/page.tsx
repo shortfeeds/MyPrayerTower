@@ -2,6 +2,7 @@ import { getChurchById } from '@/app/actions/church-directory';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import {
     MapPin, Globe, Phone, Clock, ArrowLeft, Share2, Star,
     Calendar, Mail, Info, History, Eye, Users, ExternalLink,
@@ -9,6 +10,39 @@ import {
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
+
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+    const church = await getChurchById(params.id);
+    if (!church) {
+        return {
+            title: 'Parish Directory | MyPrayerTower',
+            description: 'Find Catholic parishes, Mass times, and Confession schedules near you.',
+        };
+    }
+
+    const location = [church.city, church.state, church.country].filter(Boolean).join(', ');
+    const title = `${church.name} — Mass Times & Catholic Parish in ${location || 'Directory'}`;
+    const description = church.shortDescription || church.description?.slice(0, 160) || `Find Holy Mass schedules, Confession times, and parish community details for ${church.name} in ${location}.`;
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            images: church.primaryImageUrl ? [church.primaryImageUrl] : ['https://www.myprayertower.com/og-image.jpg'],
+            type: 'website',
+            url: `https://www.myprayertower.com/churches/${params.id}`,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: church.primaryImageUrl ? [church.primaryImageUrl] : ['https://www.myprayertower.com/og-image.jpg'],
+        },
+    };
+}
 
 export default async function ChurchDetailPage({ params }: { params: { id: string } }) {
     const church = await getChurchById(params.id);
@@ -44,8 +78,27 @@ export default async function ChurchDetailPage({ params }: { params: { id: strin
         return null;
     };
 
+
+    const churchSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'CatholicChurch',
+        name: church.name,
+        description: church.shortDescription || church.description || undefined,
+        image: church.primaryImageUrl || 'https://www.myprayertower.com/og-image.jpg',
+        url: `https://www.myprayertower.com/churches/${church.id}`,
+        telephone: church.phone || undefined,
+        address: {
+            '@type': 'PostalAddress',
+            streetAddress: church.address || undefined,
+            addressLocality: church.city || undefined,
+            addressRegion: church.state || undefined,
+            postalCode: church.postalCode || undefined,
+            addressCountry: church.country || 'US',
+        },
+    };
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 pb-20">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(churchSchema) }} />
             {/* Hero Image */}
             <div className="relative h-[450px] w-full bg-gray-900">
                 {church.primaryImageUrl ? (

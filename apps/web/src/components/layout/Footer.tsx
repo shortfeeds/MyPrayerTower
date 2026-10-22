@@ -132,6 +132,18 @@ export function Footer() {
         <>
             <footer className={`hidden lg:block bg-gray-950 text-gray-400 border-t border-gray-900 pt-16 pb-8 ${appModeCtx.isNativeApp ? 'hidden' : ''}`}>
                 <div className="container mx-auto px-6">
+                    {/* Desktop Newsletter Bar */}
+                    <div className="mb-14 p-8 rounded-3xl bg-gradient-to-r from-gray-900 via-sacred-950 to-gray-900 border border-gray-800 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-xl">
+                        <div className="max-w-xl text-left">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gold-500 mb-2 block">Daily Grace</span>
+                            <h3 className="font-serif text-2xl font-bold text-white mb-2">Receive Daily Spiritual Nourishment</h3>
+                            <p className="text-sm text-gray-400">Join our global community of faithful receiving daily Mass readings, reflections, and prayers.</p>
+                        </div>
+                        <div className="w-full lg:w-auto lg:min-w-[420px]">
+                            <NewsletterForm />
+                        </div>
+                    </div>
+
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12">
                         <div className="col-span-2">
                             <Link href="/" className="inline-flex items-center gap-3 mb-6">
@@ -153,7 +165,7 @@ export function Footer() {
                             <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-widest">Divine</h4>
                             <ul className="space-y-4 text-sm">
                                 <li><Link href="/readings" className="hover:text-white transition-colors">Daily Readings</Link></li>
-                                <li><Link href="/prayers/rosary" className="hover:text-white transition-colors">Holy Rosary</Link></li>
+                                <li><Link href="/rosary" className="hover:text-white transition-colors">Holy Rosary</Link></li>
                                 <li><Link href="/prayers" className="hover:text-white transition-colors">Prayer Library</Link></li>
                                 <li><Link href="/candles" className="hover:text-white transition-colors">Virtual Candles</Link></li>
                             </ul>

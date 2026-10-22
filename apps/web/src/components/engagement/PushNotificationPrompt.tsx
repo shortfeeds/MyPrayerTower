@@ -66,11 +66,25 @@ export function PushNotificationPrompt({
             setPermission(result);
 
             if (result === 'granted') {
-                // Register for push notifications
-                if ('serviceWorker' in navigator) {
-                    const registration = await navigator.serviceWorker.ready;
-                    // Here you would subscribe to push notifications
-                    console.log('Push notification enabled', registration);
+                try {
+                    let subToken = '';
+                    if ('serviceWorker' in navigator && 'PushManager' in window) {
+                        const registration = await navigator.serviceWorker.ready;
+                        const sub = await registration.pushManager.getSubscription();
+                        if (sub) {
+                            subToken = JSON.stringify(sub);
+                        }
+                    }
+                    if (!subToken) {
+                        subToken = `web-perm-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+                    }
+                    await fetch('/api/notifications/subscribe', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: subToken, platform: 'web' }),
+                    });
+                } catch (subErr) {
+                    console.warn('Subscription save notice:', subErr);
                 }
             }
 

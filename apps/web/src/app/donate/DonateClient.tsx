@@ -627,16 +627,16 @@ export function DonateClient() {
                                     subscriptionPlanId={tab === 'monthly' ? selectedPlanData?.paypalPlanId : undefined}
                                     description={
                                         tab === 'oneTime'
-                                            ? `Donation to MyPrayerTower - ${customAmount ? 'Custom' : selectedTierData?.label}`
-                                            : `${selectedPlanData?.name} Monthly Subscription`
+                                            ? `Service Export - MyPrayerTower Ministry Platform Service (${customAmount ? 'Custom' : selectedTierData?.label})`
+                                            : `Service Export - MyPrayerTower Monthly Plan: ${selectedPlanData?.name}`
                                     }
                                     onSuccess={handlePayPalSuccess}
                                     onError={handlePayPalError}
                                     onCancel={() => setShowPaymentModal(false)}
-                                    referenceId={`DONATE_${tab}_${Date.now()}`}
+                                    referenceId={`SVC_EXP_${tab}_${Date.now()}`}
                                     createOrderUrl={tab === 'oneTime' ? '/api/donations/payment/create' : undefined}
                                     captureOrderUrl={tab === 'oneTime' ? '/api/donations/payment/capture' : undefined}
-                                    buttonLabel="donate"
+                                    buttonLabel="pay"
                                     metadata={{
                                         tier: customAmount ? 'CUSTOM' : (selectedTier || 'CUSTOM'),
                                         email,

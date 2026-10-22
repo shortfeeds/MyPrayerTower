@@ -262,6 +262,14 @@ export function Header() {
                                 {/* Language Switcher */}
                                 <LanguageSwitcher id="google_translate_desktop" />
 
+                                <Link
+                                    href="/donate"
+                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-gold-500/20 to-amber-500/20 hover:from-gold-500 hover:to-amber-500 text-gold-300 hover:text-white border border-gold-400/40 hover:border-gold-400 rounded-full text-xs font-bold uppercase tracking-wider transition-all transform hover:scale-105 shadow-sm"
+                                >
+                                    <Heart className="w-3.5 h-3.5 fill-current text-gold-400 hover:text-white" />
+                                    <span>Support</span>
+                                </Link>
+
                                 {isAuthenticated ? (
                                     /* Authenticated User Menu */
                                     <div className="flex items-center gap-2">

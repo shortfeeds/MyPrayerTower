@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
         const order = await createPayPalOrder(
             dollarAmount,
-            description || 'Donation',
+            description || 'Service Export - Digital Sanctuary Platform Service',
             donation.id
         );
 

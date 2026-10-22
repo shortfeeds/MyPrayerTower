@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Heart } from 'lucide-react';
+import Link from 'next/link';
+import { Sparkles, Heart, Flame, X } from 'lucide-react';
 
 interface PrayerCompletionModalProps {
     isOpen: boolean;
@@ -13,7 +14,7 @@ interface PrayerCompletionModalProps {
 export function PrayerCompletionModal({
     isOpen,
     onClose,
-    autoCloseDuration = 3500
+    autoCloseDuration = 6000
 }: PrayerCompletionModalProps) {
     useEffect(() => {
         if (isOpen) {
@@ -44,7 +45,7 @@ export function PrayerCompletionModal({
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         transition={{ type: "spring", duration: 0.6 }}
-                        className="fixed inset-0 flex items-center justify-center z-[101] p-4 pointer-events-none"
+                        className="fixed inset-0 flex items-center justify-center z-[101] p-4 pointer-events-auto"
                     >
                         <div className="bg-gradient-to-b from-white to-amber-50 rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-white/20 relative overflow-hidden text-center">
 
@@ -80,7 +81,24 @@ export function PrayerCompletionModal({
                                 "For where two or three are gathered in my name, there am I among them."
                             </motion.p>
 
-                            <motion.div
+                            
+                            <div className="mt-6 pt-4 border-t border-amber-200/50 flex flex-col gap-2">
+                                <Link
+                                    href="/candles"
+                                    onClick={onClose}
+                                    className="inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-amber-500 to-gold-500 hover:from-amber-600 hover:to-gold-600 text-white rounded-xl text-xs font-bold shadow-md shadow-amber-500/20 transition-all active:scale-95"
+                                >
+                                    <Flame className="w-3.5 h-3.5" />
+                                    <span>Light a Virtual Candle</span>
+                                </Link>
+                                <button
+                                    onClick={onClose}
+                                    className="text-[11px] text-gray-500 hover:text-gray-700 py-1 font-medium"
+                                >
+                                    Amen • Continue in Peace
+                                </button>
+                            </div>
+<motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: "100%" }}
                                 transition={{ delay: 0.5, duration: 3 }}

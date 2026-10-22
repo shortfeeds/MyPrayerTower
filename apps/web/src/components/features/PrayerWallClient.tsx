@@ -227,20 +227,26 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
         });
     };
 
-    const handleShare = (prayerId: string, platform: 'facebook' | 'twitter' | 'copy') => {
+    const handleShare = (prayerId: string, platform: 'whatsapp' | 'telegram' | 'facebook' | 'twitter' | 'copy') => {
         const prayer = prayers.find(p => p.id === prayerId);
         if (!prayer) return;
 
-        const shareText = `🙏 Please join me in prayer: "${prayer.content.substring(0, 100)}..." - Pray with us on MyPrayerTower`;
-        const shareUrl = `https://myprayertower.com/prayer-wall?prayer=${prayerId}`;
+        const shareText = `🙏 Please join me in prayer: "${prayer.content.substring(0, 120)}..." - Pray with us on MyPrayerTower`;
+        const shareUrl = `https://www.myprayertower.com/prayer-wall?prayer=${prayerId}`;
 
-        if (platform === 'facebook') {
+        if (platform === 'whatsapp') {
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`, '_blank');
+        } else if (platform === 'telegram') {
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
+        } else if (platform === 'facebook') {
             window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
         } else if (platform === 'twitter') {
             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
         } else {
-            navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-            alert('Link copied to clipboard!');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+                alert('Prayer link copied to clipboard!');
+            }
         }
         setShowShareModal(null);
     };
@@ -840,6 +846,61 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
                 isOpen={prayerCompleteOpen}
                 onClose={() => setPrayerCompleteOpen(false)}
             />
+
+            {/* Share Modal */}
+            {showShareModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+                    <div className="bg-white dark:bg-gray-900 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-800 text-center animate-scale-in">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-serif font-bold text-lg text-gray-900 dark:text-white">Share Prayer Intention</h3>
+                            <button onClick={() => setShowShareModal(null)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+                                <X className="w-4 h-4 text-gray-500" />
+                            </button>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-6">
+                            Invite friends and family to lift this intention in united prayer.
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-3 mb-4">
+                            <button
+                                onClick={() => handleShare(showShareModal, 'whatsapp')}
+                                className="flex items-center justify-center gap-2 py-3 px-4 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
+                            >
+                                <MessageCircle className="w-4 h-4" />
+                                <span>WhatsApp</span>
+                            </button>
+                            <button
+                                onClick={() => handleShare(showShareModal, 'telegram')}
+                                className="flex items-center justify-center gap-2 py-3 px-4 bg-[#229ED9] hover:bg-[#1E8BC1] text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
+                            >
+                                <span>Telegram</span>
+                            </button>
+                            <button
+                                onClick={() => handleShare(showShareModal, 'facebook')}
+                                className="flex items-center justify-center gap-2 py-3 px-4 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
+                            >
+                                <Facebook className="w-4 h-4" />
+                                <span>Facebook</span>
+                            </button>
+                            <button
+                                onClick={() => handleShare(showShareModal, 'twitter')}
+                                className="flex items-center justify-center gap-2 py-3 px-4 bg-black hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
+                            >
+                                <Twitter className="w-4 h-4" />
+                                <span>X</span>
+                            </button>
+                        </div>
+
+                        <button
+                            onClick={() => handleShare(showShareModal, 'copy')}
+                            className="w-full flex items-center justify-center gap-2 py-3 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-xl text-xs font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                        >
+                            <Copy className="w-4 h-4" />
+                            <span>Copy Prayer Link</span>
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

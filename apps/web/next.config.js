@@ -205,6 +205,11 @@ const nextConfig = {
     async redirects() {
         return [
             {
+                source: '/prayers/rosary',
+                destination: '/rosary',
+                permanent: true,
+            },
+            {
                 source: '/obituaries',
                 destination: '/memorials',
                 permanent: true,

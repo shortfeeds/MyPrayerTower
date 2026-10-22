@@ -369,7 +369,7 @@ export default function SanctuaryHub() {
           <div className="grid grid-cols-4 gap-4">
             {[
               { icon: BookOpen, label: 'Readings', href: '/readings', bg: 'bg-indigo-500/30 border-indigo-500/40 text-indigo-300 shadow-[0_4px_20px_rgba(99,102,241,0.25)]' },
-              { icon: Music, label: 'Rosary', href: '/prayers/rosary', bg: 'bg-amber-500/30 border-amber-500/40 text-amber-300 shadow-[0_4px_20px_rgba(245,158,11,0.25)]' },
+              { icon: Music, label: 'Rosary', href: '/rosary', bg: 'bg-amber-500/30 border-amber-500/40 text-amber-300 shadow-[0_4px_20px_rgba(245,158,11,0.25)]' },
               { icon: Flame, label: 'Candle', href: '/candles', bg: 'bg-orange-500/30 border-orange-500/40 text-orange-300 shadow-[0_4px_20px_rgba(249,115,22,0.25)]' },
               { icon: Heart, label: 'Prayers', href: '/prayers', bg: 'bg-rose-500/30 border-rose-500/40 text-rose-300 shadow-[0_4px_20px_rgba(244,63,94,0.25)]' },
             ].map((q, i) => (

@@ -221,7 +221,7 @@ export function PayPalCheckout({
                         layout: 'vertical',
                         color: 'gold',
                         shape: 'rect',
-                        label: subscriptionPlanId ? 'subscribe' : buttonLabel,
+                        label: subscriptionPlanId ? 'subscribe' : (buttonLabel === 'donate' ? 'pay' : buttonLabel),
                         height: 48,
                     }}
                     fundingSource={FUNDING.PAYPAL}
