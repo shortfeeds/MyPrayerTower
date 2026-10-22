@@ -31,13 +31,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             description: novena.description,
             type: 'article',
             url: `https://www.myprayertower.com/novenas/${novena.id}`,
-            images: [`/images/novenas/${novena.id}.jpg`], // Placeholder
+            images: ['/og-image.jpg'],
         },
         twitter: {
             card: 'summary_large_image',
             title: novena.name,
             description: novena.description,
-            images: [`/images/novenas/${novena.id}.jpg`],
+            images: ['/og-image.jpg'],
         },
         alternates: {
             canonical: `https://www.myprayertower.com/novenas/${novena.id}`,
@@ -62,9 +62,9 @@ export default function NovenaPage({ params }: Props) {
         publisher: {
             '@type': 'Organization',
             name: 'MyPrayerTower',
-            logo: { '@type': 'ImageObject', url: 'https://myprayertower.com/logo.png' }
+            logo: { '@type': 'ImageObject', url: 'https://www.myprayertower.com/logo.png' }
         },
-        image: `https://myprayertower.com/images/novenas/${novena.id}.jpg`, // Placeholder
+        image: `https://www.myprayertower.com/og-image.jpg`, // Placeholder
         datePublished: '2024-01-01', // Static content
     };
 

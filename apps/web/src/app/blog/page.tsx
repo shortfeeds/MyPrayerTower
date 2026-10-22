@@ -137,7 +137,7 @@ export default async function BlogHubPage({
                                 </div>
                                 <div className="lg:w-1/2 relative bg-stone-200 overflow-hidden min-h-[300px]">
                                     {/* Abstract Religious Pattern as Placeholder if no image */}
-                                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544427928-c49cdfebf49c?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-80" />
+                                    <div className="absolute inset-0 bg-[url('/images/blog/blog-hero.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-80" />
                                     <div className="absolute inset-0 bg-gradient-to-r lg:bg-gradient-to-l from-transparent to-stone-100" />
                                 </div>
                             </div>

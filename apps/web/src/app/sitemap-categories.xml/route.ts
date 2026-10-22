@@ -1,3 +1,4 @@
+export const revalidate = 86400; // Cache for 24 hours
 import { NOVENAS } from '@/lib/novenas';
 
 export async function GET() {
@@ -31,7 +32,8 @@ export async function GET() {
 
     return new Response(xml, {
         headers: {
-            'Content-Type': 'text/xml',
+            'Content-Type': 'text/xml; charset=utf-8',
+            'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400',
         },
     });
 }

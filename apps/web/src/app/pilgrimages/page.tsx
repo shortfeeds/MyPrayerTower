@@ -27,7 +27,7 @@ const PILGRIMAGES: Pilgrimage[] = [
         description: 'The heart of Catholicism, home to the Pope and the tomb of St. Peter.',
         significance: 'Center of the Universal Church',
         virtualTourUrl: 'https://www.vatican.va/various/basiliche/san_pietro/vr_tour/index-en.html',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/St_Peter%27s_Basilica_1.jpg/1200px-St_Peter%27s_Basilica_1.jpg',
+        imageUrl: '/images/churches/st-peters-basilica.jpg',
         history: 'Built over the burial site of St. Peter the Apostle.'
     },
     {
@@ -37,7 +37,7 @@ const PILGRIMAGES: Pilgrimage[] = [
         country: 'Israel',
         description: 'Walk where Jesus walked. Visit the Church of the Holy Sepulchre and Via Dolorosa.',
         significance: 'Sites of Christ\'s life, death, and resurrection',
-        imageUrl: 'https://images.unsplash.com/photo-1548126466-419586aba1a9?auto=format&fit=crop&q=80&w=2000',
+        imageUrl: '/images/pilgrimages/holy-land.jpg',
         history: 'Direct connection to the Gospel events.'
     },
     {
@@ -48,7 +48,7 @@ const PILGRIMAGES: Pilgrimage[] = [
         description: 'Where Our Lady appeared to St. Bernadette. A place of deep healing.',
         significance: 'Marian apparition site',
         virtualTourUrl: 'https://www.lourdes-france.org/en/virtual-tour/',
-        imageUrl: 'https://images.unsplash.com/photo-1610450503022-7945d83669c5?auto=format&fit=crop&q=80&w=2000'
+        imageUrl: '/images/pilgrimages/lourdes.jpg'
     },
     {
         id: 'fatima',
@@ -57,7 +57,7 @@ const PILGRIMAGES: Pilgrimage[] = [
         country: 'Portugal',
         description: 'Site of the 1917 apparitions. Home of the Miracle of the Sun.',
         significance: 'Marian apparition site',
-        imageUrl: 'https://images.unsplash.com/photo-1590059392358-132ced7d863f?auto=format&fit=crop&q=80&w=2000'
+        imageUrl: '/images/pilgrimages/fatima.jpg'
     },
     {
         id: 'santiago',
@@ -66,7 +66,7 @@ const PILGRIMAGES: Pilgrimage[] = [
         country: 'Spain',
         description: 'End point of the Camino pilgrimage. Burial site of St. James.',
         significance: 'Apostolic shrine',
-        imageUrl: 'https://images.unsplash.com/photo-1579621970795-87faff38317a?auto=format&fit=crop&q=80&w=2000'
+        imageUrl: '/images/pilgrimages/santiago.jpg'
     },
     {
         id: 'guadalupe',
@@ -75,7 +75,7 @@ const PILGRIMAGES: Pilgrimage[] = [
         country: 'Mexico',
         description: 'Where Our Lady appeared to St. Juan Diego. The tilma is preserved here.',
         significance: 'Marian apparition site',
-        imageUrl: 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&q=80&w=2000'
+        imageUrl: '/images/churches/our-lady-of-guadalupe.jpg'
     },
 ];
 
@@ -109,7 +109,7 @@ export default function PilgrimagesPage() {
             <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1511252178225-cc70bf4f71a0?auto=format&fit=crop&q=80&w=2000"
+                        src="/images/churches/st-peters-basilica.jpg"
                         className="w-full h-full object-cover opacity-30 saturate-[0.5]"
                         alt="Hero Background"
                     />

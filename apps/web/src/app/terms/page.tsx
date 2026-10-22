@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default function TermsOfServicePage() {
-    const lastUpdated = 'January 12, 2026';
-    const effectiveDate = 'January 12, 2026';
+    const lastUpdated = 'October 22, 2026';
+    const effectiveDate = 'October 22, 2026';
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -39,23 +39,23 @@ export default function TermsOfServicePage() {
                         </p>
                     </section>
 
-                    {/* Nature of Our Services */}
+                    {/* Nature of Our Services & Commercial Classification */}
                     <section className="p-6 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Nature of Our Services</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Nature of Our Services & Commercial Service Classification</h2>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                            <strong>MyPrayerTower is a privately-owned technology company based in Mumbai, India.</strong> We have been serving the global Catholic community since 2018.
+                            <strong>MyPrayerTower is an independent digital media, communications, and technology platform based in Mumbai, India.</strong> We develop software tools, devotional guides, and digital coordination systems for Catholic believers globally.
                         </p>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                            <strong>We are NOT:</strong>
+                            <strong>Legal Status & Non-Charitable Entity Declaration:</strong>
                         </p>
-                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1 mb-4">
-                            <li>A registered charity or tax-exempt organization in any jurisdiction</li>
-                            <li>A parish, diocese, or canonical entity of the Catholic Church</li>
-                            <li>Affiliated with the Vatican, any bishop, or any specific diocese</li>
-                            <li>A religious institution that ordains clergy or administers sacraments</li>
+                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2 mb-4">
+                            <li>MyPrayerTower is NOT a charitable trust, 501(c)(3), NGO, or tax-exempt religious entity in India, the United States, or any other jurisdiction.</li>
+                            <li>We are NOT an ecclesiastical diocese, parish, or canonical entity of the Roman Catholic Church, nor do we administer holy sacraments or govern clergy directly.</li>
+                            <li><strong>Commercial Service Export Fees:</strong> All user remittances—including Mass intention stipends, virtual candle lighting, digital memorials, and devotional packages—are legally classified as <strong>commercial service export fees and digital platform facilitation charges</strong> (SAC Code for software & online information services).</li>
+                            <li><strong>No Charitable Donations:</strong> We do NOT solicit, process, or route charitable donations or non-profit contributions. No tax-deductible donation receipts are provided. International payments made through PayPal, Google Play, or merchant payment gateways represent commercial consideration for cross-border digital coordination and information services.</li>
                         </ul>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            We operate as an <strong>intermediary service provider</strong>, connecting Catholic faithful with spiritual resources and partner churches. Payments made to MyPrayerTower are service fees, not tax-deductible charitable donations.
+                            We operate as an <strong>intermediary technology provider</strong>, coordinating devotional intentions with ordained partner clergy and providing digital devotional tools to users worldwide.
                         </p>
                     </section>
 
@@ -202,7 +202,7 @@ export default function TermsOfServicePage() {
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
                             <li><strong>Virtual Candles:</strong> Digital prayer candles with set durations (1-30 days)</li>
                             <li><strong>Mass Offerings:</strong> Requests for Masses to be offered for specific intentions</li>
-                            <li><strong>Platform Support Contributions:</strong> Voluntary contributions to support our platform (not tax-deductible)</li>
+                            <li><strong>Platform Support Services:</strong> Digital platform facilitation fees to support continuous server hosting, content curation, and mobile app maintenance (classified as commercial service fees, non-tax-deductible)</li>
                             <li><strong>Spiritual Bouquets:</strong> Gift packages of prayers sent to loved ones</li>
                         </ul>
                     </section>

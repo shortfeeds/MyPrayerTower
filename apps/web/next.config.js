@@ -100,7 +100,9 @@ const nextConfig = {
     images: {
         unoptimized: true, // Crucial for Hostinger stability
         domains: [
-            'myprayertower.com', 
+            'myprayertower.com',
+            'www.myprayertower.com',
+            'upload.wikimedia.org', 
             'gcatholic.org', 
             'localhost', 
             'images.unsplash.com', 

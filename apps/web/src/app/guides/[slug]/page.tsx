@@ -76,7 +76,7 @@ export default async function GuidePage({ params }: Props) {
             name: 'MyPrayerTower',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://myprayertower.com/logo.png'
+                url: 'https://www.myprayertower.com/logo.png'
             }
         },
     };

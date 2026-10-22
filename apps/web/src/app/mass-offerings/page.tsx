@@ -148,7 +148,7 @@ export default function MassOfferingsPage() {
         <div className={`min-h-screen font-sans ${isNativeApp ? 'bg-[#0a0612]' : 'bg-slate-50'}`}>
             {/* Immersive Header */}
             <div className={`relative pb-32 overflow-hidden ${isNativeApp ? 'bg-[#120821]' : 'bg-indigo-900 text-white'}`}>
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544211604-faed3810ea38?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center opacity-20 transform scale-105" />
+                <div className="absolute inset-0 bg-[url('/images/mass-hero.jpg')] bg-cover bg-center opacity-20 transform scale-105" />
                 <div className={`absolute inset-0 ${isNativeApp ? 'bg-gradient-to-b from-[#120821]/40 via-[#120821]/80 to-[#0a0612]' : 'bg-gradient-to-b from-indigo-900/40 via-indigo-900/80 to-slate-50'}`} />
 
                 <div className="container mx-auto px-4 pt-8 md:pt-16 relative z-10 text-center">

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
         siteName: 'MyPrayerTower',
         images: [
             {
-                url: 'https://www.myprayertower.com/images/og-image.jpg',
+                url: 'https://www.myprayertower.com/og-image.jpg',
                 width: 1200,
                 height: 630,
                 alt: 'MyPrayerTower Online Giving',
@@ -40,7 +40,7 @@ export default function DonatePage() {
             '@type': 'Organization',
             name: 'MyPrayerTower',
             url: 'https://www.myprayertower.com',
-            logo: 'https://www.myprayertower.com/icons/icon-512x512.png',
+            logo: 'https://www.myprayertower.com/icon-512.png',
         },
         actionStatus: 'PotentialActionStatus',
         target: {

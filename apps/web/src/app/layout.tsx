@@ -177,8 +177,8 @@ export default function RootLayout({
                                                     '@type': 'Organization',
                                                     '@id': 'https://myprayertower.com/#organization',
                                                     name: 'MyPrayerTower',
-                                                    url: 'https://myprayertower.com',
-                                                    logo: 'https://myprayertower.com/icon.png',
+                                                    url: 'https://www.myprayertower.com',
+                                                    logo: 'https://www.myprayertower.com/icon.png',
                                                     sameAs: [
                                                         'https://www.facebook.com/myprayertower',
                                                         'https://www.youtube.com/@myprayertower',
