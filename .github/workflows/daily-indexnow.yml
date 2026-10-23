@@ -1,0 +1,23 @@
+name: Daily Search Engine Indexing (IndexNow)
+
+on:
+  schedule:
+    # Runs at 03:00 UTC every day
+    - cron: '0 3 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  indexnow-submission:
+    name: Submit All Sitemaps to IndexNow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Submit Live URLs to IndexNow Engines
+        run: node scripts/submit-indexnow.js

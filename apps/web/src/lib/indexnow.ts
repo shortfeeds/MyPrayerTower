@@ -258,6 +258,17 @@ export async function fetchAllSiteUrls(): Promise<string[]> {
         '/vatican-ii',
         '/welcome',
         '/year-in-review',
+        '/sitemap.xml',
+        '/sitemap-main.xml',
+        '/sitemap-categories.xml',
+        '/sitemap-products.xml',
+        '/sitemap-blog.xml',
+        '/sitemap-saints.xml',
+        '/sitemap-prayers.xml',
+        '/sitemap-guides.xml',
+        '/llms.txt',
+        '/llms-full.txt',
+        '/ai-manifest.json',
     ];
 
     const urls: string[] = [...staticPaths];
@@ -265,7 +276,7 @@ export async function fetchAllSiteUrls(): Promise<string[]> {
     try {
         // Fetch Saints
         const saints = await db.saint.findMany({ select: { slug: true }, take: 10000 });
-        saints.forEach((s) => urls.push(`/saints/${s.slug}`));
+        saints.forEach((s: any) => urls.push(`/saints/${s.slug}`));
 
         // Fetch Prayers
         const prayers = await db.prayer.findMany({
@@ -273,7 +284,7 @@ export async function fetchAllSiteUrls(): Promise<string[]> {
             select: { slug: true },
             take: 10000,
         });
-        prayers.forEach((p) => urls.push(`/prayers/${p.slug}`));
+        prayers.forEach((p: any) => urls.push(`/prayers/${p.slug}`));
 
         // Fetch Memorials
         const memorials = await db.memorial.findMany({
@@ -281,22 +292,22 @@ export async function fetchAllSiteUrls(): Promise<string[]> {
             select: { slug: true },
             take: 10000,
         });
-        memorials.forEach((m) => urls.push(`/memorials/${m.slug}`));
+        memorials.forEach((m: any) => urls.push(`/memorials/${m.slug}`));
 
         // Fetch Churches
         const churches = await db.church.findMany({ select: { slug: true }, take: 10000 });
-        churches.forEach((c) => urls.push(`/churches/${c.slug}`));
+        churches.forEach((c: any) => urls.push(`/churches/${c.slug}`));
 
         // Fetch Guides
         const guides = await getAllGuides();
-        guides.forEach((g) => urls.push(`/guides/${g.slug}`));
+        guides.forEach((g: any) => urls.push(`/guides/${g.slug}`));
 
         // Fetch Blog Posts
         const posts = await getAllPosts();
-        posts.forEach((p) => urls.push(`/blog/${p.slug}`));
+        posts.forEach((p: any) => urls.push(`/blog/${p.slug}`));
 
         // Novenas
-        NOVENAS.forEach((n) => urls.push(`/novenas/${n.id}`));
+        NOVENAS.forEach((n: any) => urls.push(`/novenas/${n.id}`));
     } catch (err) {
         console.error('[IndexNow] DB URL fetch error (using static routes):', err);
     }
