@@ -22,6 +22,17 @@ export interface YouTubeVideo {
     type: 'short' | 'video' | 'podcast' | 'rosary' | 'novena' | 'hymn' | 'series'; // Enhanced categorization
 }
 
+/**
+ * Sanitize YouTube video description to remove deprecated social links
+ */
+function cleanDescription(desc: string): string {
+    if (!desc) return '';
+    return desc
+        .replace(/(?:📌\s*)?(?:\*\*)?Pinterest:?(?:\*\*)?\s*https?:\/\/(?:www\.)?pinterest\.com\/myprayertower\/?/gi, '')
+        .replace(/https?:\/\/(?:www\.)?pinterest\.com\/myprayertower\/?/gi, '')
+        .replace(/https?:\/\/t\.me\/MyPrayerTowerBot/gi, 'https://t.me/myprayertower')
+        .trim();
+}
 
 /**
  * Server-side YouTube video fetcher.
@@ -93,7 +104,7 @@ export async function fetchYouTubeVideos(limit: number = 30, playlistId?: string
                     return {
                         id,
                         title: item.snippet?.title || '',
-                        description: item.snippet?.description || '',
+                        description: cleanDescription(item.snippet?.description || ''),
                         thumbnail: item.snippet?.thumbnails?.high?.url || item.snippet?.thumbnails?.medium?.url || '',
                         publishedAt: item.snippet?.publishedAt || '',
                         type
@@ -116,7 +127,7 @@ export async function fetchYouTubeVideos(limit: number = 30, playlistId?: string
         return entries.map(entry => {
             const id = entry.match(/<yt:videoId>(.*?)<\/yt:videoId>/)?.[1] || '';
             const title = entry.match(/<title>(.*?)<\/title>/)?.[1] || '';
-            const description = entry.match(/<media:description>(.*?)<\/media:description>/)?.[1] || '';
+            const description = cleanDescription(entry.match(/<media:description>(.*?)<\/media:description>/)?.[1] || '');
             
             // Heuristic for RSS
             let type: YouTubeVideo['type'] = 'video';
