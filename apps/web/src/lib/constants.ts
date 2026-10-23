@@ -5,5 +5,5 @@ export const socialIcons = [
     { name: 'Instagram', href: 'https://www.instagram.com/myprayertower/', color: 'bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737]' },
     { name: 'TikTok', href: 'https://www.tiktok.com/@myprayertower', color: 'bg-black' },
     { name: 'Threads', href: 'https://www.threads.net/@myprayertower', color: 'bg-black' },
-    { name: 'Pinterest', href: 'https://www.pinterest.com/myprayertower/', color: 'bg-[#E60023]' },
+    { name: 'Telegram', href: 'https://t.me/myprayertower', color: 'bg-[#229ED9]' },
 ];

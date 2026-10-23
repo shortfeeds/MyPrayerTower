@@ -281,8 +281,8 @@ export default async function BlogHubPage({
                         <Link href="https://play.google.com/store/apps/details?id=com.myprayertower.myprayertower_app" className="w-full sm:w-auto px-10 py-5 bg-gold-500 text-sacred-950 font-black rounded-2xl hover:bg-gold-400 transition-all uppercase tracking-widest text-xs shadow-xl shadow-gold-500/20">
                             Download App
                         </Link>
-                        <Link href="https://t.me/MyPrayerTowerBot" className="w-full sm:w-auto px-10 py-5 bg-white/10 text-white font-black rounded-2xl hover:bg-white/20 transition-all uppercase tracking-widest text-xs backdrop-blur-md border border-white/10">
-                            Telegram Bot
+                        <Link href="https://t.me/myprayertower" className="w-full sm:w-auto px-10 py-5 bg-white/10 text-white font-black rounded-2xl hover:bg-white/20 transition-all uppercase tracking-widest text-xs backdrop-blur-md border border-white/10">
+                            Telegram Channel
                         </Link>
                     </div>
                 </div>

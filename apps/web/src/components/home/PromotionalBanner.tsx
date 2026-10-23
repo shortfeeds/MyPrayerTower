@@ -157,9 +157,9 @@ export function AppDownloadBanner() {
                         </p>
 
                         <div className="flex flex-wrap justify-center gap-4">
-                            {/* Telegram Bot Button */}
+                            {/* Telegram Channel Button */}
                             <a
-                                href="https://t.me/MyPrayerTowerBot"
+                                href="https://t.me/myprayertower"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-3 px-6 py-3 bg-[#229ED9] text-white font-bold rounded-xl hover:bg-[#1f8ebf] transition-colors shadow-lg"

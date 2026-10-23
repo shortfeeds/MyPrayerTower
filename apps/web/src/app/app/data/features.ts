@@ -94,7 +94,7 @@ export const ALL_FEATURES: Feature[] = [
   { title: 'Achievements',       description: 'Unlock badges as you grow',           icon: Sparkles,      href: '/achievements',        color: 'bg-purple-500/10 text-purple-400',   category: 'community' },
   { title: 'Testimonies',        description: 'Share your faith story',              icon: Mic2,          href: '/testimonies',         color: 'bg-teal-500/10 text-teal-400',        category: 'community' },
   { title: 'Faith Quiz',         description: 'Test your Catholic knowledge',        icon: GraduationCap, href: '/quiz',                color: 'bg-blue-500/10 text-blue-400',       badge: 'FUN', category: 'community' },
-  { title: 'Telegram Bot',       description: 'Prayers on Telegram',                 icon: Send,          href: '/bot',                 color: 'bg-sky-400/20 text-sky-400',           category: 'community' },
+  { title: 'Telegram Channel',   description: 'Join our daily prayer channel',       icon: Send,          href: 'https://t.me/myprayertower',          color: 'bg-sky-400/20 text-sky-400',           category: 'community' },
 
   // ── 7. MEDIA & NEWS ───────────────────────────────────────────────────────
   { title: 'Watch & Pray',       description: 'Faith YouTube treasury',              icon: Video,         href: '/watch',               color: 'bg-red-500/10 text-red-500',          category: 'media' },

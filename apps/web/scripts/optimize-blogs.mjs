@@ -5,7 +5,7 @@ const blogDir = './content/blog';
 
 // Correct App Links
 const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.myprayertower.myprayertower_app';
-const TELEGRAM_BOT_URL = 'https://t.me/MyPrayerTowerBot';
+const TELEGRAM_CHANNEL_URL = 'https://t.me/myprayertower';
 
 async function optimizeBlogs() {
     const files = await fs.readdir(blogDir);
@@ -31,7 +31,7 @@ If you found this reflection helpful, we invite you to explore more ways to stre
 *   **[Join our Prayer Wall](/prayer-wall):** Share your intentions and pray for others in our global community.
 *   **[Light a Virtual Candle](/candles):** Offer a symbolic light for your loved ones or special intentions.
 *   **[Get the MyPrayerTower App](${GOOGLE_PLAY_URL}):** The full spiritual experience on your Android device.
-*   **[Chat with our Telegram Bot](${TELEGRAM_BOT_URL}):** Get daily readings, saint stories, and prayer reminders directly on Telegram.
+*   **[Join our Telegram Channel](${TELEGRAM_CHANNEL_URL}):** Get daily readings, saint stories, and prayer reminders directly on Telegram.
 
 *May God bless you and keep you always in His grace.*
         `;

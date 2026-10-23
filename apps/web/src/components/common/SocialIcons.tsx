@@ -67,10 +67,4 @@ export const socialLinksData = [
         href: 'https://www.threads.net/@myprayertower',
         color: 'bg-black'
     },
-    {
-        icon: PinterestIcon,
-        label: 'Pinterest',
-        href: 'https://www.pinterest.com/myprayertower/',
-        color: 'bg-[#E60023]'
-    },
 ];

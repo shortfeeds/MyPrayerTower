@@ -306,8 +306,8 @@ export default async function BlogPostPage({ params }: Props) {
                                     Providing a digital sanctuary for the modern faithful through beautiful technology and clear teaching.
                                 </p>
                                 <div className="flex justify-center gap-3">
-                                    <Link href="https://t.me/MyPrayerTowerBot" className="px-4 py-2 bg-white border border-gray-100 rounded-full text-[10px] font-black uppercase tracking-widest text-sacred-950 hover:bg-gold-500 hover:text-white transition-all">
-                                        Join Bot
+                                    <Link href="https://t.me/myprayertower" className="px-4 py-2 bg-white border border-gray-100 rounded-full text-[10px] font-black uppercase tracking-widest text-sacred-950 hover:bg-gold-500 hover:text-white transition-all">
+                                        Join Telegram
                                     </Link>
                                     <Link href="/prayer-wall" className="px-4 py-2 bg-sacred-950 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-gold-600 transition-all">
                                         Prayer Wall

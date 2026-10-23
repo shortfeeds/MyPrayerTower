@@ -23,7 +23,7 @@
   <a href="https://www.instagram.com/myprayertower/">Instagram</a> •
   <a href="https://www.tiktok.com/@myprayertower">TikTok</a> •
   <a href="https://www.threads.net/@myprayertower">Threads</a> •
-  <a href="https://www.pinterest.com/myprayertower/">Pinterest</a>
+  <a href="https://t.me/myprayertower">Telegram</a>
 </p>
 
 ---

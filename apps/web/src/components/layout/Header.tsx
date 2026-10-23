@@ -7,10 +7,10 @@ import {
     Menu, X, Building, Heart, BookOpen, User, Star, Search,
     ChevronDown, Sparkles, Book, Calendar, Facebook, Youtube,
     Moon, Sun, Compass, MapPin, Users, Home, LogOut, Settings,
-    Flame, Gift, CreditCard
+    Flame, Gift, CreditCard, Send
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { TwitterIcon, InstagramIcon, ThreadsIcon, PinterestIcon, TikTokIcon } from '@/components/common/SocialIcons';
+import { TwitterIcon, InstagramIcon, ThreadsIcon, TikTokIcon } from '@/components/common/SocialIcons';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useAuth } from '@/hooks/useAuth';
@@ -514,7 +514,7 @@ export function Header() {
                                 <a href="https://www.instagram.com/myprayertower/" target="_blank" rel="noopener noreferrer" className="p-2 bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] text-white rounded-lg hover:opacity-90 transition-opacity" aria-label="Instagram"><InstagramIcon className="w-5 h-5" /></a>
                                 <a href="https://www.tiktok.com/@myprayertower" target="_blank" rel="noopener noreferrer" className="p-2 bg-black text-white rounded-lg hover:opacity-90 transition-opacity" aria-label="TikTok"><TikTokIcon className="w-5 h-5" /></a>
                                 <a href="https://www.threads.net/@myprayertower" target="_blank" rel="noopener noreferrer" className="p-2 bg-black text-white rounded-lg hover:opacity-90 transition-opacity"><ThreadsIcon className="w-5 h-5" /></a>
-                                <a href="https://www.pinterest.com/myprayertower/" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#E60023] text-white rounded-lg hover:opacity-90 transition-opacity"><PinterestIcon className="w-5 h-5" /></a>
+                                <a href="https://t.me/myprayertower" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#229ED9] text-white rounded-lg hover:opacity-90 transition-opacity" aria-label="Telegram"><Send className="w-5 h-5" /></a>
                             </div>
                         </div>
                     </nav>

@@ -186,7 +186,7 @@ export default function RootLayout({
                                                         'https://www.instagram.com/myprayertower/',
                                                         'https://www.tiktok.com/@myprayertower',
                                                         'https://www.threads.net/@myprayertower',
-                                                        'https://www.pinterest.com/myprayertower/'
+                                                        'https://t.me/myprayertower'
                                                     ],
                                                     description: 'The #1 All-in-One Catholic Services App. Find churches, prayer wall, and daily readings.',
                                                     foundingDate: '2023-01-01',
