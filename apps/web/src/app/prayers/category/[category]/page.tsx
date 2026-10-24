@@ -9,6 +9,16 @@ import { FAQModule } from '@/components/seo/FAQModule';
 import { getPrayerFAQs } from '@/lib/seo/prayerFAQs'; // Reusing for now, or expand
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 
+// Enable ISR: Cache category pages for 24 hours
+export const revalidate = 86400; // 24 hours
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+    return Object.keys(CATEGORY_META).map((category) => ({
+        category,
+    }));
+}
+
 interface Props {
     params: {
         category: string;

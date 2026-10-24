@@ -1,3 +1,4 @@
+import { db } from '@/lib/db';
 import { getPrayerBySlug, getLibraryPrayers } from '@/app/actions/prayer-library';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
@@ -21,6 +22,24 @@ interface Props {
 // Enable ISR: Cache generated prayer pages on Vercel Edge CDN for 7 days
 export const revalidate = 604800; // 7 days (seconds)
 export const dynamicParams = true;
+
+// Pre-render top prayers at build time; all others generated on demand and cached via ISR
+export async function generateStaticParams() {
+    try {
+        const prayers = await db.prayer.findMany({
+            where: { is_active: true, slug: { not: null } },
+            select: { slug: true },
+            take: 60,
+        });
+        return prayers
+            .filter((p) => Boolean(p.slug))
+            .map((p) => ({
+                slug: p.slug,
+            }));
+    } catch {
+        return [];
+    }
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const prayer = await getPrayerBySlug(params.slug);

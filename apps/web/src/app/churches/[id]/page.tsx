@@ -1,3 +1,4 @@
+import { db } from '@/lib/db';
 import { getChurchById } from '@/app/actions/church-directory';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,6 +13,20 @@ import {
 // Enable ISR: Cache church profiles for 24 hours
 export const revalidate = 86400; // 24 hours
 export const dynamicParams = true;
+
+export async function generateStaticParams() {
+    try {
+        const churches = await db.church.findMany({
+            select: { id: true },
+            take: 30,
+        });
+        return churches.map((c) => ({
+            id: c.id,
+        }));
+    } catch {
+        return [];
+    }
+}
 
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
