@@ -1,10 +1,9 @@
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
 // Revalidate every 30 seconds
-export const revalidate = 30;
+export const revalidate = 60;
 
 export async function GET() {
     try {
@@ -56,7 +55,12 @@ export async function GET() {
             candlesLit,
             prayingNow,
             source: 'database'
-        }, { status: 200 });
+        }, {
+            status: 200,
+            headers: {
+                'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+            },
+        });
 
     } catch (error) {
         console.error('Error fetching stats:', error);

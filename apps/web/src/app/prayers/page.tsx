@@ -1,4 +1,4 @@
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours
 import { getLibraryPrayers, getPrayerCategories } from '@/app/actions/prayer-library';
 import { PrayerSearch, PrayerFilter, Pagination } from '@/components/library/LibraryControls';
 import Link from 'next/link';

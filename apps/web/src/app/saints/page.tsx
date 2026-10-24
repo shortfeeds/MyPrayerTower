@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     description: 'Explore our comprehensive library of Catholic Saints. Read biographies, find patron saints, and learn about their feast days.',
 };
 
+// Cache Saints directory for 24 hours
+export const revalidate = 86400;
+
 export default async function SaintsPage() {
     // Fetch all saints - ordered by feast day or name could be good, let's do name for now
     const saints = await db.saint.findMany({

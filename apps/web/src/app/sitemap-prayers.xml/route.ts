@@ -31,7 +31,7 @@ export async function GET() {
   <url>
     <loc>${baseUrl}/prayers/${p.slug}</loc>
     <lastmod>${new Date(p.created_at || new Date()).toISOString()}</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>`
       )

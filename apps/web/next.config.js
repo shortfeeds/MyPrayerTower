@@ -158,7 +158,52 @@ const nextConfig = {
                 ],
             },
             {
-                // Global security and performance headers
+                source: '/saints/:slug*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=3600, s-maxage=604800, stale-while-revalidate=86400',
+                    },
+                ],
+            },
+            {
+                source: '/prayers/:slug*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=3600, s-maxage=604800, stale-while-revalidate=86400',
+                    },
+                ],
+            },
+            {
+                source: '/blog/:slug*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400',
+                    },
+                ],
+            },
+            {
+                source: '/churches/:id*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400',
+                    },
+                ],
+            },
+            {
+                source: '/challenges/:slug*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400',
+                    },
+                ],
+            },
+            // Global security and performance headers
+            {
                 source: '/(.*)',
                 headers: [
                     {

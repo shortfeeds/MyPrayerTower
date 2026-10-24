@@ -9,7 +9,9 @@ import {
     ShieldCheck, Building
 } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+// Enable ISR: Cache church profiles for 24 hours
+export const revalidate = 86400; // 24 hours
+export const dynamicParams = true;
 
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {

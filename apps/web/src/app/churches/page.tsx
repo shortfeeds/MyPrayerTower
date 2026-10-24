@@ -5,7 +5,8 @@ import { Building, MapPin, Search, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 
-export const dynamic = 'force-dynamic';
+// Cache default directory view for 1 hour
+export const revalidate = 3600;
 
 interface ChurchesPageProps {
     searchParams: {

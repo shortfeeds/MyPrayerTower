@@ -2,7 +2,9 @@ import { notFound } from 'next/navigation';
 import { getChallengeBySlug } from '@/app/actions/challenges';
 import ChallengeDetailClient from './ChallengeDetailClient';
 
-export const dynamic = 'force-dynamic';
+// Enable ISR: Cache challenge pages for 24 hours
+export const revalidate = 86400; // 24 hours
+export const dynamicParams = true;
 
 interface Props {
     params: { slug: string };

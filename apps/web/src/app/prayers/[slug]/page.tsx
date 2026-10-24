@@ -18,6 +18,10 @@ interface Props {
     };
 }
 
+// Enable ISR: Cache generated prayer pages on Vercel Edge CDN for 7 days
+export const revalidate = 604800; // 7 days (seconds)
+export const dynamicParams = true;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const prayer = await getPrayerBySlug(params.slug);
 

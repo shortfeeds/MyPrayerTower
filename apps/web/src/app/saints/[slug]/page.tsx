@@ -15,6 +15,10 @@ interface Props {
     };
 }
 
+// Enable ISR: Cache generated saint pages on Vercel Edge CDN for 7 days
+export const revalidate = 604800; // 7 days (seconds)
+export const dynamicParams = true;
+
 // SSG for all saints
 export async function generateStaticParams() {
     // Limit to popular saints or all if list is manageable. 
