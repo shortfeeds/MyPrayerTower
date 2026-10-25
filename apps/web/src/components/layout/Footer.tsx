@@ -8,6 +8,7 @@ import { TwitterIcon, InstagramIcon, ThreadsIcon, TikTokIcon } from '@/component
 import { UniversalOfferingModal } from '@/components/offerings/UniversalOfferingModal';
 import { MobileBottomNav } from './MobileBottomNav';
 import { useAppMode } from '@/contexts/AppModeContext';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 // App Store Button Component
 function AppStoreButton({ store }: { store: 'telegram' | 'google' }) {
@@ -186,11 +187,14 @@ export function Footer() {
                             </div>
                         </div>
                     </div>
-                    <div className="mt-16 pt-8 border-t border-gray-900 flex justify-between items-center text-xs text-gray-600">
+                    <div className="mt-16 pt-8 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600">
                         <p>© {currentYear} MyPrayerTower. All rights reserved.</p>
-                        <div className="flex gap-6 uppercase tracking-tighter">
-                            <Link href="/privacy" className="hover:text-gray-400">Privacy</Link>
-                            <Link href="/terms" className="hover:text-gray-400">Terms</Link>
+                        <div className="flex items-center gap-6">
+                            <LanguageSwitcher id="google_translate_footer" variant="footer" />
+                            <div className="flex gap-6 uppercase tracking-tighter">
+                                <Link href="/privacy" className="hover:text-gray-400">Privacy</Link>
+                                <Link href="/terms" className="hover:text-gray-400">Terms</Link>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -212,8 +216,9 @@ export function Footer() {
                         </a>
                     ))}
                 </div>
-                <div className="mt-6 flex justify-center">
+                <div className="mt-6 flex flex-col items-center gap-3">
                     <AppStoreButton store="telegram" />
+                    <LanguageSwitcher id="google_translate_mobile_footer" variant="footer" />
                 </div>
                 <div className="mt-12 text-center text-[10px] text-gray-600 uppercase tracking-widest leading-relaxed">
                     <p>May peace remain with you.</p>

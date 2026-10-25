@@ -4,10 +4,34 @@ import { Metadata } from 'next';
 import { BookOpen, Disc, Calendar, Star, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
+import { HowToJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { InteractiveRosary } from '@/components/rosary/InteractiveRosary';
+import { PrayerReminderBanner } from '@/components/notifications/PrayerReminderBanner';
+
+const BASE_URL = 'https://www.myprayertower.com';
 
 export const metadata: Metadata = {
-    title: 'How to Pray the Rosary | MyPrayerTower',
-    description: 'A step-by-step guide to praying the Holy Rosary, including all Mysteries and prayers.',
+    title: 'How to Pray the Rosary Step-by-Step | All Mysteries & Prayers | MyPrayerTower',
+    description: 'Learn how to pray the Holy Rosary step-by-step with complete Catholic prayers, meditation on all 20 Mysteries (Joyful, Sorrowful, Glorious, Luminous), and scripture.',
+    keywords: 'how to pray the rosary, holy rosary, joyful mysteries, sorrowful mysteries, glorious mysteries, luminous mysteries, catholic rosary guide, hail mary, apostles creed',
+    alternates: {
+        canonical: `${BASE_URL}/rosary`,
+    },
+    openGraph: {
+        title: 'How to Pray the Rosary Step-by-Step | All Mysteries & Prayers | MyPrayerTower',
+        description: 'Learn how to pray the Holy Rosary step-by-step with complete Catholic prayers and meditation on all 20 Mysteries.',
+        url: `${BASE_URL}/rosary`,
+        type: 'article',
+        locale: 'en_US',
+        siteName: 'MyPrayerTower',
+        images: [{ url: `${BASE_URL}/og-image.png`, width: 1200, height: 630, alt: 'How to Pray the Holy Rosary' }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'How to Pray the Rosary Step-by-Step | MyPrayerTower',
+        description: 'Complete guide to praying the Holy Rosary with all 20 Mysteries and traditional prayers.',
+        images: [`${BASE_URL}/og-image.png`],
+    },
 };
 
 const MYSTERIES = [
@@ -66,8 +90,91 @@ const MYSTERIES = [
 ];
 
 export default function RosaryPage() {
+    const howToLd = {
+        '@context': 'https://schema.org',
+        '@type': 'HowTo',
+        '@id': `${BASE_URL}/rosary#howto`,
+        name: 'How to Pray the Holy Rosary',
+        description: 'A complete step-by-step Catholic guide to praying the Holy Rosary, including the opening prayers, decades, and closing devotions.',
+        totalTime: 'PT20M',
+        inLanguage: 'en-US',
+        step: [
+            {
+                '@type': 'HowToStep',
+                position: 1,
+                name: 'Sign of the Cross and Apostles\' Creed',
+                text: 'Holding the crucifix, make the Sign of the Cross and pray the Apostles\' Creed.',
+                url: `${BASE_URL}/rosary#step-1`
+            },
+            {
+                '@type': 'HowToStep',
+                position: 2,
+                name: 'Opening Our Father',
+                text: 'On the first large bead, pray the Our Father for the intentions of the Holy Father.',
+                url: `${BASE_URL}/rosary#step-2`
+            },
+            {
+                '@type': 'HowToStep',
+                position: 3,
+                name: 'Three Hail Marys for Faith, Hope, and Charity',
+                text: 'On the next three small beads, pray three Hail Marys for an increase in faith, hope, and charity, followed by the Glory Be.',
+                url: `${BASE_URL}/rosary#step-3`
+            },
+            {
+                '@type': 'HowToStep',
+                position: 4,
+                name: 'Announce First Mystery and Pray Decade',
+                text: 'Announce the first mystery, pray the Our Father on the large bead, 10 Hail Marys on the decade beads, the Glory Be, and the Fatima Prayer.',
+                url: `${BASE_URL}/rosary#step-4`
+            },
+            {
+                '@type': 'HowToStep',
+                position: 5,
+                name: 'Complete the Remaining 4 Decades',
+                text: 'Meditate on each of the remaining mysteries, praying an Our Father, 10 Hail Marys, Glory Be, and Fatima Prayer for each decade.',
+                url: `${BASE_URL}/rosary#step-5`
+            },
+            {
+                '@type': 'HowToStep',
+                position: 6,
+                name: 'Hail Holy Queen (Salve Regina)',
+                text: 'Conclude the five decades by praying the Hail, Holy Queen.',
+                url: `${BASE_URL}/rosary#step-6`
+            },
+            {
+                '@type': 'HowToStep',
+                position: 7,
+                name: 'Concluding Prayer & Sign of the Cross',
+                text: 'Pray the Rosary concluding prayer ("O God, whose only begotten Son...") and finish with the Sign of the Cross.',
+                url: `${BASE_URL}/rosary#step-7`
+            }
+        ]
+    };
+
+    const breadcrumbsLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: BASE_URL
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Holy Rosary',
+                item: `${BASE_URL}/rosary`
+            }
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-[#faf9f6]">
+            <HowToJsonLd data={howToLd as any} />
+            <BreadcrumbJsonLd data={breadcrumbsLd as any} />
+
             {/* Hero */}
             <div className="bg-gradient-to-br from-rose-700 to-sacred-800 text-white pt-28 pb-16">
                 <div className="container mx-auto px-4 text-center">
@@ -85,9 +192,15 @@ export default function RosaryPage() {
             {/* Guide Section */}
             <div className="container mx-auto px-4 py-16">
                 <div className="max-w-4xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">How to Pray</h2>
-                        <p className="text-gray-600">The Rosary is a Scripture-based prayer. It begins with the Apostles' Creed, which summarizes the great mysteries of the Catholic faith.</p>
+                    {/* Interactive Virtual Rosary Bead Tracker */}
+                    <InteractiveRosary />
+
+                    {/* Prayer Reminder & Telegram Community */}
+                    <PrayerReminderBanner />
+
+                    <div className="text-center mb-16 mt-16">
+                        <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">How to Pray the 20 Mysteries</h2>
+                        <p className="text-gray-600">The Rosary is a Scripture-based prayer. It begins with the Apostles&apos; Creed, which summarizes the great mysteries of the Catholic faith.</p>
                     </div>
 
                     {/* Mysteries Grid */}

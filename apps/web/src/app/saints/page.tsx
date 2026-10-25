@@ -1,19 +1,39 @@
 import { Metadata } from 'next';
 import { db } from '@/lib/db';
 import SaintList from './SaintList';
-import { JsonLd } from '@/components/seo/JsonLd';
+import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { User } from 'lucide-react';
 
+const BASE_URL = 'https://www.myprayertower.com';
+
 export const metadata: Metadata = {
-    title: 'Catholic Saints Library | Biographies & Patronages',
-    description: 'Explore our comprehensive library of Catholic Saints. Read biographies, find patron saints, and learn about their feast days.',
+    title: 'Catholic Saints Library | Biographies & Patronages | MyPrayerTower',
+    description: 'Explore our comprehensive library of Catholic Saints. Read inspirational biographies, find patron saints for your intentions, and learn about feast days.',
+    keywords: 'Catholic saints, patron saints, saint feast days, lives of the saints, Christian saints, Catholic martyrs, church doctors',
+    alternates: {
+        canonical: `${BASE_URL}/saints`,
+    },
+    openGraph: {
+        title: 'Catholic Saints Library | Biographies & Patronages | MyPrayerTower',
+        description: 'Explore our comprehensive library of Catholic Saints. Read inspirational biographies, find patron saints, and learn about feast days.',
+        url: `${BASE_URL}/saints`,
+        type: 'website',
+        locale: 'en_US',
+        siteName: 'MyPrayerTower',
+        images: [{ url: `${BASE_URL}/og-image.png`, width: 1200, height: 630, alt: 'Catholic Saints Library' }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Catholic Saints Library | Biographies & Patronages | MyPrayerTower',
+        description: 'Explore our comprehensive library of Catholic Saints. Read biographies, find patron saints, and learn about feast days.',
+        images: [`${BASE_URL}/og-image.png`],
+    },
 };
 
 // Cache Saints directory for 24 hours
 export const revalidate = 86400;
 
 export default async function SaintsPage() {
-    // Fetch all saints - ordered by feast day or name could be good, let's do name for now
     const saints = await db.saint.findMany({
         take: 60,
         orderBy: { name: 'asc' },
@@ -26,19 +46,47 @@ export default async function SaintsPage() {
             imageUrl: true,
             patronOf: true,
             shortBio: true
-            // biography: true - Excluded for performance on list view
         }
     });
 
+    const collectionLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        '@id': `${BASE_URL}/saints#collection`,
+        name: 'Catholic Saints Library',
+        description: 'Comprehensive library of Catholic Saints, biographies, feast days, and patronages.',
+        url: `${BASE_URL}/saints`,
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${BASE_URL}/#website`,
+            name: 'MyPrayerTower',
+            url: BASE_URL,
+        },
+    };
+
+    const breadcrumbsLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: BASE_URL,
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Saints',
+                item: `${BASE_URL}/saints`,
+            },
+        ],
+    };
+
     return (
         <div className="min-h-screen bg-[#faf9f6]">
-            <JsonLd<any> data={{
-                '@context': 'https://schema.org',
-                '@type': 'CollectionPage',
-                name: 'Catholic Saints Library',
-                description: 'Comprehensive library of Catholic Saints.',
-                url: 'https://myprayertower.com/saints'
-            }} />
+            <JsonLd data={collectionLd as any} />
+            <BreadcrumbJsonLd data={breadcrumbsLd as any} />
 
             {/* Hero Section */}
             <div className="bg-white border-b border-gray-100 pt-32 pb-20">

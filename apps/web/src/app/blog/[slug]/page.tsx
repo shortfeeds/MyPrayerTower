@@ -5,7 +5,7 @@ import { MDXComponents } from '@/components/mdx/MDXComponents';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, Clock, Calendar, BookOpen, Share2, Rss, Layers, Tag, ArrowRight, Bookmark, MessageSquare, Sparkles, Mail } from 'lucide-react';
-import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { ArticleJsonLd, BreadcrumbJsonLd, FaqJsonLd } from '@/components/seo/JsonLd';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { Metadata } from 'next';
 import { ReadingProgressBar } from '@/components/blog/ReadingProgressBar';
@@ -15,6 +15,7 @@ import { FloatingShareBar } from '@/components/blog/FloatingShareBar';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { BlogAnalytics } from '@/components/analytics/BlogAnalytics';
 import { BlogNewsletterForm } from '@/components/blog/BlogNewsletterForm';
+import { extractFaqsFromMarkdown } from '@/lib/seo/extractFaqs';
 
 interface Props {
     params: {
@@ -40,23 +41,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (!post) return { title: 'Post Not Found' };
 
     const ogImage = post.image
-        ? `${BASE_URL}${post.image}`
+        ? (post.image.startsWith('http') ? post.image : `${BASE_URL}${post.image}`)
         : `${BASE_URL}/blog-og-fallback.png`;
 
+    const rawKeywords = post.keywords || post.tags;
+    const keywordsStr = Array.isArray(rawKeywords) ? rawKeywords.join(', ') : (rawKeywords || 'Catholic prayers, Catholic spiritual life, Novenas, Rosary');
+
     return {
-        title: `${post.title} | MyPrayerTower Blog`,
+        title: `${post.title} | MyPrayerTower`,
         description: post.description,
-        keywords: post.tags?.join(', '),
-        authors: post.author?.name ? [{ name: post.author.name }] : undefined,
+        keywords: keywordsStr,
+        authors: post.author?.name ? [{ name: post.author.name }] : [{ name: 'MyPrayerTower Editorial Team' }],
+        creator: 'MyPrayerTower',
+        publisher: 'MyPrayerTower',
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                'max-video-preview': -1,
+                'max-image-preview': 'large',
+                'max-snippet': -1,
+            },
+        },
         openGraph: {
             title: post.title,
             description: post.description,
             type: 'article',
+            locale: 'en_US',
             publishedTime: post.publishedAt,
             modifiedTime: post.updatedAt || post.publishedAt,
             section: post.category,
             tags: post.tags,
-            authors: post.author?.name ? [post.author.name] : undefined,
+            authors: post.author?.name ? [post.author.name] : ['MyPrayerTower Editorial Team'],
             images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
             url: `${BASE_URL}/blog/${params.slug}`,
             siteName: 'MyPrayerTower',
@@ -103,34 +121,60 @@ export default async function BlogPostPage({ params }: Props) {
     const allCategories = Array.from(new Set(allPosts.map(post => post.category).filter(Boolean)));
     const allTags = Array.from(new Set(allPosts.flatMap(post => post.tags || [])));
 
-
     const categoryLabel = post.category.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     const postUrl = `${BASE_URL}/blog/${post.slug}`;
+    const ogImage = post.image
+        ? (post.image.startsWith('http') ? post.image : `${BASE_URL}${post.image}`)
+        : `${BASE_URL}/blog-og-fallback.png`;
 
-    // Enhanced JSON-LD — BlogPosting type w/ wordCount
+    // Extract FAQs if present in content
+    const extractedFaqs = extractFaqsFromMarkdown(post.content);
+
+    // Enhanced JSON-LD — BlogPosting type w/ wordCount and speakable schema
     const wordCount = post.content.split(/\s+/).length;
+    const rawKeywords = post.keywords || post.tags;
+    const keywordsStr = Array.isArray(rawKeywords) ? rawKeywords.join(', ') : (rawKeywords || '');
+
     const articleLd = {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
+        '@id': `${postUrl}#article`,
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${BASE_URL}/#website`,
+            name: 'MyPrayerTower',
+            url: BASE_URL,
+        },
         mainEntityOfPage: {
             '@type': 'WebPage',
             '@id': postUrl,
         },
         headline: post.title,
         description: post.description,
-        image: post.image ? `${BASE_URL}${post.image}` : undefined,
+        image: ogImage,
         datePublished: post.publishedAt,
         dateModified: post.updatedAt || post.publishedAt,
+        inLanguage: 'en-US',
         wordCount,
         articleSection: post.category,
-        keywords: post.tags?.join(', '),
+        keywords: keywordsStr,
+        about: [
+            { '@type': 'Thing', name: 'Catholic Church' },
+            { '@type': 'Thing', name: 'Catholic Prayer' },
+            { '@type': 'Thing', name: categoryLabel }
+        ],
+        speakable: {
+            '@type': 'SpeakableSpecification',
+            cssSelector: ['h1', 'article p:first-of-type'],
+        },
         author: {
             '@type': 'Person',
-            name: post.author?.name || 'MyPrayerTower Team',
+            name: post.author?.name || 'MyPrayerTower Editorial Team',
             url: post.author?.url || BASE_URL,
         },
         publisher: {
             '@type': 'Organization',
+            '@id': `${BASE_URL}/#organization`,
             name: 'MyPrayerTower',
             url: BASE_URL,
             logo: {
@@ -142,6 +186,19 @@ export default async function BlogPostPage({ params }: Props) {
         },
         isAccessibleForFree: true,
     };
+
+    const faqLd = extractedFaqs.length > 0 ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: extractedFaqs.map(faq => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer,
+            },
+        })),
+    } : null;
 
     const breadcrumbItems = [
         { label: 'Home', href: '/' },
@@ -161,6 +218,7 @@ export default async function BlogPostPage({ params }: Props) {
 
             {/* SEO Schema */}
             <ArticleJsonLd data={articleLd as any} />
+            {faqLd && <FaqJsonLd data={faqLd as any} />}
             <BreadcrumbJsonLd data={{
                 '@context': 'https://schema.org',
                 '@type': 'BreadcrumbList',
@@ -203,7 +261,7 @@ export default async function BlogPostPage({ params }: Props) {
                         <header className="mb-20">
                             <div className="flex items-center gap-3 mb-10">
                                 <Link
-                                    href={`/blog?category=${post.category}`}
+                                    href={`/blog/category/${post.category}`}
                                     className="text-gold-600 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 bg-gold-400/5 rounded-full border border-gold-400/10 hover:bg-gold-50 transition-colors"
                                 >
                                     {categoryLabel}
@@ -235,7 +293,7 @@ export default async function BlogPostPage({ params }: Props) {
                                     </div>
                                 </div>
                                 <div className="hidden sm:block">
-                                   <button className="p-3 rounded-full hover:bg-gray-50 text-gray-400 hover:text-gold-600 transition-colors">
+                                   <button className="p-3 rounded-full hover:bg-gray-50 text-gray-400 hover:text-gold-600 transition-colors" aria-label="Bookmark post">
                                        <Bookmark className="w-5 h-5" />
                                    </button>
                                 </div>
@@ -386,4 +444,3 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
     );
 }
-

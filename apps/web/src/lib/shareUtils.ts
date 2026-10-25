@@ -142,14 +142,6 @@ export function getSharePlatforms(text: string, url: string, title: string): Sha
       getUrl: () => `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
     },
     {
-      id: 'pinterest',
-      name: 'Pinterest',
-      icon: '📌',
-      color: 'bg-[#E60023]',
-      hoverColor: 'hover:bg-[#C8001E]',
-      getUrl: () => `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedText}`,
-    },
-    {
       id: 'reddit',
       name: 'Reddit',
       icon: '🔴',

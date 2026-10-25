@@ -1,15 +1,46 @@
 export const revalidate = 86400; // 24 hours
+
+import { Metadata } from 'next';
 import { getLibraryPrayers, getPrayerCategories } from '@/app/actions/prayer-library';
 import { PrayerSearch, PrayerFilter, Pagination } from '@/components/library/LibraryControls';
 import Link from 'next/link';
 import { Book, Heart, Sun, Moon, Calendar, ChevronRight, Sparkles, Anchor, Feather, Flame } from 'lucide-react';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
+import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { PrayerReminderBanner } from '@/components/notifications/PrayerReminderBanner';
+import { CATHOLIC_INTENTIONS } from '@/lib/seo/intentionsData';
+
+const BASE_URL = 'https://www.myprayertower.com';
+
+export const metadata: Metadata = {
+    title: 'Catholic Prayer Library | 3,900+ Traditional & Modern Prayers | MyPrayerTower',
+    description: 'Explore over 3,900 traditional and modern Catholic prayers, litanies, devotions, and daily offerings. Search by intention, saint, or liturgical season.',
+    keywords: 'Catholic prayers, daily prayers, traditional Catholic prayers, litanies, Catholic devotions, morning offering, evening prayers, Catholic treasury',
+    alternates: {
+        canonical: `${BASE_URL}/prayers`,
+    },
+    openGraph: {
+        title: 'Catholic Prayer Library | 3,900+ Traditional & Modern Prayers | MyPrayerTower',
+        description: 'Explore over 3,900 traditional and modern Catholic prayers, litanies, devotions, and daily offerings.',
+        url: `${BASE_URL}/prayers`,
+        type: 'website',
+        locale: 'en_US',
+        siteName: 'MyPrayerTower',
+        images: [{ url: `${BASE_URL}/og-image.png`, width: 1200, height: 630, alt: 'Catholic Prayer Library' }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Catholic Prayer Library | 3,900+ Catholic Prayers | MyPrayerTower',
+        description: 'Explore over 3,900 traditional and modern Catholic prayers, litanies, devotions, and daily offerings.',
+        images: [`${BASE_URL}/og-image.png`],
+    },
+};
 
 interface Props {
     searchParams: { [key: string]: string | string[] | undefined };
 }
 
-// Fixed Suggested Section for Top of Page (preserved style)
+// Fixed Suggested Section for Top of Page
 const SUGGESTED_TODAY = [
     {
         title: "Morning Offering",
@@ -47,8 +78,47 @@ export default async function PrayerLibraryPage({ searchParams }: Props) {
 
     const { prayers, totalPages, totalItems } = libraryData;
 
+    const collectionLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        '@id': `${BASE_URL}/prayers#collection`,
+        name: 'Catholic Prayer Library',
+        description: 'Comprehensive digital treasury of 3,900+ traditional and contemporary Catholic prayers, novenas, and litanies.',
+        url: `${BASE_URL}/prayers`,
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${BASE_URL}/#website`,
+            name: 'MyPrayerTower',
+            url: BASE_URL,
+        },
+    };
+
+    const breadcrumbsLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: BASE_URL,
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Prayers',
+                item: `${BASE_URL}/prayers`,
+            },
+        ],
+    };
+
+    const intentionList = Object.values(CATHOLIC_INTENTIONS);
+
     return (
         <div className="min-h-screen bg-[#faf9f6]">
+            <JsonLd data={collectionLd as any} />
+            <BreadcrumbJsonLd data={breadcrumbsLd as any} />
+
             {/* Elegant Hero */}
             <div className="relative bg-sacred-900 text-white overflow-hidden pt-32 pb-24">
                 <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
@@ -74,7 +144,7 @@ export default async function PrayerLibraryPage({ searchParams }: Props) {
 
                 {/* Only show 'Suggested' on home view (no search/filter) */}
                 {!search && !category && page === 1 && (
-                    <div className="-mt-20 relative z-20 mb-16">
+                    <div className="-mt-20 relative z-20 mb-12">
                         <div className="bg-white rounded-3xl shadow-xl p-8">
                             <h2 className="font-serif text-2xl text-gray-900 mb-8 flex items-center gap-3">
                                 <Sun className="w-6 h-6 text-gold-500" />
@@ -104,6 +174,28 @@ export default async function PrayerLibraryPage({ searchParams }: Props) {
                         </div>
                     </div>
                 )}
+
+                {/* High-Intent Catholic Collections (Intention SEO Hub Pills) */}
+                <div className="mb-10 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-sm font-bold uppercase tracking-wider text-amber-800 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-gold-500" />
+                            Pray by Catholic Intention
+                        </h2>
+                        <span className="text-xs text-gray-400">Curated Thematic Collections</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {intentionList.map((hub) => (
+                            <Link
+                                key={hub.slug}
+                                href={`/prayers/intention/${hub.slug}`}
+                                className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/60 transition-all hover:scale-105 active:scale-95"
+                            >
+                                {hub.shortTitle}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
 
                 {/* Filters */}
                 <PrayerFilter categories={categories} />
@@ -168,6 +260,9 @@ export default async function PrayerLibraryPage({ searchParams }: Props) {
 
                 {/* Pagination */}
                 <Pagination currentPage={page} totalPages={totalPages} />
+
+                {/* Daily Liturgical Reminder & Community Telegram Banner */}
+                <PrayerReminderBanner />
 
                 {/* Bottom Ad */}
                 <div className="mt-8">

@@ -1,3 +1,5 @@
+export const revalidate = 86400; // 24 hours
+
 import { getGuideBySlug, getAllGuides } from '@/lib/content';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
@@ -5,16 +7,19 @@ import { MDXComponents } from '@/components/mdx/MDXComponents';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { ChevronLeft, Clock, Calendar, Share2, User } from 'lucide-react';
-import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { ArticleJsonLd, BreadcrumbJsonLd, FaqJsonLd } from '@/components/seo/JsonLd';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { RelatedContent } from '@/components/seo/RelatedContent';
 import { Metadata } from 'next';
+import { extractFaqsFromMarkdown } from '@/lib/seo/extractFaqs';
 
 interface Props {
     params: {
         slug: string;
     };
 }
+
+const BASE_URL = 'https://www.myprayertower.com';
 
 export async function generateStaticParams() {
     const guides = await getAllGuides();
@@ -27,27 +32,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const guide = await getGuideBySlug(params.slug);
     if (!guide) return { title: 'Guide Not Found' };
 
+    const guideUrl = `${BASE_URL}/guides/${params.slug}`;
+    const ogImage = guide.image
+        ? (guide.image.startsWith('http') ? guide.image : `${BASE_URL}${guide.image}`)
+        : `${BASE_URL}/og-image.png`;
+
     return {
-        title: guide.title,
+        title: `${guide.title} | Catholic Spiritual Guides | MyPrayerTower`,
         description: guide.description,
+        alternates: {
+            canonical: guideUrl,
+        },
         openGraph: {
             title: guide.title,
             description: guide.description,
             type: 'article',
+            locale: 'en_US',
+            siteName: 'MyPrayerTower',
             publishedTime: guide.publishedAt,
-            authors: guide.author?.name ? [guide.author.name] : undefined,
-            images: guide.image ? [guide.image] : undefined,
-            url: `https://myprayertower.com/guides/${params.slug}`,
+            authors: guide.author?.name ? [guide.author.name] : ['MyPrayerTower Team'],
+            images: [{ url: ogImage, width: 1200, height: 630, alt: guide.title }],
+            url: guideUrl,
         },
         twitter: {
             card: 'summary_large_image',
             title: guide.title,
             description: guide.description,
-            images: guide.image ? [guide.image] : undefined,
+            images: [ogImage],
         },
-        alternates: {
-            canonical: `/guides/${params.slug}`,
-        }
     };
 }
 
@@ -58,35 +70,89 @@ export default async function GuidePage({ params }: Props) {
         notFound();
     }
 
+    const guideUrl = `${BASE_URL}/guides/${guide.slug}`;
+    const ogImage = guide.image
+        ? (guide.image.startsWith('http') ? guide.image : `${BASE_URL}${guide.image}`)
+        : `${BASE_URL}/og-image.png`;
+
+    // Extract FAQs if present
+    const extractedFaqs = extractFaqsFromMarkdown(guide.content);
+
     // JSON-LD Data
     const articleLd = {
         '@context': 'https://schema.org',
         '@type': 'Article',
+        '@id': `${guideUrl}#article`,
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${BASE_URL}/#website`,
+            name: 'MyPrayerTower',
+            url: BASE_URL,
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': guideUrl,
+        },
         headline: guide.title,
         description: guide.description,
-        image: guide.image ? `https://myprayertower.com${guide.image}` : undefined,
+        image: ogImage,
         datePublished: guide.publishedAt,
         dateModified: guide.updatedAt || guide.publishedAt,
+        inLanguage: 'en-US',
+        about: [
+            { '@type': 'Thing', name: 'Catholic Church' },
+            { '@type': 'Thing', name: guide.category || 'Catholic Devotion' },
+        ],
         author: {
             '@type': 'Person',
             name: guide.author?.name || 'MyPrayerTower Team',
+            url: guide.author?.url || BASE_URL,
         },
         publisher: {
             '@type': 'Organization',
+            '@id': `${BASE_URL}/#organization`,
             name: 'MyPrayerTower',
+            url: BASE_URL,
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://www.myprayertower.com/logo.png'
+                url: `${BASE_URL}/logo.png`,
+                width: 512,
+                height: 512,
             }
         },
     };
 
+    const faqLd = extractedFaqs.length > 0 ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: extractedFaqs.map(faq => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer,
+            },
+        })),
+    } : null;
+
     const breadcrumbs = [
+        { label: 'Home', href: '/' },
         { label: 'Guides', href: '/guides' },
         { label: guide.title, href: `/guides/${guide.slug}` },
     ];
 
-    // Related Content Mock (In real app, fetch based on tags/category)
+    const breadcrumbLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbs.map((crumb, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: crumb.label,
+            item: `${BASE_URL}${crumb.href}`
+        }))
+    };
+
+    // Related Content
     const relatedItems = guide.relatedGuides ? await Promise.all(
         guide.relatedGuides.map(slug => getGuideBySlug(slug))
     ).then(items => items.filter(Boolean).map(item => ({
@@ -100,16 +166,8 @@ export default async function GuidePage({ params }: Props) {
         <div className="min-h-screen bg-[#faf9f6]">
             {/* SEO Data */}
             <ArticleJsonLd data={articleLd as any} />
-            <BreadcrumbJsonLd data={{
-                '@context': 'https://schema.org',
-                '@type': 'BreadcrumbList',
-                itemListElement: breadcrumbs.map((crumb, index) => ({
-                    '@type': 'ListItem',
-                    position: index + 1,
-                    name: crumb.label,
-                    item: `https://myprayertower.com${crumb.href}`
-                }))
-            }} />
+            {faqLd && <FaqJsonLd data={faqLd as any} />}
+            <BreadcrumbJsonLd data={breadcrumbLd as any} />
 
             {/* Header / Nav */}
             <div className="bg-white border-b border-gray-100 sticky top-0 z-30 opacity-95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
@@ -131,7 +189,7 @@ export default async function GuidePage({ params }: Props) {
             </div>
 
             <article className="container mx-auto px-4 py-12 max-w-4xl">
-                <Breadcrumbs items={breadcrumbs} />
+                <Breadcrumbs items={breadcrumbs.slice(1)} />
 
                 {/* Article Header */}
                 <div className="text-center mb-16">
@@ -160,7 +218,6 @@ export default async function GuidePage({ params }: Props) {
                 {/* Featured Image (if exists) */}
                 {guide.image && (
                     <div className="rounded-2xl overflow-hidden shadow-xl mb-16 aspect-video bg-gray-100 relative">
-                        {/* Placeholder for actual Next.js Image component if using remote images */}
                         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${guide.image})` }} />
                     </div>
                 )}

@@ -43,3 +43,4 @@ android-twa/local.properties
 deploy-out/
 server.js
 *.tsbuildinfo
+*backup*.json

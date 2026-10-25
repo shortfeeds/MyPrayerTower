@@ -1,16 +1,20 @@
 export const revalidate = 86400; // Cache for 24 hours
 import { NOVENAS } from '@/lib/novenas';
+import { CATHOLIC_INTENTIONS } from '@/lib/seo/intentionsData';
 
 export async function GET() {
     const baseUrl = 'https://www.myprayertower.com';
     
-    // Convert novenas to category routes
+    // Convert novenas to routes
     const novenaRoutes = NOVENAS.map(n => `/novenas/${n.id}`);
     
-    // Add other dynamic categories here if needed
+    // Convert intentions to programmatic hub routes
+    const intentionRoutes = Object.keys(CATHOLIC_INTENTIONS).map(slug => `/prayers/intention/${slug}`);
+    
     const categories = [
         '/blog',
         '/novenas',
+        ...intentionRoutes,
         ...novenaRoutes
     ];
 
@@ -23,7 +27,7 @@ export async function GET() {
     <loc>${baseUrl}${route}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>`
       )
       .join('')}

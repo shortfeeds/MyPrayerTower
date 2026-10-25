@@ -4,12 +4,17 @@ import { format } from 'date-fns';
 import { Clock, Calendar, ChevronRight, Tag, ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 
 interface Props {
     params: {
         category: string;
     };
 }
+
+const BASE_URL = 'https://www.myprayertower.com';
+
+export const revalidate = 86400; // 24 hours
 
 export async function generateStaticParams() {
     const posts = await getAllPosts();
@@ -21,32 +26,82 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const categoryLabel = params.category.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const categoryUrl = `${BASE_URL}/blog/category/${params.category}`;
 
     return {
         title: `${categoryLabel} Articles | MyPrayerTower Blog`,
-        description: `Read our latest articles about ${categoryLabel} and grow in your Catholic faith.`,
+        description: `Read our latest Catholic articles, theological reflections, and guides about ${categoryLabel}.`,
+        alternates: {
+            canonical: categoryUrl,
+        },
         openGraph: {
             title: `${categoryLabel} Articles | MyPrayerTower Blog`,
-            url: `https://myprayertower.com/blog/category/${params.category}`,
-        }
+            description: `Read our latest Catholic articles, theological reflections, and guides about ${categoryLabel}.`,
+            url: categoryUrl,
+            type: 'website',
+            siteName: 'MyPrayerTower',
+            locale: 'en_US',
+            images: [{ url: `${BASE_URL}/og-image.png`, width: 1200, height: 630, alt: `${categoryLabel} Articles` }],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: `${categoryLabel} Articles | MyPrayerTower Blog`,
+            description: `Read our latest Catholic articles, theological reflections, and guides about ${categoryLabel}.`,
+            images: [`${BASE_URL}/og-image.png`],
+        },
     };
 }
 
 export default async function BlogCategoryPage({ params }: Props) {
     const posts = await getPostsByCategory(params.category);
-
-    if (posts.length === 0) {
-        // Technically this might be reached if valid category but no posts, 
-        // though generateStaticParams handles build time.
-        // For dynamic requests we might want to handle gracefully or 404.
-        // Let's 404 if truly empty to avoid soft 404s.
-        // Actually, let's show an empty state instead of 404ing valid layouts.
-    }
-
     const categoryLabel = params.category.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const categoryUrl = `${BASE_URL}/blog/category/${params.category}`;
+
+    const collectionLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        '@id': `${categoryUrl}#collection`,
+        name: `${categoryLabel} Articles`,
+        description: `Catholic articles and reflections categorized under ${categoryLabel}.`,
+        url: categoryUrl,
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${BASE_URL}/#website`,
+            name: 'MyPrayerTower',
+            url: BASE_URL,
+        },
+    };
+
+    const breadcrumbsLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: BASE_URL,
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Blog',
+                item: `${BASE_URL}/blog`,
+            },
+            {
+                '@type': 'ListItem',
+                position: 3,
+                name: categoryLabel,
+                item: categoryUrl,
+            },
+        ],
+    };
 
     return (
         <div className="min-h-screen bg-[#faf9f6]">
+            <JsonLd data={collectionLd as any} />
+            <BreadcrumbJsonLd data={breadcrumbsLd as any} />
+
             {/* Header */}
             <div className="bg-white border-b border-gray-100 py-12">
                 <div className="container mx-auto px-4 text-center">

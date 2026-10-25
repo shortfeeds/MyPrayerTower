@@ -89,6 +89,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
             image: data.image,
             category: data.category,
             tags: data.tags,
+            keywords: data.keywords || data.tags,
             readingTime: data.readingTime,
             relatedPosts: data.relatedPosts,
             featured: data.featured,

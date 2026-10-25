@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, Calendar, User, BookOpen } from 'lucide-react';
 import { ShareButtons } from '@/components/social/ShareButtons';
-import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { BreadcrumbJsonLd, FaqJsonLd } from '@/components/seo/JsonLd';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { FAQModule, FAQItem } from '@/components/seo/FAQModule';
 
@@ -15,18 +15,14 @@ interface Props {
     };
 }
 
+const BASE_URL = 'https://www.myprayertower.com';
+
 // Enable ISR: Cache generated saint pages on Vercel Edge CDN for 7 days
 export const revalidate = 604800; // 7 days (seconds)
 export const dynamicParams = true;
 
 // SSG for all saints
 export async function generateStaticParams() {
-    // Limit to popular saints or all if list is manageable. 
-    // Given the previous timeout on 250 pages, we might want to be careful here.
-    // However, generateStaticParams only runs at build time. 
-    // If we have 1000 saints, this might be slow but valid.
-    // Let's fetch all slugs but rely on the build system's concurrency.
-    // If it fails again, we can limit it.
     const saints = await db.saint.findMany({
         select: { slug: true },
         take: 60,
@@ -46,26 +42,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const type = saint.title ? saint.title : 'Saint';
     const fullName = `${type} ${saint.name}`.trim();
+    const saintUrl = `${BASE_URL}/saints/${params.slug}`;
+    const description = saint.shortBio || `Learn about the life, feast day, patronage, and miracles of ${fullName}.`;
+    const ogImage = saint.imageUrl || `${BASE_URL}/og-image.png`;
 
     return {
-        title: `${fullName} | Catholic Saints`,
-        description: saint.shortBio || `Learn about the life, miracles, and patronage of ${fullName}.`,
+        title: `${fullName} — Life, Feast Day, Patronage & Miracles | MyPrayerTower`,
+        description,
+        alternates: {
+            canonical: saintUrl,
+        },
         openGraph: {
-            title: fullName,
-            description: saint.shortBio || `Learn about the life of ${fullName}.`,
-            images: saint.imageUrl ? [saint.imageUrl] : undefined,
+            title: `${fullName} — Life, Feast Day & Patronage`,
+            description,
+            images: [{ url: ogImage, width: 1200, height: 630, alt: fullName }],
             type: 'article',
-            url: `https://www.myprayertower.com/saints/${params.slug}`,
+            locale: 'en_US',
+            siteName: 'MyPrayerTower',
+            url: saintUrl,
         },
         twitter: {
             card: 'summary_large_image',
-            title: fullName,
-            description: saint.shortBio || `Learn about the life of ${fullName}.`,
-            images: saint.imageUrl ? [saint.imageUrl] : undefined,
+            title: `${fullName} | Catholic Saints`,
+            description,
+            images: [ogImage],
         },
-        alternates: {
-            canonical: `https://www.myprayertower.com/saints/${params.slug}`,
-        }
     };
 }
 
@@ -80,23 +81,71 @@ export default async function SaintPage({ params }: Props) {
 
     const title = saint.title ? saint.title : '';
     const fullName = `${title} ${saint.name}`.trim();
+    const saintUrl = `${BASE_URL}/saints/${saint.slug}`;
 
-    // SEO Data
-    // We can use 'Person' schema or 'Article' schema. Article is better for the biography content itself.
-    // Adding Person as primary entity is also good.
+    // Construct FAQs
+    const faqItems: FAQItem[] = [];
+    if (saint.feastDay) {
+        faqItems.push({
+            question: `When is the feast day of ${fullName}?`,
+            answer: `The feast day of ${fullName} is celebrated on ${saint.feastDay}.`
+        });
+    }
+    if (saint.patronOf && saint.patronOf.length > 0) {
+        faqItems.push({
+            question: `What is ${fullName} the patron saint of?`,
+            answer: `${fullName} is the patron saint of ${saint.patronOf.join(', ')}.`
+        });
+    }
+    if (saint.bornDate || saint.diedDate) {
+        let answer = '';
+        if (saint.bornDate) answer += `${fullName} was born on ${saint.bornDate}. `;
+        if (saint.diedDate) answer += `They entered eternal life on ${saint.diedDate}.`;
+        faqItems.push({
+            question: `When did ${fullName} live?`,
+            answer: answer.trim()
+        });
+    }
+
+    // Person & Article Schema
     const personLd = {
         '@context': 'https://schema.org',
         '@type': 'Person',
+        '@id': `${saintUrl}#person`,
         name: saint.name,
         honorificPrefix: saint.title,
         description: saint.shortBio,
-        image: saint.imageUrl,
+        image: saint.imageUrl || `${BASE_URL}/og-image.png`,
         birthDate: saint.bornDate,
         deathDate: saint.diedDate,
-        mainEntityOfPage: `https://myprayertower.com/saints/${saint.slug}`
+        knowsAbout: ['Catholic Faith', 'Christian Martyrdom', 'Holy Life'],
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': saintUrl
+        },
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${BASE_URL}/#website`,
+            name: 'MyPrayerTower',
+            url: BASE_URL
+        }
     };
 
+    const faqLd = faqItems.length > 0 ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqItems.map(faq => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer.replace(/<[^>]*>/g, '') // strip HTML for JSON-LD text
+            }
+        }))
+    } : null;
+
     const breadcrumbs = [
+        { label: 'Home', href: '/' },
         { label: 'Saints', href: '/saints' },
         { label: fullName, href: `/saints/${saint.slug}` },
     ];
@@ -108,6 +157,7 @@ export default async function SaintPage({ params }: Props) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
             />
+            {faqLd && <FaqJsonLd data={faqLd as any} />}
             <BreadcrumbJsonLd data={{
                 '@context': 'https://schema.org',
                 '@type': 'BreadcrumbList',
@@ -115,7 +165,7 @@ export default async function SaintPage({ params }: Props) {
                     '@type': 'ListItem',
                     position: index + 1,
                     name: crumb.label,
-                    item: `https://myprayertower.com${crumb.href}`
+                    item: `${BASE_URL}${crumb.href}`
                 }))
             }} />
 
@@ -142,7 +192,7 @@ export default async function SaintPage({ params }: Props) {
             </div>
 
             <article className="container mx-auto px-4 py-12 max-w-4xl">
-                <Breadcrumbs items={breadcrumbs} />
+                <Breadcrumbs items={breadcrumbs.slice(1)} />
 
                 {/* Hero Header */}
                 <div className="text-center mb-12">
@@ -244,44 +294,12 @@ export default async function SaintPage({ params }: Props) {
                 </div>
 
                 {/* FAQ Section */}
-                {(() => {
-                    const faqItems: FAQItem[] = [];
-
-                    if (saint.feastDay) {
-                        faqItems.push({
-                            question: `When is the feast day of ${fullName}?`,
-                            answer: `The feast day of ${fullName} is celebrated on <strong>${saint.feastDay}</strong>.`
-                        });
-                    }
-
-                    if (saint.patronOf && saint.patronOf.length > 0) {
-                        faqItems.push({
-                            question: `What is ${fullName} the patron saint of?`,
-                            answer: `${fullName} is the patron saint of ${saint.patronOf.join(', ')}.`
-                        });
-                    }
-
-                    if (saint.bornDate || saint.diedDate) {
-                        let answer = '';
-                        if (saint.bornDate) answer += `${fullName} was born on ${saint.bornDate}. `;
-                        if (saint.diedDate) answer += `He/She died on ${saint.diedDate}.`;
-
-                        faqItems.push({
-                            question: `When did ${fullName} live?`,
-                            answer: answer.trim()
-                        });
-                    }
-
-                    if (faqItems.length > 0) {
-                        return (
-                            <FAQModule
-                                items={faqItems}
-                                title={`Common Questions about ${fullName}`}
-                            />
-                        );
-                    }
-                    return null;
-                })()}
+                {faqItems.length > 0 && (
+                    <FAQModule
+                        items={faqItems}
+                        title={`Common Questions about ${fullName}`}
+                    />
+                )}
 
             </article>
         </div>

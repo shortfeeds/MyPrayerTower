@@ -33,6 +33,7 @@ export interface BlogPost {
     image?: string;
     category: string; // More flexible for blog
     tags?: string[];
+    keywords?: string[] | string;
     readingTime?: string;
     relatedPosts?: string[]; // Slugs of related posts
     featured?: boolean;

@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import { FAQSection } from '@/components/seo/FAQSection';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
+import { UpcomingNovenaCountdown } from '@/components/home/UpcomingNovenaCountdown';
 
 export const metadata: Metadata = {
     title: 'Catholic Novenas | 9-Day Prayers for Every Intention',
@@ -35,7 +36,7 @@ export default function NovenasPage() {
                 '@type': 'CollectionPage',
                 name: 'Catholic Novenas Library',
                 description: 'Complete collection of 9-day Catholic prayers.',
-                url: 'https://myprayertower.com/novenas',
+                url: 'https://www.myprayertower.com/novenas',
                 about: { '@type': 'Thing', name: 'Catholic Novena' }
             }} />
 
@@ -57,6 +58,11 @@ export default function NovenasPage() {
                         Find hope, healing, and intercession.
                     </p>
                 </div>
+            </div>
+
+            {/* Active or Upcoming Novena Countdown */}
+            <div className="container mx-auto px-4 max-w-5xl -mt-20 relative z-20 mb-8">
+                <UpcomingNovenaCountdown />
             </div>
 
             {/* Interactive List (Client Component) */}

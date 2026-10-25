@@ -8,7 +8,7 @@ import { PrayerInteractions } from '@/components/prayer/PrayerInteractions';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { RelatedContent } from '@/components/seo/RelatedContent';
-import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { ArticleJsonLd, BreadcrumbJsonLd, FaqJsonLd } from '@/components/seo/JsonLd';
 import { FAQModule } from '@/components/seo/FAQModule';
 import { DailyPrayerCTA } from '@/components/seo/DailyPrayerCTA';
 import { getPrayerFAQs } from '@/lib/seo/prayerFAQs';
@@ -18,6 +18,8 @@ interface Props {
         slug: string;
     };
 }
+
+const BASE_URL = 'https://www.myprayertower.com';
 
 // Enable ISR: Cache generated prayer pages on Vercel Edge CDN for 7 days
 export const revalidate = 604800; // 7 days (seconds)
@@ -51,22 +53,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const title = `${prayer.title} — Powerful Catholic Prayer for ${prayer.category || 'Help'} (With Reflection)`;
+    const description = prayer.content.slice(0, 160).replace(/\s+/g, ' ').trim();
+    const prayerUrl = `${BASE_URL}/prayers/${params.slug}`;
 
     return {
         title: `${title} | MyPrayerTower`,
-        description: prayer.content.slice(0, 160),
+        description,
         keywords: prayer.tags,
         alternates: {
-            canonical: `https://www.myprayertower.com/prayers/${params.slug}`
+            canonical: prayerUrl
         },
         openGraph: {
-            title: title,
-            description: prayer.content.slice(0, 160),
-            url: `https://www.myprayertower.com/prayers/${params.slug}`,
+            title,
+            description,
+            url: prayerUrl,
             type: 'article',
-            publishedTime: new Date().toISOString(), // In real app, use updated_at
+            locale: 'en_US',
+            siteName: 'MyPrayerTower',
             authors: ['MyPrayerTower'],
-        }
+            images: [{ url: `${BASE_URL}/og-image.png`, width: 1200, height: 630, alt: prayer.title }],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [`${BASE_URL}/og-image.png`],
+        },
     };
 }
 
@@ -94,28 +106,68 @@ export default async function PrayerPage({ params }: Props) {
 
     // Generate FAQs
     const faqs = getPrayerFAQs(prayer.category || 'general', prayer.title);
+    const prayerUrl = `${BASE_URL}/prayers/${prayer.slug}`;
 
     // SEO Schema
     const articleLd = {
         '@context': 'https://schema.org',
         '@type': 'Article',
+        '@id': `${prayerUrl}#article`,
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${BASE_URL}/#website`,
+            name: 'MyPrayerTower',
+            url: BASE_URL,
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': prayerUrl,
+        },
         headline: prayer.title,
-        description: prayer.content.slice(0, 160),
-        datePublished: new Date().toISOString(), // Mock for now, should be DB field
+        description: prayer.content.slice(0, 160).replace(/\s+/g, ' ').trim(),
+        datePublished: new Date().toISOString(),
+        inLanguage: 'en-US',
+        about: [
+            { '@type': 'Thing', name: prayer.category || 'Catholic Prayer' },
+            { '@type': 'Thing', name: 'Catholic Church' }
+        ],
+        speakable: {
+            '@type': 'SpeakableSpecification',
+            cssSelector: ['h1', 'article .font-serif.text-lg'],
+        },
         author: {
             '@type': 'Organization',
+            '@id': `${BASE_URL}/#organization`,
             name: 'MyPrayerTower',
+            url: BASE_URL,
         },
         publisher: {
             '@type': 'Organization',
+            '@id': `${BASE_URL}/#organization`,
             name: 'MyPrayerTower',
+            url: BASE_URL,
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://myprayertower.com/icon.png'
+                url: `${BASE_URL}/logo.png`,
+                width: 512,
+                height: 512,
             }
         },
         articleSection: prayer.category || 'Prayers'
     };
+
+    const faqLd = faqs.length > 0 ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqs.map(faq => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer,
+            },
+        })),
+    } : null;
 
     const breadcrumbs = [
         { label: 'Prayers', href: '/prayers' },
@@ -123,20 +175,31 @@ export default async function PrayerPage({ params }: Props) {
         { label: prayer.title, href: `/prayers/${prayer.slug}` },
     ];
 
+    const breadcrumbsLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: BASE_URL,
+            },
+            ...breadcrumbs.map((crumb, index) => ({
+                '@type': 'ListItem',
+                position: index + 2,
+                name: crumb.label,
+                item: `${BASE_URL}${crumb.href}`
+            }))
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-[#faf9f6]">
             {/* SEO Data */}
             <ArticleJsonLd data={articleLd as any} />
-            <BreadcrumbJsonLd data={{
-                '@context': 'https://schema.org',
-                '@type': 'BreadcrumbList',
-                itemListElement: breadcrumbs.map((crumb, index) => ({
-                    '@type': 'ListItem',
-                    position: index + 1,
-                    name: crumb.label,
-                    item: `https://myprayertower.com${crumb.href}`
-                }))
-            }} />
+            {faqLd && <FaqJsonLd data={faqLd as any} />}
+            <BreadcrumbJsonLd data={breadcrumbsLd as any} />
 
             {/* Header / Nav */}
             <div className="bg-white border-b border-gray-100 sticky top-0 z-30">

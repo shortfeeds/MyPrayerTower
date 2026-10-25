@@ -1,13 +1,37 @@
+export const revalidate = 86400; // 24 hours
+
 import { getAllGuides } from '@/lib/content';
 import Link from 'next/link';
 import { BookOpen, Calendar, ChevronRight, Search } from 'lucide-react';
 import { Metadata } from 'next';
 import { format } from 'date-fns';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
+import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+
+const BASE_URL = 'https://www.myprayertower.com';
 
 export const metadata: Metadata = {
-    title: 'Catholic Guides & Resources | MyPrayerTower',
-    description: 'Learn how to pray the Rosary, discover Novenas, and deepen your Catholic faith with our comprehensive guides and articles.',
+    title: 'Catholic Guides & Resources | How to Pray, Traditions & Devotions | MyPrayerTower',
+    description: 'Learn how to pray the Rosary, discover Novenas, and deepen your Catholic faith with our comprehensive step-by-step guides and theological reflections.',
+    keywords: 'Catholic guides, how to pray catholic, rosary guide, novena guide, catholic traditions, examination of conscience, spiritual life',
+    alternates: {
+        canonical: `${BASE_URL}/guides`,
+    },
+    openGraph: {
+        title: 'Catholic Guides & Resources | MyPrayerTower',
+        description: 'Learn how to pray the Rosary, discover Novenas, and deepen your Catholic faith with our comprehensive guides.',
+        url: `${BASE_URL}/guides`,
+        type: 'website',
+        locale: 'en_US',
+        siteName: 'MyPrayerTower',
+        images: [{ url: `${BASE_URL}/og-image.png`, width: 1200, height: 630, alt: 'Catholic Guides & Resources' }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Catholic Guides & Resources | MyPrayerTower',
+        description: 'Learn how to pray the Rosary, discover Novenas, and deepen your Catholic faith with our comprehensive guides.',
+        images: [`${BASE_URL}/og-image.png`],
+    },
 };
 
 const CATEGORIES = [
@@ -22,8 +46,45 @@ const CATEGORIES = [
 export default async function GuidesPage() {
     const guides = await getAllGuides();
 
+    const collectionLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        '@id': `${BASE_URL}/guides#collection`,
+        name: 'Catholic Guides & Resources',
+        description: 'Comprehensive guides, tutorials, and explanations of Catholic prayers, traditions, and devotions.',
+        url: `${BASE_URL}/guides`,
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${BASE_URL}/#website`,
+            name: 'MyPrayerTower',
+            url: BASE_URL,
+        },
+    };
+
+    const breadcrumbsLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: BASE_URL,
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Guides',
+                item: `${BASE_URL}/guides`,
+            },
+        ],
+    };
+
     return (
         <div className="min-h-screen bg-[#faf9f6]">
+            <JsonLd data={collectionLd as any} />
+            <BreadcrumbJsonLd data={breadcrumbsLd as any} />
+
             {/* Hero Section */}
             <div className="bg-sacred-900 text-white pt-32 pb-20 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>

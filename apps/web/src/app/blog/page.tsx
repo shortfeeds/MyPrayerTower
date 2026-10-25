@@ -6,16 +6,32 @@ import { Metadata } from 'next';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { BlogSearch } from '@/components/blog/BlogSearch';
 import { BlogAnalytics } from '@/components/analytics/BlogAnalytics';
+import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+
+const BASE_URL = 'https://www.myprayertower.com';
 
 export const metadata: Metadata = {
     title: 'Catholic Blog & Spiritual Index | MyPrayerTower',
     description: 'Explore 300+ deep-dive articles on Catholic prayer, the lives of the saints, liturgical traditions, and modern spiritual life.',
+    keywords: 'Catholic blog, Catholic prayers, saints, liturgical calendar, Catholic life, spiritual guides, novenas',
+    alternates: {
+        canonical: `${BASE_URL}/blog`,
+    },
     openGraph: {
         title: 'Catholic Blog & Spiritual Index | MyPrayerTower',
-        description: 'Explore 300+ deep-dive articles on Catholic prayer and spiritual life.',
+        description: 'Explore 300+ deep-dive articles on Catholic prayer, the lives of the saints, liturgical traditions, and modern spiritual life.',
         type: 'website',
-        url: 'https://myprayertower.com/blog',
-    }
+        locale: 'en_US',
+        url: `${BASE_URL}/blog`,
+        siteName: 'MyPrayerTower',
+        images: [{ url: `${BASE_URL}/og-image.png`, width: 1200, height: 630, alt: 'MyPrayerTower Blog' }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Catholic Blog & Spiritual Index | MyPrayerTower',
+        description: 'Explore 300+ deep-dive articles on Catholic prayer, the lives of the saints, liturgical traditions, and modern spiritual life.',
+        images: [`${BASE_URL}/og-image.png`],
+    },
 };
 
 const CATEGORIES = [
@@ -53,9 +69,46 @@ export default async function BlogHubPage({
     const startIndex = (currentPage - 1) * postsPerPage;
     const displayedPosts = allPosts.slice(startIndex, startIndex + postsPerPage);
 
+    const collectionLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        '@id': `${BASE_URL}/blog#collection`,
+        name: 'Catholic Blog & Spiritual Index',
+        description: 'Explore 300+ deep-dive articles on Catholic prayer, the lives of the saints, liturgical traditions, and modern spiritual life.',
+        url: `${BASE_URL}/blog`,
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${BASE_URL}/#website`,
+            name: 'MyPrayerTower',
+            url: BASE_URL,
+        },
+    };
+
+    const breadcrumbLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: BASE_URL,
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Blog',
+                item: `${BASE_URL}/blog`,
+            },
+        ],
+    };
+
     return (
         <div className="min-h-screen bg-[#fffefc] selection:bg-sacred-100 selection:text-sacred-900">
             <BlogAnalytics />
+            <JsonLd data={collectionLd as any} />
+            <BreadcrumbJsonLd data={breadcrumbLd as any} />
+
             {/* Elegant Hero Section */}
             <div className="relative bg-sacred-950 pt-32 pb-24 overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/patterns/catholic-pattern.svg')] opacity-[0.03] scale-150 rotate-12" />
@@ -195,7 +248,7 @@ export default async function BlogHubPage({
                                         </div>
                                         <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-sacred-950 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-500">
                                             Read Reflection
-                                            <ArrowRight className="w-3 h-3" />
+                                             <ArrowRight className="w-3 h-3" />
                                         </div>
                                     </div>
                                 </Link>

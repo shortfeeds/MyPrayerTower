@@ -157,6 +157,19 @@ export default function RootLayout({
                 />
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300" suppressHydrationWarning>
+                {/* Global Google Translate Mount Node (Hidden from view & assistive tech) */}
+                <div
+                    id="google_translate_element"
+                    style={{
+                        position: 'absolute',
+                        left: '-9999px',
+                        top: '-9999px',
+                        width: '1px',
+                        height: '1px',
+                        overflow: 'hidden',
+                    }}
+                    aria-hidden="true"
+                />
                 <ThemeProvider>
                     <AudioProvider>
                         <SpiritualJourneyProvider>
@@ -175,7 +188,7 @@ export default function RootLayout({
                                             '@graph': [
                                                 {
                                                     '@type': 'Organization',
-                                                    '@id': 'https://myprayertower.com/#organization',
+                                                    '@id': 'https://www.myprayertower.com/#organization',
                                                     name: 'MyPrayerTower',
                                                     url: 'https://www.myprayertower.com',
                                                     logo: 'https://www.myprayertower.com/icon.png',
@@ -200,16 +213,16 @@ export default function RootLayout({
                                                 },
                                                 {
                                                     '@type': 'WebSite',
-                                                    '@id': 'https://myprayertower.com/#website',
-                                                    url: 'https://myprayertower.com',
+                                                    '@id': 'https://www.myprayertower.com/#website',
+                                                    url: 'https://www.myprayertower.com',
                                                     name: 'MyPrayerTower',
                                                     description: 'The #1 All-in-One Catholic Services App',
                                                     publisher: {
-                                                        '@id': 'https://myprayertower.com/#organization'
+                                                        '@id': 'https://www.myprayertower.com/#organization'
                                                     },
                                                     potentialAction: {
                                                         '@type': 'SearchAction',
-                                                        target: 'https://myprayertower.com/prayers?q={search_term_string}',
+                                                        target: 'https://www.myprayertower.com/prayers?q={search_term_string}',
                                                         'query-input': 'required name=search_term_string'
                                                     }
                                                 }

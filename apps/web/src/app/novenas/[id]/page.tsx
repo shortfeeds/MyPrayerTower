@@ -1,10 +1,12 @@
+export const revalidate = 86400; // Cache for 24 hours
+
 import { NOVENAS } from '@/lib/novenas';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ChevronLeft, Calendar, User, Heart, Share2 } from 'lucide-react';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
-import { ArticleJsonLd } from '@/components/seo/JsonLd';
+import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { RelatedContent } from '@/components/seo/RelatedContent';
 
 interface Props {
@@ -12,6 +14,8 @@ interface Props {
         id: string;
     };
 }
+
+const BASE_URL = 'https://www.myprayertower.com';
 
 export async function generateStaticParams() {
     return NOVENAS.map((novena) => ({
@@ -23,25 +27,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const novena = NOVENAS.find(n => n.id === params.id);
     if (!novena) return { title: 'Novena Not Found' };
 
+    const novenaUrl = `${BASE_URL}/novenas/${novena.id}`;
+    const ogImage = `${BASE_URL}/og-image.png`;
+
     return {
-        title: `${novena.name} - 9 Day Catholic Prayer`,
+        title: `${novena.name} - 9-Day Catholic Novena Prayers & Meditations | MyPrayerTower`,
         description: novena.description,
+        alternates: {
+            canonical: novenaUrl,
+        },
         openGraph: {
-            title: novena.name,
+            title: `${novena.name} - 9-Day Catholic Novena`,
             description: novena.description,
             type: 'article',
-            url: `https://www.myprayertower.com/novenas/${novena.id}`,
-            images: ['/og-image.jpg'],
+            locale: 'en_US',
+            siteName: 'MyPrayerTower',
+            url: novenaUrl,
+            images: [{ url: ogImage, width: 1200, height: 630, alt: novena.name }],
         },
         twitter: {
             card: 'summary_large_image',
-            title: novena.name,
+            title: `${novena.name} - 9-Day Catholic Novena`,
             description: novena.description,
-            images: ['/og-image.jpg'],
+            images: [ogImage],
         },
-        alternates: {
-            canonical: `https://www.myprayertower.com/novenas/${novena.id}`,
-        }
     };
 }
 
@@ -52,26 +61,68 @@ export default function NovenaPage({ params }: Props) {
         notFound();
     }
 
-    // SEO Data
+    const novenaUrl = `${BASE_URL}/novenas/${novena.id}`;
+
+    // SEO Schema
     const articleLd = {
         '@context': 'https://schema.org',
         '@type': 'Article',
-        headline: novena.name,
+        '@id': `${novenaUrl}#article`,
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${BASE_URL}/#website`,
+            name: 'MyPrayerTower',
+            url: BASE_URL,
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': novenaUrl,
+        },
+        headline: `${novena.name} - 9-Day Catholic Novena`,
         description: novena.description,
-        author: { '@type': 'Organization', name: 'MyPrayerTower' },
+        inLanguage: 'en-US',
+        about: [
+            { '@type': 'Thing', name: 'Catholic Novena' },
+            { '@type': 'Thing', name: novena.patron || 'Catholic Prayer' },
+        ],
+        author: {
+            '@type': 'Organization',
+            '@id': `${BASE_URL}/#organization`,
+            name: 'MyPrayerTower',
+            url: BASE_URL,
+        },
         publisher: {
             '@type': 'Organization',
+            '@id': `${BASE_URL}/#organization`,
             name: 'MyPrayerTower',
-            logo: { '@type': 'ImageObject', url: 'https://www.myprayertower.com/logo.png' }
+            url: BASE_URL,
+            logo: {
+                '@type': 'ImageObject',
+                url: `${BASE_URL}/logo.png`,
+                width: 512,
+                height: 512,
+            }
         },
-        image: `https://www.myprayertower.com/og-image.jpg`, // Placeholder
-        datePublished: '2024-01-01', // Static content
+        image: `${BASE_URL}/og-image.png`,
+        datePublished: '2024-01-01',
     };
 
     const breadcrumbs = [
+        { label: 'Home', href: '/' },
         { label: 'Novenas', href: '/novenas' },
         { label: novena.name, href: `/novenas/${novena.id}` },
     ];
+
+    const breadcrumbLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbs.map((crumb, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: crumb.label,
+            item: `${BASE_URL}${crumb.href}`,
+        })),
+    };
 
     // Simple related logic: same category or random
     const relatedItems = NOVENAS
@@ -87,6 +138,7 @@ export default function NovenaPage({ params }: Props) {
     return (
         <div className="min-h-screen bg-[#faf9f6]">
             <ArticleJsonLd data={articleLd as any} />
+            <BreadcrumbJsonLd data={breadcrumbLd as any} />
 
             {/* Nav */}
             <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
@@ -99,7 +151,7 @@ export default function NovenaPage({ params }: Props) {
                         All Novenas
                     </Link>
                     <div className="flex items-center gap-4">
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-all" title="Share">
+                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-all" title="Share" aria-label="Share this novena">
                             <Share2 className="w-5 h-5" />
                         </button>
                     </div>
@@ -107,7 +159,7 @@ export default function NovenaPage({ params }: Props) {
             </div>
 
             <article className="max-w-4xl mx-auto px-4 py-12">
-                <Breadcrumbs items={breadcrumbs} />
+                <Breadcrumbs items={breadcrumbs.slice(1)} />
 
                 {/* Header */}
                 <div className={`rounded-3xl p-8 md:p-12 mb-12 text-white bg-gradient-to-br ${novena.color} shadow-lg relative overflow-hidden`}>

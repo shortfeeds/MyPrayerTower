@@ -112,8 +112,6 @@ export function Header() {
             {(mounted && appModeCtx.isNativeApp) ? (
                 // --- NATIVE APP MODE TOP BAR ---
                 <header className="fixed top-0 left-0 right-0 z-50 bg-sacred-950 text-white shadow-xl pt-safe select-none">
-                    {/* Global Google Translate Element (Hidden) */}
-                    <div id="google_translate_element" className="hidden absolute" />
 
                     <div className="flex items-center justify-between w-full px-4 h-full">
                         {/* Logo */}
@@ -157,8 +155,6 @@ export function Header() {
                         : 'bg-sacred-900/95 backdrop-blur-xl shadow-xl shadow-black/10 py-3'
                         }`}
                 >
-                    {/* Global Google Translate Element (Hidden) */}
-                    <div id="google_translate_element" className="hidden absolute" />
 
                     <div className="container mx-auto px-4">
                         <div className="flex items-center justify-between">
@@ -474,12 +470,14 @@ export function Header() {
 
                         <div className="my-4 border-t border-gray-200 dark:border-gray-700" />
 
+                        {/* Language Selector (All Users) */}
+                        <div className="mb-4">
+                            <LanguageSwitcher id="google_translate_mobile" variant="pill" />
+                        </div>
+
                         {/* Auth Buttons */}
                         {!isAuthenticated ? (
                             <div className="flex flex-col gap-3">
-                                <div className="flex justify-center mb-2">
-                                    <LanguageSwitcher id="google_translate_mobile" />
-                                </div>
                                 <Link
                                     href="/login"
                                     className="w-full py-3.5 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl font-medium border border-gray-200 dark:border-gray-700"

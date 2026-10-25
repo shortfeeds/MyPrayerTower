@@ -13,6 +13,7 @@ import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { AppDownloadBanner } from '@/components/home/PromotionalBanner';
 import { HomeSessionWrapper } from '@/components/home/HomeSessionWrapper';
 import { MemorialsBanner } from '@/components/home/MemorialsBanner';
+import { UpcomingNovenaCountdown } from '@/components/home/UpcomingNovenaCountdown';
 import { getLiturgicalData, getDailyReading, getSaintOfTheDay } from '@/app/actions/home';
 import { WelcomeGreeting } from '@/components/home/WelcomeGreeting';
 import { GlobalPerpetualFlame } from '@/components/novenas/GlobalPerpetualFlame';
@@ -150,7 +151,12 @@ async function LoggedOutHomePage() {
                 SECTION 2.5: ETERNAL MEMORIALS BANNER
                 Goal: Promote key feature
             ============================================ */}
-            <MemorialsBanner />
+                        <MemorialsBanner />
+
+            {/* Liturgical Countdown */}
+            <div className="container mx-auto px-4">
+                <UpcomingNovenaCountdown />
+            </div>
 
             {/* ============================================
                 SECTION 3: SOCIAL REASSURANCE
@@ -220,10 +226,10 @@ export default async function Home() {
                 '@context': 'https://schema.org',
                 '@type': 'WebSite',
                 name: 'MyPrayerTower',
-                url: 'https://myprayertower.com',
+                url: 'https://www.myprayertower.com',
                 potentialAction: {
                     '@type': 'SearchAction',
-                    target: 'https://myprayertower.com/prayers?q={search_term_string}',
+                    target: 'https://www.myprayertower.com/prayers?q={search_term_string}',
                     'query-input': 'required name=search_term_string'
                 }
             }} />
