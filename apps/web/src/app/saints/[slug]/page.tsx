@@ -23,13 +23,18 @@ export const dynamicParams = true;
 
 // SSG for all saints
 export async function generateStaticParams() {
-    const saints = await db.saint.findMany({
-        select: { slug: true },
-        take: 60,
-    });
-    return saints.map((saint) => ({
-        slug: saint.slug,
-    }));
+    try {
+        const saints = await db.saint.findMany({
+            select: { slug: true },
+            take: 60,
+        });
+        return saints.map((saint) => ({
+            slug: saint.slug,
+        }));
+    } catch (e) {
+        console.error("Failed to fetch static params for saints:", e);
+        return [];
+    }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
