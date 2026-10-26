@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { 
@@ -45,6 +45,8 @@ interface DonationTier {
 }
 
 const ONE_TIME_TIERS: DonationTier[] = [
+    { id: 'ALMS', amount: 300, dollars: 3, icon: '🕊️', label: 'Sacred Alms', description: 'Micro-almsgiving to keep prayers free for all' },
+    { id: 'VIGIL', amount: 500, dollars: 5, icon: '✨', label: 'Vigil Gift', description: 'Supports daily sanctuary servers & hosting' },
     { id: 'CANDLE', amount: 1000, dollars: 10, icon: '🕯️', label: 'Light a Candle', description: 'Supports daily prayer candles' },
     { id: 'ROSARY', amount: 2500, dollars: 25, icon: '📿', label: 'Rosary Partner', description: 'Supports communal prayers & guides' },
     { id: 'SUPPORTER', amount: 5000, dollars: 50, icon: '⛪', label: 'Parish Supporter', description: 'Helps sustain platform & priest stipends', popular: true },
@@ -110,6 +112,7 @@ const MONTHLY_PLANS: MonthlyPlan[] = [
 
 export function DonateClient() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [tab, setTab] = useState<'oneTime' | 'monthly'>('oneTime');
     const [selectedTier, setSelectedTier] = useState<string>('SUPPORTER');
     const [customAmount, setCustomAmount] = useState<string>('');
@@ -125,6 +128,32 @@ export function DonateClient() {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+
+    useEffect(() => {
+        if (!searchParams) return;
+        const paramAmount = searchParams.get('amount');
+        const paramTier = searchParams.get('tier');
+        const paramMonthly = searchParams.get('monthly');
+
+        if (paramMonthly === 'true') {
+            setTab('monthly');
+        } else if (paramTier) {
+            const found = ONE_TIME_TIERS.find(t => t.id.toLowerCase() === paramTier.toLowerCase());
+            if (found) {
+                setSelectedTier(found.id);
+                setCustomAmount('');
+            }
+        } else if (paramAmount) {
+            const num = Number(paramAmount);
+            const found = ONE_TIME_TIERS.find(t => t.dollars === num);
+            if (found) {
+                setSelectedTier(found.id);
+                setCustomAmount('');
+            } else if (num > 0) {
+                setCustomAmount(String(num));
+            }
+        }
+    }, [searchParams]);
 
     const selectedTierData = ONE_TIME_TIERS.find((t) => t.id === selectedTier);
     const selectedPlanData = MONTHLY_PLANS.find((p) => p.id === selectedPlan);
@@ -507,6 +536,7 @@ export function DonateClient() {
                             <div className="grid grid-cols-2 gap-2 text-xs">
                                 <Link
                                     href="/mass-offerings"
+                                    data-open-offering="mass"
                                     className="p-2.5 rounded-xl bg-white border border-amber-200/60 font-semibold text-slate-800 hover:bg-amber-50 transition-colors flex items-center gap-1.5"
                                 >
                                     <Church className="w-3.5 h-3.5 text-amber-600 shrink-0" />
@@ -514,6 +544,7 @@ export function DonateClient() {
                                 </Link>
                                 <Link
                                     href="/candles"
+                                    data-open-offering="candle"
                                     className="p-2.5 rounded-xl bg-white border border-amber-200/60 font-semibold text-slate-800 hover:bg-amber-50 transition-colors flex items-center gap-1.5"
                                 >
                                     <Flame className="w-3.5 h-3.5 text-rose-500 shrink-0" />
@@ -521,6 +552,7 @@ export function DonateClient() {
                                 </Link>
                                 <Link
                                     href="/bouquets"
+                                    data-open-offering="bouquet"
                                     className="p-2.5 rounded-xl bg-white border border-amber-200/60 font-semibold text-slate-800 hover:bg-amber-50 transition-colors flex items-center gap-1.5"
                                 >
                                     <BookOpen className="w-3.5 h-3.5 text-purple-600 shrink-0" />

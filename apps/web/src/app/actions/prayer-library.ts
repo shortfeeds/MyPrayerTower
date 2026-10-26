@@ -1,6 +1,16 @@
 
 import { db } from '@/lib/db';
 
+function cleanPreviewText(raw: string, length = 160): string {
+    const withoutRubrics = raw
+        .replace(/^>.*$/gm, '') // Remove rubric/instruction lines
+        .replace(/[#*`_]/g, '') // Remove markdown formatting
+        .replace(/\s+/g, ' ')   // Normalize whitespace
+        .trim();
+    const source = withoutRubrics || raw.replace(/[#*`_>]/g, '').replace(/\s+/g, ' ').trim();
+    return source.slice(0, length) + (source.length > length ? '...' : '');
+}
+
 export async function getLibraryPrayers(page = 1, limit = 20, search?: string, category?: string) {
     try {
         const skip = (page - 1) * limit;
@@ -10,9 +20,14 @@ export async function getLibraryPrayers(page = 1, limit = 20, search?: string, c
         };
 
         if (search) {
+            const trimmed = search.trim();
+            const searchWords = trimmed.toLowerCase().split(/\s+/).filter(w => w.length > 1);
             where.OR = [
-                { title: { contains: search, mode: 'insensitive' } },
-                { content: { contains: search, mode: 'insensitive' } },
+                { title: { contains: trimmed, mode: 'insensitive' } },
+                { content: { contains: trimmed, mode: 'insensitive' } },
+                { category: { contains: trimmed, mode: 'insensitive' } },
+                { category_label: { contains: trimmed, mode: 'insensitive' } },
+                ...(searchWords.length > 0 ? [{ tags: { hasSome: searchWords } }] : []),
             ];
         }
 
@@ -32,6 +47,7 @@ export async function getLibraryPrayers(page = 1, limit = 20, search?: string, c
                     slug: true,
                     content: true, // Needed for preview
                     category: true,
+                    category_label: true,
                     tags: true,
                 }
             }),
@@ -42,7 +58,7 @@ export async function getLibraryPrayers(page = 1, limit = 20, search?: string, c
             prayers: prayers.map(p => ({
                 ...p,
                 id: p.id.toString(), // Convert BigInt to string
-                content: p.content.slice(0, 150) + (p.content.length > 150 ? '...' : '') // Preview only
+                content: cleanPreviewText(p.content, 150) // Clean preview without raw markdown
             })),
             totalPages: Math.ceil(total / limit),
             currentPage: page,

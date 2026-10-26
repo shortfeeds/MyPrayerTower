@@ -68,7 +68,7 @@ export function SaintOfTheDayCard({ saint }: SaintOfTheDayCardProps) {
                         <div className="flex-shrink-0 relative">
                             {displayImage ? (
                                 <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gold-200 shadow-md relative">
-                                    <Image src={displayImage} alt={displayName} fill className="object-cover" />
+                                    <Image src={displayImage} alt={displayName} fill sizes="80px" className="object-cover" />
                                 </div>
                             ) : (
                                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gold-200 to-gold-400 flex items-center justify-center text-white text-3xl font-display shadow-md">

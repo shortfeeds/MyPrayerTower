@@ -5,7 +5,7 @@ import { notifyBouquet } from '@/lib/email';
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { items, recipientName, senderName, senderEmail, message, scheduleDate, isAnonymous, occasion, paypalOrderId, paypalPayerEmail } = body;
+        const { items, recipientName, recipientEmail, senderName, senderEmail, message, scheduleDate, isAnonymous, occasion, paypalOrderId, paypalPayerEmail } = body;
 
         // items = { [id]: count }
         // Pricing logic must match frontend or DB

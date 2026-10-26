@@ -47,6 +47,8 @@ export const ALL_FEATURES: Feature[] = [
   // ── 2. SPIRITUAL OFFERINGS ────────────────────────────────────────────────
   { title: 'Light a Candle',     description: 'Place your intention before God',     icon: Flame,         href: '/candles',             color: 'bg-amber-500/10 text-amber-500',      badge: 'From $1',   isPremium: true, category: 'offerings' },
   { title: 'Request a Mass',     description: 'Have a Holy Mass offered for you',    icon: Church,        href: '/mass-offerings',      color: 'bg-blue-500/10 text-blue-400',       badge: 'Popular',   isPremium: true, category: 'offerings' },
+  { title: 'Occasion Blessings', description: 'Sacred ceremonies & keepsakes',       icon: Sparkles,      href: '/blessings',           color: 'bg-amber-400/10 text-amber-300',      badge: 'NEW',       isPremium: true, category: 'offerings' },
+  { title: 'My Sacred Vigils',   description: 'Track active flames & certificates',  icon: Sparkles,      href: '/my-vigils',           color: 'bg-yellow-500/10 text-yellow-400',   badge: 'Keepsakes', isPremium: true, category: 'offerings' },
   { title: 'Spiritual Bouquets', description: 'Send a sacred gift to loved ones',    icon: Gift,          href: '/bouquets',            color: 'bg-pink-500/10 text-pink-400',       isPremium: true,    category: 'offerings' },
   { title: 'Charity Campaigns',  description: 'Support urgent Catholic causes',      icon: LifeBuoy,      href: '/campaigns',           color: 'bg-teal-500/10 text-teal-400',       category: 'offerings' },
   { title: 'Contributions',      description: 'Support our global ministry',         icon: Wallet,        href: '/contributions',       color: 'bg-emerald-500/10 text-emerald-400', isPremium: true,    category: 'offerings' },

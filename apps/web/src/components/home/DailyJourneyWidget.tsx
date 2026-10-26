@@ -107,7 +107,7 @@ export function DailyJourneyWidget({ reading, saint }: DailyJourneyProps) {
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden ring-2 ring-gold-100">
                                     {saint?.image ? (
-                                        <img src={saint.image} alt={saint.name} className="w-full h-full object-cover" />
+                                        <img src={saint.image} alt={saint.name} width={48} height={48} loading="lazy" className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-purple-100 text-purple-500 font-serif font-bold">
                                             {saint?.name?.charAt(0) || 'S'}

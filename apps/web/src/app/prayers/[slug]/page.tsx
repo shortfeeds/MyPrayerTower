@@ -3,8 +3,9 @@ import { getPrayerBySlug, getLibraryPrayers } from '@/app/actions/prayer-library
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Scroll, Sparkles } from 'lucide-react';
 import { PrayerInteractions } from '@/components/prayer/PrayerInteractions';
+import { AnsweredGraces } from '@/components/prayer/AnsweredGraces';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { RelatedContent } from '@/components/seo/RelatedContent';
@@ -101,8 +102,23 @@ export default async function PrayerPage({ params }: Props) {
             type: 'prayer' as const
         }));
 
-    // Simple formatting for content: split by newlines and wrap in paragraphs
-    const paragraphs = prayer.content.split('\n').filter(p => p.trim() !== '');
+    // Parse liturgical rubrics (starting with >) and sacred prayer petitions
+    const lines = prayer.content.split('\n');
+    const rubrics: string[] = [];
+    const bodyParagraphs: string[] = [];
+    let inRubricSection = true;
+
+    for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (!line) continue;
+
+        if (inRubricSection && line.startsWith('>')) {
+            rubrics.push(line.replace(/^>\s*/, ''));
+        } else {
+            inRubricSection = false;
+            bodyParagraphs.push(line);
+        }
+    }
 
     // Generate FAQs
     const faqs = getPrayerFAQs(prayer.category || 'general', prayer.title);
@@ -217,6 +233,7 @@ export default async function PrayerPage({ params }: Props) {
                             url={`/prayers/${params.slug}`}
                             title={prayer.title}
                             description={prayer.content.slice(0, 160)}
+                            fullText={prayer.content}
                             contentType="prayer"
                             variant="compact"
                         />
@@ -231,8 +248,8 @@ export default async function PrayerPage({ params }: Props) {
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-2 mb-6">
                         <span className="h-px w-8 bg-gold-300"></span>
-                        <span className="text-gold-500 text-xs font-bold tracking-widest uppercase">
-                            {prayer.category}
+                        <span className="text-gold-600 text-xs font-bold tracking-widest uppercase">
+                            {prayer.category_label || prayer.category}
                         </span>
                         <span className="h-px w-8 bg-gold-300"></span>
                     </div>
@@ -244,9 +261,13 @@ export default async function PrayerPage({ params }: Props) {
                     {prayer.tags && prayer.tags.length > 0 && (
                         <div className="flex flex-wrap justify-center gap-2">
                             {prayer.tags.map(tag => (
-                                <span key={tag} className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                                <Link
+                                    key={tag}
+                                    href={`/prayers?q=${encodeURIComponent(tag.replace(/^[^:]+:/, ''))}`}
+                                    className="px-3 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded-full text-xs font-medium border border-amber-200/50 transition-colors"
+                                >
                                     #{tag}
-                                </span>
+                                </Link>
                             ))}
                         </div>
                     )}
@@ -262,13 +283,59 @@ export default async function PrayerPage({ params }: Props) {
                         </svg>
                     </div>
 
-                    {/* Text Content */}
+                    {/* Liturgical Rubrics & Roots Callout Card */}
+                    {rubrics.length > 0 && (
+                        <div className="mb-10 p-6 md:p-7 rounded-2xl bg-gradient-to-br from-amber-50/90 via-orange-50/40 to-amber-50/70 border border-amber-200/90 shadow-sm">
+                            <div className="flex items-center gap-2.5 mb-4 text-amber-900 font-bold text-xs uppercase tracking-wider">
+                                <span className="p-1.5 rounded-lg bg-amber-100 text-amber-800">
+                                    <Scroll className="w-4 h-4" />
+                                </span>
+                                <span>Liturgical Setting, Posture & Origins</span>
+                            </div>
+                            <div className="space-y-3 text-sm md:text-base text-amber-950/90 leading-relaxed font-sans">
+                                {rubrics.map((rubric, rIdx) => (
+                                    <div key={rIdx} className="flex items-start gap-3">
+                                        <span className="mt-2 w-1.5 h-1.5 rounded-full bg-gold-500 shrink-0"></span>
+                                        <p
+                                            className="flex-1"
+                                            dangerouslySetInnerHTML={{
+                                                __html: rubric
+                                                    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-amber-950">$1</strong>')
+                                                    .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Sacred Text Content */}
                     <div className="font-serif text-lg md:text-xl leading-loose text-gray-800 space-y-6">
-                        {paragraphs.map((paragraph, idx) => (
-                            <p key={idx} className={idx === 0 ? "first-letter:text-5xl first-letter:font-bold first-letter:text-gold-600 first-letter:float-left first-letter:mr-3 first-letter:mt-[-10px]" : ""}>
-                                {paragraph}
-                            </p>
-                        ))}
+                        {bodyParagraphs.map((paragraph, idx) => {
+                            const isHeader = paragraph.startsWith('**') && paragraph.endsWith('**');
+                            const isVersicle = paragraph.startsWith('V.') || paragraph.startsWith('R.') || paragraph.startsWith('Step ');
+
+                            if (isHeader) {
+                                return (
+                                    <h3 key={idx} className="font-sans font-bold text-base md:text-lg text-sacred-900 pt-4 pb-1 tracking-wide border-b border-gray-100">
+                                        {paragraph.replace(/\*\*/g, '')}
+                                    </h3>
+                                );
+                            }
+
+                            return (
+                                <p
+                                    key={idx}
+                                    className={`${idx === 0 ? "first-letter:text-5xl first-letter:font-bold first-letter:text-gold-600 first-letter:float-left first-letter:mr-3 first-letter:mt-[-10px]" : ""} ${isVersicle ? "pl-4 border-l-2 border-gold-400 bg-amber-50/30 py-1 rounded-r-lg text-gray-800" : ""}`}
+                                    dangerouslySetInnerHTML={{
+                                        __html: paragraph
+                                            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
+                                            .replace(/\*(.*?)\*/g, '<em class="italic text-gray-700">$1</em>')
+                                    }}
+                                />
+                            );
+                        })}
                     </div>
 
                     {/* Amen footer */}
@@ -294,12 +361,16 @@ export default async function PrayerPage({ params }: Props) {
                             url={`/prayers/${params.slug}`}
                             title={prayer.title}
                             description={prayer.content.slice(0, 160)}
+                            fullText={prayer.content}
                             contentType="prayer"
                             label="Share This Prayer"
                             variant="cta"
                         />
                     </div>
                 </div>
+
+                {/* Living Faith & Answered Graces Testimonials */}
+                <AnsweredGraces category={prayer.category || undefined} />
 
                 {/* Related Prayers */}
                 {relatedItems.length > 0 && (

@@ -5,6 +5,7 @@ import { getUserFromCookie } from '@/lib/auth';
 import { moderateContent } from '@/lib/moderation';
 import { unstable_cache } from 'next/cache';
 import { notifyIndexNow } from '@/lib/indexnow';
+import { sendVigilConfirmationEmail, sendMassConfirmationEmail } from '@/lib/email';
 
 // Alias db to prisma for compatibility with existing code in this file
 const prisma = db;
@@ -142,6 +143,16 @@ export async function lightVirtualCandle(data: {
         // Auto-notify search engines of new candle
         await notifyIndexNow('/candles');
 
+        // Send spiritual confirmation email if email provided
+        if (candle.email) {
+            sendVigilConfirmationEmail({
+                email: candle.email,
+                name: candle.name || undefined,
+                intention: candle.intention,
+                durationDays: days,
+            }).catch(e => console.error('Vigil email error:', e));
+        }
+
         return { success: true, candle };
     } catch (error) {
         console.error('Error lighting candle:', error);
@@ -201,6 +212,16 @@ export async function lightBulkCandles(data: {
 
         if (results.length > 0) {
             await notifyIndexNow('/candles');
+
+            const targetEmail = data.email || user?.email;
+            if (targetEmail && data.intentions[0]) {
+                sendVigilConfirmationEmail({
+                    email: targetEmail,
+                    name: data.name || user?.firstName || undefined,
+                    intention: data.intentions.join('; '),
+                    durationDays: days,
+                }).catch(e => console.error('Bulk vigil email error:', e));
+            }
         }
 
         return { success: true, count: results.length, candles: results };
@@ -490,5 +511,237 @@ export async function prayForCandle(candleId: string) {
     } catch (error) {
         console.error('Error praying for candle:', error);
         return { success: false };
+    }
+}
+
+export async function submitMassOffering(data: {
+    offeringTypeId: string;
+    intentionFor: string;
+    intentionType?: string;
+    requestedBy?: string;
+    email: string;
+    notes?: string;
+    paymentId?: string;
+}) {
+    try {
+        const typeMap: Record<string, { type: 'REGULAR' | 'NOVENA' | 'GREGORIAN' | 'PERPETUAL'; amount: number; label: string }> = {
+            single: { type: 'REGULAR', amount: 1000, label: 'Single Mass' },
+            novena: { type: 'NOVENA', amount: 7500, label: 'Novena of Masses' },
+            gregorian: { type: 'GREGORIAN', amount: 20000, label: 'Gregorian Masses' },
+            perpetual: { type: 'PERPETUAL', amount: 10000, label: 'Perpetual Enrollment' },
+        };
+
+        const config = typeMap[data.offeringTypeId] || typeMap.single;
+        const user = await getUserFromCookie();
+
+        const mass = await db.massOffering.create({
+            data: {
+                offeringType: config.type,
+                amount: config.amount,
+                currency: 'usd',
+                intentionFor: data.intentionFor.trim(),
+                specialIntention: data.notes?.trim() || null,
+                offeredBy: data.requestedBy?.trim() || null,
+                name: data.requestedBy?.trim() || 'Faithful Soul',
+                email: data.email.trim(),
+                userId: user?.id || null,
+                status: 'PAID',
+                paidAt: new Date(),
+                isForLiving: data.intentionType !== 'Deceased Person',
+            }
+        });
+
+        // Trigger confirmation email
+        sendMassConfirmationEmail({
+            email: data.email.trim(),
+            intentionFor: data.intentionFor.trim(),
+            requestedBy: data.requestedBy?.trim(),
+            massTypeName: config.label,
+        }).catch(err => console.error('Failed to trigger mass confirmation email:', err));
+
+        return {
+            success: true,
+            massOfferingId: mass.id,
+            orderNumber: mass.orderNumber,
+            offeringType: config.label
+        };
+    } catch (error) {
+        console.error('Error submitting mass offering:', error);
+        return { success: false, error: 'Could not record mass offering' };
+    }
+}
+
+export async function getUserSanctuaryVigils() {
+    const user = await getUserFromCookie();
+    if (!user) {
+        return { candles: [], massOfferings: [] };
+    }
+
+    try {
+        const [candles, massOfferings] = await Promise.all([
+            db.prayerCandle.findMany({
+                where: {
+                    OR: [
+                        { userId: user.id },
+                        user.email ? { email: user.email } : { id: 'impossible_id' }
+                    ],
+                    isActive: true,
+                },
+                orderBy: { litAt: 'desc' },
+                take: 20
+            }),
+            db.massOffering.findMany({
+                where: {
+                    OR: [
+                        { userId: user.id },
+                        user.email ? { email: user.email } : { id: 'impossible_id' }
+                    ]
+                },
+                orderBy: { createdAt: 'desc' },
+                take: 20
+            })
+        ]);
+
+        return {
+            candles: candles.map(c => ({
+                id: c.id,
+                intention: c.intention,
+                name: c.name,
+                duration: c.duration,
+                litAt: c.litAt.toISOString(),
+                expiresAt: c.expiresAt.toISOString(),
+                isActive: c.isActive && new Date(c.expiresAt) > new Date(),
+                prayerCount: c.prayerCount
+            })),
+            massOfferings: massOfferings.map(m => ({
+                id: m.id,
+                orderNumber: m.orderNumber,
+                offeringType: m.offeringType,
+                intentionFor: m.intentionFor,
+                offeredBy: m.offeredBy,
+                status: m.status,
+                createdAt: m.createdAt.toISOString(),
+                celebrationDate: m.celebrationDate ? m.celebrationDate.toISOString() : null,
+                celebrant: m.celebrant
+            }))
+        };
+    } catch (err) {
+        console.error('Error fetching user vigils:', err);
+        return { candles: [], massOfferings: [] };
+    }
+}
+
+export async function createSpiritualBouquet(data: {
+    creatorName: string;
+    creatorEmail: string;
+    recipientName: string;
+    recipientEmail: string;
+    occasion: string;
+    message?: string;
+    massesCount: number;
+    rosariesCount: number;
+    prayersCount: number;
+    candlesCount: number;
+    amount: number; // in cents
+    paymentId?: string;
+}) {
+    try {
+        const user = await getUserFromCookie();
+
+        const bouquet = await db.spiritualBouquet.create({
+            data: {
+                creatorId: user?.id || null,
+                creatorName: data.creatorName.trim(),
+                creatorEmail: data.creatorEmail.trim(),
+                recipientName: data.recipientName.trim(),
+                recipientEmail: data.recipientEmail.trim(),
+                occasion: data.occasion || 'Spiritual Blessing',
+                message: data.message?.trim() || null,
+                massesCount: data.massesCount || 0,
+                rosariesCount: data.rosariesCount || 0,
+                prayersCount: data.prayersCount || 0,
+                candlesCount: data.candlesCount || 0,
+                amount: data.amount,
+                paymentId: data.paymentId || null,
+                paymentStatus: data.amount === 0 || data.paymentId ? 'PAID' : 'PENDING',
+                sentAt: new Date(),
+            }
+        });
+
+        // Automatically light a 7-day Sanctuary Candle if requested in bouquet
+        if (data.candlesCount > 0) {
+            const expires = new Date();
+            expires.setDate(expires.getDate() + 7);
+            await db.prayerCandle.create({
+                data: {
+                    intention: `Spiritual Bouquet for ${data.recipientName} (${data.occasion})`,
+                    name: data.creatorName,
+                    email: data.creatorEmail,
+                    isAnonymous: false,
+                    duration: 'SEVEN_DAYS',
+                    amount: data.candlesCount * 499,
+                    isActive: true,
+                    litAt: new Date(),
+                    expiresAt: expires,
+                    paymentStatus: 'PAID'
+                }
+            }).catch(e => console.error('Error auto-lighting bouquet candle:', e));
+        }
+
+        return { success: true, bouquetId: bouquet.id };
+    } catch (error) {
+        console.error('Error creating spiritual bouquet:', error);
+        return { success: false, error: 'Failed to create spiritual bouquet' };
+    }
+}
+
+export async function getActiveTabernacleLamp() {
+    try {
+        const lamp = await db.prayerCandle.findFirst({
+            where: {
+                isActive: true,
+                expiresAt: { gt: new Date() },
+                OR: [
+                    { duration: 'THIRTY_DAYS' },
+                    { intention: { contains: 'Tabernacle' } }
+                ]
+            },
+            orderBy: { litAt: 'desc' },
+            select: {
+                id: true,
+                name: true,
+                intention: true,
+                litAt: true,
+                expiresAt: true,
+                duration: true,
+                prayerCount: true
+            }
+        });
+
+        if (lamp) {
+            return {
+                id: lamp.id,
+                sponsorFamily: lamp.name || 'The Faithful Communion',
+                intention: lamp.intention,
+                litAt: lamp.litAt.toISOString(),
+                expiresAt: lamp.expiresAt.toISOString(),
+                prayerCount: lamp.prayerCount
+            };
+        }
+
+        // Sacred default for continuous reverence
+        const defaultExpires = new Date();
+        defaultExpires.setDate(defaultExpires.getDate() + 6);
+        return {
+            id: 'tabernacle-perpetual',
+            sponsorFamily: 'The Friends of the Sanctuary',
+            intention: 'Perpetual Adoration and Peace for the Whole World',
+            litAt: new Date().toISOString(),
+            expiresAt: defaultExpires.toISOString(),
+            prayerCount: 842
+        };
+    } catch (error) {
+        console.error('Error fetching tabernacle lamp:', error);
+        return null;
     }
 }

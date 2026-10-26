@@ -2,6 +2,7 @@
 
 import { PayPalScriptProvider as PayPalProvider, PayPalButtons, FUNDING } from '@paypal/react-paypal-js';
 import { useState } from 'react';
+import { trackPurchase } from '@/lib/analytics';
 
 // Add helper type match
 export interface PayPalFrontendItem {
@@ -172,7 +173,19 @@ export function PayPalCheckout({
 
                                 const captureData = await response.json();
 
-                                if (captureData.success) {
+                                                                if (captureData.success) {
+                                    const parsedVal = (amount ? amount / 100 : 0);
+                                    trackPurchase(
+                                        captureData.orderId || data.orderID,
+                                        parsedVal,
+                                        [{
+                                            item_id: referenceId || data.orderID,
+                                            item_name: description || 'Spiritual Offering',
+                                            price: parsedVal,
+                                            quantity: 1,
+                                        }],
+                                        captureData.currency || 'USD'
+                                    );
                                     onSuccess({
                                         orderId: captureData.orderId,
                                         captureId: captureData.captureId,
@@ -291,7 +304,19 @@ export function PayPalCheckout({
 
                                 const captureData = await response.json();
 
-                                if (captureData.success) {
+                                                                if (captureData.success) {
+                                    const parsedVal = (amount ? amount / 100 : 0);
+                                    trackPurchase(
+                                        captureData.orderId || data.orderID,
+                                        parsedVal,
+                                        [{
+                                            item_id: referenceId || data.orderID,
+                                            item_name: description || 'Spiritual Offering',
+                                            price: parsedVal,
+                                            quantity: 1,
+                                        }],
+                                        captureData.currency || 'USD'
+                                    );
                                     onSuccess({
                                         orderId: captureData.orderId,
                                         captureId: captureData.captureId,

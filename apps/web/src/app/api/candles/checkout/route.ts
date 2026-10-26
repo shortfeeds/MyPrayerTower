@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
             else if (duration === 'THIRTY_DAYS') expiresAt.setDate(now.getDate() + 30);
             else expiresAt.setDate(now.getDate() + 3); // Default
 
-            await db.virtualCandle.create({
+            await db.prayerCandle.create({
                 data: {
                     id: orderId,
                     intention,

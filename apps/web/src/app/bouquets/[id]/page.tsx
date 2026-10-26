@@ -1,4 +1,3 @@
-
 import { db } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { BouquetActions } from '@/components/bouquets/BouquetActions';
@@ -78,7 +77,7 @@ export default async function BouquetPage({ params }: Props) {
                     <Flower className="w-16 h-16 text-gold-500 mx-auto mb-4 animate-pulse-soft" />
 
                     <h1 className="font-serif text-3xl font-bold text-white mb-2 relative z-10">
-                        Top {bouquet.recipientName}
+                        For {bouquet.recipientName}
                     </h1>
                     <p className="text-sacred-200 font-medium uppercase tracking-widest text-sm relative z-10">
                         {bouquet.occasion || 'Spiritual Bouquet'}
@@ -132,12 +131,11 @@ export default async function BouquetPage({ params }: Props) {
                         massesCount: bouquet.massesCount,
                         rosariesCount: bouquet.rosariesCount,
                         prayersCount: bouquet.prayersCount,
-                        candlesCount: bouquet.candlesCount
+                        candlesCount: bouquet.candlesCount,
+                        message: bouquet.message,
                     }} />
                 </div>
             </div>
         </div>
     );
 }
-
-// Add viewport export in file or handle in layout

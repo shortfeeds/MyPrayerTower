@@ -163,11 +163,15 @@ export function Footer() {
                         </div>
                         <div>
                             <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-widest">Divine</h4>
-                            <ul className="space-y-4 text-sm">
+                            <ul className="space-y-3 text-sm">
                                 <li><Link href="/readings" className="hover:text-white transition-colors">Daily Readings</Link></li>
                                 <li><Link href="/rosary" className="hover:text-white transition-colors">Holy Rosary</Link></li>
                                 <li><Link href="/prayers" className="hover:text-white transition-colors">Prayer Library</Link></li>
                                 <li><Link href="/candles" className="hover:text-white transition-colors">Virtual Candles</Link></li>
+                                <li><Link href="/mass-offerings" className="hover:text-gold-400 transition-colors">Request a Mass</Link></li>
+                                <li><Link href="/blessings" className="hover:text-gold-400 transition-colors">Occasion Blessings</Link></li>
+                                <li><Link href="/bouquets" className="hover:text-gold-400 transition-colors">Spiritual Bouquets</Link></li>
+                                <li><Link href="/my-vigils" className="hover:text-gold-400 transition-colors">My Sacred Vigils</Link></li>
                             </ul>
                         </div>
                         <div>
@@ -194,6 +198,7 @@ export function Footer() {
                             <div className="flex gap-6 uppercase tracking-tighter">
                                 <Link href="/privacy" className="hover:text-gray-400">Privacy</Link>
                                 <Link href="/terms" className="hover:text-gray-400">Terms</Link>
+                                <Link href="/refunds" className="hover:text-gray-400">Refund Policy</Link>
                             </div>
                         </div>
                     </div>

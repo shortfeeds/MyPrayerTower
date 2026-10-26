@@ -37,13 +37,13 @@ export async function POST(req: NextRequest) {
                 console.log(`Lighting Candle: ${dbRecordId}`);
 
                 // Fetch to get duration for expiry calculation
-                const candle = await db.virtualCandle.findUnique({ where: { id: dbRecordId } });
+                const candle = await db.prayerCandle.findUnique({ where: { id: dbRecordId } });
 
                 if (candle) {
                     const hours = DURATION_HOURS[candle.duration as keyof typeof DURATION_HOURS] || 24;
                     const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
 
-                    const updatedCandle = await db.virtualCandle.update({
+                    const updatedCandle = await db.prayerCandle.update({
                         where: { id: dbRecordId },
                         data: {
                             paymentStatus: 'PAID',

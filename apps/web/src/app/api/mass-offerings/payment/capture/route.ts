@@ -34,9 +34,9 @@ export async function POST(req: NextRequest) {
             // Fallback: If we can't find it in PayPal response (legacy lib issue), 
             // we might need to rely on the fact that we created it.
             // But let's look for purchase_units[0].reference_id (standard).
-            const dbRecordId = captureResult.purchase_units?.[0]?.reference_id;
+            const dbRecordId = (captureResult.purchase_units?.[0] as any)?.reference_id;
             // If createPayPalOrder puts it in custom_id:
-            const customId = captureResult.purchase_units?.[0]?.custom_id;
+            const customId = (captureResult.purchase_units?.[0] as any)?.custom_id;
 
             const targetId = dbRecordId || customId;
 

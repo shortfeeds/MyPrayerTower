@@ -4,10 +4,12 @@ declare global {
     var prisma: PrismaClient | undefined;
 }
 
-// Create Prisma client with error handling
+// Create Prisma client with error handling & direct fallback
 function createPrismaClient() {
     console.log(">>> [DB] Creating new PrismaClient instance...");
+    const url = process.env.DIRECT_URL || process.env.DATABASE_URL;
     return new PrismaClient({
+        datasources: url ? { db: { url } } : undefined,
         log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
     });
 }

@@ -89,7 +89,7 @@ export function DailyFocus({ reading, saint, date, liturgicalColor = 'green' }: 
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden ring-2 ring-gold-100 shrink-0 relative">
                                     {saint?.image ? (
-                                        <Image src={saint.image} alt={saint.name} fill className="object-cover" />
+                                        <Image src={saint.image} alt={saint.name} fill sizes="48px" className="object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-purple-100 text-purple-500 font-serif font-bold">
                                             {saint?.name?.charAt(0) || 'S'}

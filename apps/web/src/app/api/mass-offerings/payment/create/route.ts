@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
                 recipientName: metadata.recipientName,
                 giftMessage: metadata.giftMessage,
                 // Add-ons
-                includesVirtualCandle: metadata.includesVirtualCandle,
+                includesPrayerCandle: !!metadata.includesVirtualCandle,
                 virtualCandleAmount: metadata.includesVirtualCandle ? 500 : 0,
                 includesPrintedCard: metadata.includesPrintedCard,
                 printedCardAmount: metadata.includesPrintedCard ? 1000 : 0,

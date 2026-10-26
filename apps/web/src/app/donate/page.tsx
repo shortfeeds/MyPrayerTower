@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { DonateClient } from './DonateClient';
 
@@ -59,7 +60,9 @@ export default function DonatePage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <DonateClient />
+            <Suspense fallback={null}>
+                <DonateClient />
+            </Suspense>
         </>
     );
 }

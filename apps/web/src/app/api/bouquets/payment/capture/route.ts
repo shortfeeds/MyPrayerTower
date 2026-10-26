@@ -36,12 +36,18 @@ export async function POST(req: NextRequest) {
                 });
 
                 // Send email notification
+                const prayerTypesList: string[] = [];
+                if (bouquet.massesCount > 0) prayerTypesList.push(`${bouquet.massesCount} Masses`);
+                if (bouquet.rosariesCount > 0) prayerTypesList.push(`${bouquet.rosariesCount} Rosaries`);
+                if (bouquet.prayersCount > 0) prayerTypesList.push(`${bouquet.prayersCount} Prayers`);
+                if (bouquet.candlesCount > 0) prayerTypesList.push(`${bouquet.candlesCount} Candles`);
+
                 await notifyBouquet({
                     recipient: bouquet.recipientName,
-                    sender: bouquet.senderName,
-                    prayerTypes: bouquet.prayerTypes,
+                    sender: bouquet.creatorName,
+                    prayerTypes: prayerTypesList,
                     amount: bouquet.amount || 0,
-                    email: bouquet.senderEmail
+                    email: bouquet.creatorEmail
                 });
             } else {
                 console.warn('No reference ID found in PayPal bouquet order.', orderId);

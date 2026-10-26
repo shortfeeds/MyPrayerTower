@@ -73,6 +73,17 @@ export default function RefundsPage() {
                                 </p>
                             </div>
 
+                            {/* Spiritual Bouquets & Blessings */}
+                            <div className="border-l-4 border-purple-500 pl-4">
+                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Spiritual Bouquets & Blessings</h3>
+                                <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
+                                    <li>• <strong>Spiritual Bouquets:</strong> Non-refundable once generated, personalized, and dispatched.</li>
+                                    <li>• <strong>Occasion Blessings & Consecrations:</strong> Non-refundable once the consecration ritual has concluded and the digital certificate has been issued.</li>
+                                    <li>• <strong>Tabernacle Lamp & Perpetual Vigils:</strong> Non-refundable once activated and burning in the live sanctuary registry.</li>
+                                    <li>• <strong>All Services 100% Digital:</strong> All deliverables are electronic (PDF certificates, digital cards, sanctuary visualizations). No physical returns or shipments apply.</li>
+                                </ul>
+                            </div>
+
                             {/* Platform Support Contributions */}
                             <div className="border-l-4 border-green-500 pl-4">
                                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">Platform Support Contributions</h3>

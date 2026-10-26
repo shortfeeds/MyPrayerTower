@@ -39,6 +39,7 @@ export async function getRevenueStats(): Promise<RevenueStats> {
         const [
             massStats, 
             donationStats, 
+            bouquetStats,
             subStats, 
             candleStats,
             massGroups,
@@ -50,7 +51,12 @@ export async function getRevenueStats(): Promise<RevenueStats> {
                 _count: true
             }),
             db.platformDonation.aggregate({
-                where: { status: 'COMPLETED', createdAt: { gte: REVENUE_START_DATE } },
+                where: { status: { in: ['PAID', 'COMPLETED'] }, createdAt: { gte: REVENUE_START_DATE } },
+                _sum: { amount: true },
+                _count: true
+            }),
+            db.spiritualBouquet.aggregate({
+                where: { paymentStatus: 'PAID', sendDate: { gte: REVENUE_START_DATE } },
                 _sum: { amount: true },
                 _count: true
             }),
@@ -81,11 +87,11 @@ export async function getRevenueStats(): Promise<RevenueStats> {
         ]);
 
         const massRevenue = massStats._sum?.amount || 0;
-        const donationRevenue = (donationStats._sum?.amount || 0) + (candleStats._sum?.amount || 0);
+        const donationRevenue = (donationStats._sum?.amount || 0) + (candleStats._sum?.amount || 0) + (bouquetStats._sum?.amount || 0);
         const subscriptionRevenue = subStats._sum?.amount || 0;
 
         const totalRevenue = massRevenue + donationRevenue + subscriptionRevenue;
-        const totalOrders = (massStats._count || 0) + (donationStats._count || 0) + (candleStats._count || 0) + (subStats._count || 0);
+        const totalOrders = (massStats._count || 0) + (donationStats._count || 0) + (bouquetStats._count || 0) + (candleStats._count || 0) + (subStats._count || 0);
         const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
 
         // Map Mass Breakdowns
@@ -162,14 +168,22 @@ export async function getRevenueChartData(period: '7d' | '30d' | '90d' | '12m' |
         const effectiveStartDate = startDate < REVENUE_START_DATE ? REVENUE_START_DATE : startDate;
  
         // Fetch all raw records since startDate
-        const [masses, donations, candles, subs] = await Promise.all([
+        const [masses, donations, platformDonations, bouquets, candles, subs] = await Promise.all([
             db.massOffering.findMany({
                 where: { createdAt: { gte: effectiveStartDate }, status: 'PAID' },
                 select: { createdAt: true, amount: true }
             }),
             db.donation.findMany({
-                where: { createdAt: { gte: effectiveStartDate }, status: 'COMPLETED' },
+                where: { createdAt: { gte: effectiveStartDate }, status: { in: ['PAID', 'COMPLETED'] } },
                 select: { createdAt: true, amount: true }
+            }),
+            db.platformDonation.findMany({
+                where: { createdAt: { gte: effectiveStartDate }, status: { in: ['PAID', 'COMPLETED'] } },
+                select: { createdAt: true, amount: true }
+            }),
+            db.spiritualBouquet.findMany({
+                where: { sendDate: { gte: effectiveStartDate }, paymentStatus: 'PAID' },
+                select: { sendDate: true, amount: true }
             }),
             db.prayerCandle.findMany({
                 where: { litAt: { gte: effectiveStartDate }, paymentStatus: 'PAID' },
@@ -203,6 +217,8 @@ export async function getRevenueChartData(period: '7d' | '30d' | '90d' | '12m' |
 
         masses.forEach(m => addToBucket(m.createdAt, 'mass', m.amount));
         donations.forEach(d => addToBucket(d.createdAt, 'donation', d.amount));
+        platformDonations.forEach(pd => addToBucket(pd.createdAt, 'donation', pd.amount));
+        bouquets.forEach(b => addToBucket(b.sendDate || new Date(), 'mass', b.amount));
         candles.forEach(c => addToBucket(c.litAt, 'donation', c.amount));
         subs.forEach(s => addToBucket(s.purchasedAt, 'sub', s.amount || 0));
 

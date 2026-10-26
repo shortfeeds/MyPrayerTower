@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Heart, Share2, Flag, CheckCircle, Filter, Loader2, MapPin, Clock, Facebook, Twitter, Copy, X, Globe, Sparkles, Church, Bookmark, MessageCircle, Search, ShieldAlert } from 'lucide-react';
 import { useSpiritualJourney } from '@/components/journey/SpiritualJourneyProvider';
 import { submitPrayerRequest, prayForRequest, markPrayerAnswered, reportPrayer, getPrayerRequests } from '@/app/actions/prayer';
@@ -86,11 +87,29 @@ function getTimeAgo(date: Date): string {
     return `${Math.floor(seconds / 86400)}d ago`;
 }
 
+function PrayerWallSearchParamsHandler({
+    onTitleFound
+}: {
+    onTitleFound: (title: string) => void;
+}) {
+    const searchParams = useSearchParams();
+    const title = searchParams.get('title') || searchParams.get('intention');
+
+    useEffect(() => {
+        if (title) {
+            onTitleFound(title);
+        }
+    }, [title, onTitleFound]);
+
+    return null;
+}
+
 export default function PrayerWallClient({ initialPrayers, currentUserId }: { initialPrayers: Prayer[], currentUserId?: string }) {
     const [prayers, setPrayers] = useState<Prayer[]>([...SAMPLE_PRAYERS, ...initialPrayers]);
     const [selectedCategory, setSelectedCategory] = useState('All');
     // ... (Keep existing state)
     const [showSubmitModal, setShowSubmitModal] = useState(false);
+    const [prayerContent, setPrayerContent] = useState('');
     const [showShareModal, setShowShareModal] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [prayedIds, setPrayedIds] = useState<Set<string>>(new Set());
@@ -101,6 +120,11 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
     const [hasMore, setHasMore] = useState(true);
     const { triggerSacredMoment } = useSpiritualJourney();
     const { triggerInterstitial } = useNativeAds();
+
+    const handleTitleFound = useCallback((title: string) => {
+        setPrayerContent(`Please join in prayer with me for: "${title}". Asking the Lord for grace, peace, and deliverance.`);
+        setShowSubmitModal(true);
+    }, []);
 
     // -- New Modal States --
     const [closingPrayerFor, setClosingPrayerFor] = useState<Prayer | null>(null);
@@ -358,6 +382,10 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-cream-50 to-white">
+            <Suspense fallback={null}>
+                <PrayerWallSearchParamsHandler onTitleFound={handleTitleFound} />
+            </Suspense>
+
             {/* Header */}
             <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white pt-28 pb-16 relative overflow-hidden">
                 {/* Background orbs */}
@@ -717,8 +745,10 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
                                         required
                                         minLength={5}
                                         rows={4}
+                                        value={prayerContent}
+                                        onChange={(e) => setPrayerContent(e.target.value)}
                                         placeholder="Share your prayer request with our global community..."
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent resize-none"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent resize-none text-gray-900 bg-white"
                                     />
                                 </div>
 

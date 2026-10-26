@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
             recentOfferings
         ] = await Promise.all([
             db.massOffering.count(),
-            db.massOffering.count({ where: { status: 'PENDING' } }),
+            db.massOffering.count({ where: { status: 'PENDING_PAYMENT' } }),
             db.massOffering.count({ where: { status: 'COMPLETED' } }),
             db.massOffering.aggregate({
                 _sum: { amount: true }
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
                     id: true,
                     tier: true,
                     amount: true,
-                    donorName: true,
+                    name: true,
                     status: true,
                     createdAt: true
                 }

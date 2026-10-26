@@ -1,3 +1,10 @@
+export interface MemorialGuestbookEntry {
+    id: string;
+    guestName?: string | null;
+    message: string;
+    createdAt: string;
+}
+
 export interface Memorial {
     id: string;
     firstName: string;
@@ -14,6 +21,10 @@ export interface Memorial {
     };
     totalCandles: number;
     totalFlowers: number;
+    totalPrayers?: number;
+    tier?: 'BASIC' | 'PREMIUM';
+    slug?: string;
+    guestbook?: MemorialGuestbookEntry[];
 }
 
 export interface MemorialsResponse {

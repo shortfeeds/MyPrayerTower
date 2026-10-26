@@ -67,8 +67,62 @@ export function trackDonationEvent(amount: number, currency: string = 'USD', tie
 }
 
 /**
- * Conversion: Virtual Candle Lit
+ * Standard GA4 Ecommerce Purchase Event
  */
+export function trackPurchase(transactionId: string, value: number, items: Array<{ item_id: string; item_name: string; price: number; quantity?: number }>, currency: string = 'USD') {
+    trackEvent('purchase', {
+        transaction_id: transactionId,
+        value: typeof value === 'number' ? value : parseFloat(value || '0'),
+        currency,
+        items: items.length > 0 ? items : [{
+            item_id: transactionId,
+            item_name: 'Spiritual Offering',
+            price: typeof value === 'number' ? value : parseFloat(value || '0'),
+            quantity: 1
+        }]
+    });
+}
+
+/**
+ * Conversion: Spiritual Bouquet Created
+ */
+export function trackSpiritualBouquetEvent(bouquetId: string, amount: number, recipient: string) {
+    trackEvent('spiritual_bouquet_created', {
+        bouquet_id: bouquetId,
+        value: amount,
+        recipient_name: recipient,
+        currency: 'USD',
+        event_category: 'spiritual_offering',
+        event_label: `Bouquet for ${recipient}`
+    });
+}
+
+/**
+ * Conversion: Sacred Blessing Ritual Completed
+ */
+export function trackBlessingRequestedEvent(occasion: string, amount: number) {
+    trackEvent('blessing_ritual_completed', {
+        occasion,
+        value: amount,
+        currency: 'USD',
+        event_category: 'spiritual_offering',
+        event_label: `Blessing: ${occasion}`
+    });
+}
+
+/**
+ * Conversion: Tabernacle Sanctuary Vigil / Perpetual Lamp Lit
+ */
+export function trackTabernacleVigilEvent(vigilType: string, amount: number) {
+    trackEvent('tabernacle_vigil_lit', {
+        vigil_type: vigilType,
+        value: amount,
+        currency: 'USD',
+        event_category: 'spiritual_offering',
+        event_label: `Vigil: ${vigilType}`
+    });
+}
+
 export function trackCandleLitEvent(candleId: string, duration: string, amount: number) {
     trackEvent('candle_lit', {
         candle_id: candleId,

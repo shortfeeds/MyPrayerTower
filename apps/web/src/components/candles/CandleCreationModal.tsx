@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Flame, ChevronRight, Lock, CheckCircle, Smartphone } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -17,6 +17,7 @@ interface CreateCandleModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    initialIntention?: string;
 }
 
 import Image from 'next/image';
@@ -31,21 +32,64 @@ const DEFAULT_DURATIONS = [
     { value: 'THIRTY_DAYS', label: 'Divine Cathedral', daysLabel: '30 Days', hours: 720, price: 1499, priceDisplay: '$14.99', tier: 'premium', desc: 'A month of continuous prayer', image: '/images/candles/divine.png', spiritual: '🕊️ Your prayer ascends to Heaven', tierBadge: 'Month of Grace' },
 ];
 
-export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandleModalProps) {
+function saveCandlesToLocal(
+    intentions: string[],
+    isAnonymous: boolean,
+    name: string,
+    duration: string,
+    price: number,
+    hours: number
+) {
+    try {
+        const existing = JSON.parse(localStorage.getItem('mpt_user_candles') || '[]');
+        const now = new Date();
+        const expires = new Date(now.getTime() + hours * 3600 * 1000);
+        const days = Math.max(1, Math.round(hours / 24));
+
+        const newEntries = intentions.filter(Boolean).map((int, i) => ({
+            id: `candle_${Date.now()}_${i}`,
+            intention: int,
+            name: isAnonymous ? 'Anonymous' : (name || 'Faithful Soul'),
+            duration,
+            durationDays: days,
+            litAt: now.toISOString(),
+            expiresAt: expires.toISOString(),
+            isActive: true,
+            amount: price / (intentions.length || 1),
+        }));
+
+        localStorage.setItem('mpt_user_candles', JSON.stringify([...newEntries, ...existing]));
+    } catch {
+        // Ignore storage errors in private browsing
+    }
+}
+
+export function CandleCreationModal({ isOpen, onClose, onSuccess, initialIntention }: CreateCandleModalProps) {
     const { prices, formatPrice } = usePricing();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
-        intentions: [''] as string[],
+        intentions: [initialIntention || ''] as string[],
         quantity: 1,
         useSameIntention: true,
         name: '',
         isAnonymous: false,
-        duration: 'ONE_DAY',
+        duration: initialIntention ? 'THREE_DAYS' : 'ONE_DAY',
         email: '' // Optional for receipt
     });
     const [hasSuccess, setHasSuccess] = useState(false);
+
+    // Sync initialIntention when passed or opened
+    useEffect(() => {
+        if (initialIntention && isOpen) {
+            setFormData(prev => ({
+                ...prev,
+                intentions: [initialIntention, ...prev.intentions.slice(1)],
+                duration: prev.duration === 'ONE_DAY' ? 'THREE_DAYS' : prev.duration
+            }));
+        }
+    }, [initialIntention, isOpen]);
 
     // Sacred Pause State
     const [isSacredPausing, setIsSacredPausing] = useState(false);
@@ -140,6 +184,16 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                     name: formData.isAnonymous ? 'Anonymous' : formData.name
                 });
 
+                // Save to local storage for "My Sacred Vigils" portal
+                saveCandlesToLocal(
+                    finalIntentions,
+                    formData.isAnonymous,
+                    formData.name,
+                    formData.duration,
+                    totalPrice,
+                    selectedTier.hours
+                );
+
                 // Show Offered
                 setStillnessStage('offered');
                 await new Promise(resolve => setTimeout(resolve, 2000));
@@ -177,6 +231,16 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess }: CreateCandle
                 name: formData.isAnonymous ? 'Anonymous' : formData.name,
                 paymentId: details.orderId
             });
+
+            // Save to local storage for "My Sacred Vigils" portal
+            saveCandlesToLocal(
+                finalIntentions,
+                formData.isAnonymous,
+                formData.name,
+                formData.duration,
+                totalPrice,
+                selectedTier.hours
+            );
 
             // Show Offered
             setStillnessStage('offered');

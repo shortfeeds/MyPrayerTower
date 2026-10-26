@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Download, Share2, Copy, Check } from 'lucide-react';
+import { toPng } from 'html-to-image';
 
 interface ShareableCardProps {
     /** Type of content */
@@ -49,7 +50,7 @@ export function ShareableCard({
     };
 
     const handleCopyText = async () => {
-        const text = `🙏 ${title}\n\n${content}${subtitle ? `\n\n— ${subtitle}` : ''}\n\nShared from MyPrayerTower.com\n📲 Download the app: https://bit.ly/myprayertowerapp`;
+        const text = `🙏 ${title}\n\n${content}${subtitle ? `\n\n— ${subtitle}` : ''}\n\nShared from MyPrayerTower.com\n📲 Download the app: https://www.myprayertower.com/app`;
         try {
             await navigator.clipboard.writeText(text);
             setCopied(true);
@@ -59,12 +60,35 @@ export function ShareableCard({
         }
     };
 
+    const [isExporting, setIsExporting] = useState(false);
+
+    const handleDownloadImage = async () => {
+        if (!cardRef.current) return;
+        try {
+            setIsExporting(true);
+            const dataUrl = await toPng(cardRef.current, {
+                pixelRatio: 2.5,
+                cacheBust: true,
+            });
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = `MyPrayerTower-${type}-${title.slice(0, 15).replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            console.error('Failed to download card image', e);
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     const handleShare = async () => {
         if ('share' in navigator) {
             try {
                 await navigator.share({
                     title,
-                    text: `${content}\n\n📲 Download My Prayer Tower: https://bit.ly/myprayertowerapp`,
+                    text: `${content}\n\n📲 Download My Prayer Tower: https://www.myprayertower.com/app`,
                     url: window.location.href,
                 });
             } catch (error) {
@@ -133,32 +157,43 @@ export function ShareableCard({
                         mt-6 pt-4 border-t flex items-center justify-between
                         ${theme === 'gradient' ? 'border-white/20' : theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}
                     `}>
-                        <span className={`
-                            text-sm font-semibold
-                            ${theme === 'gradient' ? 'text-white/80' : 'text-gray-500'}
-                        `}>
-                            MyPrayerTower.com
-                        </span>
-                        <span className="text-[10px] opacity-60">📲 bit.ly/myprayertowerapp</span>
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-amber-400 font-bold">☩</span>
+                            <span className={`
+                                text-xs sm:text-sm font-serif font-black tracking-wider uppercase
+                                ${theme === 'gradient' ? 'text-amber-300' : 'text-amber-800 dark:text-amber-300'}
+                            `}>
+                                My Prayer Tower
+                            </span>
+                        </div>
+                        <span className="text-[10px] font-mono opacity-70">myprayertower.com/app</span>
                     </div>
                 </div>
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+                <button
+                    onClick={handleDownloadImage}
+                    disabled={isExporting}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-xs rounded-xl shadow-md transition-all active:scale-95"
+                >
+                    <Download size={15} />
+                    <span>{isExporting ? 'Generating...' : 'Download Image'}</span>
+                </button>
                 <button
                     onClick={handleCopyText}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                 >
-                    {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
-                    {copied ? 'Copied!' : 'Copy Text'}
+                    {copied ? <Check size={15} className="text-green-500" /> : <Copy size={15} />}
+                    <span>{copied ? 'Copied!' : 'Copy'}</span>
                 </button>
                 <button
                     onClick={handleShare}
-                    className="flex items-center gap-2 px-4 py-2 bg-sacred-600 text-white rounded-lg hover:bg-sacred-500 transition-colors"
+                    className="flex items-center gap-2 px-3.5 py-2 bg-sacred-600 hover:bg-sacred-500 text-white text-xs font-semibold rounded-xl transition-colors"
                 >
-                    <Share2 size={16} />
-                    Share
+                    <Share2 size={15} />
+                    <span>Share</span>
                 </button>
             </div>
         </div>

@@ -2,13 +2,17 @@
 
 import Link from 'next/link';
 import Script from 'next/script';
-import { useState, useCallback } from 'react';
-import { ChevronLeft, Cross, Heart, Calendar, Users, Check, Loader2, Info, Sparkles, ShieldCheck, Church } from 'lucide-react';
+import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { ChevronLeft, Cross, Heart, Calendar, Users, Check, Loader2, Info, Sparkles, ShieldCheck, Church, Share2, Copy, Download } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SACRED_COPY } from '@/lib/sacred-copy';
 import { useAppMode } from '@/contexts/AppModeContext';
 import { trackHubAction } from '@/lib/analytics';
+import { submitMassOffering } from '@/app/actions/spiritual';
+import { SacredCertificate } from '@/components/certificates/SacredCertificate';
+import { CertificateModal } from '@/components/certificates/CertificateModal';
 
 const PayPalCheckout = dynamic(
     () => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout),
@@ -56,20 +60,20 @@ const massTypes: MassType[] = [
     {
         id: 'gregorian',
         name: 'Gregorian Masses',
-        description: '30 consecutive Masses for a soul',
+        description: '30 consecutive uninterrupted Masses for a departed soul',
         price: 20000,
         color: 'from-purple-500 to-violet-600',
         icon: ShieldCheck,
-        features: ['30 Days Consecutive', 'For Deceased Only', 'Top Priority']
+        features: ['Pope St. Gregory Tradition', '30 Consecutive Days', 'For Departed Souls', 'Full Digital Certificate']
     },
     {
         id: 'perpetual',
         name: 'Perpetual Enrollment',
-        description: 'Permanent daily prayer inclusion',
+        description: 'Permanent daily prayer inclusion in Holy Masses forever',
         price: 10000,
         color: 'from-amber-400 to-orange-500',
         icon: Users,
-        features: ['Daily Remembrance', 'Forever Included', 'Certificate Sent']
+        features: ['Enrolled Forever', 'Daily Holy Mass', 'Living or Deceased', 'Perpetual Digital Parchment']
     },
 ];
 
@@ -84,6 +88,23 @@ const intentionTypes = [
     'World Peace',
 ];
 
+function MassOfferingSearchParamsHandler({
+    onIntentionFound
+}: {
+    onIntentionFound: (intention: string) => void;
+}) {
+    const searchParams = useSearchParams();
+    const intention = searchParams.get('intention');
+
+    useEffect(() => {
+        if (intention) {
+            onIntentionFound(intention);
+        }
+    }, [intention, onIntentionFound]);
+
+    return null;
+}
+
 export default function MassOfferingsPage() {
     const [selectedMass, setSelectedMass] = useState<MassType | null>(null);
     const [intentionType, setIntentionType] = useState('');
@@ -96,6 +117,16 @@ export default function MassOfferingsPage() {
     const [showPayPal, setShowPayPal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [hasSuccess, setHasSuccess] = useState(false);
+    const [copied, setCopied] = useState(false);
+    const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+
+    const handleIntentionFound = useCallback((intention: string) => {
+        setSelectedMass(massTypes[0]); // Default to Single Mass ($10)
+        setIntentionType('Special Intention');
+        setIntentionFor(intention);
+        setNotes(`Intention from prayer: ${intention}`);
+        setStep(2); // Directly jump to step 2 so user sees intention pre-populated
+    }, []);
 
     // Sacred Pause State
     const [isSacredPausing, setIsSacredPausing] = useState(false);
@@ -117,30 +148,49 @@ export default function MassOfferingsPage() {
 
         try {
             // SACRED PAUSE: Reflective delay before API call
-            await new Promise(resolve => setTimeout(resolve, 2500));
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // Here you would typically call your backend API
-            // For now, we simulate the completion
+            const res = await submitMassOffering({
+                offeringTypeId: selectedMass?.id || 'single',
+                intentionFor,
+                intentionType,
+                requestedBy,
+                email,
+                notes,
+            });
+
+            // Store in localStorage for "My Sacred Vigils" portal
+            try {
+                const existing = JSON.parse(localStorage.getItem('mpt_user_mass_offerings') || '[]');
+                const newRecord = {
+                    id: (res.success && res.massOfferingId) ? res.massOfferingId : `mass_${Date.now()}`,
+                    orderNumber: (res.success && res.orderNumber) ? res.orderNumber : `MPT-${Math.floor(100000 + Math.random() * 900000)}`,
+                    intentionFor: intentionFor.trim(),
+                    offeringType: selectedMass?.name || 'Single Mass',
+                    requestedBy: requestedBy.trim() || 'Faithful Soul',
+                    submittedAt: new Date().toISOString(),
+                    status: 'SCHEDULED'
+                };
+                localStorage.setItem('mpt_user_mass_offerings', JSON.stringify([newRecord, ...existing]));
+            } catch {
+                // Ignore storage issues in private window
+            }
 
             // SACRED PAUSE: Assurance stage
             setStillnessStage('offered');
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
             setHasSuccess(true);
             trackHubAction('mass_offering_success', 'Revenue');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
             console.error('Mass offering error:', error);
-            setIsSacredPausing(false); // Only clear on error, success keeps it until transition? 
-            // Actually, hasSuccess replaces the form, so overlay unmounts along with form container parent if not careful,
-            // but the overlay is INSIDE the form motion.div.
-            // If hasSuccess becomes true, the AnimatePresence switches to "success" view.
+            setIsSacredPausing(false);
             alert('Something went wrong. Please try again.');
         } finally {
             setIsSubmitting(false);
-            // We don't clear isSacredPausing here if success, because the view switches.
         }
-    }, []);
+    }, [selectedMass, intentionFor, intentionType, requestedBy, email, notes]);
 
     const { isNativeApp } = useAppMode();
 
@@ -171,6 +221,10 @@ export default function MassOfferingsPage() {
 
             {/* Main Content Area */}
             <div className="container mx-auto px-4 -mt-20 relative z-20 pb-24">
+                <Suspense fallback={null}>
+                    <MassOfferingSearchParamsHandler onIntentionFound={handleIntentionFound} />
+                </Suspense>
+
                 <AnimatePresence mode='wait'>
                     {!hasSuccess ? (
                         <motion.div
@@ -239,6 +293,24 @@ export default function MassOfferingsPage() {
                                                     </button>
                                                 ))}
                                             </div>
+
+                                            {/* Gregorian Tradition & Perpetual Memorial Banner */}
+                                            <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-purple-50 via-indigo-50 to-purple-50 border border-purple-200/80 text-left">
+                                                <div className="flex items-start gap-4">
+                                                    <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                                                        <ShieldCheck className="w-5 h-5" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-serif font-bold text-gray-900 text-sm md:text-base">
+                                                            ☩ About Gregorian Masses (30 Consecutive Days)
+                                                        </h4>
+                                                        <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                                                            Originating from Pope St. Gregory the Great in the 6th Century, a series of 30 uninterrupted daily Masses is the most solemn and efficacious spiritual sacrifice the Church offers for the release of a departed soul from Purgatory into Heavenly glory. You receive an official digital commemorative certificate upon scheduling.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div className="flex justify-end mt-8">
                                                 <button
                                                     onClick={() => selectedMass && setStep(2)}
@@ -276,6 +348,16 @@ export default function MassOfferingsPage() {
                                                 </button>
                                                 <h2 className="text-2xl font-serif font-bold text-gray-900">Intention Details</h2>
                                             </div>
+
+                                            {notes.startsWith('Intention from prayer:') && (
+                                                <div className="mb-6 p-4 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center gap-3 text-sm text-indigo-950">
+                                                    <Sparkles className="w-5 h-5 text-indigo-600 shrink-0" />
+                                                    <div>
+                                                        <p className="font-semibold text-indigo-900">Your prayer intention has been carried forward to the altar.</p>
+                                                        <p className="text-xs text-indigo-700">Single Holy Mass ($10) pre-selected. Please provide your details below.</p>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                             <div className="grid md:grid-cols-2 gap-6">
                                                 <div className="space-y-4">
@@ -480,23 +562,118 @@ export default function MassOfferingsPage() {
                     ) : (
                         <motion.div
                             key="success"
-                            initial={{ opacity: 0, scale: 0.9 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="max-w-md mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden text-center p-12"
+                            className="max-w-xl mx-auto space-y-6"
                         >
-                            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <Check className="w-10 h-10 text-green-600" />
+                            {/* Sacred Consecration Certificate (Renaissance / Papal Layout) */}
+                            <div className="relative group cursor-pointer" onClick={() => setIsCertModalOpen(true)}>
+                                <SacredCertificate
+                                    type="mass-offering"
+                                    theme="cathedral-gold"
+                                    title="HOLY MASS OFFERING CERTIFICATE"
+                                    latinTitle="Sacrificium Sanctissimum Missae"
+                                    recipientName={intentionFor || 'Special Intention'}
+                                    donorName={requestedBy || 'Faithful Soul'}
+                                    dedicatedDetail={`${selectedMass?.name || 'Single Mass'} • Offertory Sacrifice`}
+                                    intention={notes || `Holy Mass requested for ${intentionFor}`}
+                                    celebrantOrSanctuary="Sanctuary of Perpetual Adoration & Sacred Altars"
+                                />
+                                <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                    <span className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs shadow-xl flex items-center gap-2">
+                                        <Sparkles className="w-4 h-4" /> Click to Customize &amp; Download High-Res
+                                    </span>
+                                </div>
                             </div>
-                            <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">Offering Received</h2>
-                            <p className="text-gray-600 mb-8">
-                                Thank you. Your Mass intention has been recorded and will be offered by our partner priests. A confirmation card has been sent to your email.
-                            </p>
-                            <button
-                                onClick={() => { setHasSuccess(false); setStep(1); setSelectedMass(null); setShowPayPal(false); }}
-                                className="px-8 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition"
-                            >
-                                Request Another
-                            </button>
+
+                            {/* Social Sharing & Action Bar */}
+                            <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 flex flex-col gap-3">
+                                <p className="text-xs text-gray-500 font-serif italic text-center">
+                                    Your offering has been recorded. Save your commemorative memorabilia or share with family:
+                                </p>
+
+                                <div className="flex flex-col sm:flex-row items-center gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsCertModalOpen(true)}
+                                        className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        <span>Download Certificate (PNG)</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsCertModalOpen(true)}
+                                        className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                                    >
+                                        <Share2 className="w-4 h-4" />
+                                        <span>Share Memorabilia</span>
+                                    </button>
+
+                                    <a
+                                        href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                                            `🍷 A Holy Mass has been requested on MyPrayerTower for this intention: "${intentionFor}". May God bless and protect you. \n\n📱 Free app: https://www.myprayertower.com/app \nJoin Telegram: https://t.me/myprayertower`
+                                        )}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                                        title="Share on WhatsApp"
+                                    >
+                                        <span>💬</span>
+                                    </a>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const copyMsg = `🍷 A Holy Mass has been requested on MyPrayerTower for this intention: "${intentionFor}". \n\n📱 Free app: https://www.myprayertower.com/app \nJoin Telegram: https://t.me/myprayertower`;
+                                            navigator.clipboard.writeText(copyMsg);
+                                            setCopied(true);
+                                            setTimeout(() => setCopied(false), 2500);
+                                        }}
+                                        className="p-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 border border-slate-200 transition-colors"
+                                        title="Copy Message"
+                                    >
+                                        {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                                    </button>
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                                    <Link
+                                        href="/my-vigils"
+                                        className="w-full sm:w-auto text-xs bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 px-4 py-2 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                                    >
+                                        <span>🕯️</span>
+                                        <span>View in My Sacred Vigils</span>
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setHasSuccess(false);
+                                            setStep(1);
+                                            setSelectedMass(null);
+                                            setShowPayPal(false);
+                                        }}
+                                        className="w-full sm:w-auto text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-medium transition-all"
+                                    >
+                                        Request Another Mass
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Fullscreen High-Resolution Certificate Modal with Theme Switcher */}
+                            <CertificateModal
+                                isOpen={isCertModalOpen}
+                                onClose={() => setIsCertModalOpen(false)}
+                                type="mass-offering"
+                                title="HOLY MASS OFFERING CERTIFICATE"
+                                latinTitle="Sacrificium Sanctissimum Missae"
+                                recipientName={intentionFor || 'Special Intention'}
+                                donorName={requestedBy || 'Faithful Soul'}
+                                dedicatedDetail={`${selectedMass?.name || 'Single Mass'} • Offertory Sacrifice`}
+                                intention={notes || `Holy Mass requested for ${intentionFor}`}
+                                celebrantOrSanctuary="Sanctuary of Perpetual Adoration & Sacred Altars"
+                            />
                         </motion.div>
                     )}
                 </AnimatePresence>

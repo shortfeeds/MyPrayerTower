@@ -44,6 +44,7 @@ const menuItems: MenuItem[] = [
             { name: 'Donations', href: '/admin/donations' },
             { name: 'Mass Offerings', href: '/admin/mass-offerings' },
             { name: 'Virtual Candles', href: '/admin/candles' },
+            { name: 'Spiritual Bouquets', href: '/admin/bouquets' },
             { name: 'Failed Payments', href: '/admin/finance/failed-payments' },
             { name: 'Abandoned Carts', href: '/admin/abandoned-carts' },
         ]

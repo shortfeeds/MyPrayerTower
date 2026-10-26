@@ -10,6 +10,7 @@ import { CookieConsent } from '@/components/CookieConsent';
 import { SkipToContent } from '@/components/ui/SkipToContent';
 import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { UniversalOfferingModal } from '@/components/offerings/UniversalOfferingModal';
 
 interface LayoutChromeProps {
     children: React.ReactNode;
@@ -27,6 +28,7 @@ export function LayoutChrome({ children }: LayoutChromeProps) {
                 <main id="main-content">
                     {children}
                 </main>
+                <UniversalOfferingModal />
                 {isDedicatedAppPage && (
                     <>
                         <FloatingPrayerButton href="/prayers" label="Pray Now" enabled={true} />
@@ -38,16 +40,17 @@ export function LayoutChrome({ children }: LayoutChromeProps) {
     }
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen" suppressHydrationWarning>
             <SkipToContent />
             <Header />
-            <main id="main-content" className="flex-1 w-full">
+            <main id="main-content" className="flex-1 w-full" suppressHydrationWarning>
                 {children}
             </main>
             <Footer />
             <GlobalEngagement />
             <BackToTop />
             <CookieConsent />
+            <UniversalOfferingModal />
         </div>
     );
 }

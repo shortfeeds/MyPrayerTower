@@ -16,6 +16,7 @@ interface ShareButtonsProps {
   url: string;
   title: string;
   description?: string;
+  fullText?: string;
   contentType?: ShareContentType;
   /** Button label */
   label?: string;
@@ -32,6 +33,7 @@ export function ShareButtons({
   url,
   title,
   description = '',
+  fullText,
   contentType = 'general',
   label = 'Share Prayer',
   variant = 'full',
@@ -40,12 +42,12 @@ export function ShareButtons({
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const shareText = buildShareText({ title, description, type: contentType, url });
+  const shareText = buildShareText({ title, description, fullText, type: contentType, url });
   const platforms = getSharePlatforms(shareText, url, title);
   const whatsappPlatform = platforms.find((p) => p.id === 'whatsapp');
 
   const handleShare = async () => {
-    const shared = await triggerNativeShare({ title, description, type: contentType, url });
+    const shared = await triggerNativeShare({ title, description, fullText, type: contentType, url });
     if (!shared) {
       setShowModal(true);
     }
@@ -60,7 +62,7 @@ export function ShareButtons({
   };
 
   const handleCopy = async () => {
-    await copyShareText({ title, description, type: contentType, url });
+    await copyShareText({ title, description, fullText, type: contentType, url });
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };

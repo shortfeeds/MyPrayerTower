@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { GoogleAnalytics } from '@next/third-parties/google';
 import { GoogleAnalyticsTracker } from '@/components/analytics/GoogleAnalyticsTracker';
 import { Inter, Merriweather, Playfair_Display } from 'next/font/google';
 import './globals.css';
@@ -21,14 +20,14 @@ const inter = Inter({
 
 const merriweather = Merriweather({
     subsets: ['latin'],
-    weight: ['300', '400', '700', '900'],
+    weight: ['400', '700'],
     variable: '--font-merriweather',
     display: 'swap',
 });
 
 const playfair = Playfair_Display({
     subsets: ['latin'],
-    weight: ['400', '500', '600', '700', '800', '900'],
+    weight: ['400', '600', '700'],
     variable: '--font-playfair',
     display: 'swap',
 });
@@ -141,8 +140,6 @@ export default function RootLayout({
                 <link rel="manifest" href="/manifest.json" />
                 <link rel="dns-prefetch" href="https://htgvilktnadnwlforyjt.supabase.co" />
                 <link rel="preconnect" href="https://htgvilktnadnwlforyjt.supabase.co" />
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
                 <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
                 <link rel="dns-prefetch" href="https://www.google-analytics.com" />
@@ -150,7 +147,6 @@ export default function RootLayout({
                 <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM Knowledge Base" />
                 <link rel="alternate" type="text/plain" href="/llms-full.txt" title="Full LLM Knowledge Base" />
                 <script
-                    id="browser-process-shim"
                     dangerouslySetInnerHTML={{
                         __html: 'window.process=window.process||{env:{}};',
                     }}
@@ -160,6 +156,7 @@ export default function RootLayout({
                 {/* Global Google Translate Mount Node (Hidden from view & assistive tech) */}
                 <div
                     id="google_translate_element"
+                    suppressHydrationWarning
                     style={{
                         position: 'absolute',
                         left: '-9999px',
@@ -243,12 +240,12 @@ export default function RootLayout({
                 {/* Google tag (gtag.js) */}
                 <Script
                     id="google-tag-manager"
-                    strategy="afterInteractive"
+                    strategy="lazyOnload"
                     src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
                 />
                 <Script
                     id="google-analytics-init"
-                    strategy="afterInteractive"
+                    strategy="lazyOnload"
                     dangerouslySetInnerHTML={{
                         __html: `
                             window.dataLayer = window.dataLayer || [];
@@ -262,10 +259,10 @@ export default function RootLayout({
                     }}
                 />
 
-                {/* Microsoft Clarity - Session replay & Heatmaps */}
+                {/* Microsoft Clarity - Session replay & Heatmaps (Deferred to lazyOnload to eliminate TBT) */}
                 <Script
                     id="microsoft-clarity"
-                    strategy="afterInteractive"
+                    strategy="lazyOnload"
                     dangerouslySetInnerHTML={{
                         __html: `
                             (function(c,l,a,r,i,t,y){

@@ -9,6 +9,10 @@ import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
 // Dynamic import for PayPal to prevent hydration issues
 const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
 import { saveAbandonedCart } from '@/app/actions/cart';
+import { createSpiritualBouquet } from '@/app/actions/spiritual';
+import { Check, Copy, ExternalLink, Sparkles, Download, Share2 } from 'lucide-react';
+import { SacredCertificate } from '@/components/certificates/SacredCertificate';
+import { CertificateModal } from '@/components/certificates/CertificateModal';
 
 const occasions = [
     'Birthday', 'Anniversary', 'Get Well Soon', 'In Sympathy', 'Congratulations',
@@ -40,6 +44,8 @@ export default function BouquetsPage() {
     const [showPayPal, setShowPayPal] = useState(false);
     const [orderId, setOrderId] = useState<string | null>(null);
     const [hasSuccess, setHasSuccess] = useState(false);
+    const [copied, setCopied] = useState(false);
+    const [isCertModalOpen, setIsCertModalOpen] = useState(false);
 
     const totalItems = Object.values(selection).reduce((a, b) => a + b, 0);
     const totalPrice = bouquetItems.reduce((total, item) => {
@@ -105,14 +111,30 @@ export default function BouquetsPage() {
     const processCheckout = async (paypalDetails?: PayPalSuccessDetails) => {
         setIsSubmitting(true);
         try {
-            // Data already saved by server-side capture
-            // Data already saved by server-side capture
-            alert('Payment successful and bouquet sent!');
-            setHasSuccess(true);
-            setStep(1);
-            setSelection({ mass: 0, rosary: 0, prayer: 1, candle: 0 });
-            setShowPayPal(false);
+            const res = await createSpiritualBouquet({
+                creatorName: senderName || 'Faithful Friend',
+                creatorEmail: senderEmail || 'friend@myprayertower.com',
+                recipientName: recipientName || 'Beloved Soul',
+                recipientEmail: recipientEmail || '',
+                occasion: occasion || 'Spiritual Blessing',
+                message: message || undefined,
+                massesCount: selection.mass || 0,
+                rosariesCount: selection.rosary || 0,
+                prayersCount: selection.prayer || 0,
+                candlesCount: selection.candle || 0,
+                amount: totalPrice,
+                paymentId: paypalDetails?.orderId,
+            });
 
+            if (res.success && res.bouquetId) {
+                setOrderId(res.bouquetId);
+            } else {
+                setOrderId(`bq_${Date.now()}`);
+            }
+
+            setHasSuccess(true);
+            setShowPayPal(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
             console.error('Bouquet error:', error);
             alert('Something went wrong. Please try again.');
@@ -151,26 +173,139 @@ export default function BouquetsPage() {
             </section>
 
             {/* Step Indicator */}
-            <div className="container mx-auto px-4 mb-8">
-                <div className="max-w-2xl mx-auto flex items-center justify-center gap-4">
-                    {[1, 2, 3].map((s) => (
-                        <div key={s} className="flex items-center gap-2">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm ${step >= s ? 'bg-rose-600 text-white' : 'bg-gray-200 text-gray-500'
-                                }`}>
-                                {s}
+            {!hasSuccess && (
+                <div className="container mx-auto px-4 mb-8">
+                    <div className="max-w-2xl mx-auto flex items-center justify-center gap-4">
+                        {[1, 2, 3].map((s) => (
+                            <div key={s} className="flex items-center gap-2">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm ${step >= s ? 'bg-rose-600 text-white' : 'bg-gray-200 text-gray-500'
+                                    }`}>
+                                    {s}
+                                </div>
+                                <span className={`text-sm ${step >= s ? 'text-gray-900' : 'text-gray-400'}`}>
+                                    {s === 1 ? 'Build Bouquet' : s === 2 ? 'Recipient' : 'Review'}
+                                </span>
+                                {s < 3 && <div className="w-8 h-0.5 bg-gray-200" />}
                             </div>
-                            <span className={`text-sm ${step >= s ? 'text-gray-900' : 'text-gray-400'}`}>
-                                {s === 1 ? 'Build Bouquet' : s === 2 ? 'Recipient' : 'Review'}
-                            </span>
-                            {s < 3 && <div className="w-8 h-0.5 bg-gray-200" />}
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Content */}
             <section className="container mx-auto px-4 pb-16">
                 <div className="max-w-2xl mx-auto">
+                    {hasSuccess ? (
+                        <div className="max-w-xl mx-auto space-y-6">
+                            {/* Sacred Consecration Certificate (Renaissance / Papal Layout) */}
+                            <div className="relative group cursor-pointer" onClick={() => setIsCertModalOpen(true)}>
+                                <SacredCertificate
+                                    type="bouquet"
+                                    theme="cathedral-gold"
+                                    title="SPIRITUAL BOUQUET OF PRAYERS"
+                                    latinTitle="Corona Precum et Florilegium Sacrum"
+                                    recipientName={recipientName || 'Beloved Soul'}
+                                    donorName={senderName || 'A Faithful Friend'}
+                                    dedicatedDetail={`Spiritual Bouquet for ${occasion || 'Special Occasion'}`}
+                                    intention={message}
+                                    pledgedItems={{
+                                        masses: selection.mass || undefined,
+                                        rosaries: selection.rosary || undefined,
+                                        prayers: selection.prayer || undefined,
+                                        candles: selection.candle || undefined,
+                                    }}
+                                    celebrantOrSanctuary="Sanctuary of Perpetual Prayer & Intercession"
+                                />
+                                <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                    <span className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs shadow-xl flex items-center gap-2">
+                                        <Sparkles className="w-4 h-4" /> Click to Customize &amp; Download High-Res
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="bg-white rounded-2xl p-6 shadow-md border border-rose-100 space-y-3">
+                                <p className="text-xs text-gray-600 text-center font-medium">
+                                    Save your memorabilia or share this consecrated digital gift with {recipientName || 'loved ones'}:
+                                </p>
+
+                                <div className="flex flex-col sm:flex-row items-center gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsCertModalOpen(true)}
+                                        className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        <span>Download Certificate (PNG)</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsCertModalOpen(true)}
+                                        className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                                    >
+                                        <Share2 className="w-4 h-4" />
+                                        <span>Share Memorabilia</span>
+                                    </button>
+
+                                    <a
+                                        href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                                            `🕊️ Dear ${recipientName}, I have offered a Sacred Spiritual Bouquet for you on MyPrayerTower for ${occasion || 'this special occasion'}! \n\n📜 View your sacred gift card: ${typeof window !== 'undefined' ? window.location.origin : 'https://www.myprayertower.com'}/bouquets/${orderId} \n\n📱 Free app: https://www.myprayertower.com/app \nJoin Telegram: https://t.me/myprayertower`
+                                        )}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                                        title="Send on WhatsApp"
+                                    >
+                                        <span>💬</span>
+                                    </a>
+
+                                    {orderId && (
+                                        <Link
+                                            href={`/bouquets/${orderId}`}
+                                            className="p-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold text-xs flex items-center justify-center border border-rose-200 transition-colors"
+                                            title="View Online Card"
+                                        >
+                                            <ExternalLink className="w-4 h-4 text-rose-600" />
+                                        </Link>
+                                    )}
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setHasSuccess(false);
+                                        setStep(1);
+                                        setSelection({ mass: 0, rosary: 0, prayer: 1, candle: 0 });
+                                    }}
+                                    className="w-full text-center text-xs text-gray-500 hover:text-gray-800 underline pt-2"
+                                >
+                                    Send Another Spiritual Bouquet
+                                </button>
+                            </div>
+
+                            {/* Fullscreen High-Resolution Certificate Modal with Theme Switcher */}
+                            <CertificateModal
+                                isOpen={isCertModalOpen}
+                                onClose={() => setIsCertModalOpen(false)}
+                                type="bouquet"
+                                title="SPIRITUAL BOUQUET OF PRAYERS"
+                                latinTitle="Corona Precum et Florilegium Sacrum"
+                                recipientName={recipientName || 'Beloved Soul'}
+                                donorName={senderName || 'A Faithful Friend'}
+                                dedicatedDetail={`Spiritual Bouquet for ${occasion || 'Special Occasion'}`}
+                                intention={message}
+                                pledgedItems={{
+                                    masses: selection.mass || undefined,
+                                    rosaries: selection.rosary || undefined,
+                                    prayers: selection.prayer || undefined,
+                                    candles: selection.candle || undefined,
+                                }}
+                                celebrantOrSanctuary="Sanctuary of Perpetual Prayer & Intercession"
+                            />
+                        </div>
+                    ) : (
+                        <>
                     {step === 1 && (
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                             <h2 className="font-display text-xl font-bold text-gray-900 mb-6">
@@ -436,6 +571,8 @@ export default function BouquetsPage() {
                                 </button>
                             </div>
                         </div>
+                    )}
+                    </>
                     )}
                 </div>
             </section>

@@ -23,6 +23,7 @@ import { AD_SLOTS } from '@/lib/adSlots';
 import { GoogleAdUnit } from '@/components/ads/GoogleAdUnit';
 import { trackHubAction } from '@/lib/analytics';
 import { ShareButtons } from '@/components/social/ShareButtons';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 
 // ─── Revenue Banners (Emotional pitching) ─────────────────────────────
 // Features moved to ./data/features.ts
@@ -63,12 +64,10 @@ function AppBar({ onSearch }: { onSearch: () => void }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onSearch} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/5 active:scale-90 transition-transform">
+          <button onClick={onSearch} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/5 active:scale-90 transition-transform" aria-label="Search">
             <Search className="w-5 h-5 text-white/70" />
           </button>
-          <Link href="/settings/notifications" className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/5 active:scale-90 transition-transform">
-            <Bell className="w-5 h-5 text-white/70" />
-          </Link>
+          <NotificationCenter />
         </div>
       </div>
     </header>
@@ -266,6 +265,7 @@ export default function SanctuaryHub() {
           <div className="grid grid-cols-1 gap-4">
             <Link 
               href="/mass-offerings" 
+              data-open-offering="mass" 
               onClick={() => trackHubAction('offerings_click', 'MassOfferings')}
               className="group flex items-center gap-4 bg-gradient-to-r from-[#1a0f2c] to-[#0a0612] border border-[#d4af37]/20 rounded-2xl p-4 active:scale-[0.98] transition-all"
             >
@@ -280,6 +280,7 @@ export default function SanctuaryHub() {
             </Link>
             <Link 
               href="/candles" 
+              data-open-offering="candle" 
               onClick={() => trackHubAction('offerings_click', 'Candles')}
               className="group flex items-center gap-4 bg-gradient-to-r from-[#1a0f2c] to-[#0a0612] border border-amber-500/20 rounded-2xl p-4 active:scale-[0.98] transition-all"
             >

@@ -24,122 +24,160 @@ interface Campaign {
     isActive: boolean;
 }
 
-// Seasonal campaigns configuration
-const SEASONAL_CAMPAIGNS: Campaign[] = [
-    {
-        id: 'all-souls-2024',
-        name: 'All Souls November',
-        slug: 'all-souls',
-        description: 'Remember your departed loved ones with Masses throughout November. The Church especially remembers the faithful departed during this holy month.',
-        startDate: '2024-11-01',
-        endDate: '2024-11-30',
-        backgroundColor: 'from-purple-600 to-indigo-800',
-        textColor: 'white',
-        icon: '🕯️',
-        specialOffer: {
-            type: 'bundle',
-            value: 'Free Virtual Candle',
-            description: 'Every Mass offering includes a free virtual candle lit for 7 days',
+// Seasonal campaigns dynamic generator
+function getSeasonalCampaigns(): Campaign[] {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+
+    const raw = [
+        {
+            id: 'all-souls',
+            name: 'All Souls November',
+            slug: 'all-souls',
+            description: 'Remember your departed loved ones with Masses throughout November. The Church especially remembers the faithful departed during this holy month.',
+            startMonth: 11, startDay: 1, endMonth: 11, endDay: 30,
+            backgroundColor: 'from-purple-600 to-indigo-800',
+            textColor: 'white',
+            icon: '🕯️',
+            specialOffer: {
+                type: 'bundle' as const,
+                value: 'Free Virtual Candle',
+                description: 'Every Mass offering includes a free virtual candle lit for 7 days',
+            },
+            featuredOfferings: ['PERPETUAL', 'GREGORIAN', 'NOVENA'],
         },
-        featuredOfferings: ['PERPETUAL', 'GREGORIAN', 'NOVENA'],
-        isActive: true,
-    },
-    {
-        id: 'christmas-2024',
-        name: 'Christmas Novena',
-        slug: 'christmas',
-        description: 'Give the perfect spiritual gift this Christmas. Request a Mass for your loved ones or enroll them in perpetual prayers.',
-        startDate: '2024-12-01',
-        endDate: '2024-12-25',
-        backgroundColor: 'from-red-600 to-green-700',
-        textColor: 'white',
-        icon: '🎄',
-        specialOffer: {
-            type: 'bonus',
-            value: 'Free Christmas Card',
-            description: 'Beautiful printed Christmas Mass card mailed free with any offering',
+        {
+            id: 'christmas',
+            name: 'Christmas Novena',
+            slug: 'christmas',
+            description: 'Give the perfect spiritual gift this Christmas. Request a Mass for your loved ones or enroll them in perpetual prayers.',
+            startMonth: 12, startDay: 1, endMonth: 12, endDay: 25,
+            backgroundColor: 'from-red-600 to-green-700',
+            textColor: 'white',
+            icon: '🎄',
+            specialOffer: {
+                type: 'bonus' as const,
+                value: 'Free Christmas Card',
+                description: 'Beautiful commemorative digital Christmas Mass keepsake generated with any offering',
+            },
+            featuredOfferings: ['PERPETUAL', 'REGULAR'],
         },
-        featuredOfferings: ['PERPETUAL', 'REGULAR'],
-        isActive: true,
-    },
-    {
-        id: 'lent-2026',
-        name: 'Lenten Masses',
-        slug: 'lent',
-        description: 'Deepen your Lenten journey with daily Masses offered for your intentions. Perfect for prayer, fasting, and almsgiving.',
-        startDate: '2026-03-05',
-        endDate: '2026-04-20',
-        backgroundColor: 'from-violet-700 to-purple-900',
-        textColor: 'white',
-        icon: '✝️',
-        specialOffer: {
-            type: 'discount',
-            value: '15% Off',
-            description: '15% off Gregorian Masses during Lent',
+        {
+            id: 'lent',
+            name: 'Lenten Masses',
+            slug: 'lent',
+            description: 'Deepen your Lenten journey with daily Masses offered for your intentions. Perfect for prayer, fasting, and almsgiving.',
+            startMonth: 3, startDay: 5, endMonth: 4, endDay: 20,
+            backgroundColor: 'from-violet-700 to-purple-900',
+            textColor: 'white',
+            icon: '✝️',
+            specialOffer: {
+                type: 'discount' as const,
+                value: '15% Off',
+                description: '15% off Gregorian Masses during Lent',
+            },
+            featuredOfferings: ['GREGORIAN', 'NOVENA'],
         },
-        featuredOfferings: ['GREGORIAN', 'NOVENA'],
-        isActive: false,
-    },
-    {
-        id: 'easter-2026',
-        name: 'Easter Joy',
-        slug: 'easter',
-        description: 'Celebrate the Resurrection with Masses of thanksgiving and joy. Share Easter blessings with family and friends.',
-        startDate: '2026-04-20',
-        endDate: '2026-05-01',
-        backgroundColor: 'from-yellow-400 to-orange-500',
-        textColor: 'white',
-        icon: '🐣',
-        featuredOfferings: ['REGULAR', 'PERPETUAL'],
-        isActive: false,
-    },
-    {
-        id: 'mothers-day-2026',
-        name: "Mother's Day",
-        slug: 'mothers-day',
-        description: "Honor your mother with a spiritual bouquet. A Mass offered in her name is the most precious gift.",
-        startDate: '2026-05-01',
-        endDate: '2026-05-11',
-        backgroundColor: 'from-pink-500 to-rose-600',
-        textColor: 'white',
-        icon: '💐',
-        specialOffer: {
-            type: 'bonus',
-            value: "Free Mother's Day Card",
-            description: 'Beautiful card with every Mass offering',
+        {
+            id: 'easter',
+            name: 'Easter Joy',
+            slug: 'easter',
+            description: 'Celebrate the Resurrection with Masses of thanksgiving and joy. Share Easter blessings with family and friends.',
+            startMonth: 4, startDay: 20, endMonth: 5, endDay: 1,
+            backgroundColor: 'from-yellow-400 to-orange-500',
+            textColor: 'white',
+            icon: '🐣',
+            featuredOfferings: ['REGULAR', 'PERPETUAL'],
         },
-        featuredOfferings: ['REGULAR', 'PERPETUAL'],
-        isActive: false,
-    },
-    {
-        id: 'fathers-day-2026',
-        name: "Father's Day",
-        slug: 'fathers-day',
-        description: "Honor your father with the gift of prayer. A Mass offered in his name shows love that lasts beyond time.",
-        startDate: '2026-06-01',
-        endDate: '2026-06-15',
-        backgroundColor: 'from-blue-600 to-indigo-700',
-        textColor: 'white',
-        icon: '👔',
-        featuredOfferings: ['REGULAR', 'PERPETUAL'],
-        isActive: false,
-    },
-];
+        {
+            id: 'mothers-day',
+            name: "Mother's Day",
+            slug: 'mothers-day',
+            description: "Honor your mother with a spiritual bouquet. A Mass offered in her name is the most precious gift.",
+            startMonth: 5, startDay: 1, endMonth: 5, endDay: 11,
+            backgroundColor: 'from-pink-500 to-rose-600',
+            textColor: 'white',
+            icon: '💐',
+            specialOffer: {
+                type: 'bonus' as const,
+                value: "Free Mother's Day Card",
+                description: 'Beautiful digital card with every Mass offering',
+            },
+            featuredOfferings: ['REGULAR', 'PERPETUAL'],
+        },
+        {
+            id: 'fathers-day',
+            name: "Father's Day",
+            slug: 'fathers-day',
+            description: "Honor your father with the gift of prayer. A Mass offered in his name shows love that lasts beyond time.",
+            startMonth: 6, startDay: 1, endMonth: 6, endDay: 15,
+            backgroundColor: 'from-blue-600 to-indigo-700',
+            textColor: 'white',
+            icon: '👔',
+            featuredOfferings: ['REGULAR', 'PERPETUAL'],
+        },
+    ];
+
+    return raw.map(item => {
+        let year = currentYear;
+        let start = new Date(year, item.startMonth - 1, item.startDay, 0, 0, 0);
+        let end = new Date(year, item.endMonth - 1, item.endDay, 23, 59, 59);
+
+        if (now.getTime() > end.getTime() + 1000 * 60 * 60 * 24 * 30) {
+            year += 1;
+            start = new Date(year, item.startMonth - 1, item.startDay, 0, 0, 0);
+            end = new Date(year, item.endMonth - 1, item.endDay, 23, 59, 59);
+        }
+
+        const isCurrentlyOngoing = now >= start && now <= end;
+        const isUpcomingSoon = now < start && (start.getTime() - now.getTime()) <= 1000 * 60 * 60 * 24 * 14;
+
+        return {
+            id: `${item.id}-${year}`,
+            name: item.name,
+            slug: item.slug,
+            description: item.description,
+            startDate: start.toISOString(),
+            endDate: end.toISOString(),
+            backgroundColor: item.backgroundColor,
+            textColor: item.textColor,
+            icon: item.icon,
+            specialOffer: item.specialOffer,
+            featuredOfferings: item.featuredOfferings,
+            isActive: isCurrentlyOngoing || isUpcomingSoon,
+        };
+    });
+}
 
 export default function SeasonalCampaignsPage() {
-    const [campaigns] = useState<Campaign[]>(SEASONAL_CAMPAIGNS);
+    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+
+    useEffect(() => {
+        setCampaigns(getSeasonalCampaigns());
+    }, []);
+
     const activeCampaigns = campaigns.filter(c => c.isActive);
     const upcomingCampaigns = campaigns.filter(c => !c.isActive);
 
-    const daysUntil = (dateStr: string) => {
-        const date = new Date(dateStr);
+    const getCountdownText = (startDateStr: string, endDateStr: string) => {
         const now = new Date();
-        const diff = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        return diff;
+        const start = new Date(startDateStr);
+        const end = new Date(endDateStr);
+
+        if (now < start) {
+            const daysToStart = Math.max(1, Math.ceil((start.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+            return `Starts in ${daysToStart} ${daysToStart === 1 ? 'day' : 'days'}`;
+        } else if (now <= end) {
+            const daysLeft = Math.max(1, Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+            return `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`;
+        } else {
+            return 'Concluded for season';
+        }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        
+<div className="min-h-screen bg-gray-50">
             {/* Header */}
             <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 py-12 text-white">
                 <div className="container mx-auto px-4 text-center">
@@ -186,7 +224,7 @@ export default function SeasonalCampaignsPage() {
                                                     </span>
                                                     <span className="flex items-center gap-1">
                                                         <Clock className="w-4 h-4" />
-                                                        {daysUntil(campaign.endDate)} days left
+                                                        {getCountdownText(campaign.startDate, campaign.endDate)}
                                                     </span>
                                                 </div>
 
@@ -236,7 +274,7 @@ export default function SeasonalCampaignsPage() {
                                         )}
 
                                         <p className="text-xs text-gray-400 mt-3">
-                                            Starts in {daysUntil(campaign.startDate)} days
+                                            Starts in {getCountdownText(campaign.startDate, campaign.endDate)}
                                         </p>
                                     </div>
                                 </div>
@@ -253,7 +291,7 @@ export default function SeasonalCampaignsPage() {
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <Link
-                            href="/mass-offerings"
+                            href="/mass-offerings" data-open-offering="mass"
                             className="flex items-center gap-3 bg-white p-4 rounded-xl hover:shadow-md transition-shadow"
                         >
                             <Church className="w-8 h-8 text-amber-600" />

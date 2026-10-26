@@ -25,9 +25,9 @@ export function AppModeProvider({ children }: { children: React.ReactNode }) {
             const isTwaSource = window.location.search.includes('source=twa');
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
             const isIosStandalone = ('standalone' in window.navigator) && !!(window.navigator as any).standalone;
-            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const isDevAppMode = window.location.search.includes('mode=app');
             
-            const active = isStandalone || isTwaSource || isIosStandalone || isLocal;
+            const active = isStandalone || isTwaSource || isIosStandalone || isDevAppMode;
             setIsNativeApp(active);
             
             // Critical: Monkey-patch for stale Webpack chunks

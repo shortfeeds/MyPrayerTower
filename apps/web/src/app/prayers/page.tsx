@@ -13,15 +13,15 @@ import { CATHOLIC_INTENTIONS } from '@/lib/seo/intentionsData';
 const BASE_URL = 'https://www.myprayertower.com';
 
 export const metadata: Metadata = {
-    title: 'Catholic Prayer Library | 3,900+ Traditional & Modern Prayers | MyPrayerTower',
-    description: 'Explore over 3,900 traditional and modern Catholic prayers, litanies, devotions, and daily offerings. Search by intention, saint, or liturgical season.',
-    keywords: 'Catholic prayers, daily prayers, traditional Catholic prayers, litanies, Catholic devotions, morning offering, evening prayers, Catholic treasury',
+    title: 'Catholic Prayer Library | 4,000+ Traditional & Modern Prayers | MyPrayerTower',
+    description: 'Explore over 4,000 traditional and modern Catholic prayers, litanies, devotions, and daily offerings. Search by occasion, intention, crisis, saint, or historical tradition.',
+    keywords: 'Catholic prayers, daily prayers, traditional Catholic prayers, litanies, Catholic devotions, morning offering, evening prayers, Catholic treasury, occasions, surgery, house blessing',
     alternates: {
         canonical: `${BASE_URL}/prayers`,
     },
     openGraph: {
-        title: 'Catholic Prayer Library | 3,900+ Traditional & Modern Prayers | MyPrayerTower',
-        description: 'Explore over 3,900 traditional and modern Catholic prayers, litanies, devotions, and daily offerings.',
+        title: 'Catholic Prayer Library | 4,000+ Traditional & Modern Prayers | MyPrayerTower',
+        description: 'Explore over 4,000 traditional and modern Catholic prayers, litanies, devotions, and daily offerings.',
         url: `${BASE_URL}/prayers`,
         type: 'website',
         locale: 'en_US',
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Catholic Prayer Library | 3,900+ Catholic Prayers | MyPrayerTower',
-        description: 'Explore over 3,900 traditional and modern Catholic prayers, litanies, devotions, and daily offerings.',
+        title: 'Catholic Prayer Library | 4,000+ Catholic Prayers | MyPrayerTower',
+        description: 'Explore over 4,000 traditional and modern Catholic prayers, litanies, devotions, and daily offerings.',
         images: [`${BASE_URL}/og-image.png`],
     },
 };
@@ -83,7 +83,7 @@ export default async function PrayerLibraryPage({ searchParams }: Props) {
         '@type': 'CollectionPage',
         '@id': `${BASE_URL}/prayers#collection`,
         name: 'Catholic Prayer Library',
-        description: 'Comprehensive digital treasury of 3,900+ traditional and contemporary Catholic prayers, novenas, and litanies.',
+        description: 'Comprehensive digital treasury of 4,000+ traditional and contemporary Catholic prayers, novenas, and litanies.',
         url: `${BASE_URL}/prayers`,
         isPartOf: {
             '@type': 'WebSite',
@@ -224,21 +224,30 @@ export default async function PrayerLibraryPage({ searchParams }: Props) {
                                 href={`/prayers/${prayer.slug}`}
                                 className="group block p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-gold-200"
                             >
-                                <div className="flex justify-between items-start mb-2">
-                                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-gold-600 transition-colors line-clamp-1">
+                                <div className="flex justify-between items-start gap-3 mb-2">
+                                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-sacred-700 transition-colors line-clamp-1">
                                         {prayer.title}
                                     </h3>
-                                    {prayer.category && (
-                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-500 px-2 py-1 rounded-md group-hover:bg-gold-50 group-hover:text-gold-600 transition-colors">
-                                            {prayer.category}
+                                    {(prayer.category_label || prayer.category) && (
+                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200/50 px-2.5 py-1 rounded-md shrink-0 group-hover:bg-amber-100 transition-colors">
+                                            {prayer.category_label || prayer.category}
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-sm text-gray-500 line-clamp-3 leading-relaxed">
+                                <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed mb-3">
                                     {prayer.content}
                                 </p>
-                                <div className="mt-4 flex items-center text-xs font-medium text-gold-500 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                                    Read Prayer <ChevronRight className="w-3 h-3 ml-1" />
+                                {prayer.tags && prayer.tags.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mb-2">
+                                        {prayer.tags.slice(0, 3).map((tag: string) => (
+                                            <span key={tag} className="text-[10px] font-medium bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                                                #{tag.replace(/^[^:]+:/, '')}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                                <div className="mt-2 flex items-center text-xs font-semibold text-gold-600 group-hover:translate-x-1 transition-transform">
+                                    Read Full Prayer & Instructions <ChevronRight className="w-3.5 h-3.5 ml-1" />
                                 </div>
                             </Link>
                         ))}

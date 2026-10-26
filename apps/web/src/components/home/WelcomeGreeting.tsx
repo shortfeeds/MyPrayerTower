@@ -9,10 +9,15 @@ export function WelcomeGreeting() {
         subtext: "Welcome to your sanctuary.",
         icon: Sun
     });
-    const [mounted, setMounted] = useState(false);
+    const [formattedDate, setFormattedDate] = useState<string>('');
 
     useEffect(() => {
-        setMounted(true);
+        try {
+            setFormattedDate(new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }));
+        } catch {
+            setFormattedDate('Today in Prayer');
+        }
+
         const hour = new Date().getHours();
 
         if (hour >= 5 && hour < 12) {
@@ -42,21 +47,18 @@ export function WelcomeGreeting() {
         }
     }, []);
 
-    // Remove early return to prevent CLS
-    // if (!mounted) return null; 
-
     return (
-        <div className="flex flex-col items-center animate-fade-in-up">
-            <div className="flex items-center gap-2 mb-3 px-3 py-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-sm">
+        <div className="flex flex-col items-center animate-fade-in-up" suppressHydrationWarning>
+            <div className="flex items-center gap-2 mb-3 px-3 py-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-sm" suppressHydrationWarning>
                 <greeting.icon className="w-4 h-4 text-gold-400" />
                 <span suppressHydrationWarning className="text-xs font-medium tracking-widest uppercase text-gold-200/80">
-                    {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+                    {formattedDate || 'Sanctuary of Prayer'}
                 </span>
             </div>
-            <h2 className="font-serif text-2xl md:text-3xl text-white mb-2 text-center tracking-tight font-light">
+            <h2 suppressHydrationWarning className="font-serif text-2xl md:text-3xl text-white mb-2 text-center tracking-tight font-light">
                 {greeting.text}
             </h2>
-            <p className="text-sm md:text-base text-gray-400 font-light text-center max-w-lg mx-auto leading-relaxed">
+            <p suppressHydrationWarning className="text-sm md:text-base text-gray-400 font-light text-center max-w-lg mx-auto leading-relaxed">
                 {greeting.subtext}
             </p>
         </div>
