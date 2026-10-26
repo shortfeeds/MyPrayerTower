@@ -58,6 +58,6 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ notifications });
     } catch (error) {
         console.error('Admin Notifications API Error:', error);
-        return NextResponse.json({ notifications: [] }, { status: 500 });
+        return NextResponse.json({ notifications: [] }, { status: 200 });
     }
 }

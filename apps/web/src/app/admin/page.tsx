@@ -25,36 +25,51 @@ import { SitemapGenerator } from '@/components/admin/SitemapGenerator';
 export const dynamic = 'force-dynamic';
 
 async function DashboardStats() {
-    const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay()));
-    const startOfToday = new Date(new Date().setHours(0, 0, 0, 0));
+    let userCount = 0;
+    let newUsersThisMonth = 0;
+    let newUsersToday = 0;
+    let churchCount = 0;
+    let verifiedChurches = 0;
+    let saintCount = 0;
+    let prayerCount = 0;
+    let prayersToday = 0;
 
-    const [
-        userCount,
-        newUsersThisMonth,
-        newUsersToday,
-        churchCount,
-        verifiedChurches,
-        saintCount,
-        prayerCount,
-        prayersToday,
-        pendingReports,
-        adImpressions,
-        adClicks
-    ] = await Promise.all([
-        db.user.count(),
-        db.user.count({ where: { createdAt: { gte: startOfMonth } } }),
-        db.user.count({ where: { createdAt: { gte: startOfToday } } }),
-        db.church.count(),
-        db.church.count({ where: { isVerified: true } }),
-        db.saint.count(),
-        db.prayerRequest.count(),
-        db.prayerRequest.count({ where: { createdAt: { gte: startOfToday } } }),
-        db.userReport.count({ where: { status: 'PENDING' } }),
-        db.sponsoredContent.aggregate({ _sum: { impressions: true } }),
-        db.sponsoredContent.aggregate({ _sum: { clicks: true } })
-    ]);
+    try {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        const [
+            users,
+            usersMonth,
+            usersToday,
+            churches,
+            churchesVer,
+            saints,
+            prayers,
+            prayersT
+        ] = await Promise.all([
+            db.user.count().catch(() => 0),
+            db.user.count({ where: { createdAt: { gte: startOfMonth } } }).catch(() => 0),
+            db.user.count({ where: { createdAt: { gte: startOfToday } } }).catch(() => 0),
+            db.church.count().catch(() => 0),
+            db.church.count({ where: { isVerified: true } }).catch(() => 0),
+            db.saint.count().catch(() => 0),
+            db.prayerRequest.count().catch(() => 0),
+            db.prayerRequest.count({ where: { createdAt: { gte: startOfToday } } }).catch(() => 0),
+        ]);
+
+        userCount = users;
+        newUsersThisMonth = usersMonth;
+        newUsersToday = usersToday;
+        churchCount = churches;
+        verifiedChurches = churchesVer;
+        saintCount = saints;
+        prayerCount = prayers;
+        prayersToday = prayersT;
+    } catch (e) {
+        console.error('Failed to query dashboard stats:', e);
+    }
 
     const stats = [
         {
@@ -125,21 +140,26 @@ async function DashboardStats() {
 }
 
 async function AdPerformance() {
-    const ads = await db.sponsoredContent.findMany({
-        where: { isActive: true },
-        select: {
-            id: true,
-            title: true,
-            impressions: true,
-            clicks: true,
-            placement: true
-        },
-        take: 5,
-        orderBy: { impressions: 'desc' }
-    });
+    let ads: any[] = [];
+    try {
+        ads = await db.sponsoredContent.findMany({
+            where: { isActive: true },
+            select: {
+                id: true,
+                title: true,
+                impressions: true,
+                clicks: true,
+                placement: true
+            },
+            take: 5,
+            orderBy: { impressions: 'desc' }
+        });
+    } catch (e) {
+        console.error('Failed to query ad performance:', e);
+    }
 
-    const totalImpressions = ads.reduce((sum, ad) => sum + ad.impressions, 0);
-    const totalClicks = ads.reduce((sum, ad) => sum + ad.clicks, 0);
+    const totalImpressions = ads.reduce((sum, ad) => sum + (ad.impressions || 0), 0);
+    const totalClicks = ads.reduce((sum, ad) => sum + (ad.clicks || 0), 0);
     const avgCTR = totalImpressions > 0 ? ((totalClicks / totalImpressions) * 100).toFixed(2) : '0.00';
 
     return (
@@ -195,18 +215,27 @@ async function AdPerformance() {
 }
 
 async function RecentActivity() {
-    const [recentUsers, recentPrayers] = await Promise.all([
-        db.user.findMany({
-            take: 5,
-            orderBy: { createdAt: 'desc' },
-            select: { id: true, firstName: true, lastName: true, displayName: true, email: true, createdAt: true }
-        }),
-        db.prayerRequest.findMany({
-            take: 5,
-            orderBy: { createdAt: 'desc' },
-            select: { id: true, title: true, createdAt: true, isAnonymous: true }
-        })
-    ]);
+    let recentUsers: any[] = [];
+    let recentPrayers: any[] = [];
+
+    try {
+        const [users, prayers] = await Promise.all([
+            db.user.findMany({
+                take: 5,
+                orderBy: { createdAt: 'desc' },
+                select: { id: true, firstName: true, lastName: true, displayName: true, email: true, createdAt: true }
+            }).catch(() => []),
+            db.prayerRequest.findMany({
+                take: 5,
+                orderBy: { createdAt: 'desc' },
+                select: { id: true, title: true, createdAt: true, isAnonymous: true }
+            }).catch(() => [])
+        ]);
+        recentUsers = users;
+        recentPrayers = prayers;
+    } catch (e) {
+        console.error('Failed to query recent activity:', e);
+    }
 
     const activities = [
         ...recentUsers.map(u => ({
@@ -225,13 +254,14 @@ async function RecentActivity() {
             icon: Heart,
             color: 'bg-rose-100 text-rose-600'
         }))
-    ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8);
+    ].sort((a, b) => new Date(b.time || 0).getTime() - new Date(a.time || 0).getTime()).slice(0, 8);
 
-    const formatTime = (date: Date) => {
+    const formatTime = (date?: Date | string | null) => {
+        if (!date) return 'Recently';
         const now = new Date();
         const diff = now.getTime() - new Date(date).getTime();
         const mins = Math.floor(diff / 60000);
-        if (mins < 60) return `${mins}m ago`;
+        if (mins < 60) return `${Math.max(1, mins)}m ago`;
         const hours = Math.floor(mins / 60);
         if (hours < 24) return `${hours}h ago`;
         return `${Math.floor(hours / 24)}d ago`;
@@ -247,18 +277,22 @@ async function RecentActivity() {
             </div>
 
             <div className="space-y-4">
-                {activities.map((activity, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                        <div className={`p-2 rounded-lg ${activity.color}`}>
-                            <activity.icon className="w-4 h-4" />
+                {activities.length > 0 ? (
+                    activities.map((activity, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                            <div className={`p-2 rounded-lg ${activity.color}`}>
+                                <activity.icon className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-medium text-gray-900 truncate">{activity.title}</p>
+                                <p className="text-sm text-gray-500 truncate">{activity.subtitle}</p>
+                            </div>
+                            <span className="text-xs text-gray-400 whitespace-nowrap">{formatTime(activity.time)}</span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 truncate">{activity.title}</p>
-                            <p className="text-sm text-gray-500 truncate">{activity.subtitle}</p>
-                        </div>
-                        <span className="text-xs text-gray-400 whitespace-nowrap">{formatTime(activity.time)}</span>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <p className="text-center text-gray-500 py-6 text-sm">No recent activity recorded yet.</p>
+                )}
             </div>
         </div>
     );
@@ -266,16 +300,22 @@ async function RecentActivity() {
 
 async function SystemStatus() {
     let dbStatus = 'operational';
+    let pendingReports = 0;
+
     try {
         await db.$queryRaw`SELECT 1`;
     } catch (e) {
         dbStatus = 'error';
     }
 
-    const [pendingReports, pendingClaims] = await Promise.all([
-        db.userReport.count({ where: { status: 'PENDING' } }),
-        db.churchClaim.count({ where: { status: 'PENDING' } })
-    ]);
+    try {
+        const [reports] = await Promise.all([
+            db.userReport.count({ where: { status: 'PENDING' } }).catch(() => 0),
+        ]);
+        pendingReports = reports;
+    } catch (e) {
+        console.error('Failed to count pending reports:', e);
+    }
 
     const statuses = [
         { name: 'API Server', status: process.env.NODE_ENV === 'production' ? 'operational' : 'development', uptime: 'Healthy' },

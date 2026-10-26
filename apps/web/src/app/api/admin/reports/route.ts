@@ -78,6 +78,6 @@ export async function GET(request: NextRequest) {
         });
     } catch (error: any) {
         console.error('Admin Reports GET Error:', error);
-        return NextResponse.json({ error: 'Failed to fetch reports', reports: [], total: 0 }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to fetch reports', reports: [], total: 0, page: 1, totalPages: 0 }, { status: 200 });
     }
 }
