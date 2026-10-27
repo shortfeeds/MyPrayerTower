@@ -4,7 +4,6 @@
     "packageManager": "pnpm@8.15.0",
     "private": true,
     "scripts": {
-        "postinstall": "prisma generate --schema=../../packages/database/prisma/schema.prisma",
         "dev": "next dev -p 3005",
         "build": "next build",
         "postbuild": "npm run indexnow",
