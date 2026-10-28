@@ -25,8 +25,7 @@ export default function CreateChurchPage() {
         setLoading(true);
 
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/churches`, {
+            const res = await fetch(`/api/admin/churches`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

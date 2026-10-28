@@ -161,8 +161,47 @@ export function UniversalOfferingModal({
         }
     };
 
-    const handleSuccess = (details?: any) => {
-        // Save to local storage for instant vigil updates
+    const handleSuccess = async (details?: any) => {
+        const callerName = donorName || recipientName || 'Faithful Soul';
+        const callerEmail = donorEmail || '';
+
+        // Call live backend APIs based on offering type
+        try {
+            if (activeTab === 'candle') {
+                await fetch('/api/candles/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        duration: candleDuration === 'FREE' ? 'ONE_DAY' :
+                                  candleDuration === '3_DAYS' ? 'THREE_DAYS' :
+                                  candleDuration === '7_DAYS' ? 'SEVEN_DAYS' :
+                                  candleDuration === '14_DAYS' ? 'FOURTEEN_DAYS' : 'THIRTY_DAYS',
+                        amount: price,
+                        intention: intention || 'Special Sanctuary Intention',
+                        name: callerName,
+                        email: callerEmail,
+                        paypalOrderId: details?.id,
+                    })
+                });
+            } else if (activeTab === 'tabernacle') {
+                await fetch('/api/tabernacle/sponsor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        familyName: callerName,
+                        intention: intention || 'In Adoration & Protection of Catholic Families',
+                        email: callerEmail,
+                        durationDays: 7,
+                        amount: price,
+                        paypalOrderId: details?.id,
+                    })
+                });
+            }
+        } catch (apiErr) {
+            console.error('Failed to sync offering with backend API:', apiErr);
+        }
+
+        // Save to local storage for instant client-side reactivity
         try {
             if (activeTab === 'candle') {
                 const existing = JSON.parse(localStorage.getItem('mpt_user_candles') || '[]');
@@ -170,7 +209,7 @@ export function UniversalOfferingModal({
                 const newCandle = {
                     id: `candle_${Date.now()}`,
                     intention: intention || 'Special Sanctuary Intention',
-                    name: donorName || recipientName || 'Faithful Soul',
+                    name: callerName,
                     duration: candleDuration,
                     durationDays: Math.round(hours / 24),
                     litAt: new Date().toISOString(),
@@ -183,7 +222,7 @@ export function UniversalOfferingModal({
                 const expires = new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
                 localStorage.setItem('mpt_tabernacle_lamp', JSON.stringify({
                     id: `tabernacle_${Date.now()}`,
-                    sponsorFamily: donorName || recipientName || 'The Faithful Family',
+                    sponsorFamily: callerName,
                     intention: intention || 'In Thanksgiving & Divine Protection',
                     litAt: new Date().toISOString(),
                     expiresAt: expires,

@@ -7,9 +7,9 @@ const quickActions = [
     { href: '/prayers/rosary', label: 'Rosary', icon: '📿', color: 'from-rose-500 to-rose-600' },
     { href: '/readings', label: 'Readings', icon: BookOpen, color: 'from-emerald-500 to-emerald-600' },
     { href: '/confession', label: 'Confession', icon: Shield, color: 'from-purple-500 to-purple-600' },
-    { href: '/candles', label: 'Candles', icon: Flame, color: 'from-amber-500 to-amber-600' },
+    { href: '/candles', label: 'Candles', icon: Flame, color: 'from-amber-500 to-amber-600', offeringTab: 'candle' },
     { href: '/prayer-wall', label: 'Pray', icon: Heart, color: 'from-pink-500 to-pink-600' },
-    { href: '/mass-offerings', label: 'Offering', icon: Gift, color: 'from-blue-500 to-blue-600' },
+    { href: '/mass-offerings', label: 'Offering', icon: Gift, color: 'from-blue-500 to-blue-600', offeringTab: 'mass' },
 ];
 
 export function QuickAccessBar() {
@@ -21,6 +21,7 @@ export function QuickAccessBar() {
                     <Link
                         key={i}
                         href={action.href}
+                        data-open-offering={action.offeringTab}
                         className="group flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                         <div className={`w-12 h-12 bg-gradient-to-br ${action.color} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
@@ -45,6 +46,7 @@ export function QuickAccessCompact() {
                 <Link
                     key={i}
                     href={action.href}
+                    data-open-offering={action.offeringTab}
                     className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full border border-white/20 transition-colors"
                 >
                     {typeof action.icon === 'string' ? (

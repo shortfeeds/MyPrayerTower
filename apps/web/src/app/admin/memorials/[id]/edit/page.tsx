@@ -28,8 +28,7 @@ export default function EditMemorialPage({ params }: { params: Promise<{ id: str
 
     const fetchMemorial = async () => {
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/memorials/${id}`);
+            const res = await fetch(`/api/admin/memorials/${id}`);
             if (res.ok) {
                 const data = await res.json();
                 setFormData({
@@ -59,8 +58,7 @@ export default function EditMemorialPage({ params }: { params: Promise<{ id: str
         setLoading(true);
 
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/memorials/${id}`, {
+            const res = await fetch(`/api/admin/memorials/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
                     status: true,
                     prayerCount: true,
                     createdAt: true,
-                    User: {
+                    user: {
                         select: {
                             id: true,
                             displayName: true,
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
                 isFlagged: p.status === 'REJECTED', // Map REJECTED to flagged for UI
                 prayerCount: p.prayerCount,
                 createdAt: p.createdAt.toISOString(),
-                user: p.User ? { id: p.User.id, name: p.User.displayName, email: p.User.email } : null
+                user: (p as any).user ? { id: (p as any).user.id, name: (p as any).user.displayName, email: (p as any).user.email } : null
             })),
             total,
             page,

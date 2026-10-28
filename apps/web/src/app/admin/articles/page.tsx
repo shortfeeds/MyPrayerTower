@@ -40,8 +40,7 @@ export default function ArticlesCMSPage() {
 
     const fetchArticles = async () => {
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/articles?page=1&limit=50`);
+            const res = await fetch('/api/admin/articles?page=1&limit=50');
             if (res.ok) {
                 const data = await res.json();
                 setArticles(data.articles || data || []);
@@ -60,8 +59,7 @@ export default function ArticlesCMSPage() {
         if (!confirm('Are you sure you want to delete this article?')) return;
 
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/articles/${id}`, { method: 'DELETE' });
+            const res = await fetch(`/api/admin/articles/${id}`, { method: 'DELETE' });
 
             if (res.ok) {
                 setArticles(prev => prev.filter(a => a.id !== id));
@@ -76,7 +74,7 @@ export default function ArticlesCMSPage() {
 
     const filteredArticles = articles.filter(article =>
         article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.category.toLowerCase().includes(searchQuery.toLowerCase())
+        (article.category && article.category.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     return (
@@ -155,13 +153,13 @@ export default function ArticlesCMSPage() {
                                         <td className="px-6 py-4">
                                             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
                                                 <Tag className="w-3 h-3" />
-                                                {article.category}
+                                                {article.category || 'General'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-500">
                                             <div className="flex items-center gap-2">
                                                 <User className="w-3 h-3" />
-                                                {article.author?.firstName} {article.author?.lastName}
+                                                {article.author ? `${article.author.firstName || ''} ${article.author.lastName || ''}`.trim() : 'Editorial'}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">

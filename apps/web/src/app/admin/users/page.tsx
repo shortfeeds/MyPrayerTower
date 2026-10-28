@@ -25,6 +25,7 @@ interface User {
     email: string;
     firstName: string;
     lastName: string;
+    name?: string;
     role: string;
     isEmailVerified: boolean;
     isBanned: boolean;
@@ -44,17 +45,18 @@ export default function AdminUsersPage() {
 
     useEffect(() => {
         fetchUsers();
-    }, [page, searchQuery]);
+    }, [page, searchQuery, selectedRole]);
 
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/users?page=${page}&limit=20&search=${searchQuery}`);
+            const res = await fetch(`/api/admin/users?page=${page}&limit=20&search=${encodeURIComponent(searchQuery)}&role=${selectedRole}`);
             if (res.ok) {
                 const data = await res.json();
-                setUsers(data.users);
-                setTotalPages(Math.ceil(data.total / 20));
+                setUsers(data.users || []);
+                setTotalPages(data.totalPages || 1);
+            } else {
+                toast.error('Failed to fetch users');
             }
         } catch (error) {
             toast.error('Failed to fetch users');
@@ -67,12 +69,11 @@ export default function AdminUsersPage() {
         if (!confirm(`Are you sure you want to ${currentStatus ? 'unban' : 'ban'} this user?`)) return;
 
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const endpoint = currentStatus ? 'unban' : 'ban';
-            const res = await fetch(`${API_BASE}/admin/users/${userId}/${endpoint}`, {
-                method: 'POST',
+            const action = currentStatus ? 'unban' : 'ban';
+            const res = await fetch(`/api/admin/users/${userId}`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ reason: 'Admin action' })
+                body: JSON.stringify({ action })
             });
 
             if (res.ok) {
@@ -91,13 +92,14 @@ export default function AdminUsersPage() {
         if (!confirm('Are you sure? This action is irreversible.')) return;
 
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/users/${userId}`, { method: 'DELETE' });
+            const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
 
             if (res.ok) {
                 setUsers(prev => prev.filter(u => u.id !== userId));
                 toast.success('User deleted');
                 setShowActionMenu(null);
+            } else {
+                toast.error('Failed to delete user');
             }
         } catch (error) {
             toast.error('Error deleting user');
@@ -113,10 +115,6 @@ export default function AdminUsersPage() {
                     <p className="text-gray-500">Manage user accounts and permissions</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition">
-                        <Download className="w-4 h-4" />
-                        Export
-                    </button>
                     <Link
                         href="/admin/users/create"
                         className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-sm"
@@ -135,7 +133,7 @@ export default function AdminUsersPage() {
                             <UsersIcon className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Total Users</p>
+                            <p className="text-sm font-medium text-gray-500">Total Users Listed</p>
                             <h3 className="text-2xl font-bold text-gray-900">{users.length}</h3>
                         </div>
                     </div>
@@ -172,7 +170,10 @@ export default function AdminUsersPage() {
                         type="text"
                         placeholder="Search users by name or email..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setPage(1);
+                        }}
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     />
                 </div>
@@ -181,12 +182,15 @@ export default function AdminUsersPage() {
                         <Filter className="w-4 h-4 text-gray-500" />
                         <select
                             value={selectedRole}
-                            onChange={(e) => setSelectedRole(e.target.value)}
+                            onChange={(e) => {
+                                setSelectedRole(e.target.value);
+                                setPage(1);
+                            }}
                             className="bg-transparent border-none text-sm focus:outline-none text-gray-700"
                         >
                             <option value="ALL">All Roles</option>
                             <option value="USER">User</option>
-                            <option value="ADMIN">Admin</option>
+                            <option value="ADMIN">Admin / Premium</option>
                         </select>
                     </div>
                 </div>
@@ -227,7 +231,7 @@ export default function AdminUsersPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
-                                                    {user.firstName?.[0]}{user.lastName?.[0]}
+                                                    {(user.firstName?.[0] || 'U')}{(user.lastName?.[0] || '')}
                                                 </div>
                                                 <div>
                                                     <div className="font-medium text-gray-900">{user.firstName} {user.lastName}</div>
@@ -246,7 +250,7 @@ export default function AdminUsersPage() {
                                                     }`}>
                                                     {user.isBanned ? 'Banned' : 'Active'}
                                                 </span>
-                                                {user.subscriptionTier !== 'FREE' && (
+                                                {user.subscriptionTier && user.subscriptionTier !== 'FREE' && (
                                                     <span className="inline-flex w-fit items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">
                                                         {user.subscriptionTier}
                                                     </span>

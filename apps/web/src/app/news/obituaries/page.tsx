@@ -106,10 +106,21 @@ export default async function ObituariesPage({
                         </Link>
                         <Link
                             href="/mass-offerings"
+                            data-open-offering="mass"
+                            data-intention="For the Eternal Rest and Repose of All Departed Souls"
                             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/[0.08] hover:bg-white/[0.12] text-white border border-white/10 text-xs font-semibold uppercase tracking-wider transition-all"
                         >
                             <Flame className="w-4 h-4 text-gold-400" />
                             <span>Request Memorial Mass</span>
+                        </Link>
+                        <Link
+                            href="/candles"
+                            data-open-offering="candle"
+                            data-intention="For the Peaceful Repose of Departed Faithful Souls"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/[0.08] hover:bg-white/[0.12] text-white border border-white/10 text-xs font-semibold uppercase tracking-wider transition-all"
+                        >
+                            <Flame className="w-4 h-4 text-amber-400" />
+                            <span>Light a Vigil Candle</span>
                         </Link>
                     </div>
                 </div>

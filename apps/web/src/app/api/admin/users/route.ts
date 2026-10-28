@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
 
     try {
         const skip = (page - 1) * limit;
-
         const where: any = {};
 
         if (search) {
@@ -24,10 +23,9 @@ export async function GET(request: NextRequest) {
             ];
         }
 
-        // Filter by role (map to subscriptionTier for ADMIN check)
-        if (role && role !== 'all') {
+        if (role && role !== 'ALL' && role !== 'all') {
             if (role === 'ADMIN') {
-                where.subscriptionTier = 'PREMIUM'; // Treat premium as admin-level
+                where.subscriptionTier = 'PREMIUM';
             } else if (role === 'USER') {
                 where.subscriptionTier = 'FREE';
             }
@@ -48,6 +46,7 @@ export async function GET(request: NextRequest) {
                     subscriptionTier: true,
                     emailVerified: true,
                     avatarUrl: true,
+                    notificationsEnabled: true,
                     createdAt: true,
                     lastLoginAt: true,
                     _count: {
@@ -58,21 +57,23 @@ export async function GET(request: NextRequest) {
             db.user.count({ where })
         ]);
 
-        // Transform data to match client expectations
         const transformedUsers = users.map(user => {
-            // Map subscription tier to role for UI
-            let role = 'USER';
+            let userRole = 'USER';
             if (user.subscriptionTier === 'PREMIUM' || user.subscriptionTier === 'PLUS') {
-                role = 'PREMIUM';
+                userRole = 'PREMIUM';
             }
 
             return {
                 id: user.id,
-                name: user.displayName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || null,
+                name: user.displayName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User',
+                firstName: user.firstName || user.displayName?.split(' ')[0] || 'User',
+                lastName: user.lastName || user.displayName?.split(' ').slice(1).join(' ') || '',
                 email: user.email,
-                role: role,
+                role: userRole,
+                subscriptionTier: user.subscriptionTier,
                 isVerified: !!user.emailVerified,
-                isBanned: false, // We don't have a banned field yet, default to false
+                isEmailVerified: !!user.emailVerified,
+                isBanned: user.notificationsEnabled === false,
                 avatarUrl: user.avatarUrl,
                 createdAt: user.createdAt.toISOString(),
                 lastLoginAt: user.lastLoginAt?.toISOString() || null,
@@ -89,5 +90,40 @@ export async function GET(request: NextRequest) {
     } catch (error: any) {
         console.error('Admin Users GET Error:', error);
         return NextResponse.json({ error: 'Failed to fetch users', users: [], total: 0 }, { status: 500 });
+    }
+}
+
+export async function POST(request: NextRequest) {
+    try {
+        const body = await request.json();
+        const { email, firstName, lastName, role } = body;
+
+        if (!email?.trim()) {
+            return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+        }
+
+        const existing = await db.user.findUnique({
+            where: { email: email.trim().toLowerCase() }
+        });
+
+        if (existing) {
+            return NextResponse.json({ error: 'User with this email already exists' }, { status: 400 });
+        }
+
+        const user = await db.user.create({
+            data: {
+                email: email.trim().toLowerCase(),
+                firstName: firstName?.trim() || null,
+                lastName: lastName?.trim() || null,
+                displayName: `${firstName || ''} ${lastName || ''}`.trim() || null,
+                subscriptionTier: role === 'ADMIN' ? 'PREMIUM' : 'FREE',
+                emailVerified: true,
+            }
+        });
+
+        return NextResponse.json({ success: true, user }, { status: 201 });
+    } catch (error: any) {
+        console.error('Admin User POST Error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

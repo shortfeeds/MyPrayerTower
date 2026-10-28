@@ -2,14 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { capturePayPalOrder } from '@/lib/paypal';
 import { db } from '@/lib/db';
 import { notifyCandle } from '@/lib/email';
+import { dispatchServerNotification } from '@/lib/serverNotifications';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
-const prisma = db; // Alias for minimal refactor impact if used elsewhere
+const prisma = db;
 
 // Duration in hours
 const DURATION_HOURS = {
     'ONE_DAY': 24,
     'THREE_DAYS': 72,
     'SEVEN_DAYS': 168,
+    'FOURTEEN_DAYS': 336,
     'THIRTY_DAYS': 720
 };
 
@@ -47,12 +50,20 @@ export async function POST(req: NextRequest) {
                         where: { id: dbRecordId },
                         data: {
                             paymentStatus: 'PAID',
-                            paymentId: capture?.id, // Use capture ID as payment ID
+                            paymentId: capture?.id,
                             isActive: true,
                             litAt: new Date(),
                             expiresAt: expiresAt
                         }
                     });
+
+                    // Instant cache purge for live sanctuary view
+                    try {
+                        revalidatePath('/candles');
+                        revalidateTag('candles');
+                    } catch {
+                        // ignore
+                    }
 
                     // Send email notification
                     await notifyCandle({
@@ -62,6 +73,17 @@ export async function POST(req: NextRequest) {
                         name: updatedCandle.isAnonymous ? 'Anonymous' : (updatedCandle.name || 'Prayer Warrior'),
                         email: captureResult.payer?.email_address
                     });
+
+                    // In-app & Push notification
+                    if (updatedCandle.userId) {
+                        await dispatchServerNotification({
+                            userId: updatedCandle.userId,
+                            title: 'Votive Candle Lit in Sanctuary',
+                            body: `Your vigil for "${updatedCandle.intention.slice(0, 45)}..." is now burning brightly in the sanctuary.`,
+                            type: 'SYSTEM',
+                            data: { link: '/my-vigils', candleId: updatedCandle.id }
+                        });
+                    }
                 }
             } else {
                 console.warn('No reference ID found in PayPal candle order.', orderId);

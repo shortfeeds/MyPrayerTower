@@ -47,14 +47,32 @@ export function TabernacleLampModal({ isOpen, onClose, onSuccess }: TabernacleLa
         }
     };
 
-    const handlePayPalSuccess = (details: any) => {
+    const handlePayPalSuccess = async (details: any) => {
         const sponsorData = {
             familyName: familyName.trim() || 'Faithful Catholic Family',
             intention: intention.trim(),
             durationDays,
         };
 
-        // Save to localStorage for real-time banner update
+        // Call backend API to record the live sanctuary sponsor in Postgres
+        try {
+            await fetch('/api/tabernacle/sponsor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    familyName: sponsorData.familyName,
+                    intention: sponsorData.intention,
+                    email: email.trim(),
+                    durationDays,
+                    amount: getPrice(),
+                    paypalOrderId: details?.id,
+                })
+            });
+        } catch (apiErr) {
+            console.error('Failed to sync Tabernacle sponsorship with backend:', apiErr);
+        }
+
+        // Save to localStorage for instant client-side reactivity
         try {
             const now = new Date();
             const expires = new Date(now.getTime() + durationDays * 24 * 3600 * 1000);

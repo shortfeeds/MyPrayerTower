@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { capturePayPalOrder } from '@/lib/paypal';
 import { db } from '@/lib/db';
 import { notifyMassOffering } from '@/lib/email';
+import { dispatchServerNotification } from '@/lib/serverNotifications';
 
 const prisma = db;
 
@@ -22,22 +23,8 @@ export async function POST(req: NextRequest) {
         if (captureResult.status === 'COMPLETED') {
             const capture = captureResult.purchase_units[0]?.payments?.captures?.[0];
 
-            // 2. Retrieve our DB Record ID
-            // We passed it as referenceId (invoice_id) or custom_id when creating.
-            // PayPal returns it in purchase_units[0].reference_id or custom_id.
-            // Check captureResult.purchase_units[0]
-
-            // NOTE: The 'createPayPalOrder' lib helper usually maps referenceId to invoice_id or custom_id.
-            // We try to find the mass offering by matching the 'reference_id' returned by PayPal 
-            // OR we can trust the client? NO. We must find it from PayPal data.
-
-            // Fallback: If we can't find it in PayPal response (legacy lib issue), 
-            // we might need to rely on the fact that we created it.
-            // But let's look for purchase_units[0].reference_id (standard).
             const dbRecordId = (captureResult.purchase_units?.[0] as any)?.reference_id;
-            // If createPayPalOrder puts it in custom_id:
             const customId = (captureResult.purchase_units?.[0] as any)?.custom_id;
-
             const targetId = dbRecordId || customId;
 
             if (targetId) {
@@ -59,6 +46,17 @@ export async function POST(req: NextRequest) {
                     name: offering.name,
                     email: offering.email
                 });
+
+                // In-App & Push Notification
+                if (offering.userId) {
+                    await dispatchServerNotification({
+                        userId: offering.userId,
+                        title: 'Holy Mass Intention Consecrated',
+                        body: `Your Holy Mass offering for "${offering.intentionFor}" has been accepted and scheduled for celebration.`,
+                        type: 'MASS_OFFERING_UPDATE',
+                        data: { link: '/my-vigils', orderNumber: offering.orderNumber }
+                    });
+                }
             } else {
                 console.warn('No reference ID found in PayPal order. Manual reconciliation needed.', orderId);
             }
@@ -67,7 +65,6 @@ export async function POST(req: NextRequest) {
                 success: true,
                 orderId: captureResult.id,
                 status: captureResult.status,
-                // Return details for client display
                 amount: capture?.amount?.value,
                 currency: capture?.amount?.currency_code,
                 payerName: captureResult.payer?.name?.given_name,

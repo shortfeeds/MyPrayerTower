@@ -286,8 +286,27 @@ export default function RootLayout({
                     crossOrigin="anonymous"
                     strategy="lazyOnload"
                 />
-                {/* Shared Mobile Nav for TWA/App Mode */}
-                
+
+                {/* Localhost / Development Service Worker & Stale Cache Purger */}
+                <script
+                    id="dev-sw-cleaner"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            if (typeof window !== 'undefined' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+                                if ('serviceWorker' in navigator) {
+                                    navigator.serviceWorker.getRegistrations().then(function(regs) {
+                                        for (var r of regs) r.unregister();
+                                    });
+                                }
+                                if ('caches' in window) {
+                                    caches.keys().then(function(keys) {
+                                        for (var k of keys) caches.delete(k);
+                                    });
+                                }
+                            }
+                        `
+                    }}
+                />
             </body>
         </html>
     );

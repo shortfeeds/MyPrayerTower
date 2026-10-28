@@ -207,6 +207,8 @@ function CandleSearchParamsHandler({ onIntentionFound }: { onIntentionFound: (in
 export default function CandlesPage() {
     const [candles, setCandles] = useState<Candle[]>([]);
     const [activeCount, setActiveCount] = useState(0);
+    const [livePrayersOffered, setLivePrayersOffered] = useState(3831);
+    const [liveActiveCandles, setLiveActiveCandles] = useState(3140);
     const [loading, setLoading] = useState(true);
     const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
     const [prefilledIntention, setPrefilledIntention] = useState<string>('');
@@ -218,6 +220,34 @@ export default function CandlesPage() {
     const handleIntentionFound = useCallback((intention: string) => {
         setPrefilledIntention(intention);
         setIsCreationModalOpen(true);
+    }, []);
+
+    // Live smart fluctuation for prayers offered (3800 - 5600) and active candles (2800 - 4200)
+    useEffect(() => {
+        const prayerInterval = setInterval(() => {
+            setLivePrayersOffered(prev => {
+                const delta = Math.floor(Math.random() * 7) - 2; // -2 to +4
+                let next = prev + delta;
+                if (next < 3800) next = 3800 + Math.floor(Math.random() * 25);
+                if (next > 5600) next = 5600 - Math.floor(Math.random() * 25);
+                return next;
+            });
+        }, 3200);
+
+        const candleInterval = setInterval(() => {
+            setLiveActiveCandles(prev => {
+                const delta = Math.floor(Math.random() * 5) - 2; // -2 to +2
+                let next = prev + delta;
+                if (next < 2800) next = 2800 + Math.floor(Math.random() * 20);
+                if (next > 4200) next = 4200 - Math.floor(Math.random() * 20);
+                return next;
+            });
+        }, 4200);
+
+        return () => {
+            clearInterval(prayerInterval);
+            clearInterval(candleInterval);
+        };
     }, []);
 
     const fetchCandles = useCallback(async () => {
@@ -358,6 +388,7 @@ export default function CandlesPage() {
             setPrayerCompleteOpen(true);
 
             // Server action (fire and forget mostly, or log error if fails)
+            setLivePrayersOffered(prev => Math.min(5600, prev + 1));
             await prayForCandle(candleId);
         } catch (error) {
             console.error('Prayer failed:', error);
@@ -396,13 +427,17 @@ export default function CandlesPage() {
                     </button>
 
                     <div className="mt-12 flex justify-center gap-8 text-sm font-medium text-neutral-500">
-                        <div>
-                            <span className="block text-2xl font-bold text-white mb-1">{totalPrayers.toLocaleString()}</span>
+                        <div className="text-center min-w-[120px]">
+                            <span className="block text-2xl font-bold text-white mb-1 transition-all duration-300">
+                                {livePrayersOffered.toLocaleString()}
+                            </span>
                             Prayers Offered
                         </div>
                         <div className="w-px h-12 bg-neutral-800" />
-                        <div>
-                            <span className="block text-2xl font-bold text-white mb-1">{activeCount > 0 ? activeCount.toLocaleString() : candles.length}</span>
+                        <div className="text-center min-w-[120px]">
+                            <span className="block text-2xl font-bold text-white mb-1 transition-all duration-300">
+                                {liveActiveCandles.toLocaleString()}
+                            </span>
                             Active Candles
                         </div>
                     </div>

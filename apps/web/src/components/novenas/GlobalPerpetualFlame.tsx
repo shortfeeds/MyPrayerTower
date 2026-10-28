@@ -1,30 +1,38 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Flame, Users } from 'lucide-react';
 
+const MIN_PRAYING = 5203;
+const MAX_PRAYING = 9703;
+
 export function GlobalPerpetualFlame() {
-    const [activeCount, setActiveCount] = useState(124); // Placeholder initial count
+    // Seed within the 5203 - 9703 range
+    const [activeCount, setActiveCount] = useState(7458);
     const [intensity, setIntensity] = useState(1);
 
-    // Simulate "Live" updates for demonstration
+    // Live smart fluctuation strictly bounded between 5203 - 9703
     useEffect(() => {
         const interval = setInterval(() => {
             setActiveCount(prev => {
-                const diff = Math.floor(Math.random() * 5) - 2;
-                return Math.max(10, prev + diff);
+                // Natural random step between -4 and +5
+                const delta = Math.floor(Math.random() * 10) - 4;
+                let next = prev + delta;
+                if (next < MIN_PRAYING) next = MIN_PRAYING + Math.floor(Math.random() * 15);
+                if (next > MAX_PRAYING) next = MAX_PRAYING - Math.floor(Math.random() * 15);
+                return next;
             });
-        }, 5000);
+        }, 3200);
 
         return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
-        // Intensity scales with participation
-        const newIntensity = 0.5 + (activeCount / 500);
-        setIntensity(Math.min(2.5, newIntensity));
+        // Natural visual intensity scaling for flame between 0.95 and 1.25
+        const progress = (activeCount - MIN_PRAYING) / (MAX_PRAYING - MIN_PRAYING);
+        const newIntensity = 0.95 + progress * 0.25;
+        setIntensity(Math.min(1.35, Math.max(0.9, newIntensity)));
     }, [activeCount]);
 
     return (
@@ -69,8 +77,9 @@ export function GlobalPerpetualFlame() {
                 {/* Live Count Label */}
                 <motion.div
                     key={activeCount}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0.85, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
                     className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10 backdrop-blur-sm"
                 >
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />

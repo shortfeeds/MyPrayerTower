@@ -1,5 +1,5 @@
 // MyPrayerTower Sanctuary Service Worker & Push Notification Hub
-const CACHE_NAME = 'mpt-sanctuary-v2';
+const CACHE_NAME = 'mpt-sanctuary-v3';
 
 self.addEventListener('install', (event) => {
     // Immediately activate without waiting for old tabs to close
@@ -15,7 +15,12 @@ self.addEventListener('activate', (event) => {
             caches.keys().then((keys) => {
                 return Promise.all(
                     keys.map((key) => {
-                        if (key !== CACHE_NAME) {
+                        // In local development, purge ALL caches to prevent webpack chunk collision
+                        if (
+                            self.location.hostname === 'localhost' ||
+                            self.location.hostname === '127.0.0.1' ||
+                            key !== CACHE_NAME
+                        ) {
                             return caches.delete(key);
                         }
                     })
@@ -35,16 +40,19 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // NEVER intercept or cache admin or API routes
+    // NEVER intercept or cache localhost, admin, API, or HMR routes
     if (
+        url.hostname === 'localhost' ||
+        url.hostname === '127.0.0.1' ||
         url.pathname.startsWith('/admin') ||
         url.pathname.startsWith('/api') ||
-        url.pathname.startsWith('/auth')
+        url.pathname.startsWith('/auth') ||
+        url.pathname.startsWith('/_next/webpack-hmr')
     ) {
         return;
     }
 
-    // Static assets (CSS, JS, fonts, static images) - Stale while revalidate
+    // Static assets (CSS, JS, fonts, static images) - Stale while revalidate in production
     if (
         url.pathname.startsWith('/_next/static/') ||
         url.pathname.match(/\.(?:png|jpg|jpeg|svg|gif|webp|ico|woff2?|css|js)$/i)

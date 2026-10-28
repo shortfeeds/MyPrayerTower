@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Mail, Clock, ShoppingCart, Loader2, Check, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AbandonedCart {
     id: string;
@@ -25,35 +26,17 @@ export default function AbandonedCartsPage() {
 
     const fetchCarts = async () => {
         try {
-            // Mock data for now as we don't have a list API yet
-            // In real impl: const res = await fetch('/api/admin/abandoned-carts');
-
-            // Simulating API response
-            const mockCarts: AbandonedCart[] = [
-                {
-                    id: '1',
-                    type: 'MEMORIAL',
-                    email: 'jane@example.com',
-                    name: 'Jane Doe',
-                    step: 'payment',
-                    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-                    reminderCount: 0,
-                    lastReminder: null,
-                },
-                {
-                    id: '2',
-                    type: 'CANDLE',
-                    email: 'mark@example.com',
-                    name: null,
-                    step: 'details',
-                    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(), // 26 hours ago
-                    reminderCount: 1,
-                    lastReminder: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-                }
-            ];
-            setCarts(mockCarts);
+            setLoading(true);
+            const res = await fetch('/api/admin/abandoned-carts');
+            if (res.ok) {
+                const data = await res.json();
+                setCarts(data.carts || []);
+            } else {
+                toast.error('Failed to load abandoned carts');
+            }
         } catch (error) {
             console.error('Failed to fetch carts', error);
+            toast.error('Network error loading abandoned carts');
         } finally {
             setLoading(false);
         }
@@ -62,18 +45,23 @@ export default function AbandonedCartsPage() {
     const sendReminder = async (cart: AbandonedCart) => {
         setSendingId(cart.id);
         try {
-            // Call API to send manual reminder
-            // await fetch(`/api/admin/remind/${cart.id}`, { method: 'POST' });
-            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate delay
+            const res = await fetch(`/api/admin/abandoned-carts/${cart.id}`, {
+                method: 'POST',
+            });
 
-            // Update local state
-            setCarts(prev => prev.map(c =>
-                c.id === cart.id
-                    ? { ...c, reminderCount: c.reminderCount + 1, lastReminder: new Date().toISOString() }
-                    : c
-            ));
+            if (res.ok) {
+                toast.success(`Reminder queued for ${cart.email}`);
+                setCarts(prev => prev.map(c =>
+                    c.id === cart.id
+                        ? { ...c, reminderCount: c.reminderCount + 1, lastReminder: new Date().toISOString() }
+                        : c
+                ));
+            } else {
+                toast.error('Failed to send reminder');
+            }
         } catch (error) {
             console.error('Failed to send reminder', error);
+            toast.error('Error sending reminder');
         } finally {
             setSendingId(null);
         }
@@ -84,12 +72,12 @@ export default function AbandonedCartsPage() {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Abandoned Carts</h1>
-                    <p className="text-gray-500">Track and recover incomplete transactions</p>
+                    <p className="text-gray-500">Track and recover incomplete offerings and memorial purchases</p>
                 </div>
                 <div className="flex gap-2">
                     <div className="px-4 py-2 bg-amber-50 text-amber-700 rounded-lg text-sm font-medium border border-amber-200 flex items-center gap-2">
                         <AlertCircle className="w-4 h-4" />
-                        {carts.length} Active Carts
+                        {carts.length} Pending Carts
                     </div>
                 </div>
             </div>
@@ -100,7 +88,7 @@ export default function AbandonedCartsPage() {
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-200">
                                 <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
-                                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Item Type</th>
+                                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Offering Type</th>
                                 <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Stage</th>
                                 <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Time</th>
                                 <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Reminders</th>
@@ -111,14 +99,14 @@ export default function AbandonedCartsPage() {
                             {loading ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
+                                        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-amber-500" />
                                         Loading carts...
                                     </td>
                                 </tr>
                             ) : carts.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                        No abandoned carts found.
+                                        No abandoned carts pending recovery.
                                     </td>
                                 </tr>
                             ) : (
@@ -126,11 +114,11 @@ export default function AbandonedCartsPage() {
                                     <tr key={cart.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                                                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-medium">
                                                     <UserIcon name={cart.name} />
                                                 </div>
                                                 <div>
-                                                    <div className="font-medium text-gray-900">{cart.name || 'Guest User'}</div>
+                                                    <div className="font-medium text-gray-900 text-sm">{cart.name || 'Guest User'}</div>
                                                     <div className="text-xs text-gray-500">{cart.email}</div>
                                                 </div>
                                             </div>

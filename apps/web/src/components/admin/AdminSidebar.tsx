@@ -7,264 +7,349 @@ import {
     Users,
     Church,
     BookOpen,
-    Heart,
-    Image,
     Settings,
-    Shield,
+    ShieldCheck,
     BarChart3,
-    Bell,
     LogOut,
-    Menu,
-    X,
     ChevronDown,
     Search,
-    Moon,
-    Sun,
     Flame,
-    ShoppingBag
+    CreditCard,
+    DollarSign,
+    Candle,
+    Gift,
+    ShoppingBag,
+    AlertOctagon,
+    HeartHandshake,
+    CheckCircle,
+    Flag,
+    FileText,
+    Activity,
+    Sliders,
+    Megaphone,
+    Globe,
+    Mail,
+    SlidersHorizontal,
+    ExternalLink
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-interface MenuItem {
+interface SubMenuItem {
     name: string;
     href: string;
-    icon: any;
     badge?: number;
-    children?: { name: string; href: string }[];
 }
 
-const menuItems: MenuItem[] = [
-    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    {
-        name: 'Financial Center',
-        href: '/admin/finance',
-        icon: BarChart3,
-        children: [
-            { name: 'Revenue Overview', href: '/admin/revenue' },
-            { name: 'Donations', href: '/admin/donations' },
-            { name: 'Mass Offerings', href: '/admin/mass-offerings' },
-            { name: 'Virtual Candles', href: '/admin/candles' },
-            { name: 'Spiritual Bouquets', href: '/admin/bouquets' },
-            { name: 'Failed Payments', href: '/admin/finance/failed-payments' },
-            { name: 'Abandoned Carts', href: '/admin/abandoned-carts' },
-        ]
-    },
-    {
-        name: 'Content & Resources',
-        href: '/admin/cms',
-        icon: BookOpen,
-        children: [
-            { name: 'Saints', href: '/admin/saints' },
-            { name: 'Prayers', href: '/admin/prayers' },
-            { name: 'Readings', href: '/admin/readings' },
-            { name: 'Articles', href: '/admin/articles' },
-            { name: 'Memorials', href: '/admin/memorials' },
-        ]
-    },
-    {
-        name: 'Churches & Community',
-        href: '/admin/churches',
-        icon: Church,
-        children: [
-            { name: 'All Churches', href: '/admin/churches' },
-            { name: 'Pending Claims', href: '/admin/churches/claims' },
-            { name: 'Verified', href: '/admin/churches/verified' },
-        ]
-    },
-    {
-        name: 'Growth & Ads',
-        href: '/admin/ads',
-        icon: Image,
-        children: [
-            { name: 'Advertisements', href: '/admin/ads' },
-            { name: 'Quick Indexing (IndexNow)', href: '/admin/indexing' },
-            { name: 'Moderation', href: '/admin/moderation' },
-            { name: 'Reports', href: '/admin/reports' },
-        ]
-    },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
-];
+interface PillarItem {
+    name: string;
+    icon: any;
+    defaultHref: string;
+    children: SubMenuItem[];
+}
 
 export function AdminSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (val: boolean) => void }) {
     const pathname = usePathname();
-    const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+    const [reportCount, setReportCount] = useState(0);
+    const [claimCount, setClaimCount] = useState(0);
+    const [searchFilter, setSearchFilter] = useState('');
 
-    const toggleMenu = (name: string) => {
-        setExpandedMenus(prev =>
+    const [expandedPillars, setExpandedPillars] = useState<string[]>([
+        'Financials & Offerings',
+        'Community & Ministry',
+        'Content & Liturgy',
+        'Trust & Safety',
+        'Platform & Growth',
+    ]);
+
+    useEffect(() => {
+        const fetchCounters = async () => {
+            try {
+                // Reports counter
+                const repRes = await fetch('/api/admin/reports?status=PENDING&limit=1');
+                if (repRes.ok) {
+                    const data = await repRes.json();
+                    setReportCount(data.total || 0);
+                }
+            } catch (err) {
+                // non-blocking
+            }
+
+            try {
+                // Claims counter
+                const claimRes = await fetch('/api/admin/claims?limit=1');
+                if (claimRes.ok) {
+                    const data = await claimRes.json();
+                    setClaimCount(data.total || 0);
+                }
+            } catch (err) {
+                // non-blocking
+            }
+        };
+
+        fetchCounters();
+        const interval = setInterval(fetchCounters, 60000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const togglePillar = (name: string) => {
+        setExpandedPillars(prev =>
             prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]
         );
     };
 
-    const isActive = (href: string) => pathname === href || pathname?.startsWith(href + '/');
+    const isLinkActive = (href: string) => {
+        if (href === '/admin') return pathname === '/admin';
+        return pathname === href || pathname?.startsWith(href + '/');
+    };
 
-    const [reportCount, setReportCount] = useState(0);
-
-    useEffect(() => {
-        const fetchReportCount = async () => {
-            try {
-                const res = await fetch('/api/admin/reports?status=PENDING&limit=1');
-                if (res.ok) {
-                    const data = await res.json();
-                    setReportCount(data.total || 0);
-                }
-            } catch (err) {
-                console.error('Failed to fetch report count', err);
-            }
-        };
-
-        fetchReportCount();
-        // Optional: Poll every minute
-        const interval = setInterval(fetchReportCount, 60000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const updatedMenuItems = menuItems.map(item => {
-        if (item.name === 'Moderation') {
-            return { ...item, badge: reportCount > 0 ? reportCount : undefined };
+    const pillars: PillarItem[] = [
+        {
+            name: 'Financials & Offerings',
+            icon: CreditCard,
+            defaultHref: '/admin/finance/overview',
+            children: [
+                { name: 'Revenue Overview', href: '/admin/finance/overview' },
+                { name: 'Transactions Ledger', href: '/admin/finance/transactions' },
+                { name: 'Virtual Candles', href: '/admin/candles' },
+                { name: 'Mass Offerings', href: '/admin/mass-offerings' },
+                { name: 'Spiritual Bouquets', href: '/admin/bouquets' },
+                { name: 'Donations & Tithing', href: '/admin/donations' },
+                { name: 'Failed Payments', href: '/admin/finance/failed-payments' },
+                { name: 'Abandoned Carts', href: '/admin/abandoned-carts' },
+            ]
+        },
+        {
+            name: 'Community & Ministry',
+            icon: Users,
+            defaultHref: '/admin/users',
+            children: [
+                { name: 'User Directory', href: '/admin/users' },
+                { name: 'Parish Directory', href: '/admin/churches' },
+                { name: 'Parish Claim Requests', href: '/admin/churches/claims', badge: claimCount },
+                { name: 'Verified Parishes', href: '/admin/churches/verified' },
+                { name: 'Eternal Memorials', href: '/admin/memorials' },
+                { name: 'Mass Partners Network', href: '/admin/partners' },
+            ]
+        },
+        {
+            name: 'Content & Liturgy',
+            icon: BookOpen,
+            defaultHref: '/admin/cms/prayers',
+            children: [
+                { name: 'Prayer Wall & Queue', href: '/admin/cms/prayers' },
+                { name: 'Saints & Feasts CMS', href: '/admin/cms/saints' },
+                { name: 'Catholic Articles', href: '/admin/articles' },
+            ]
+        },
+        {
+            name: 'Trust & Safety',
+            icon: ShieldCheck,
+            defaultHref: '/admin/moderation',
+            children: [
+                { name: 'Content Moderation', href: '/admin/moderation' },
+                { name: 'Incident Reports', href: '/admin/reports', badge: reportCount },
+                { name: 'Audit & Task Logs', href: '/admin/audit' },
+            ]
+        },
+        {
+            name: 'Platform & Growth',
+            icon: SlidersHorizontal,
+            defaultHref: '/admin/analytics',
+            children: [
+                { name: 'Platform Analytics', href: '/admin/analytics' },
+                { name: 'Sponsor Advertisements', href: '/admin/ads' },
+                { name: 'Instant Indexing (SEO)', href: '/admin/indexing' },
+                { name: 'Newsletter Subscribers', href: '/admin/newsletter' },
+                { name: 'Feature Controls', href: '/admin/features' },
+                { name: 'Platform Settings', href: '/admin/settings' },
+            ]
         }
-        return item;
-    });
+    ];
 
     return (
         <>
-            {/* Sidebar Overlay */}
+            {/* Sidebar Mobile Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                    className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-xs transition-opacity"
                     onClick={() => setIsOpen(false)}
                 />
             )}
 
-            {/* Sidebar */}
+            {/* Sidebar Container */}
             <aside className={`
-                fixed lg:sticky top-0 left-0 h-screen w-72 bg-[#0F172A] text-white border-r border-gray-800
-                transform transition-transform duration-300 z-50 flex flex-col overflow-hidden
+                fixed lg:sticky top-0 left-0 h-screen w-72 bg-[#0B132B] text-slate-100 border-r border-slate-800/80
+                transform transition-transform duration-300 z-50 flex flex-col overflow-hidden shadow-2xl
                 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
-                {/* Custom Scrollbar Styling */}
+                {/* Custom Scrollbar */}
                 <style jsx global>{`
                     .admin-sidebar-scroll::-webkit-scrollbar {
-                        display: none;
+                        width: 4px;
                     }
-                    .admin-sidebar-scroll {
-                        -ms-overflow-style: none;  /* IE and Edge */
-                        scrollbar-width: none;  /* Firefox */
+                    .admin-sidebar-scroll::-webkit-scrollbar-thumb {
+                        background: #1e293b;
+                        border-radius: 4px;
+                    }
+                    .admin-sidebar-scroll::-webkit-scrollbar-track {
+                        background: transparent;
                     }
                 `}</style>
-                <div className="p-4 mb-0">
-                    <Link href="/" className="flex items-center gap-3 px-2">
-                        <div className="w-9 h-9 bg-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
-                            <Flame className="w-6 h-6 text-white" />
+
+                {/* Brand / Logo */}
+                <div className="p-4 border-b border-slate-800/60 bg-[#070D1E]/60 flex items-center justify-between">
+                    <Link href="/admin" className="flex items-center gap-3 px-1">
+                        <div className="w-9 h-9 bg-gradient-to-tr from-amber-500 to-amber-400 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                            <Flame className="w-5 h-5 text-slate-950 fill-slate-950" />
                         </div>
-                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-500 tracking-tight">
-                            PrayerTower
-                        </span>
+                        <div>
+                            <span className="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-amber-400 to-orange-400 tracking-tight block">
+                                MyPrayerTower
+                            </span>
+                            <span className="text-[10px] uppercase tracking-wider text-slate-400 font-medium block">
+                                Admin Portal
+                            </span>
+                        </div>
                     </Link>
                 </div>
 
-                {/* Search */}
-                <div className="px-4 py-2">
+                {/* Search Quick-Filter */}
+                <div className="px-3 pt-3 pb-2">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                         <input
                             type="text"
-                            placeholder="Search..."
-                            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500"
+                            placeholder="Filter modules..."
+                            value={searchFilter}
+                            onChange={(e) => setSearchFilter(e.target.value)}
+                            className="w-full pl-9 pr-3 py-1.5 bg-slate-900/90 border border-slate-800 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-amber-500/60 focus:border-amber-500/60"
                         />
                     </div>
                 </div>
 
-                {/* Navigation - Scrollable Section */}
-                <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto admin-sidebar-scroll">
-                    {menuItems.map((item) => {
-                        const Icon = item.icon;
-                        const active = isActive(item.href);
-                        const hasChildren = item.children && item.children.length > 0;
-                        const isExpanded = expandedMenus.includes(item.name);
+                {/* Navigation */}
+                <nav className="flex-1 px-3 py-2 space-y-1.5 overflow-y-auto admin-sidebar-scroll">
+                    {/* Top-Level Dashboard */}
+                    {(!searchFilter || 'dashboard overview'.includes(searchFilter.toLowerCase())) && (
+                        <Link
+                            href="/admin"
+                            onClick={() => setIsOpen(false)}
+                            className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                                pathname === '/admin'
+                                    ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                                    : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                            }`}
+                        >
+                            <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
+                            <span>Executive Dashboard</span>
+                        </Link>
+                    )}
+
+                    {/* 5 Enterprise Pillars */}
+                    {pillars.map((pillar) => {
+                        const Icon = pillar.icon;
+                        const matchingChildren = pillar.children.filter(c =>
+                            !searchFilter || c.name.toLowerCase().includes(searchFilter.toLowerCase())
+                        );
+
+                        if (searchFilter && matchingChildren.length === 0 && !pillar.name.toLowerCase().includes(searchFilter.toLowerCase())) {
+                            return null;
+                        }
+
+                        const isPillarActive = pillar.children.some(c => isLinkActive(c.href));
+                        const isExpanded = expandedPillars.includes(pillar.name) || Boolean(searchFilter);
+                        const pillarTotalBadge = pillar.children.reduce((acc, c) => acc + (c.badge || 0), 0);
 
                         return (
-                            <div key={item.name}>
-                                {hasChildren ? (
-                                        <button
-                                            onClick={() => toggleMenu(item.name)}
-                                            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all ${active
-                                                ? 'bg-amber-500/10 text-amber-400'
-                                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                                                }`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                                                    <Icon className="w-5 h-5 text-inherit" />
-                                                </div>
-                                                <span className="font-medium">{item.name}</span>
-                                            </div>
-                                            <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                                        </button>
-                                    ) : (
-                                        <Link
-                                            href={item.href}
-                                            onClick={() => setIsOpen(false)}
-                                            className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all ${active
-                                                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/25'
-                                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                                                }`}
-                                        >
-                                            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                                                <Icon className="w-5 h-5 text-inherit" />
-                                            </div>
-                                            <span className="font-medium">{item.name}</span>
-                                            {item.badge && item.badge > 0 && (
-                                                <span className="ml-auto px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full">
-                                                    {item.badge}
-                                                </span>
-                                            )}
-                                        </Link>
-                                    )}
+                            <div key={pillar.name} className="pt-1">
+                                <button
+                                    onClick={() => togglePillar(pillar.name)}
+                                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-colors text-xs font-semibold ${
+                                        isPillarActive
+                                            ? 'text-amber-400 bg-amber-500/10'
+                                            : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                        <Icon className={`w-4 h-4 flex-shrink-0 ${isPillarActive ? 'text-amber-400' : 'text-slate-400'}`} />
+                                        <span className="truncate">{pillar.name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 flex-shrink-0">
+                                        {pillarTotalBadge > 0 && !isExpanded && (
+                                            <span className="px-1.5 py-0.2 bg-red-500 text-white text-[10px] font-bold rounded-full">
+                                                {pillarTotalBadge}
+                                            </span>
+                                        )}
+                                        <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                                    </div>
+                                </button>
 
-                                    {/* Submenu */}
-                                    {hasChildren && isExpanded && (
-                                        <div className="ml-[1rem] pl-4 border-l border-gray-700/50 space-y-0.5 mt-0.5">
-                                            {item.children!.map(child => (
+                                {isExpanded && (
+                                    <div className="mt-0.5 ml-3 pl-3 border-l border-slate-800/80 space-y-0.5">
+                                        {(searchFilter ? matchingChildren : pillar.children).map((child) => {
+                                            const active = isLinkActive(child.href);
+                                            return (
                                                 <Link
                                                     key={child.href}
                                                     href={child.href}
                                                     onClick={() => setIsOpen(false)}
-                                                    className={`block px-3 py-1.5 rounded-lg text-xs transition-colors ${pathname === child.href
-                                                        ? 'bg-amber-500/20 text-amber-400 font-medium'
-                                                        : 'text-gray-400/80 hover:text-white hover:bg-gray-800/50'
-                                                        }`}
+                                                    className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                                                        active
+                                                            ? 'bg-amber-500/20 text-amber-300 font-semibold'
+                                                            : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'
+                                                    }`}
                                                 >
-                                                    {child.name}
+                                                    <span className="truncate">{child.name}</span>
+                                                    {Boolean(child.badge && child.badge > 0) && (
+                                                        <span className="ml-2 px-1.5 py-0.2 bg-red-500 text-white text-[10px] font-bold rounded-full">
+                                                            {child.badge}
+                                                        </span>
+                                                    )}
                                                 </Link>
-                                            ))}
-                                        </div>
-                                    )}
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
                 </nav>
 
-                {/* User Section */}
-                <div className="p-4 border-t border-gray-800">
-                    <div className="flex items-center gap-3 p-2 bg-gray-800/50 rounded-xl">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                            <span className="text-white font-bold text-xs">SA</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="font-medium text-white text-xs truncate">Super Admin</p>
-                            <p className="text-[10px] text-gray-500 truncate">admin@myprayertower.com</p>
-                        </div>
-                    </div>
-                    <button
-                        onClick={async () => {
-                            await fetch('/api/admin/auth/logout', { method: 'POST' });
-                            window.location.href = '/admin/login';
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-3 mt-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-xl transition-colors"
+                {/* Footer User & External Link */}
+                <div className="p-3 border-t border-slate-800/80 bg-[#070D1E]/60 space-y-2">
+                    <Link
+                        href="/"
+                        target="_blank"
+                        className="flex items-center justify-between px-3 py-1.5 text-xs text-slate-400 hover:text-amber-400 hover:bg-slate-800/40 rounded-lg transition-colors"
                     >
-                        <LogOut className="w-5 h-5" />
-                        <span className="font-medium">Sign Out</span>
-                    </button>
+                        <span className="flex items-center gap-2">
+                            <Globe className="w-3.5 h-3.5 text-amber-500" />
+                            View Public Site
+                        </span>
+                        <ExternalLink className="w-3 h-3 text-slate-500" />
+                    </Link>
+
+                    <div className="flex items-center justify-between p-2 bg-slate-900/80 rounded-xl border border-slate-800/60">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-7 h-7 bg-gradient-to-br from-amber-500 to-amber-700 rounded-lg flex items-center justify-center font-bold text-[11px] text-slate-950 flex-shrink-0">
+                                SA
+                            </div>
+                            <div className="min-w-0">
+                                <p className="font-semibold text-white text-xs truncate leading-tight">Super Administrator</p>
+                                <p className="text-[10px] text-slate-400 truncate leading-tight">Enterprise Console</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={async () => {
+                                await fetch('/api/admin/auth/logout', { method: 'POST' }).catch(() => {});
+                                window.location.href = '/admin/login';
+                            }}
+                            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors flex-shrink-0"
+                            title="Sign Out"
+                        >
+                            <LogOut className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
             </aside>
         </>

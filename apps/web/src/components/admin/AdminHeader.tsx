@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Bell, Search, Menu, X, Check } from 'lucide-react';
+import { Bell, Search, Menu, X, Check, Globe, Shield, ExternalLink, Sparkles } from 'lucide-react';
 import Link from 'next/link';
-import { toast } from 'sonner';
 
 interface AdminHeaderProps {
     user: any;
@@ -26,7 +25,6 @@ export function AdminHeader({ user, onMenuClick }: AdminHeaderProps) {
 
     useEffect(() => {
         fetchNotifications();
-        // Optional: Poll every minute
         const interval = setInterval(fetchNotifications, 60000);
         return () => clearInterval(interval);
     }, []);
@@ -46,89 +44,112 @@ export function AdminHeader({ user, onMenuClick }: AdminHeaderProps) {
             const res = await fetch('/api/admin/notifications?limit=5');
             if (res.ok) {
                 const data = await res.json();
-                setNotifications(data.notifications || []);
-                // Assuming API returns unread count or we calculate it
-                const unread = (data.notifications || []).filter((n: Notification) => !n.isRead).length;
+                const list = data.notifications || [];
+                setNotifications(list);
+                const unread = list.filter((n: Notification) => !n.isRead).length;
                 setUnreadCount(unread);
             }
         } catch (error) {
-            console.error('Failed to load notifications', error);
+            // non-blocking
         }
     };
 
-    const markAsRead = async (id: string) => {
-        // Optimistic update
+    const markAsRead = (id: string) => {
         setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
         setUnreadCount(prev => Math.max(0, prev - 1));
-
-        // Call API (Implement mark-read endpoint if needed, or just rely on open)
     };
 
     return (
-        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-gray-200/50 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 transition-all duration-300">
-            <div className="flex items-center gap-4 lg:hidden">
-                {/* Mobile menu trigger */}
+        <header className="h-16 bg-white border-b border-gray-200/80 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 shadow-xs">
+            {/* Left Section */}
+            <div className="flex items-center gap-3">
                 <button
                     onClick={onMenuClick}
-                    className="p-2 -ml-2 text-gray-700 hover:bg-gray-100/50 rounded-xl transition-colors active:scale-95"
+                    className="p-2 -ml-2 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors lg:hidden"
                     aria-label="Open sidebar"
                 >
-                    <Menu className="w-6 h-6" />
+                    <Menu className="w-5 h-5" />
                 </button>
+
+                {/* Environment Badge */}
+                <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full text-[11px] font-semibold tracking-wide">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>SYSTEM ONLINE</span>
+                </div>
             </div>
 
-            <div className="hidden lg:flex items-center gap-4 flex-1 max-w-xl">
-                <div className="relative flex-1">
+            {/* Center Section: Quick Search Command */}
+            <div className="hidden md:flex items-center gap-4 flex-1 max-w-md mx-6">
+                <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                         type="text"
-                        placeholder="Search anything..."
-                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                        placeholder="Search offerings, users, memorials, parishes..."
+                        className="w-full pl-9 pr-4 py-1.5 bg-gray-50/80 border border-gray-200 rounded-lg text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500"
                     />
                 </div>
             </div>
 
-            <div className="flex items-center gap-4">
-                {/* Notifications */}
+            {/* Right Section */}
+            <div className="flex items-center gap-3">
+                {/* View Public Platform */}
+                <Link
+                    href="/"
+                    target="_blank"
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50/60 rounded-lg border border-gray-200/80 transition-colors"
+                >
+                    <Globe className="w-3.5 h-3.5 text-amber-500" />
+                    <span>View Public Site</span>
+                    <ExternalLink className="w-3 h-3 text-gray-400" />
+                </Link>
+
+                {/* Notifications Drawer */}
                 <div className="relative" ref={notificationRef}>
                     <button
                         onClick={() => setShowNotifications(!showNotifications)}
-                        className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="Notifications"
                     >
-                        <Bell className="w-5 h-5 text-gray-500" />
+                        <Bell className="w-4 h-4" />
                         {unreadCount > 0 && (
-                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white" />
                         )}
                     </button>
 
                     {showNotifications && (
-                        <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 py-2 animate-in fade-in slide-in-from-top-2">
-                            <div className="px-4 py-2 border-b border-gray-50 flex justify-between items-center">
-                                <h3 className="font-semibold text-sm">Notifications</h3>
-                                <Link href="/admin/notifications" className="text-xs text-amber-600 hover:underline">
-                                    View All
-                                </Link>
+                        <div className="absolute right-0 top-12 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50">
+                            <div className="p-3.5 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                                <h3 className="font-semibold text-xs text-gray-900 uppercase tracking-wider">
+                                    System Alerts
+                                </h3>
+                                <span className="text-[11px] font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                                    {unreadCount} unread
+                                </span>
                             </div>
-                            <div className="max-h-96 overflow-y-auto">
+
+                            <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
                                 {notifications.length === 0 ? (
-                                    <div className="p-4 text-center text-gray-500 text-sm">
-                                        No notifications
+                                    <div className="p-6 text-center text-gray-400 text-xs">
+                                        No recent alerts or notifications
                                     </div>
                                 ) : (
-                                    notifications.map(notification => (
+                                    notifications.map((n) => (
                                         <div
-                                            key={notification.id}
-                                            className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${!notification.isRead ? 'bg-amber-50/30' : ''}`}
-                                            onClick={() => markAsRead(notification.id)}
+                                            key={n.id}
+                                            onClick={() => markAsRead(n.id)}
+                                            className={`p-3.5 hover:bg-gray-50 cursor-pointer transition-colors ${
+                                                !n.isRead ? 'bg-amber-50/40' : ''
+                                            }`}
                                         >
-                                            <div className="flex justify-between items-start gap-2">
-                                                <p className="text-sm text-gray-800 line-clamp-2">{notification.message}</p>
-                                                {!notification.isRead && (
-                                                    <span className="w-2 h-2 mt-1.5 bg-amber-500 rounded-full flex-shrink-0" />
+                                            <div className="flex items-start justify-between gap-2">
+                                                <p className="text-xs font-semibold text-gray-900 leading-snug">{n.title}</p>
+                                                {!n.isRead && (
+                                                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0 mt-1" />
                                                 )}
                                             </div>
-                                            <p className="text-xs text-gray-400 mt-1">
-                                                {new Date(notification.createdAt).toLocaleDateString()}
+                                            <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
+                                            <p className="text-[10px] text-gray-400 mt-1.5">
+                                                {new Date(n.createdAt).toLocaleString()}
                                             </p>
                                         </div>
                                     ))
@@ -136,21 +157,6 @@ export function AdminHeader({ user, onMenuClick }: AdminHeaderProps) {
                             </div>
                         </div>
                     )}
-                </div>
-
-                <div className="h-8 w-px bg-gray-200" />
-
-                {/* User Profile */}
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">
-                            {(user.name as string)?.[0] || 'A'}
-                        </span>
-                    </div>
-                    <div className="hidden sm:block">
-                        <p className="text-sm font-medium text-gray-900">{user.name || 'Admin'}</p>
-                        <p className="text-xs text-gray-500">{user.role || 'Administrator'}</p>
-                    </div>
                 </div>
             </div>
         </header>

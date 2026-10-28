@@ -1,40 +1,46 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
-import { Heart, Church, Gift, Sparkles, ArrowRight } from 'lucide-react';
+import { Church, Heart, ArrowRight, Sparkles, Gift } from 'lucide-react';
 
 interface MassOfferingCTAProps {
     variant?: 'inline' | 'sidebar' | 'banner' | 'subtle';
-    context?: 'prayer' | 'saint' | 'rosary' | 'reading' | 'confession' | 'general';
+    context?: 'prayer_submitted' | 'intention_view' | 'saint_day' | 'memorial' | 'general' | 'reading' | 'prayer';
     intentionFor?: string;
     className?: string;
 }
 
-const contextMessages = {
-    prayer: {
-        title: 'Amplify Your Prayer',
-        description: 'Have a Mass offered for this intention. A powerful way to unite your prayers with the Holy Sacrifice.',
-        cta: 'Request a Mass',
+const contextMessages: Record<string, { title: string; description: string; cta: string }> = {
+    prayer_submitted: {
+        title: 'Deepen Your Prayer with a Holy Mass',
+        description: 'Have a Holy Mass celebrated for your intention by priests around the world.',
+        cta: 'Offer a Mass',
     },
-    saint: {
-        title: 'Honor This Saint',
-        description: 'Request a Mass in honor of this saint or in memory of a loved one.',
-        cta: 'Memorial Mass',
+    intention_view: {
+        title: 'Include This in the Holy Sacrifice',
+        description: 'Support this intention by having a Mass offered by missionary priests.',
+        cta: 'Request Mass',
     },
-    rosary: {
-        title: 'Offer Your Devotion',
-        description: 'Complete your spiritual offering with a Mass intention for your prayers.',
-        cta: 'Mass Offering',
+    saint_day: {
+        title: 'Honor Today\'s Feast with a Mass',
+        description: 'Celebrate today\'s saint with a dedicated Mass intention.',
+        cta: 'Request Mass',
+    },
+    memorial: {
+        title: 'Perpetual Remembrance in the Holy Mass',
+        description: 'Ensure the souls of your faithful departed are remembered at the altar of the Lord.',
+        cta: 'Offer Memorial Mass',
     },
     reading: {
-        title: 'Let the Word Inspire',
-        description: "Jesus said, 'It is more blessed to give than to receive.' Support our mission.",
-        cta: 'Support Our Mission',
+        title: 'Offer a Mass for Today\'s Intentions',
+        description: 'Unite your daily Scripture reflection with the Eucharistic sacrifice offered worldwide.',
+        cta: 'Offer a Mass',
     },
-    confession: {
-        title: 'Begin Your Renewal',
-        description: 'Start fresh with a Mass intention for healing, forgiveness, or thanksgiving.',
-        cta: 'Mass Intention',
+    prayer: {
+        title: 'Unite Your Intentions with the Holy Mass',
+        description: 'Have missionary priests celebrate the Holy Sacrifice of the Mass for these intentions.',
+        cta: 'Request Mass',
     },
     general: {
         title: 'Request a Mass',
@@ -49,7 +55,7 @@ export function MassOfferingCTA({
     intentionFor,
     className = '',
 }: MassOfferingCTAProps) {
-    const message = contextMessages[context];
+    const message = contextMessages[context] || contextMessages.general;
     const href = intentionFor
         ? `/mass-offerings?intention=${encodeURIComponent(intentionFor)}`
         : '/mass-offerings';
@@ -58,6 +64,8 @@ export function MassOfferingCTA({
         return (
             <Link
                 href={href}
+                data-open-offering="mass"
+                data-intention={intentionFor || ''}
                 className={`group flex items-center gap-2 text-sm text-amber-600 hover:text-amber-700 transition-colors ${className}`}
             >
                 <Church className="w-4 h-4" />
@@ -78,6 +86,8 @@ export function MassOfferingCTA({
                 <p className="text-sm text-gray-600 mb-4">{message.description}</p>
                 <Link
                     href={href}
+                    data-open-offering="mass"
+                    data-intention={intentionFor || ''}
                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-md hover:shadow-lg"
                 >
                     <Heart className="w-4 h-4" />
@@ -103,6 +113,8 @@ export function MassOfferingCTA({
                     </div>
                     <Link
                         href={href}
+                        data-open-offering="mass"
+                        data-intention={intentionFor || ''}
                         className="flex-shrink-0 px-6 py-3 bg-white text-amber-600 font-bold rounded-xl hover:bg-amber-50 transition-colors shadow-lg"
                     >
                         {message.cta}
@@ -125,17 +137,21 @@ export function MassOfferingCTA({
                     <div className="flex flex-wrap gap-3">
                         <Link
                             href={href}
+                            data-open-offering="mass"
+                            data-intention={intentionFor || ''}
                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-md"
                         >
                             <Heart className="w-4 h-4" />
                             {message.cta}
                         </Link>
                         <Link
-                            href="/donate"
+                            href="/candles"
+                            data-open-offering="candle"
+                            data-intention={intentionFor || ''}
                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 font-medium rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
                         >
                             <Gift className="w-4 h-4" />
-                            Make an Offering
+                            Light a Candle
                         </Link>
                     </div>
                 </div>
@@ -173,6 +189,7 @@ export function DonationFAB() {
     return (
         <Link
             href="/mass-offerings"
+            data-open-offering="mass"
             className="fixed bottom-20 right-4 z-40 w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-110 transition-transform md:hidden"
         >
             <Church className="w-6 h-6" />

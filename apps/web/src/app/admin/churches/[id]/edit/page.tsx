@@ -29,8 +29,7 @@ export default function EditChurchPage({ params }: { params: Promise<{ id: strin
 
     const fetchChurch = async () => {
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/churches/${id}`);
+            const res = await fetch(`/api/admin/churches/${id}`);
             if (res.ok) {
                 const data = await res.json();
                 setFormData({
@@ -61,8 +60,7 @@ export default function EditChurchPage({ params }: { params: Promise<{ id: strin
         setLoading(true);
 
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/churches/${id}`, {
+            const res = await fetch(`/api/admin/churches/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

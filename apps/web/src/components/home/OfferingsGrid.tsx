@@ -11,6 +11,7 @@ export function OfferingsGrid() {
             description: 'A virtual prayer candle burning for your intentions',
             icon: Flame,
             href: '/candles',
+            offeringTab: 'candle',
             cta: 'Start Praying',
             colors: 'from-amber-500 to-orange-500',
             bgLight: 'from-amber-50 to-orange-50',
@@ -21,6 +22,7 @@ export function OfferingsGrid() {
             description: 'Request a Holy Mass for your loved ones',
             icon: Cross,
             href: '/mass-offerings',
+            offeringTab: 'mass',
             cta: 'Request a Mass',
             colors: 'from-blue-500 to-indigo-500',
             bgLight: 'from-blue-50 to-indigo-50',
@@ -31,6 +33,7 @@ export function OfferingsGrid() {
             description: 'A beautiful gift of prayers and intentions',
             icon: Gift,
             href: '/bouquets',
+            offeringTab: 'bouquet',
             cta: 'Send a Gift',
             colors: 'from-rose-500 to-pink-500',
             bgLight: 'from-rose-50 to-pink-50',
@@ -41,6 +44,7 @@ export function OfferingsGrid() {
             description: 'Honor your departed loved ones with a tribute',
             icon: Heart,
             href: '/memorials',
+            offeringTab: undefined,
             cta: 'Honor Someone',
             colors: 'from-purple-500 to-violet-500',
             bgLight: 'from-purple-50 to-violet-50',
@@ -72,6 +76,7 @@ export function OfferingsGrid() {
                         <Link
                             key={offering.href}
                             href={offering.href}
+                            data-open-offering={offering.offeringTab}
                             className={`group relative bg-gradient-to-br ${offering.bgLight} rounded-3xl p-6 border ${offering.border} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
                         >
                             {/* New Badge */}
@@ -108,82 +113,30 @@ export function OfferingsGrid() {
 export function MemorialPreview() {
     return (
         <section className="py-16 bg-gradient-to-b from-slate-50 to-white">
-            <div className="container mx-auto px-4">
-                <div className="max-w-6xl mx-auto">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        {/* Content */}
-                        <div>
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 text-purple-700 text-sm font-semibold mb-4">
-                                <Heart className="w-4 h-4" />
-                                Eternal Memorials
-                            </div>
-                            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">
-                                Honor Those Who Have Passed
-                            </h2>
-                            <p className="text-gray-600 mb-6">
-                                Create a beautiful, lasting digital memorial for your loved ones.
-                                Light candles, request Masses, and invite family to share memories together.
-                            </p>
-                            <ul className="space-y-3 mb-8">
-                                {[
-                                    'Permanent digital tribute with photos',
-                                    'Light candles and send flowers',
-                                    'Request Masses for their soul',
-                                    'Share with family worldwide',
-                                    'QR code for gravestone',
-                                ].map((feature) => (
-                                    <li key={feature} className="flex items-center gap-3 text-gray-700">
-                                        <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center">
-                                            <svg className="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                                            </svg>
-                                        </div>
-                                        {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                            <Link
-                                href="/memorials"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-500 to-violet-500 text-white font-bold rounded-full hover:shadow-lg transition-all"
-                            >
-                                Explore Memorials
-                                <ArrowRight className="w-5 h-5" />
-                            </Link>
-                        </div>
-
-                        {/* Visual */}
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-br from-purple-200 to-violet-200 rounded-3xl blur-3xl opacity-50" />
-                            <div className="relative bg-white rounded-3xl p-8 shadow-xl border border-purple-100">
-                                <div className="flex items-start gap-4 mb-6">
-                                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
-                                        <Heart className="w-10 h-10 text-slate-400" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-gray-900">In Loving Memory</h3>
-                                        <p className="text-gray-500">1945 — 2024</p>
-                                    </div>
-                                </div>
-                                <div className="flex justify-around text-center mb-6 py-4 border-y border-gray-100">
-                                    <div>
-                                        <div className="text-2xl font-bold text-amber-500">127</div>
-                                        <div className="text-xs text-gray-500">🕯️ Candles</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold text-blue-500">18</div>
-                                        <div className="text-xs text-gray-500">✝️ Masses</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold text-rose-500">45</div>
-                                        <div className="text-xs text-gray-500">🌹 Flowers</div>
-                                    </div>
-                                </div>
-                                <p className="text-sm text-gray-600 italic">
-                                    "A loving mother, grandmother, and friend to all. Forever in our hearts..."
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+            <div className="container mx-auto px-4 max-w-4xl text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 text-purple-700 text-sm font-semibold mb-4">
+                    <Heart className="w-4 h-4" />
+                    Eternal Memorials
+                </div>
+                <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">
+                    Preserve Sacred Memories Forever
+                </h2>
+                <p className="text-gray-600 mb-8 max-w-xl mx-auto">
+                    Create a perpetual memorial page with interactive candles, condolences, and Mass offerings for your departed loved ones.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-4">
+                    <Link
+                        href="/memorials/create"
+                        className="px-8 py-3.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-sm shadow-lg shadow-purple-600/20 hover:scale-105 transition-all"
+                    >
+                        Create an Eternal Memorial
+                    </Link>
+                    <Link
+                        href="/memorials"
+                        className="px-8 py-3.5 rounded-full bg-white border border-gray-200 text-gray-800 font-semibold text-sm hover:bg-gray-50 transition-all"
+                    >
+                        Explore Memorial Registry
+                    </Link>
                 </div>
             </div>
         </section>

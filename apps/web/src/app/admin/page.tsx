@@ -97,7 +97,7 @@ async function DashboardStats() {
             trend: 'neutral',
             icon: Crown,
             color: 'from-amber-500 to-amber-600',
-            href: '/admin/saints'
+            href: '/admin/cms/saints'
         },
         {
             label: 'Prayer Requests',
@@ -106,7 +106,7 @@ async function DashboardStats() {
             trend: 'up',
             icon: Heart,
             color: 'from-rose-500 to-rose-600',
-            href: '/admin/prayers'
+            href: '/admin/cms/prayers'
         },
     ];
 

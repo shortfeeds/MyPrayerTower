@@ -30,8 +30,7 @@ export default function CreateSaintPage() {
                 patronOf: formData.patronOf.split(',').map(s => s.trim()).filter(Boolean)
             };
 
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/saints`, {
+            const res = await fetch(`/api/admin/saints`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

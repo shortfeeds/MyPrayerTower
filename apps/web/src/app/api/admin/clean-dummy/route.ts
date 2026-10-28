@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
         results.deletedCandles = deletedCandles.count;
 
         // 2. Clean test/dummy donations
-        const deletedDonations = await db.donation.deleteMany({
+        const deletedDonations = await db.platformDonation.deleteMany({
             where: {
                 OR: [
                     { donorName: { contains: 'test', mode: 'insensitive' } },
@@ -98,7 +98,7 @@ export async function GET() {
     try {
         const counts = {
             candles: await db.prayerCandle.count(),
-            donations: await db.donation.count(),
+            donations: await db.platformDonation.count(),
             massOfferings: await db.massOffering.count(),
             prayers: await db.prayerRequest.count(),
             users: await db.user.count(),

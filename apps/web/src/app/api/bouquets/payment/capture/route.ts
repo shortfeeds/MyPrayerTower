@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { capturePayPalOrder } from '@/lib/paypal';
 import { db } from '@/lib/db';
 import { notifyBouquet } from '@/lib/email';
+import { dispatchServerNotification } from '@/lib/serverNotifications';
 
 const prisma = db;
 
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
                     data: {
                         paymentStatus: 'PAID',
                         paymentId: capture?.id,
-                        sentAt: new Date(), // Used for immediate tracking, schedule delivery handled elsewhere
+                        sentAt: new Date(),
                     }
                 });
 
@@ -49,6 +50,17 @@ export async function POST(req: NextRequest) {
                     amount: bouquet.amount || 0,
                     email: bouquet.creatorEmail
                 });
+
+                // In-App & Push Notification
+                if (bouquet.creatorId) {
+                    await dispatchServerNotification({
+                        userId: bouquet.creatorId,
+                        title: 'Spiritual Bouquet Consecrated',
+                        body: `Your bouquet for ${bouquet.recipientName} has been consecrated.`,
+                        type: 'SYSTEM',
+                        data: { link: `/bouquets/${bouquet.id}` }
+                    });
+                }
             } else {
                 console.warn('No reference ID found in PayPal bouquet order.', orderId);
             }
@@ -58,7 +70,9 @@ export async function POST(req: NextRequest) {
                 orderId: captureResult.id,
                 status: captureResult.status,
                 amount: capture?.amount?.value,
+                currency: capture?.amount?.currency_code,
                 payerEmail: captureResult.payer?.email_address,
+                payerName: captureResult.payer?.name?.given_name,
             });
         }
 

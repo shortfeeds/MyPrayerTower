@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { sendVigilCompletedEmail, sendBouquetGiftEmail } from '@/lib/email';
+import { dispatchServerNotification } from '@/lib/serverNotifications';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -11,8 +12,6 @@ export async function GET(req: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
 
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-        // Vercel Cron automatically sends `Authorization: Bearer <CRON_SECRET>`
-        // Allow local dev testing if no secret configured
         if (process.env.NODE_ENV === 'production') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -22,6 +21,7 @@ export async function GET(req: NextRequest) {
     const results = {
         timestamp: now.toISOString(),
         candlesArchived: 0,
+        tabernaclesRotated: 0,
         massesProgressed: 0,
         bouquetsDelivered: 0,
         abandonedCartsPruned: 0,
@@ -66,23 +66,60 @@ export async function GET(req: NextRequest) {
                     }).catch(err => console.error('Error sending completion email:', err));
                 }
 
-                // In-App User Notification if registered
+                // In-App User & Push Notification if registered
                 if (candle.userId) {
-                    db.userNotification.create({
-                        data: {
-                            userId: candle.userId,
-                            title: 'Sacred Vigil Completed',
-                            message: `Your vigil for "${candle.intention.slice(0, 40)}..." has completed. It remains sealed in our perpetual archives.`,
-                            type: 'SYSTEM',
-                            link: '/my-vigils',
-                        }
+                    dispatchServerNotification({
+                        userId: candle.userId,
+                        title: 'Sacred Vigil Completed',
+                        body: `Your vigil for "${candle.intention.slice(0, 45)}..." has completed. It remains sealed in the perpetual sanctuary archives.`,
+                        type: 'SYSTEM',
+                        data: { link: '/my-vigils', candleId: candle.id }
                     }).catch(() => {});
                 }
             }
         }
 
-        // ─── 2. AUTONOMOUS MASS OFFERING ADVANCEMENT ───
-        // Progress active Scheduled, Assigned or Paid masses
+        // ─── 2. AUTONOMOUS TABERNACLE LAMP ROTATION & NOTIFICATION ───
+        const expiredTabernacles = await db.prayerCandle.findMany({
+            where: {
+                isActive: true,
+                expiresAt: { lte: now },
+                OR: [
+                    { duration: 'THIRTY_DAYS' },
+                    { intention: { contains: 'Tabernacle' } }
+                ]
+            },
+            take: 20,
+            select: {
+                id: true,
+                userId: true,
+                name: true,
+                email: true,
+                intention: true,
+            }
+        });
+
+        if (expiredTabernacles.length > 0) {
+            for (const lamp of expiredTabernacles) {
+                await db.prayerCandle.update({
+                    where: { id: lamp.id },
+                    data: { isActive: false }
+                });
+
+                if (lamp.userId) {
+                    dispatchServerNotification({
+                        userId: lamp.userId,
+                        title: 'Tabernacle Lamp Vigil Completed',
+                        body: `Your family's sanctuary lamp dedication for "${lamp.intention.slice(0, 45)}..." has completed. The perpetual adoration continues in heaven and earth.`,
+                        type: 'SYSTEM',
+                        data: { link: '/my-vigils', lampId: lamp.id }
+                    }).catch(() => {});
+                }
+            }
+            results.tabernaclesRotated = expiredTabernacles.length;
+        }
+
+        // ─── 3. AUTONOMOUS MASS OFFERING ADVANCEMENT ───
         const activeMasses = await db.massOffering.findMany({
             where: {
                 status: { in: ['PAID', 'SCHEDULED', 'ASSIGNED'] }
@@ -90,8 +127,11 @@ export async function GET(req: NextRequest) {
             take: 100,
             select: {
                 id: true,
+                userId: true,
+                email: true,
                 orderNumber: true,
                 offeringType: true,
+                intentionFor: true,
                 createdAt: true,
                 paidAt: true,
                 celebrationDate: true,
@@ -105,19 +145,16 @@ export async function GET(req: NextRequest) {
             let shouldComplete = false;
 
             if (mass.offeringType === 'REGULAR' || mass.offeringType === 'EXPEDITED') {
-                // Single mass completes once celebrationDate has passed or 48 hours after request
                 if (mass.celebrationDate && new Date(mass.celebrationDate) <= now) {
                     shouldComplete = true;
                 } else if (daysElapsed >= 2) {
                     shouldComplete = true;
                 }
             } else if (mass.offeringType === 'NOVENA') {
-                // Novena runs for 9 consecutive days
                 if (daysElapsed >= 9) {
                     shouldComplete = true;
                 }
             } else if (mass.offeringType === 'GREGORIAN') {
-                // Gregorian Masses run for 30 consecutive days
                 if (daysElapsed >= 30) {
                     shouldComplete = true;
                 }
@@ -131,11 +168,22 @@ export async function GET(req: NextRequest) {
                         celebrationDate: mass.celebrationDate || now,
                     }
                 });
+
+                if (mass.userId) {
+                    dispatchServerNotification({
+                        userId: mass.userId,
+                        title: 'Holy Mass Celebrated',
+                        body: `The Holy Mass offering for "${mass.intentionFor}" has been completed and consecrated.`,
+                        type: 'MASS_OFFERING_UPDATE',
+                        data: { link: '/my-vigils', orderNumber: mass.orderNumber }
+                    }).catch(() => {});
+                }
+
                 results.massesProgressed++;
             }
         }
 
-        // ─── 3. AUTONOMOUS SPIRITUAL BOUQUET DELIVERY ───
+        // ─── 4. AUTONOMOUS SPIRITUAL BOUQUET DELIVERY ───
         const pendingBouquets = await db.spiritualBouquet.findMany({
             where: {
                 paymentStatus: 'PAID',
@@ -148,6 +196,7 @@ export async function GET(req: NextRequest) {
             take: 50,
             select: {
                 id: true,
+                creatorId: true,
                 recipientEmail: true,
                 recipientName: true,
                 creatorName: true,
@@ -165,17 +214,28 @@ export async function GET(req: NextRequest) {
                     occasion: bq.occasion || undefined,
                     message: bq.message || undefined,
                     bouquetId: bq.id,
-                });
+                }).catch(err => console.error('Error sending bouquet gift email:', err));
             }
 
             await db.spiritualBouquet.update({
                 where: { id: bq.id },
                 data: { sentAt: now }
             });
+
+            if (bq.creatorId) {
+                dispatchServerNotification({
+                    userId: bq.creatorId,
+                    title: 'Spiritual Bouquet Delivered',
+                    body: `Your bouquet for ${bq.recipientName} has been delivered and blessed.`,
+                    type: 'SYSTEM',
+                    data: { link: `/bouquets/${bq.id}` }
+                }).catch(() => {});
+            }
+
             results.bouquetsDelivered++;
         }
 
-        // ─── 4. AUTONOMOUS STALE ABANDONED CART PRUNING ───
+        // ─── 5. AUTONOMOUS STALE ABANDONED CART PRUNING ───
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 

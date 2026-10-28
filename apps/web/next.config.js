@@ -83,7 +83,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: 'standalone',
-    transpilePackages: ['@mpt/database'],
+    transpilePackages: ['@mpt/database', 'next-mdx-remote'],
     reactStrictMode: true,
     typescript: {
         ignoreBuildErrors: true,
@@ -315,6 +315,52 @@ const nextConfig = {
             {
                 source: '/cookie-policy',
                 destination: '/cookies',
+                permanent: true,
+            },
+            // Admin panel consolidation redirects
+            {
+                source: '/admin/revenue',
+                destination: '/admin/finance/overview',
+                permanent: true,
+            },
+            {
+                source: '/admin/offerings',
+                destination: '/admin/finance/overview',
+                permanent: true,
+            },
+            {
+                source: '/admin/offerings/candles',
+                destination: '/admin/candles',
+                permanent: true,
+            },
+            {
+                source: '/admin/offerings/mass-offerings',
+                destination: '/admin/mass-offerings',
+                permanent: true,
+            },
+            {
+                source: '/admin/offerings/spiritual-bouquets',
+                destination: '/admin/bouquets',
+                permanent: true,
+            },
+            {
+                source: '/admin/offerings/donations',
+                destination: '/admin/donations',
+                permanent: true,
+            },
+            {
+                source: '/admin/saints',
+                destination: '/admin/cms/saints',
+                permanent: true,
+            },
+            {
+                source: '/admin/prayers',
+                destination: '/admin/cms/prayers',
+                permanent: true,
+            },
+            {
+                source: '/admin/readings',
+                destination: '/readings',
                 permanent: true,
             },
             {

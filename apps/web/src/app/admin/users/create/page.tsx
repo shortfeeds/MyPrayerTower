@@ -14,7 +14,7 @@ export default function CreateUserPage() {
         firstName: '',
         lastName: '',
         password: '',
-        role: 'USER', // This might not be persisted in current schema, but UI can show it
+        role: 'USER',
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -22,8 +22,7 @@ export default function CreateUserPage() {
         setLoading(true);
 
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/users`, {
+            const res = await fetch('/api/admin/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -33,7 +32,8 @@ export default function CreateUserPage() {
                 toast.success('User created successfully');
                 router.push('/admin/users');
             } else {
-                toast.error('Failed to create user');
+                const errData = await res.json().catch(() => ({}));
+                toast.error(errData.error || 'Failed to create user');
             }
         } catch (error) {
             toast.error('Error creating user');
@@ -58,87 +58,71 @@ export default function CreateUserPage() {
                         <h1 className="text-xl font-bold text-gray-900">Add New User</h1>
                         <p className="text-sm text-gray-500">Create a new user account</p>
                     </div>
-                    <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
-                        <UserIcon className="w-5 h-5" />
-                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} className="p-8 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">First Name</label>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                             <input
-                                required
                                 type="text"
+                                required
                                 value={formData.firstName}
-                                onChange={e => setFormData({ ...formData, firstName: e.target.value })}
+                                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                                 placeholder="John"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             />
                         </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Last Name</label>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
                             <input
-                                required
                                 type="text"
+                                required
                                 value={formData.lastName}
-                                onChange={e => setFormData({ ...formData, lastName: e.target.value })}
+                                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                                 placeholder="Doe"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Email Address</label>
-                            <input
-                                required
-                                type="email"
-                                value={formData.email}
-                                onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                placeholder="john@example.com"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Password</label>
-                            <input
-                                required
-                                type="password"
-                                value={formData.password}
-                                onChange={e => setFormData({ ...formData, password: e.target.value })}
-                                placeholder="••••••••"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Role</label>
-                            <select
-                                value={formData.role}
-                                onChange={e => setFormData({ ...formData, role: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                            >
-                                <option value="USER">User</option>
-                                <option value="ADMIN">Admin</option>
-                                <option value="CHURCH_ADMIN">Church Admin</option>
-                            </select>
-                            <p className="text-xs text-gray-500">Note: Role updates may require full system permissions.</p>
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <input
+                            type="email"
+                            required
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                            placeholder="john@example.com"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Initial Role</label>
+                            <select
+                                value={formData.role}
+                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50 bg-white"
+                            >
+                                <option value="USER">Standard User</option>
+                                <option value="ADMIN">Admin / Premium</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-100 flex justify-end gap-3">
                         <Link
                             href="/admin/users"
-                            className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                            className="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition"
                         >
                             Cancel
                         </Link>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                             Create User

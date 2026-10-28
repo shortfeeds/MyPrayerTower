@@ -26,8 +26,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
 
     const fetchUser = async () => {
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-            const res = await fetch(`${API_BASE}/admin/users/${id}`);
+            const res = await fetch(`/api/admin/users/${id}`);
             if (res.ok) {
                 const data = await res.json();
                 setFormData({
@@ -55,11 +54,10 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
         setLoading(true);
 
         try {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
             const body: any = { ...formData };
             if (!body.password) delete body.password; // Don't send empty password
 
-            const res = await fetch(`${API_BASE}/admin/users/${id}`, {
+            const res = await fetch(`/api/admin/users/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
