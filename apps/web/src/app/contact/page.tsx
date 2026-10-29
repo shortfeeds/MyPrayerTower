@@ -3,6 +3,7 @@ import React from 'react';
 import { Mail, Phone, Clock, MapPin } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
+import { trackQualifyLead } from '@/lib/analytics';
 
 import { Suspense } from 'react';
 
@@ -106,6 +107,7 @@ function ContactForm() {
             const result = await response.json();
 
             if (response.ok) {
+                trackQualifyLead('CONTACT_FORM', { subject: data.subject });
                 setStatus({ type: 'success', message: result.message || 'Message sent successfully!' });
                 (e.target as HTMLFormElement).reset();
             } else {

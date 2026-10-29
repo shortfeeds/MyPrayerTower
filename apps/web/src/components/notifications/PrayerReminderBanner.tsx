@@ -64,7 +64,7 @@ export function PrayerReminderBanner() {
                             Daily Prayer Reminders &amp; Fellowship
                         </h3>
                         <p className="text-xs md:text-sm text-amber-100/90 leading-relaxed mt-1">
-                            Pause for the <strong>12 PM Angelus</strong> and <strong>3 PM Divine Mercy Hour</strong>. Join 10,000+ faithful on Telegram for daily Scripture, feast day novenas, and intentions.
+                            Pause for the <strong>12 PM Angelus</strong> and <strong>3 PM Divine Mercy Hour</strong>. Join our Catholic prayer community on Telegram for daily Scripture, feast day novenas, and intentions.
                         </p>
                     </div>
                 </div>

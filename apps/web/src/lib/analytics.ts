@@ -1,6 +1,7 @@
 /**
  * Universal Analytics & Conversion Tracking Engine
  * For MyPrayerTower (Web, PWA, and TWA Android App)
+ * Full GA4 E-Commerce & Lifecycle Standard Implementation
  */
 
 declare global {
@@ -40,7 +41,7 @@ export function trackEvent(eventName: string, params: Record<string, any> = {}) 
     const enrichedParams = {
         platform: getPlatformType(),
         timestamp: new Date().toISOString(),
-        url: window.location.href,
+        page_location: window.location.href,
         ...params
     };
 
@@ -53,6 +54,161 @@ export function trackEvent(eventName: string, params: Record<string, any> = {}) 
     }
 }
 
+/* =====================================================================
+   GA4 STANDARD E-COMMERCE FUNNEL EVENTS
+===================================================================== */
+
+/**
+ * Standard GA4 view_item event
+ */
+export function trackViewItem(itemName: string, value: number, currency: string = 'USD', itemId?: string, category: string = 'Spiritual Offering') {
+    trackEvent('view_item', {
+        currency,
+        value: typeof value === 'number' ? value : parseFloat(value || '0'),
+        items: [{
+            item_id: itemId || itemName.toLowerCase().replace(/\s+/g, '_'),
+            item_name: itemName,
+            price: typeof value === 'number' ? value : parseFloat(value || '0'),
+            quantity: 1,
+            item_category: category
+        }]
+    });
+}
+
+/**
+ * Standard GA4 add_to_cart event
+ */
+export function trackAddToCart(itemName: string, value: number, currency: string = 'USD', itemId?: string, category: string = 'Spiritual Offering', quantity: number = 1) {
+    trackEvent('add_to_cart', {
+        currency,
+        value: typeof value === 'number' ? value : parseFloat(value || '0'),
+        items: [{
+            item_id: itemId || itemName.toLowerCase().replace(/\s+/g, '_'),
+            item_name: itemName,
+            price: typeof value === 'number' ? value : parseFloat(value || '0'),
+            quantity,
+            item_category: category
+        }]
+    });
+}
+
+/**
+ * Standard GA4 begin_checkout event
+ */
+export function trackBeginCheckout(itemName: string, value: number, currency: string = 'USD', itemId?: string, category: string = 'Spiritual Offering') {
+    trackEvent('begin_checkout', {
+        currency,
+        value: typeof value === 'number' ? value : parseFloat(value || '0'),
+        items: [{
+            item_id: itemId || itemName.toLowerCase().replace(/\s+/g, '_'),
+            item_name: itemName,
+            price: typeof value === 'number' ? value : parseFloat(value || '0'),
+            quantity: 1,
+            item_category: category
+        }]
+    });
+}
+
+/**
+ * Standard GA4 purchase event (Key Event / Conversion)
+ */
+export function trackPurchase(
+    transactionId: string, 
+    value: number, 
+    items: Array<{ item_id: string; item_name: string; price: number; quantity?: number; item_category?: string }>, 
+    currency: string = 'USD'
+) {
+    const numericValue = typeof value === 'number' ? value : parseFloat(value || '0');
+    trackEvent('purchase', {
+        transaction_id: transactionId,
+        value: numericValue,
+        currency,
+        items: items.length > 0 ? items.map(item => ({
+            item_id: item.item_id,
+            item_name: item.item_name,
+            price: typeof item.price === 'number' ? item.price : parseFloat(item.price || '0'),
+            quantity: item.quantity || 1,
+            item_category: item.item_category || 'Spiritual Offering'
+        })) : [{
+            item_id: transactionId,
+            item_name: 'Spiritual Offering',
+            price: numericValue,
+            quantity: 1,
+            item_category: 'Spiritual Offering'
+        }]
+    });
+}
+
+/* =====================================================================
+   GA4 STANDARD LIFECYCLE & KEY EVENTS
+===================================================================== */
+
+/**
+ * Standard GA4 qualify_lead / generate_lead (Direct match for Key Events)
+ */
+export function trackQualifyLead(leadType: string, value: number = 0, currency: string = 'USD') {
+    trackEvent('qualify_lead', {
+        lead_type: leadType,
+        value,
+        currency,
+        event_category: 'leads'
+    });
+    trackEvent('generate_lead', {
+        lead_type: leadType,
+        value,
+        currency,
+        event_category: 'leads'
+    });
+}
+
+/**
+ * Standard GA4 sign_up event
+ */
+export function trackSignUp(method: string = 'email') {
+    trackEvent('sign_up', {
+        method,
+        event_category: 'engagement'
+    });
+}
+
+/**
+ * Standard GA4 login event
+ */
+export function trackLogin(method: string = 'email') {
+    trackEvent('login', {
+        method,
+        event_category: 'engagement'
+    });
+}
+
+/**
+ * Standard GA4 share event
+ */
+export function trackShare(method: string, contentType: string, itemId?: string) {
+    trackEvent('share', {
+        method,
+        content_type: contentType,
+        item_id: itemId || contentType
+    });
+}
+
+/**
+ * Cart Abandonment Telemetry
+ */
+export function trackCartAbandoned(type: string, value: number, email?: string, step?: string) {
+    trackEvent('cart_abandoned', {
+        cart_type: type,
+        value: typeof value === 'number' ? value : parseFloat(value || '0'),
+        currency: 'USD',
+        step: step || 'CHECKOUT_DROPOFF',
+        has_email: Boolean(email)
+    });
+}
+
+/* =====================================================================
+   DEVOTIONAL & DOMAIN CONVERSION EVENTS
+===================================================================== */
+
 /**
  * Conversion: Donation Made
  */
@@ -63,23 +219,6 @@ export function trackDonationEvent(amount: number, currency: string = 'USD', tie
         tier: tier || 'CUSTOM',
         event_category: 'ecommerce',
         event_label: `Donation: ${currency} ${amount}`
-    });
-}
-
-/**
- * Standard GA4 Ecommerce Purchase Event
- */
-export function trackPurchase(transactionId: string, value: number, items: Array<{ item_id: string; item_name: string; price: number; quantity?: number }>, currency: string = 'USD') {
-    trackEvent('purchase', {
-        transaction_id: transactionId,
-        value: typeof value === 'number' ? value : parseFloat(value || '0'),
-        currency,
-        items: items.length > 0 ? items : [{
-            item_id: transactionId,
-            item_name: 'Spiritual Offering',
-            price: typeof value === 'number' ? value : parseFloat(value || '0'),
-            quantity: 1
-        }]
     });
 }
 
@@ -123,11 +262,15 @@ export function trackTabernacleVigilEvent(vigilType: string, amount: number) {
     });
 }
 
+/**
+ * Conversion: Candle Lit
+ */
 export function trackCandleLitEvent(candleId: string, duration: string, amount: number) {
     trackEvent('candle_lit', {
         candle_id: candleId,
         duration,
-        amount,
+        value: amount,
+        currency: 'USD',
         event_category: 'spiritual_offering',
         event_label: `Candle: ${duration}`
     });
@@ -156,6 +299,7 @@ export function trackPrayerSubmittedEvent(category?: string, isAnonymous: boolea
         event_category: 'engagement',
         event_label: 'Prayer Request'
     });
+    trackQualifyLead('PRAYER_INTENTION');
 }
 
 /**
@@ -192,5 +336,3 @@ export function trackHubAction(action: string, category: string = 'General') {
         event_label: action
     });
 }
-
-

@@ -1,64 +1,49 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@mpt/database';
-
-const prisma = new PrismaClient();
+import { saveAbandonedCart, markAbandonedCartConverted } from '@/app/actions/cart';
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { type, email, name, phone, data, step } = body;
+        const { type, email, name, phone, data, step, source } = body;
 
-        console.log('Received abandoned cart data:', { type, email, step });
-
-        if (!email || !type || !data) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        if (!email || !type) {
+            return NextResponse.json({ error: 'Missing email or type' }, { status: 400 });
         }
 
-        // Check if there's an existing cart for this email and type created in the last 24 hours
-        // If so, update it. If not, create new.
-        const existingCart = await prisma.abandonedCart.findFirst({
-            where: {
-                email,
-                type,
-                converted: false,
-                createdAt: {
-                    gt: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24h
-                }
-            },
-            orderBy: {
-                createdAt: 'desc'
-            }
+        const result = await saveAbandonedCart({
+            type,
+            email,
+            name,
+            phone,
+            data: data || {},
+            step: step || 'INITIAL',
+            source: source || 'WEB'
         });
 
-        if (existingCart) {
-            const updatedCart = await prisma.abandonedCart.update({
-                where: { id: existingCart.id },
-                data: {
-                    data,
-                    step,
-                    name: name || existingCart.name, // Keep existing name if not provided
-                    phone: phone || existingCart.phone,
-                    updatedAt: new Date(),
-                }
-            });
-            return NextResponse.json({ success: true, id: updatedCart.id });
+        if (!result.success) {
+            return NextResponse.json({ error: result.error || 'Failed to save' }, { status: 500 });
         }
 
-        const newCart = await prisma.abandonedCart.create({
-            data: {
-                type,
-                email,
-                name,
-                phone,
-                data,
-                step,
-            }
-        });
-
-        return NextResponse.json({ success: true, id: newCart.id });
-
+        return NextResponse.json(result);
     } catch (error) {
-        console.error('Error saving abandoned cart:', error);
+        console.error('Error in abandoned-cart POST API:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+
+export async function PATCH(req: Request) {
+    try {
+        const body = await req.json();
+        const { email, type } = body;
+
+        if (!email) {
+            return NextResponse.json({ error: 'Missing email' }, { status: 400 });
+        }
+
+        const result = await markAbandonedCartConverted(email, type);
+        return NextResponse.json(result);
+    } catch (error) {
+        console.error('Error in abandoned-cart PATCH API:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

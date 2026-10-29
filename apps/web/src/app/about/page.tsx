@@ -53,8 +53,8 @@ export default function AboutPage() {
                             <div className="text-sm text-gray-600 dark:text-gray-400">Churches Listed</div>
                         </div>
                         <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl">
-                            <div className="text-3xl font-bold text-primary-600 dark:text-gold-400 mb-2">10,000+</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">Daily Prayers</div>
+                            <div className="text-3xl font-bold text-primary-600 dark:text-gold-400 mb-2">4,000+</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Catholic Prayers & Novenas</div>
                         </div>
                         <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl">
                             <div className="text-3xl font-bold text-primary-600 dark:text-gold-400 mb-2">Global</div>

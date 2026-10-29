@@ -29,7 +29,7 @@ export function QuickAccessCards() {
         {
             icon: Building2,
             title: 'Find a Church',
-            description: '10,000+ parishes with Mass times',
+            description: '8,500+ parishes with Mass times',
             link: '/churches',
             color: 'bg-emerald-500',
             hoverColor: 'hover:bg-emerald-600'

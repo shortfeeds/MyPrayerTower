@@ -2,7 +2,8 @@
 
 import { PayPalScriptProvider as PayPalProvider, PayPalButtons, FUNDING } from '@paypal/react-paypal-js';
 import { useState } from 'react';
-import { trackPurchase } from '@/lib/analytics';
+import { trackPurchase, trackBeginCheckout } from '@/lib/analytics';
+import { saveAbandonedCart, markAbandonedCartConverted } from '@/app/actions/cart';
 
 // Add helper type match
 export interface PayPalFrontendItem {
@@ -58,6 +59,7 @@ export function PayPalCheckout({
 }: PayPalCheckoutProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [guestEmail, setGuestEmail] = useState(metadata?.email || '');
 
     // Prioritize the hardcoded live ID, fallback to env var
     const clientId = LIVE_CLIENT_ID || process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
@@ -100,6 +102,26 @@ export function PayPalCheckout({
                         <div className="relative">
                             <input
                                 type="email"
+                                value={guestEmail}
+                                onChange={(e) => setGuestEmail(e.target.value)}
+                                onBlur={() => {
+                                    if (guestEmail && guestEmail.includes('@')) {
+                                        saveAbandonedCart({
+                                            type: metadata?.type || 'OFFERING',
+                                            email: guestEmail,
+                                            name: metadata?.name || null,
+                                            data: {
+                                                amount: amount ? amount / 100 : 0,
+                                                description,
+                                                referenceId,
+                                                metadata
+                                            },
+                                            step: 'PAYPAL_EMAIL_ENTERED',
+                                            source: 'WEB'
+                                        });
+                                        trackBeginCheckout(description || 'Spiritual Offering', amount ? amount / 100 : 0, 'USD');
+                                    }
+                                }}
                                 placeholder="your@email.com"
                                 className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors"
                             />
@@ -174,6 +196,10 @@ export function PayPalCheckout({
                                 const captureData = await response.json();
 
                                                                 if (captureData.success) {
+                                    const payerEmail = captureData.payerEmail || guestEmail;
+                                    if (payerEmail) {
+                                        markAbandonedCartConverted(payerEmail, metadata?.type);
+                                    }
                                     const parsedVal = (amount ? amount / 100 : 0);
                                     trackPurchase(
                                         captureData.orderId || data.orderID,
@@ -305,6 +331,10 @@ export function PayPalCheckout({
                                 const captureData = await response.json();
 
                                                                 if (captureData.success) {
+                                    const payerEmail = captureData.payerEmail || guestEmail;
+                                    if (payerEmail) {
+                                        markAbandonedCartConverted(payerEmail, metadata?.type);
+                                    }
                                     const parsedVal = (amount ? amount / 100 : 0);
                                     trackPurchase(
                                         captureData.orderId || data.orderID,

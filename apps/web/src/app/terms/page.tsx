@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default function TermsOfServicePage() {
-    const lastUpdated = 'October 22, 2026';
-    const effectiveDate = 'October 22, 2026';
+    const lastUpdated = 'October 29, 2026';
+    const effectiveDate = 'October 29, 2026';
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -40,22 +40,21 @@ export default function TermsOfServicePage() {
                     </section>
 
                     {/* Nature of Our Services & Commercial Classification */}
-                    <section className="p-6 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Nature of Our Services & Commercial Service Classification</h2>
+                    <section className="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/60">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Nature of Our Services & Platform Classification</h2>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                            <strong>MyPrayerTower is an independent digital media, communications, and technology platform based in Mumbai, India.</strong> We develop software tools, devotional guides, and digital coordination systems for Catholic believers globally.
+                            <strong>MyPrayerTower is an independent digital media and devotional technology platform based in Mumbai, India.</strong> We develop software tools, liturgical resources, and digital coordination systems connecting Catholic faithful with partner parishes globally.
                         </p>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                            <strong>Legal Status & Non-Charitable Entity Declaration:</strong>
+                            <strong>Entity Classification & Service Remittances:</strong>
                         </p>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2 mb-4">
-                            <li>MyPrayerTower is NOT a charitable trust, 501(c)(3), NGO, or tax-exempt religious entity in India, the United States, or any other jurisdiction.</li>
-                            <li>We are NOT an ecclesiastical diocese, parish, or canonical entity of the Roman Catholic Church, nor do we administer holy sacraments or govern clergy directly.</li>
-                            <li><strong>Commercial Service Export Fees:</strong> All user remittances—including Mass intention stipends, virtual candle lighting, digital memorials, and devotional packages—are legally classified as <strong>commercial service export fees and digital platform facilitation charges</strong> (SAC Code for software & online information services).</li>
-                            <li><strong>No Charitable Donations:</strong> We do NOT solicit, process, or route charitable donations or non-profit contributions. No tax-deductible donation receipts are provided. International payments made through PayPal, Google Play, or merchant payment gateways represent commercial consideration for cross-border digital coordination and information services.</li>
+                            <li>MyPrayerTower operates as an independent digital technology facilitator and is not a 501(c)(3) tax-exempt religious charity, trust, or ecclesiastical diocese. We do not directly administer sacramental rites or govern clergy.</li>
+                            <li><strong>Commercial Service Facilitation:</strong> All user remittances—including Mass intention stipends, virtual candle lighting, digital memorials, and devotional packages—are legally classified as <strong>commercial service export fees and digital platform facilitation charges</strong> under applicable software and online electronic services classifications (SAC code).</li>
+                            <li><strong>Devotional Consideration:</strong> Remittances are processed to honor partner clergy stipends and sustain global digital infrastructure. Payments represent consideration for cross-border spiritual coordination and information services, and are not tax-deductible charitable contributions.</li>
                         </ul>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            We operate as an <strong>intermediary technology provider</strong>, coordinating devotional intentions with ordained partner clergy and providing digital devotional tools to users worldwide.
+                            We operate as a trusted <strong>intermediary technology provider</strong>, facilitating the reverent fulfillment of devotional requests by ordained partner clergy while delivering 100% digital devotional tools to users worldwide.
                         </p>
                     </section>
 
@@ -181,9 +180,8 @@ export default function TermsOfServicePage() {
 
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-4 mb-3">Subscription Plans</h3>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li><strong>Free:</strong> Basic features with advertisements</li>
-                            <li><strong>Plus:</strong> $4.99/month or $39.99/year - Ad-free, offline mode, 2 family members</li>
-                            <li><strong>Plus:</strong> $4.99/month or $39.99/year - Ad-free, offline mode, 2 family members</li>
+                            <li><strong>Free:</strong> Community prayer wall, basic church locator, and daily liturgical readings.</li>
+                            <li><strong>Plus:</strong> $4.99/month or $39.99/year - Ad-free spiritual sanctuary, offline audio guides, priority prayer wall placement, and family devotion sharing.</li>
                         </ul>
 
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Payment Processing</h3>

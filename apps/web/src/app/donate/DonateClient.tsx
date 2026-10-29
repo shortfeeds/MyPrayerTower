@@ -19,6 +19,8 @@ import {
     ArrowRight
 } from 'lucide-react';
 import type { PayPalSuccessDetails } from '@/components/PayPalCheckout';
+import { trackBeginCheckout, trackPurchase, trackDonationEvent } from '@/lib/analytics';
+import { saveAbandonedCart, markAbandonedCartConverted } from '@/app/actions/cart';
 
 // Dynamically load PayPal to prevent SSR issues
 const PayPalCheckout = dynamic(
@@ -183,6 +185,28 @@ export function DonateClient() {
             setErrorMessage('Please enter a donation amount of at least $1.');
             return;
         }
+        const dollars = getAmountDollars();
+        saveAbandonedCart({
+            type: 'DONATION',
+            email,
+            name: isAnonymous ? 'Anonymous' : name,
+            data: {
+                amount: dollars,
+                tab,
+                plan: selectedPlan,
+                tier: selectedTier,
+                message
+            },
+            step: 'PAYMENT_MODAL_OPENED',
+            source: 'WEB'
+        });
+        trackBeginCheckout(
+            tab === 'monthly' ? `Monthly Plan: ${selectedPlan}` : `Donation: ${selectedTier}`,
+            dollars,
+            'USD',
+            tab === 'monthly' ? selectedPlan : selectedTier,
+            'Donation'
+        );
         setShowPaymentModal(true);
     };
 
@@ -213,6 +237,23 @@ export function DonateClient() {
             }
         }
 
+        const dollars = getAmountDollars();
+        if (email) {
+            await markAbandonedCartConverted(email, 'DONATION');
+        }
+        trackPurchase(
+            details.orderId || details.captureId || `don_${Date.now()}`,
+            dollars,
+            [{
+                item_id: tab === 'monthly' ? selectedPlan : selectedTier,
+                item_name: tab === 'monthly' ? `Monthly Plan: ${selectedPlan}` : `Donation: ${selectedTier}`,
+                price: dollars,
+                quantity: 1,
+                item_category: 'Donation'
+            }],
+            'USD'
+        );
+        trackDonationEvent(dollars, 'USD', tab === 'monthly' ? selectedPlan : selectedTier);
         router.push(`/donate/success?order=${encodeURIComponent(details.orderId || details.captureId)}`);
     };
 

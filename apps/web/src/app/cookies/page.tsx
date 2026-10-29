@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function CookiePolicyPage() {
-    const lastUpdated = 'October 22, 2026';
+    const lastUpdated = 'October 29, 2026';
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -94,10 +94,11 @@ export default function CookiePolicyPage() {
                             We use services from the following third parties that may set cookies:
                         </p>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li><strong>Google Analytics:</strong> Website analytics</li>
-                            <li><strong>Google AdSense/AdMob:</strong> Advertising</li>
-                            <li><strong>Firebase:</strong> Push notifications and authentication</li>
-                            <li><strong>YouTube:</strong> Embedded videos (if any)</li>
+                            <li><strong>Google Analytics:</strong> Anonymized website and devotional traffic insights</li>
+                            <li><strong>Google AdSense / AdMob:</strong> Ethical, non-intrusive religious and relevant banner advertising</li>
+                            <li><strong>PayPal:</strong> Secure cross-border checkout and fraud prevention cookies</li>
+                            <li><strong>Supabase & Firebase:</strong> Authentication tokens, user sessions, and spiritual notification delivery</li>
+                            <li><strong>YouTube:</strong> Embedded liturgical and Catholic prayer guides (when viewed)</li>
                         </ul>
                     </section>
 
@@ -157,6 +158,7 @@ export default function CookiePolicyPage() {
                         <div className="flex flex-wrap gap-4">
                             <Link href="/privacy" className="text-primary-600 hover:underline">Privacy Policy</Link>
                             <Link href="/terms" className="text-primary-600 hover:underline">Terms of Service</Link>
+                            <Link href="/refunds" className="text-primary-600 hover:underline">Refund Policy</Link>
                         </div>
                     </section>
 

@@ -45,7 +45,7 @@ export function FAQSection() {
     const faqs = [
         {
             question: "Is MyPrayerTower really free?",
-            answer: "Yes! MyPrayerTower is completely free to use. We believe everyone should have access to tools that help them grow in their faith. Our mission is supported by optional donations and offerings, but all core features are free forever."
+            answer: "Yes! MyPrayerTower is completely free to use. We believe everyone should have access to tools that help them grow in their faith. Core devotional features, daily readings, church directory, and prayers are free. Optional physical candle lighting and parish Mass intention coordination involve transparent service fees."
         },
         {
             question: "Is this app approved by the Catholic Church?",
@@ -53,11 +53,11 @@ export function FAQSection() {
         },
         {
             question: "How do I find my local parish?",
-            answer: "Our church finder includes over 10,000 Catholic churches worldwide. Simply enter your location, and we'll show you nearby parishes with Mass times, confession schedules, and contact information. You can also save your home parish for quick access."
+            answer: "Our church finder includes over 8,500 Catholic churches worldwide. Simply enter your location, and we'll show you nearby parishes with Mass times, confession schedules, and contact information. You can also save your home parish for quick access."
         },
         {
             question: "Can I pray with others in real-time?",
-            answer: "Absolutely! We offer Live Prayer Sessions throughout the day including Morning Rosary, Divine Mercy Chaplet, and Evening Prayer. Join thousands of Catholics praying together at scheduled times, or post your intentions on the Prayer Wall for others to pray for."
+            answer: "Absolutely! We offer Live Prayer Sessions throughout the day including Morning Rosary, Divine Mercy Chaplet, and Evening Prayer. Join faithful Catholics praying together at scheduled times, or post your intentions on the Prayer Wall for others to pray for."
         },
         {
             question: "What is the Prayer Wall?",

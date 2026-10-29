@@ -9,7 +9,15 @@ import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SACRED_COPY } from '@/lib/sacred-copy';
 import { useAppMode } from '@/contexts/AppModeContext';
-import { trackHubAction } from '@/lib/analytics';
+import { 
+    trackHubAction, 
+    trackViewItem, 
+    trackAddToCart, 
+    trackBeginCheckout, 
+    trackPurchase, 
+    trackMassOfferingEvent 
+} from '@/lib/analytics';
+import { saveAbandonedCart, markAbandonedCartConverted } from '@/app/actions/cart';
 import { submitMassOffering } from '@/app/actions/spiritual';
 import { SacredCertificate } from '@/components/certificates/SacredCertificate';
 import { CertificateModal } from '@/components/certificates/CertificateModal';
@@ -132,10 +140,52 @@ export default function MassOfferingsPage() {
     const [isSacredPausing, setIsSacredPausing] = useState(false);
     const [stillnessStage, setStillnessStage] = useState<'lifting' | 'offered'>('lifting');
 
+    const handleProceedToReview = async () => {
+        if (!intentionType || !intentionFor || !email) return;
+        setStep(3);
+        if (selectedMass) {
+            trackBeginCheckout(selectedMass.name, selectedMass.price / 100, 'USD', selectedMass.id, 'Mass Offering');
+            await saveAbandonedCart({
+                type: 'MASS',
+                email,
+                name: requestedBy || intentionFor,
+                data: {
+                    massTypeId: selectedMass.id,
+                    massTypeName: selectedMass.name,
+                    price: selectedMass.price / 100,
+                    intentionFor,
+                    intentionType,
+                    requestedBy,
+                    preferredDate,
+                    notes
+                },
+                step: 'REVIEW_STEP',
+                source: 'WEB'
+            });
+        }
+    };
+
     const handleSubmit = async () => {
         if (!selectedMass) return;
         if (selectedMass.price > 0 && !showPayPal) {
             setShowPayPal(true);
+            await saveAbandonedCart({
+                type: 'MASS',
+                email,
+                name: requestedBy || intentionFor,
+                data: {
+                    massTypeId: selectedMass.id,
+                    massTypeName: selectedMass.name,
+                    price: selectedMass.price / 100,
+                    intentionFor,
+                    intentionType,
+                    requestedBy,
+                    preferredDate,
+                    notes
+                },
+                step: 'PAYMENT_PENDING',
+                source: 'WEB'
+            });
             return;
         }
         await processOrder();
@@ -181,6 +231,24 @@ export default function MassOfferingsPage() {
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             setHasSuccess(true);
+            if (email) {
+                await markAbandonedCartConverted(email, 'MASS');
+            }
+            if (selectedMass) {
+                trackPurchase(
+                    (res.success && res.orderNumber) ? res.orderNumber : `mass_${Date.now()}`,
+                    selectedMass.price / 100,
+                    [{
+                        item_id: selectedMass.id,
+                        item_name: selectedMass.name,
+                        price: selectedMass.price / 100,
+                        quantity: 1,
+                        item_category: 'Mass Offering'
+                    }],
+                    'USD'
+                );
+                trackMassOfferingEvent(selectedMass.name, selectedMass.price / 100);
+            }
             trackHubAction('mass_offering_success', 'Revenue');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
@@ -260,7 +328,11 @@ export default function MassOfferingsPage() {
                                                 {massTypes.map((mass) => (
                                                     <button
                                                         key={mass.id}
-                                                        onClick={() => setSelectedMass(mass)}
+                                                        onClick={() => {
+                                                            setSelectedMass(mass);
+                                                            trackViewItem(mass.name, mass.price / 100, 'USD', mass.id, 'Mass Offering');
+                                                            trackAddToCart(mass.name, mass.price / 100, 'USD', mass.id, 'Mass Offering');
+                                                        }}
                                                         className={`relative p-1 rounded-3xl transition-all duration-300 group text-left h-full ${selectedMass?.id === mass.id ? 'ring-4 ring-indigo-100 scale-[1.02]' : 'hover:scale-[1.01]'
                                                             }`}
                                                     >
@@ -313,7 +385,13 @@ export default function MassOfferingsPage() {
 
                                             <div className="flex justify-end mt-8">
                                                 <button
-                                                    onClick={() => selectedMass && setStep(2)}
+                                                    onClick={() => {
+                                                        if (selectedMass) {
+                                                            trackViewItem(selectedMass.name, selectedMass.price / 100, 'USD', selectedMass.id, 'Mass Offering');
+                                                            trackAddToCart(selectedMass.name, selectedMass.price / 100, 'USD', selectedMass.id, 'Mass Offering');
+                                                            setStep(2);
+                                                        }
+                                                    }}
                                                     disabled={!selectedMass}
                                                     className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                                                 >
@@ -432,7 +510,7 @@ export default function MassOfferingsPage() {
 
                                             <div className="flex justify-end gap-4 mt-8">
                                                 <button
-                                                    onClick={() => setStep(3)}
+                                                    onClick={handleProceedToReview}
                                                     disabled={!intentionType || !intentionFor || !email}
                                                     className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 disabled:opacity-50 transition-all shadow-lg"
                                                 >

@@ -74,7 +74,7 @@ export default function SessionsPage() {
                 <div className="container mx-auto px-4">
                     <div className="flex flex-wrap justify-center gap-8 md:gap-16">
                         {[
-                            { icon: Users, value: '10,000+', label: 'Monthly Participants', color: 'text-rose-400' },
+                            { icon: Users, value: 'Global', label: 'Faithful Community', color: 'text-rose-400' },
                             { icon: Calendar, value: '5+', label: 'Daily Sessions', color: 'text-amber-400' },
                             { icon: Clock, value: '24/7', label: 'Prayer Coverage', color: 'text-emerald-400' },
                         ].map((stat, i) => (

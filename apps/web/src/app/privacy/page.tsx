@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-    const lastUpdated = 'October 22, 2026';
+    const lastUpdated = 'October 29, 2026';
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -108,28 +108,49 @@ export default function PrivacyPolicyPage() {
                         </p>
                     </section>
 
-                    {/* Financial Disclosure */}
-                    <section className="p-6 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">How Your Service Fees Are Used</h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            When you pay for services on MyPrayerTower, your funds are allocated approximately as follows:
+                    {/* Devotional Offering & Fee Transparency */}
+                    <section className="p-5 bg-slate-50/80 dark:bg-gray-800/50 rounded-xl border border-slate-200/80 dark:border-gray-700/60">
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                            <Shield className="w-5 h-5 text-sacred-600" />
+                            Devotional Offering & Fee Transparency
+                        </h2>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+                            When you request Mass offerings, candle vigils, or sacred memorials, your contributions are carefully distributed to honor clergy intentions, maintain altar traditions, and sustain platform reliability:
                         </p>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div className="p-4 bg-white dark:bg-gray-800 rounded-xl text-center">
-                                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">50%</div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">Platform Development & Maintenance</div>
+                        
+                        {/* Compact Visual Distribution Bar */}
+                        <div className="w-full h-2 rounded-full overflow-hidden flex bg-gray-200 dark:bg-gray-700 mb-3">
+                            <div style={{ width: '70%' }} className="bg-amber-500" title="70% Church & Clergy Stipends" />
+                            <div style={{ width: '20%' }} className="bg-emerald-600" title="20% Pastoral Coordination & Operations" />
+                            <div style={{ width: '10%' }} className="bg-sky-600" title="10% Secure Digital Infrastructure" />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                            <div className="p-3 bg-white dark:bg-gray-800/80 rounded-lg border border-gray-100 dark:border-gray-700/50">
+                                <div className="flex items-baseline gap-1.5">
+                                    <span className="text-xl font-bold text-amber-600 dark:text-amber-400">70%</span>
+                                    <span className="text-xs font-semibold text-gray-900 dark:text-gray-200">Church & Clergy</span>
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Direct stipends for priests, Masses & altar sanctuary upkeep</p>
                             </div>
-                            <div className="p-4 bg-white dark:bg-gray-800 rounded-xl text-center">
-                                <div className="text-2xl font-bold text-green-600 dark:text-green-400">30%</div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">Partner Church Stipends</div>
+                            <div className="p-3 bg-white dark:bg-gray-800/80 rounded-lg border border-gray-100 dark:border-gray-700/50">
+                                <div className="flex items-baseline gap-1.5">
+                                    <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">20%</span>
+                                    <span className="text-xs font-semibold text-gray-900 dark:text-gray-200">Pastoral Care</span>
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Intention coordination, sacred certificates & pastoral support</p>
                             </div>
-                            <div className="p-4 bg-white dark:bg-gray-800 rounded-xl text-center">
-                                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">20%</div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">Operations & Support</div>
+                            <div className="p-3 bg-white dark:bg-gray-800/80 rounded-lg border border-gray-100 dark:border-gray-700/50">
+                                <div className="flex items-baseline gap-1.5">
+                                    <span className="text-xl font-bold text-sky-600 dark:text-sky-400">10%</span>
+                                    <span className="text-xs font-semibold text-gray-900 dark:text-gray-200">Infrastructure</span>
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">SSL security, cloud hosting & payment processing</p>
                             </div>
                         </div>
-                        <p className="text-gray-700 dark:text-gray-300 text-sm">
-                            <strong>Important:</strong> MyPrayerTower is NOT a tax-exempt charitable organization in any jurisdiction. Payments made to MyPrayerTower are <strong>not tax-deductible</strong> as charitable contributions.
+
+                        <p className="text-xs text-gray-500 dark:text-gray-400 leading-normal border-t border-gray-200/60 dark:border-gray-700/50 pt-3">
+                            <strong>Legal Notice:</strong> MyPrayerTower facilitates devotional services and forwards sacred stipends to ordained Catholic clergy and partner shrines. Remittances are categorized as digital service facilitation fees and are not tax-deductible charitable contributions.
                         </p>
                     </section>
 

@@ -240,12 +240,12 @@ export default function RootLayout({
                 {/* Google tag (gtag.js) */}
                 <Script
                     id="google-tag-manager"
-                    strategy="lazyOnload"
+                    strategy="afterInteractive"
                     src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
                 />
                 <Script
                     id="google-analytics-init"
-                    strategy="lazyOnload"
+                    strategy="afterInteractive"
                     dangerouslySetInnerHTML={{
                         __html: `
                             window.dataLayer = window.dataLayer || [];
@@ -253,7 +253,7 @@ export default function RootLayout({
                             window.gtag = gtag;
                             gtag('js', new Date());
                             gtag('config', '${gaId}', {
-                                send_page_view: true
+                                send_page_view: false
                             });
                         `,
                     }}

@@ -13,6 +13,7 @@ import { ClosingPrayerModal, ReportModal, AnsweredModal } from './PrayerInteract
 import { SmartAdSlot } from '@/components/ads';
 import { PrayerCompletionModal } from '@/components/prayer/PrayerCompletionModal';
 import { useNativeAds } from '@/hooks/useNativeAds';
+import { trackQualifyLead } from '@/lib/analytics';
 
 export interface Prayer {
     id: string;
@@ -330,6 +331,7 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
             const [_, result] = await Promise.all([minWait, apiCall]);
 
             if (result.success) {
+                trackQualifyLead('PRAYER_INTENTION', { category: formData.get('category') as string });
                 // 2. ASSURANCE
                 setStillnessStage('offered');
 

@@ -19,7 +19,7 @@ export default function RefundsPage() {
                         </div>
                         <div>
                             <h1 className="text-4xl font-serif font-bold">Refund & Cancellation Policy</h1>
-                            <p className="text-primary-200">Last updated: October 2026</p>
+                            <p className="text-primary-200">Last updated: October 29, 2026</p>
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@ export default function RefundsPage() {
                             <div className="border-l-4 border-green-500 pl-4">
                                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">Platform Support Contributions</h3>
                                 <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-                                    Voluntary contributions to support MyPrayerTower&apos;s operations. These are <strong>NOT tax-deductible charitable donations</strong> as we are not a registered charity in any jurisdiction.
+                                    Voluntary contributions to support MyPrayerTower's operations, server hosting, and devotional outreach. Contributions are classified as digital platform service remittances and are not tax-deductible as charitable donations.
                                 </p>
                                 <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
                                     <li>• <strong>One-Time Contributions:</strong> Generally non-refundable</li>
@@ -97,13 +97,7 @@ export default function RefundsPage() {
                                 </ul>
                             </div>
 
-                            {/* Spiritual Bouquets */}
-                            <div className="border-l-4 border-purple-500 pl-4">
-                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Spiritual Bouquets</h3>
-                                <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                    Spiritual Bouquets can be refunded within 24 hours of purchase if not yet delivered to the recipient.
-                                </p>
-                            </div>
+                            
                         </div>
                     </section>
 
@@ -164,8 +158,8 @@ export default function RefundsPage() {
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300">
                             For refund requests or questions about this policy, please contact us at{' '}
-                            <a href="mailto:info@myprayertower.com" className="text-primary-600 hover:underline">
-                                info@myprayertower.com
+                            <a href="mailto:support@myprayertower.com" className="text-primary-600 hover:underline">
+                                support@myprayertower.com
                             </a>
                             {' '}or visit our <Link href="/contact" className="text-primary-600 hover:underline">Contact Page</Link>.
                         </p>

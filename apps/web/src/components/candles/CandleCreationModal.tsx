@@ -9,7 +9,8 @@ import { lightVirtualCandle, lightBulkCandles } from '@/app/actions/spiritual';
 
 // Dynamic import for PayPal
 const PayPalCheckout = dynamic(() => import('@/components/PayPalCheckout').then(mod => mod.PayPalCheckout), { ssr: false });
-import { saveAbandonedCart } from '@/app/actions/cart';
+import { saveAbandonedCart, markAbandonedCartConverted } from '@/app/actions/cart';
+import { trackViewItem, trackAddToCart, trackBeginCheckout, trackPurchase, trackCandleLitEvent, trackCartAbandoned } from '@/lib/analytics';
 
 import { SACRED_COPY } from '@/lib/sacred-copy';
 
@@ -206,7 +207,23 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess, initialIntenti
                 setError(err.message || 'Failed to light candle');
             }
         } else {
-            // Proceed to payment (PayPal component handles the rest)
+            trackBeginCheckout(selectedTier.label, totalPrice / 100, 'USD', selectedTier.value, 'Prayer Candle');
+            if (formData.email) {
+                saveAbandonedCart({
+                    type: 'CANDLE',
+                    email: formData.email,
+                    name: formData.name || null,
+                    data: {
+                        intentions: formData.intentions,
+                        quantity: formData.quantity,
+                        duration: formData.duration,
+                        tier: selectedTier.label,
+                        price: totalPrice / 100
+                    },
+                    step: 'PAYMENT_PENDING',
+                    source: 'WEB'
+                });
+            }
             setStep(3);
         }
     };
@@ -247,6 +264,22 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess, initialIntenti
             await new Promise(resolve => setTimeout(resolve, 2000));
 
             setHasSuccess(true);
+            if (formData.email) {
+                await markAbandonedCartConverted(formData.email, 'CANDLE');
+            }
+            trackPurchase(
+                details.orderId,
+                totalPrice / 100,
+                [{
+                    item_id: selectedTier.value,
+                    item_name: selectedTier.label,
+                    price: totalPrice / 100,
+                    quantity: formData.quantity,
+                    item_category: 'Prayer Candle'
+                }],
+                'USD'
+            );
+            trackCandleLitEvent(details.orderId, formData.duration, totalPrice / 100);
             onSuccess();
             onClose();
         } catch (err: any) {
@@ -370,6 +403,16 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess, initialIntenti
                                             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-gray-900 bg-white placeholder-gray-400"
                                         />
                                     </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Email for Confirmation</label>
+                                        <input
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            placeholder="you@email.com"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-gray-900 bg-white placeholder-gray-400"
+                                        />
+                                    </div>
                                     <div className="flex items-center gap-2">
                                         <input
                                             type="checkbox"
@@ -420,7 +463,11 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess, initialIntenti
                                         return (
                                             <button
                                                 key={tier.value}
-                                                onClick={() => setFormData({ ...formData, duration: tier.value })}
+                                                onClick={() => {
+                                                    setFormData({ ...formData, duration: tier.value });
+                                                    trackViewItem(tier.label, (tier.price * formData.quantity) / 100, 'USD', tier.value, 'Prayer Candle');
+                                                    trackAddToCart(tier.label, (tier.price * formData.quantity) / 100, 'USD', tier.value, 'Prayer Candle', formData.quantity);
+                                                }}
                                                 className={`relative w-full flex items-center justify-between p-3 rounded-xl border transition-all duration-200 ${isSelected
                                                     ? 'border-amber-500 bg-amber-50 ring-1 ring-amber-400'
                                                     : 'border-gray-100 hover:border-amber-200 bg-white hover:bg-amber-50/30'

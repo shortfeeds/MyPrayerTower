@@ -27,7 +27,7 @@ export default function WelcomePage() {
         {
             icon: Building2,
             title: 'Find Churches',
-            description: 'Locate 10,000+ Catholic churches with Mass times and directions.',
+            description: 'Locate 8,500+ Catholic churches with Mass times and directions.',
             link: '/churches',
             color: 'bg-emerald-500'
         },

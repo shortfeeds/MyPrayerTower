@@ -361,7 +361,7 @@ export function PrayerInteractions({ prayerId, prayerTitle, initialCount = 42 }:
                                 Post to Prayer Wall
                             </h4>
                             <p className="text-xs text-gray-500 leading-relaxed mb-4">
-                                Invite our global community of 12,000+ faithful believers to lift your intention in daily intercession.
+                                Invite our global global community of faithful believers to lift your intention in daily intercession.
                             </p>
                         </div>
                         <div className="flex items-center text-xs font-bold text-emerald-700 group-hover:translate-x-1 transition-transform pt-2 border-t border-gray-100">

@@ -171,8 +171,8 @@ export async function createPayPalOrder(
             brand_name: 'MyPrayerTower',
             landing_page: 'NO_PREFERENCE',
             user_action: 'PAY_NOW',
-            return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3005'}/payment-success`,
-            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3005'}/payment-cancelled`,
+            return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.myprayertower.com'}/payment-success`,
+            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.myprayertower.com'}/payment-cancelled`,
         },
     };
 

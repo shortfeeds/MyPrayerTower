@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Building2, Heart, Users, Flame, Activity } from 'lucide-react';
+import { Building2, Heart, Flame, BookOpen } from 'lucide-react';
 import { motion, useInView, useMotionValue, useSpring } from 'framer-motion';
 
 // Component for smooth counting up animation
-function Counter({ value }: { value: number }) {
+function Counter({ value, suffix = '+' }: { value: number; suffix?: string }) {
     const ref = useRef<HTMLSpanElement>(null);
     const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -25,23 +25,24 @@ function Counter({ value }: { value: number }) {
     useEffect(() => {
         return springValue.on("change", (latest) => {
             if (ref.current) {
-                ref.current.textContent = Math.floor(latest).toLocaleString() + '+';
+                ref.current.textContent = Math.floor(latest).toLocaleString() + suffix;
             }
         });
-    }, [springValue]);
+    }, [springValue, suffix]);
 
-    return <span ref={ref} className="tabular-nums">0+</span>;
+    return <span ref={ref} className="tabular-nums">0{suffix}</span>;
 }
 
 interface StatItemProps {
     icon: React.ElementType;
     value: number;
+    suffix?: string;
     label: string;
     description: string;
     delay: number;
 }
 
-function StatItem({ icon: Icon, value, label, description, delay }: StatItemProps) {
+function StatItem({ icon: Icon, value, suffix = '+', label, description, delay }: StatItemProps) {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -57,7 +58,7 @@ function StatItem({ icon: Icon, value, label, description, delay }: StatItemProp
             </div>
 
             <div className="font-serif text-3xl lg:text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-sm">
-                <Counter value={value} />
+                <Counter value={value} suffix={suffix} />
             </div>
 
             <div className="font-bold text-orange-200 uppercase tracking-widest text-xs mb-2">
@@ -74,10 +75,10 @@ function StatItem({ icon: Icon, value, label, description, delay }: StatItemProp
 export function StatisticsBand() {
     return (
         <section className="py-20 relative overflow-hidden bg-[#2a1b1b]">
-            {/* Background Gradient matching the reference: Gold/Cream top fading to dark brown/black */}
+            {/* Background Gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#4a3b32] via-[#2a1b1b] to-[#1a1111]" />
 
-            {/* Top curved light effect (simulating the header curve in the image) */}
+            {/* Top curved light effect */}
             <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-[#e8dccb]/10 to-transparent opacity-30 pointer-events-none" />
 
             {/* Elegant Background Pattern */}
@@ -103,7 +104,7 @@ export function StatisticsBand() {
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
                         </span>
-                        Live Community Statistics
+                        Verified Catholic Platform Data
                     </motion.div>
 
                     <motion.h2
@@ -113,9 +114,9 @@ export function StatisticsBand() {
                         transition={{ delay: 0.1 }}
                         className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
                     >
-                        A Global Community <br />
+                        A Global Sanctuary <br />
                         <span className="text-white">
-                            United in Prayer
+                            United in Sacred Prayer
                         </span>
                     </motion.h2>
 
@@ -126,37 +127,41 @@ export function StatisticsBand() {
                         transition={{ delay: 0.2 }}
                         className="text-lg text-white/70"
                     >
-                        Join millions of Catholics worldwide. Every number represents a soul drawing closer to God.
+                        Equipping faithful Catholics worldwide with church schedules, liturgical scripture, and traditional prayers.
                     </motion.p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <StatItem
-                        icon={Users}
-                        value={125249}
-                        label="Faithful Users"
-                        description="Praying daily across apps"
+                        icon={Building2}
+                        value={8500}
+                        suffix="+"
+                        label="Churches Listed"
+                        description="Parishes & shrines in directory"
                         delay={0.3}
                     />
                     <StatItem
                         icon={Heart}
-                        value={4370}
-                        label="Prayers Included"
-                        description="In our growing library"
+                        value={4000}
+                        suffix="+"
+                        label="Catholic Prayers"
+                        description="In our encyclopedic Catholic library"
                         delay={0.4}
                     />
                     <StatItem
-                        icon={Building2}
-                        value={9250}
-                        label="Churches Listed"
-                        description="Parishes and sanctuaries"
+                        icon={Flame}
+                        value={24}
+                        suffix="/7"
+                        label="Perpetual Prayer"
+                        description="Global intentions & candles"
                         delay={0.5}
                     />
                     <StatItem
-                        icon={Flame}
-                        value={6800}
-                        label="Saints Profiles"
-                        description="Inspiring lives of faith"
+                        icon={BookOpen}
+                        value={365}
+                        suffix=" Days"
+                        label="Roman Missal"
+                        description="Daily readings & reflections"
                         delay={0.6}
                     />
                 </div>

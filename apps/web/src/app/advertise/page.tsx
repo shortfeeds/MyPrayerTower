@@ -10,7 +10,7 @@ const adPlacements = [
         price: 50,
         period: 'week',
         description: 'Top of homepage, maximum visibility',
-        impressions: '~10,000/week'
+        impressions: 'Prominent Hero Visibility'
     },
     {
         name: 'Church Finder Sidebar',
@@ -18,7 +18,7 @@ const adPlacements = [
         price: 30,
         period: 'week',
         description: 'Sidebar on church search results',
-        impressions: '~5,000/week'
+        impressions: 'Local Church Searchers'
     },
     {
         name: 'Prayer Wall Native',
@@ -26,7 +26,7 @@ const adPlacements = [
         price: 20,
         period: 'week',
         description: 'Blends with prayer wall content',
-        impressions: '~3,000/week'
+        impressions: 'Daily Intercessors'
     },
     {
         name: 'Events Page Banner',
@@ -34,7 +34,7 @@ const adPlacements = [
         price: 40,
         period: 'week',
         description: 'Hero banner on events page',
-        impressions: '~7,000/week'
+        impressions: 'Community & Feast Days'
     },
     {
         name: 'Newsletter Sponsor',
@@ -42,7 +42,7 @@ const adPlacements = [
         price: 100,
         period: 'send',
         description: 'Featured in weekly newsletter',
-        impressions: '~15,000 subscribers'
+        impressions: 'Weekly Devotional Digest'
     },
 ];
 
@@ -76,11 +76,11 @@ export default function AdvertisePage() {
                     <div className="flex flex-wrap gap-6 text-sm">
                         <div className="flex items-center gap-2">
                             <Eye className="w-5 h-5 text-gold-400" />
-                            <span>10,000+ Monthly Visitors</span>
+                            <span>Global Catholic Reach</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Users className="w-5 h-5 text-gold-400" />
-                            <span>15,000+ Newsletter Subscribers</span>
+                            <span>Dedicated Faith Community</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Target className="w-5 h-5 text-gold-400" />

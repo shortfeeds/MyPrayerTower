@@ -6,6 +6,8 @@ import { Heart, Loader2, Camera, X, Sparkles, Check, Crown, Flame, Shield, Arrow
 import { createMemorial } from '@/app/actions/memorials';
 import { PayPalCheckout } from '@/components/PayPalCheckout';
 import { useAuth } from '@/hooks/useAuth';
+import { trackAddToCart, trackBeginCheckout, trackPurchase } from '@/lib/analytics';
+import { saveAbandonedCart, markAbandonedCartConverted } from '@/app/actions/cart';
 
 export default function CreateMemorialPage() {
     const router = useRouter();
@@ -70,6 +72,17 @@ export default function CreateMemorialPage() {
         setLoading(true);
         setErrorMsg(null);
         try {
+            if (formData.creatorEmail) {
+                markAbandonedCartConverted(formData.creatorEmail, 'MEMORIAL');
+            }
+            trackPurchase(details.id || 'paypal_memorial_prem', 19, [{
+                item_id: 'memorial-featured-altar',
+                item_name: 'Featured Memorial Altar',
+                price: 19,
+                quantity: 1,
+                item_category: 'Memorial'
+            }], 'USD');
+
             const created = await createMemorial({
                 ...formData,
                 tier: 'PREMIUM',
@@ -135,7 +148,15 @@ export default function CreateMemorialPage() {
 
                     {/* Premium Altar Tier */}
                     <div
-                        onClick={() => setTier('PREMIUM')}
+                        onClick={() => {
+                            setTier('PREMIUM');
+                            trackAddToCart({
+                                id: 'memorial-featured-altar',
+                                name: 'Featured Memorial Altar',
+                                price: 19,
+                                category: 'Memorial'
+                            });
+                        }}
                         className={`cursor-pointer rounded-2xl p-5 border transition-all relative ${
                             tier === 'PREMIUM'
                                 ? 'bg-gradient-to-br from-amber-500/20 to-gold-600/10 border-gold-400 shadow-xl shadow-amber-500/20 ring-2 ring-gold-400/60'
@@ -248,6 +269,24 @@ export default function CreateMemorialPage() {
                                         placeholder="your.email@example.com"
                                         value={formData.creatorEmail}
                                         onChange={handleChange}
+                                        onBlur={() => {
+                                            if (formData.creatorEmail && formData.creatorEmail.includes('@') && tier === 'PREMIUM') {
+                                                saveAbandonedCart({
+                                                    type: 'MEMORIAL',
+                                                    email: formData.creatorEmail,
+                                                    name: `${formData.firstName} ${formData.lastName}`.trim() || formData.creatorName || null,
+                                                    data: {
+                                                        firstName: formData.firstName,
+                                                        lastName: formData.lastName,
+                                                        tier: 'PREMIUM',
+                                                        amount: 19
+                                                    },
+                                                    step: 'MEMORIAL_FORM_FILLED',
+                                                    source: 'WEB'
+                                                });
+                                                trackBeginCheckout('Featured Memorial Altar', 19, 'USD');
+                                            }
+                                        }}
                                         className="w-full px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-gold-400"
                                     />
                                 </div>
@@ -320,9 +359,13 @@ export default function CreateMemorialPage() {
                                 </div>
                                 <div className="max-w-md mx-auto">
                                     <PayPalCheckout
-                                        amount={19}
-                                        currency="USD"
+                                        amount={1900}
                                         description={`Featured Memorial Altar for ${formData.firstName} ${formData.lastName}`}
+                                        metadata={{
+                                            type: 'MEMORIAL',
+                                            email: formData.creatorEmail,
+                                            name: `${formData.firstName} ${formData.lastName}`.trim() || formData.creatorName || 'Guest'
+                                        }}
                                         onSuccess={handlePremiumSuccess}
                                         onError={(err) => setErrorMsg(err?.message || 'Payment could not be completed.')}
                                     />

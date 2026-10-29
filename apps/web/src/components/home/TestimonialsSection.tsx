@@ -1,118 +1,118 @@
 'use client';
 
 import * as React from 'react';
-
-import { Star, Quote, BadgeCheck, Sparkles } from 'lucide-react';
+import { Quote, Sparkles, BookOpen, Church, Heart, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const TESTIMONIALS = [
+interface SaintQuote {
+    id: number;
+    quote: string;
+    author: string;
+    title: string;
+    era: string;
+    source?: string;
+    initials: string;
+    color: string;
+}
+
+const SAINTS_WISDOM: SaintQuote[] = [
     {
         id: 1,
-        text: "MyPrayerTower has transformed my daily prayer life. The reminders and streak tracking keep me accountable, and I love being able to find Mass times wherever I travel.",
-        author: "Maria Sanchez",
-        role: "Premium Member",
-        memberSince: "Member since 2023",
-        location: "Dallas, TX",
-        rating: 5,
-        color: "bg-rose-500",
-        initials: "MS"
+        quote: "Pray, hope, and don't worry. Worry is useless. God is merciful and will hear your prayer.",
+        author: "St. Pio of Pietrelcina (Padre Pio)",
+        title: "Priest & Mystic",
+        era: "1887 – 1968",
+        source: "Letters of Padre Pio",
+        initials: "PP",
+        color: "bg-amber-600"
     },
     {
         id: 2,
-        text: "Finally, an app that brings together everything I need - daily readings, prayers, confession prep, and a beautiful prayer community. It's like having a spiritual companion in my pocket.",
-        author: "John Doherty",
-        role: "Daily Prayer Warrior",
-        memberSince: "Member since 2022",
-        location: "Boston, MA",
-        rating: 5,
-        color: "bg-blue-600",
-        initials: "JD"
+        quote: "For me, prayer is a surge of the heart; it is a simple look turned toward heaven, it is a cry of recognition and of love, embracing both trial and joy.",
+        author: "St. Thérèse of Lisieux",
+        title: "Doctor of the Church",
+        era: "1873 – 1897",
+        source: "Story of a Soul",
+        initials: "TL",
+        color: "bg-rose-500"
     },
     {
         id: 3,
-        text: "The Prayer Wall feature is incredible. Knowing that believers around the world are praying for my intentions brings me so much peace and comfort.",
-        author: "Sarah Mitchell",
-        role: "Community Guide",
-        memberSince: "Member since 2024",
-        location: "Chicago, IL",
-        rating: 5,
-        color: "bg-emerald-500",
-        initials: "SM"
+        quote: "Prayer is nothing else than being on terms of friendship with God, frequently conversing in secret with Him who we know loves us.",
+        author: "St. Teresa of Ávila",
+        title: "Doctor of the Church",
+        era: "1515 – 1582",
+        source: "The Way of Perfection",
+        initials: "TA",
+        color: "bg-sacred-600"
     },
     {
         id: 4,
-        text: "As a busy mom, this app makes it easy to incorporate prayer throughout my day. The quick prayer buttons are perfect for those small moments I can steal away.",
-        author: "Jennifer Lopez",
-        role: "Family Plan",
-        memberSince: "Member since 2023",
-        location: "Phoenix, AZ",
-        rating: 5,
-        color: "bg-purple-500",
-        initials: "JL"
+        quote: "To fall in love with God is the greatest romance; to seek Him the greatest adventure; to find Him, the greatest human achievement.",
+        author: "St. Augustine of Hippo",
+        title: "Bishop & Doctor of the Church",
+        era: "354 – 430",
+        source: "Confessions",
+        initials: "SA",
+        color: "bg-blue-600"
     },
     {
         id: 5,
-        text: "I was struggling with my faith, but the Daily Journey helped me build a consistent habit. The 'Sacred Moments' remind me of the beauty of our traditions.",
-        author: "Michael Chen",
-        role: "Premium Member",
-        memberSince: "Member since 2023",
-        location: "San Francisco, CA",
-        rating: 5,
-        color: "bg-amber-500",
-        initials: "MC"
+        quote: "Do not be afraid. Open wide the doors to Christ! Prayer joined to sacrifice constitutes the most powerful force in human history.",
+        author: "St. John Paul II",
+        title: "Supreme Pontiff",
+        era: "1920 – 2005",
+        source: "Papal Encyclicals",
+        initials: "JP",
+        color: "bg-gold-600"
     },
     {
         id: 6,
-        text: "The audio rosary is beautifully produced. I listen to it on my commute every morning. It sets the tone for my entire day.",
-        author: "Elizabeth Cote",
-        role: "Audio Subscriber",
-        memberSince: "Member since 2022",
-        location: "New Orleans, LA",
-        rating: 5,
-        color: "bg-indigo-500",
-        initials: "EC"
+        quote: "Prayer enlarges the heart until it is capable of containing God's gift of Himself. Ask and seek, and your heart will grow big enough to receive Him.",
+        author: "St. Teresa of Calcutta (Mother Teresa)",
+        title: "Foundress & Missionary",
+        era: "1910 – 1997",
+        source: "No Greater Love",
+        initials: "MT",
+        color: "bg-cyan-600"
     },
     {
         id: 7,
-        text: "The ability to request Mass offerings directly through the app is a game changer for me. It's so seamless and meaningful.",
-        author: "Robert Wilson",
-        role: "Patron",
-        memberSince: "Member since 2021",
-        location: "New York, NY",
-        rating: 5,
-        color: "bg-sacred-600",
-        initials: "RW"
+        quote: "He who prays most receives most. Acquire the holy habit of speaking to God with loving confidence, as to your dearest Friend.",
+        author: "St. Alphonsus Liguori",
+        title: "Doctor of the Church",
+        era: "1696 – 1787",
+        source: "The Great Means of Salvation",
+        initials: "AL",
+        color: "bg-emerald-600"
     },
     {
         id: 8,
-        text: "I love the Saint of the Day feature! Learning about the lives of the saints inspires me to be a better person.",
-        author: "Teresa G.",
-        role: "Student",
-        memberSince: "Member since 2024",
-        location: "Miami, FL",
-        rating: 5,
-        color: "bg-teal-500",
-        initials: "TG"
+        quote: "Half an hour's meditation each day is essential, except when you are busy. Then a full hour is needed.",
+        author: "St. Francis de Sales",
+        title: "Bishop & Doctor of the Church",
+        era: "1567 – 1622",
+        source: "Introduction to the Devout Life",
+        initials: "FS",
+        color: "bg-indigo-600"
     },
     {
         id: 9,
-        text: "Creating an Eternal Memorial for my grandmother was a beautiful way to honor her. The virtual candles and prayers from the community make me feel she is never forgotten.",
-        author: "Catherine Haynes",
-        role: "Family Guardian",
-        memberSince: "Member since 2023",
-        location: "Savannah, GA",
-        rating: 5,
-        color: "bg-rose-500",
-        initials: "CH"
+        quote: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.",
+        author: "Sacred Scripture",
+        title: "Apostle Paul to the Philippians",
+        era: "New Testament",
+        source: "Philippians 4:6–7",
+        initials: "NT",
+        color: "bg-purple-600"
     }
 ];
 
 export function TestimonialsSection() {
-    const [visibleCount, setVisibleCount] = React.useState(9);
-    const visibleTestimonials = TESTIMONIALS.slice(0, visibleCount);
-    const hasMore = visibleCount < TESTIMONIALS.length;
+    const [visibleCount, setVisibleCount] = React.useState(6);
+    const visibleWisdom = SAINTS_WISDOM.slice(0, visibleCount);
+    const hasMore = visibleCount < SAINTS_WISDOM.length;
 
-    // Enhanced Testimonial Card Design
     return (
         <section className="relative py-24 overflow-hidden bg-[#fafafa] dark:bg-[#020202]">
             {/* Background Decorations - Subtle & Sacred */}
@@ -121,78 +121,61 @@ export function TestimonialsSection() {
             <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gold-500/5 rounded-full blur-[100px] translate-y-1/3 translate-x-1/3 pointer-events-none"></div>
 
             <div className="container mx-auto px-4 relative z-10">
-                <div className="text-center mb-20 max-w-3xl mx-auto">
+                <div className="text-center mb-16 max-w-3xl mx-auto">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-sm rounded-full text-xs font-bold uppercase tracking-widest text-gold-600 dark:text-gold-400 mb-8">
-                            <Star className="w-3.5 h-3.5 fill-current" />
-                            Trusted by 10,000+ Catholics
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-sm rounded-full text-xs font-bold uppercase tracking-widest text-gold-600 dark:text-gold-400 mb-6">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            Wisdom of the Saints
                         </div>
-                        <h2 className="font-serif text-5xl md:text-6xl text-gray-900 dark:text-white mb-8 tracking-tight leading-[1.1]">
-                            Stories of <span className="italic text-sacred-600 dark:text-sacred-400">Grace</span> & <span className="relative inline-block">
-                                Growth
+                        <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-gray-900 dark:text-white mb-6 tracking-tight leading-[1.15]">
+                            Voices of <span className="italic text-sacred-600 dark:text-sacred-400">Faith</span> & <span className="relative inline-block">
+                                Grace
                                 <svg className="absolute w-full h-3 -bottom-1 left-0 text-gold-400/30" viewBox="0 0 100 10" preserveAspectRatio="none">
                                     <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
                                 </svg>
                             </span>
                         </h2>
-                        <p className="text-xl text-gray-500 dark:text-gray-400 leading-relaxed font-light">
-                            See how MyPrayerTower is helping people around the world deepen their relationship with God and find peace in their daily lives.
+                        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-light">
+                            Throughout Catholic history, the doctors, mystics, and saints of the Church have reminded us that prayer is the life of the soul and communion with God.
                         </p>
                     </motion.div>
                 </div>
 
-                {/* Grid Layout - Cleaner Row Alignment */}
+                {/* Grid Layout - Saint Quotes */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {visibleTestimonials.map((testimonial, index) => (
+                    {visibleWisdom.map((item, index) => (
                         <motion.div
-                            key={testimonial.id}
-                            initial={{ opacity: 0, y: 40 }}
+                            key={item.id}
+                            initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: index * 0.1, duration: 0.8 }}
+                            transition={{ delay: index * 0.08, duration: 0.6 }}
                             className="h-full"
                         >
-                            <div className="h-full bg-white dark:bg-white/5 backdrop-blur-sm rounded-[2rem] p-8 border border-gray-100 dark:border-white/5 shadow-2xl shadow-gray-200/50 dark:shadow-black/50 hover:shadow-3xl hover:shadow-gold-500/10 hover:-translate-y-2 transition-all duration-500 relative group overflow-hidden flex flex-col">
-
-                                {/* Background Gradient on Hover */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-transparent to-gray-50 dark:to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
+                            <div className="h-full bg-white dark:bg-white/5 backdrop-blur-sm rounded-[2rem] p-8 border border-gray-100 dark:border-white/5 shadow-xl shadow-gray-200/50 dark:shadow-black/50 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative group overflow-hidden flex flex-col justify-between">
                                 {/* Quote Icon */}
-                                <Quote className="absolute top-8 right-8 w-10 h-10 text-gray-100 dark:text-white/5 group-hover:text-gold-100 dark:group-hover:text-gold-500/20 transition-colors fill-current transform group-hover:rotate-12 duration-500" />
+                                <Quote className="absolute top-6 right-6 w-10 h-10 text-gray-100 dark:text-white/5 group-hover:text-gold-200 dark:group-hover:text-gold-500/20 transition-colors fill-current" />
 
-                                {/* Stars */}
-                                <div className="flex gap-1 mb-6 relative z-10">
-                                    {[...Array(testimonial.rating)].map((_, i) => (
-                                        <Star key={i} className="w-4 h-4 text-gold-400 fill-gold-400" />
-                                    ))}
-                                </div>
-
-                                {/* Text - Flex grow to push footer down */}
-                                <div className="flex-grow mb-8 relative z-10">
-                                    <p className="text-gray-700 dark:text-gray-200 leading-relaxed font-serif text-lg">
-                                        "{testimonial.text}"
+                                <div className="relative z-10 mb-6">
+                                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed font-serif text-lg italic">
+                                        "{item.quote}"
                                     </p>
                                 </div>
 
                                 {/* Author Block */}
-                                <div className="flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-white/5 relative z-10 mt-auto">
-                                    <div className={`w-12 h-12 rounded-full ${testimonial.color} flex items-center justify-center text-white font-bold text-sm shadow-lg ring-4 ring-white dark:ring-white/5 flex-shrink-0`}>
-                                        {testimonial.initials}
+                                <div className="flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-white/10 relative z-10 mt-auto">
+                                    <div className={`w-12 h-12 rounded-full ${item.color} flex items-center justify-center text-white font-bold text-sm shadow-md ring-2 ring-white dark:ring-white/10 shrink-0`}>
+                                        {item.initials}
                                     </div>
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="font-bold text-gray-900 dark:text-white">{testimonial.author}</div>
-                                            {index < 6 && (
-                                                <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-50 dark:fill-blue-900/30" />
-                                            )}
-                                        </div>
-                                        <div className="text-xs font-semibold text-sacred-600 dark:text-sacred-400 mb-0.5 tracking-wide uppercase">{testimonial.role}</div>
-                                        <div className="text-xs text-gray-400">{testimonial.location}</div>
+                                    <div className="min-w-0">
+                                        <div className="font-bold text-gray-900 dark:text-white truncate text-base">{item.author}</div>
+                                        <div className="text-xs font-semibold text-sacred-600 dark:text-sacred-400 tracking-wide uppercase truncate">{item.title}</div>
+                                        <div className="text-[11px] text-gray-400">{item.era} {item.source && `• ${item.source}`}</div>
                                     </div>
                                 </div>
                             </div>
@@ -200,28 +183,44 @@ export function TestimonialsSection() {
                     ))}
                 </div>
 
-                {/* Load More Button - Only show if there are more */}
+                {/* Show More Button */}
                 {hasMore && (
-                    <div className="mt-16 text-center">
+                    <div className="mt-12 text-center">
                         <button
-                            onClick={() => setVisibleCount(prev => Math.min(prev + 3, TESTIMONIALS.length))}
-                            className="inline-flex items-center gap-2 px-8 py-4 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-full text-gray-900 dark:text-white font-bold tracking-wide hover:bg-gray-50 dark:hover:bg-white/20 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
-                            aria-label="Read more testimonial stories from our community"
+                            onClick={() => setVisibleCount(SAINTS_WISDOM.length)}
+                            className="inline-flex items-center gap-2 px-8 py-3.5 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-full text-gray-900 dark:text-white font-medium text-sm hover:bg-gray-50 dark:hover:bg-white/20 transition-all shadow-md hover:shadow-lg"
                         >
-                            Read More Stories
+                            Read More Saints' Reflections
                         </button>
                     </div>
                 )}
 
-                {/* Trust Footer */}
-                <div className="mt-24 text-center border-t border-gray-100 dark:border-white/5 pt-16">
-                    <p className="text-sm text-gray-400 font-medium uppercase tracking-[0.2em] mb-10">Join believers from</p>
-                    <div className="flex flex-wrap justify-center gap-12 md:gap-20 opacity-40 hover:opacity-100 transition-opacity duration-700 grayscale hover:grayscale-0">
-                        {/* Placeholder Logos with better styling */}
-                        <span className="text-2xl font-serif font-bold text-gray-800 dark:text-white flex items-center gap-3"><Sparkles className="w-6 h-6 text-gold-500" /> Catholic Weekly</span>
-                        <span className="text-2xl font-serif font-bold text-gray-800 dark:text-white flex items-center gap-3"><Quote className="w-6 h-6 text-sacred-500" /> Faith Today</span>
-                        <span className="text-2xl font-serif font-bold text-gray-800 dark:text-white flex items-center gap-3"><Star className="w-6 h-6 text-blue-500" /> Spirit Daily</span>
-                        <span className="text-2xl font-serif font-bold text-gray-800 dark:text-white flex items-center gap-3"><BadgeCheck className="w-6 h-6 text-emerald-500" /> The Tablet</span>
+                {/* Catholic Foundations Footer (Verified Features, Not Fake Media) */}
+                <div className="mt-20 text-center border-t border-gray-200 dark:border-white/10 pt-14">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-[0.2em] mb-8">
+                        Rooted in Sacred Catholic Tradition
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl mx-auto">
+                        <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/60 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                            <BookOpen className="w-5 h-5 text-gold-500" />
+                            <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Roman Missal</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">Daily Readings & Gospel</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/60 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                            <Heart className="w-5 h-5 text-rose-500" />
+                            <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Traditional Devotions</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">Rosary, Chaplets & Novenas</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/60 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                            <Church className="w-5 h-5 text-emerald-500" />
+                            <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">8,500+ Parishes</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">Catholic Church Directory</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/60 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                            <Shield className="w-5 h-5 text-blue-500" />
+                            <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Private & Sacred</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">Confidential Prayer Space</span>
+                        </div>
                     </div>
                 </div>
             </div>
