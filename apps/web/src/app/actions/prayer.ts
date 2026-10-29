@@ -3,7 +3,6 @@
 import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { randomUUID } from 'crypto';
 import { getUserFromCookie } from '@/lib/auth';
 import { notifyIndexNow } from '@/lib/indexnow';
 
@@ -103,7 +102,7 @@ export async function submitPrayerRequest(prevState: any, formData: FormData) {
 
         const prayer = await prisma.prayerRequest.create({
             data: {
-                id: randomUUID(),
+                id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
                 content,
                 category: categoryEnum as any,
                 visibility: visibilityEnum as any,
@@ -152,7 +151,7 @@ export async function prayForRequest(prayerId: string) {
         await prisma.$transaction([
             prisma.prayerAction.create({
                 data: {
-                    id: randomUUID(),
+                    id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
                     prayerRequestId: prayerId,
                     userId
                 }

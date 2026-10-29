@@ -1,7 +1,6 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { randomUUID } from 'crypto';
 
 export interface AbandonedCartPayload {
     type: string; // 'MASS' | 'CANDLE' | 'MEMORIAL' | 'DONATION' | 'OFFERING'
@@ -56,7 +55,7 @@ export async function saveAbandonedCart(payload: AbandonedCartPayload) {
 
         const created = await db.abandonedCart.create({
             data: {
-                id: randomUUID(),
+                id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
                 type: payload.type.toUpperCase(),
                 email,
                 name: payload.name || null,
