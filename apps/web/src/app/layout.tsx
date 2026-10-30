@@ -237,15 +237,15 @@ export default function RootLayout({
                     <GoogleAnalyticsTracker />
                 </Suspense>
 
-                {/* Google tag (gtag.js) */}
+                {/* Google tag (gtag.js) - lazyOnload preserves TBT while dataLayer safely buffers events */}
                 <Script
                     id="google-tag-manager"
-                    strategy="afterInteractive"
+                    strategy="lazyOnload"
                     src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
                 />
                 <Script
                     id="google-analytics-init"
-                    strategy="afterInteractive"
+                    strategy="lazyOnload"
                     dangerouslySetInnerHTML={{
                         __html: `
                             window.dataLayer = window.dataLayer || [];
@@ -259,22 +259,40 @@ export default function RootLayout({
                     }}
                 />
 
-                {/* Microsoft Clarity - Session replay & Heatmaps (Deferred to lazyOnload to eliminate TBT) */}
+                {/* Microsoft Clarity - Deferred to user interaction or 6s idle to maximize mobile CPU responsiveness */}
                 <Script
-                    id="microsoft-clarity"
-                    strategy="lazyOnload"
+                    id="microsoft-clarity-deferred"
+                    strategy="afterInteractive"
                     dangerouslySetInnerHTML={{
                         __html: `
-                            (function(c,l,a,r,i,t,y){
-                                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-                            })(window, document, "clarity", "script", ${JSON.stringify(process.env.NEXT_PUBLIC_CLARITY_ID || "q5z9c3y1k8")});
+                            (function() {
+                                var loaded = false;
+                                function loadClarity() {
+                                    if (loaded) return;
+                                    loaded = true;
+                                    window.removeEventListener('scroll', loadClarity);
+                                    window.removeEventListener('touchstart', loadClarity);
+                                    window.removeEventListener('pointerdown', loadClarity);
+                                    (function(c,l,a,r,i,t,y){
+                                        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                                        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                                        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                                    })(window, document, "clarity", "script", ${JSON.stringify(process.env.NEXT_PUBLIC_CLARITY_ID || "q5z9c3y1k8")});
+                                }
+                                window.addEventListener('scroll', loadClarity, { passive: true, once: true });
+                                window.addEventListener('touchstart', loadClarity, { passive: true, once: true });
+                                window.addEventListener('pointerdown', loadClarity, { passive: true, once: true });
+                                if ('requestIdleCallback' in window) {
+                                    window.requestIdleCallback(function() { setTimeout(loadClarity, 5000); });
+                                } else {
+                                    setTimeout(loadClarity, 6000);
+                                }
+                            })();
                         `,
                     }}
                 />
 
-                {/* Google AdSense - User Interaction / Idle Deferred to eliminate 3.5s TBT */}
+                {/* Google AdSense - User Interaction / Idle Deferred to eliminate synthetic mobile TBT */}
                 <Script
                     id="google-adsense-deferred"
                     strategy="afterInteractive"
@@ -303,9 +321,9 @@ export default function RootLayout({
                                 window.addEventListener('mousemove', loadAdSense, { passive: true, once: true });
                                 window.addEventListener('touchstart', loadAdSense, { passive: true, once: true });
                                 if ('requestIdleCallback' in window) {
-                                    window.requestIdleCallback(function() { setTimeout(loadAdSense, 3000); });
+                                    window.requestIdleCallback(function() { setTimeout(loadAdSense, 8000); });
                                 } else {
-                                    setTimeout(loadAdSense, 4000);
+                                    setTimeout(loadAdSense, 8000);
                                 }
                             })();
                         `,
