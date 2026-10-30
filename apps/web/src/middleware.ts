@@ -44,21 +44,14 @@ export async function middleware(request: NextRequest) {
     // --- TWA / Android App Detection ---
     const isTwaSource = request.nextUrl.searchParams.get('source') === 'twa';
     const hasTwaCookie = request.cookies.has('is_twa');
-    const isApp = isTwaSource || hasTwaCookie;
 
     // Redirect root to /app ONLY if launched from native app with ?source=twa
     if (isTwaSource && pathname === '/') {
         const url = request.nextUrl.clone();
         url.pathname = '/app';
         const resp = NextResponse.redirect(url);
-        resp.cookies.set('is_twa', '1', { path: '/app', maxAge: 60 * 60 * 24 * 365 });
+        resp.cookies.set('is_twa', '1', { path: '/', maxAge: 60 * 60 * 24 * 365 });
         return resp;
-    }
-
-    // Strict Non-App User Redirect
-    const isLocal = request.nextUrl.hostname === 'localhost' || request.nextUrl.hostname === '127.0.0.1';
-    if (pathname === '/app' && !isApp && !isLocal) {
-        return NextResponse.redirect('https://www.myprayertower.com');
     }
 
     const requestHeaders = new Headers(request.headers);
@@ -70,11 +63,9 @@ export async function middleware(request: NextRequest) {
         },
     });
 
+    // Persist TWA session across all pages inside the Android app
     if (isTwaSource && !hasTwaCookie) {
-        response.cookies.set('is_twa', '1', { path: '/app', maxAge: 60 * 60 * 24 * 365 });
-    } else if (!isTwaSource && hasTwaCookie && pathname !== '/app') {
-        // Clear root-level stale TWA cookie so standard web navigation is never polluted
-        response.cookies.delete('is_twa');
+        response.cookies.set('is_twa', '1', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     }
 
     // Add headers only for HTML pages/API to save bytes

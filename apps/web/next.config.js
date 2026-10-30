@@ -253,11 +253,6 @@ const nextConfig = {
     async redirects() {
         return [
             {
-                source: '/app',
-                destination: 'https://play.google.com/store/apps/details?id=com.myprayertower.myprayertower_app',
-                permanent: false,
-            },
-            {
                 source: '/android',
                 destination: 'https://play.google.com/store/apps/details?id=com.myprayertower.myprayertower_app',
                 permanent: false,
