@@ -169,7 +169,7 @@ export function LanguageSwitcher({
                 <button
                     onClick={toggleOpen}
                     className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:border-gold-500/50 text-gray-300 hover:text-white transition-all text-xs focus:outline-none"
-                    aria-label="Select Language (Google Translate)"
+                    aria-label={`Select Language, currently ${currentLangData.name}`}
                     title="Translate Website"
                 >
                     <Globe className="w-3.5 h-3.5 text-gold-400" />
@@ -181,7 +181,7 @@ export function LanguageSwitcher({
                 <button
                     onClick={toggleOpen}
                     className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 transition-all text-sm font-medium focus:outline-none"
-                    aria-label="Select Language"
+                    aria-label={`Translate: ${currentLangData.name}`}
                 >
                     <div className="flex items-center gap-2.5">
                         <Globe className="w-4 h-4 text-gold-500" />
@@ -195,7 +195,7 @@ export function LanguageSwitcher({
                 <button
                     onClick={toggleOpen}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-all text-xs border border-transparent hover:border-white/10 focus:outline-none"
-                    aria-label="Select Language (Google Translate)"
+                    aria-label={`Select Language, currently ${currentLangData.name}`}
                     title="Translate Website"
                 >
                     <Globe className="w-4 h-4 text-gold-400" />

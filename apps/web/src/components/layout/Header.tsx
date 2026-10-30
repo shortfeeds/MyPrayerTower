@@ -104,7 +104,7 @@ export function Header() {
                 <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0612]/95 backdrop-blur-xl border-b border-white/[0.08] text-white shadow-xl pt-safe select-none h-14">
                     <div className="flex items-center justify-between w-full px-4 h-full">
                         {/* Logo */}
-                        <Link href={appModeCtx.isNativeApp ? "/app" : "/"} className="flex items-center gap-2.5 focus:outline-none" aria-label="MyPrayerTower Home">
+                        <Link href={appModeCtx.isNativeApp ? "/app" : "/"} className="flex items-center gap-2.5 focus:outline-none" aria-label="MyPrayerTower">
                             <div className="w-8 h-8 rounded-lg overflow-hidden ring-1 ring-gold-400/40">
                                 <img
                                     src="/icon.png"
@@ -152,7 +152,7 @@ export function Header() {
                             <Link
                                 href="/"
                                 className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-xl"
-                                aria-label="MyPrayerTower Home"
+                                aria-label="MyPrayerTower Catholic Services"
                             >
                                 <div className="w-9 h-9 rounded-xl overflow-hidden ring-1 ring-gold-400/30 group-hover:ring-gold-400/60 shadow-sm transition-all duration-300 group-hover:scale-105">
                                     <img
@@ -233,7 +233,7 @@ export function Header() {
                                 <button
                                     onClick={() => setSearchOpen(true)}
                                     className="h-8 px-2.5 rounded-lg text-white/70 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center gap-1.5 text-xs focus:outline-none border border-transparent hover:border-white/10"
-                                    aria-label="Search"
+                                    aria-label="Search ⌘K"
                                     title="Search (⌘K)"
                                 >
                                     <Search className="w-3.5 h-3.5" />
