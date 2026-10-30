@@ -110,6 +110,8 @@ export function Header() {
                                     src="/icon.png"
                                     alt="MyPrayerTower Logo"
                                     className="w-full h-full object-cover"
+                                    width={32}
+                                    height={32}
                                 />
                             </div>
                             <span className="font-serif font-bold text-base leading-none text-white">
@@ -157,6 +159,8 @@ export function Header() {
                                         src="/icon.png"
                                         alt="MyPrayerTower Logo"
                                         className="w-full h-full object-cover"
+                                        width={36}
+                                        height={36}
                                     />
                                 </div>
                                 <div className="flex flex-col">
@@ -327,7 +331,7 @@ export function Header() {
                 <div className="flex items-center justify-between p-4 border-b border-white/10">
                     <Link href="/" className="flex items-center gap-2.5 focus:outline-none" onClick={() => setIsMenuOpen(false)}>
                         <div className="w-8 h-8 rounded-lg overflow-hidden ring-1 ring-gold-400/40">
-                            <img src="/icon.png" alt="MyPrayerTower Logo" className="w-full h-full object-cover" />
+                            <img src="/icon.png" alt="MyPrayerTower Logo" className="w-full h-full object-cover" width={32} height={32} />
                         </div>
                         <span className="font-serif font-bold text-white text-base">MyPrayerTower</span>
                     </Link>

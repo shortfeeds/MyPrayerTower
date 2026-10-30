@@ -274,17 +274,42 @@ export default function RootLayout({
                     }}
                 />
 
-                {/* Google AdSense - Deferred to avoid render-blocking */}
+                {/* Google AdSense - User Interaction / Idle Deferred to eliminate 3.5s TBT */}
                 <Script
-                    id="google-adsense"
-                    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${(() => {
-                        const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924';
-                        if (clientId.includes('~')) return `ca-pub-${clientId.split('~')[0].replace('ca-app-pub-', '')}`;
-                        if (clientId.startsWith('ca-app-pub-')) return clientId.replace('ca-app-pub-', 'ca-pub-');
-                        return clientId.startsWith('ca-pub-') ? clientId : `ca-pub-${clientId}`;
-                    })()}`}
-                    crossOrigin="anonymous"
-                    strategy="lazyOnload"
+                    id="google-adsense-deferred"
+                    strategy="afterInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            (function() {
+                                var loaded = false;
+                                function loadAdSense() {
+                                    if (loaded) return;
+                                    loaded = true;
+                                    window.removeEventListener('scroll', loadAdSense);
+                                    window.removeEventListener('mousemove', loadAdSense);
+                                    window.removeEventListener('touchstart', loadAdSense);
+                                    var s = document.createElement('script');
+                                    s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${(() => {
+                                        const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924';
+                                        if (clientId.includes('~')) return `ca-pub-${clientId.split('~')[0].replace('ca-app-pub-', '')}`;
+                                        if (clientId.startsWith('ca-app-pub-')) return clientId.replace('ca-app-pub-', 'ca-pub-');
+                                        return clientId.startsWith('ca-pub-') ? clientId : `ca-pub-${clientId}`;
+                                    })()}';
+                                    s.crossOrigin = 'anonymous';
+                                    s.async = true;
+                                    document.head.appendChild(s);
+                                }
+                                window.addEventListener('scroll', loadAdSense, { passive: true, once: true });
+                                window.addEventListener('mousemove', loadAdSense, { passive: true, once: true });
+                                window.addEventListener('touchstart', loadAdSense, { passive: true, once: true });
+                                if ('requestIdleCallback' in window) {
+                                    window.requestIdleCallback(function() { setTimeout(loadAdSense, 3000); });
+                                } else {
+                                    setTimeout(loadAdSense, 4000);
+                                }
+                            })();
+                        `,
+                    }}
                 />
 
                 {/* Localhost / Development Service Worker & Stale Cache Purger */}
