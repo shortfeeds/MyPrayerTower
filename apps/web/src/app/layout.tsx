@@ -153,10 +153,11 @@ export default function RootLayout({
                 />
             </head>
             <body className="min-h-screen-safe flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased transition-colors duration-300" suppressHydrationWarning>
-                {/* Global Google Translate Mount Node (Hidden from view & assistive tech) */}
+                {/* Global Google Translate Mount Node (Hidden from view offscreen) */}
                 <div
                     id="google_translate_element"
                     suppressHydrationWarning
+                    tabIndex={-1}
                     style={{
                         position: 'absolute',
                         left: '-9999px',
@@ -165,7 +166,6 @@ export default function RootLayout({
                         height: '1px',
                         overflow: 'hidden',
                     }}
-                    aria-hidden="true"
                 />
                 <ThemeProvider>
                     <AudioProvider>

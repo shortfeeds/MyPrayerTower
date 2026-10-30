@@ -44,6 +44,17 @@ export function LanguageSwitcher({
     const [currentLang, setCurrentLang] = useState('en');
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    const loadTranslateScript = () => {
+        const scriptId = 'google-translate-script';
+        if (typeof document !== 'undefined' && !document.getElementById(scriptId)) {
+            const script = document.createElement('script');
+            script.id = scriptId;
+            script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+            script.async = true;
+            document.body.appendChild(script);
+        }
+    };
+
     useEffect(() => {
         setMounted(true);
 
@@ -66,18 +77,31 @@ export function LanguageSwitcher({
                         },
                         'google_translate_element'
                     );
+
+                    // Ensure injected select is not keyboard-focusable when offscreen to prevent ARIA violations
+                    setTimeout(() => {
+                        const combo = document.querySelector('.goog-te-combo') as HTMLSelectElement | null;
+                        if (combo) {
+                            combo.tabIndex = -1;
+                            combo.setAttribute('tabindex', '-1');
+                            combo.setAttribute('aria-label', 'Hidden Language Selector');
+                        }
+                    }, 400);
                 }
             };
         }
 
-        // Dynamically inject Google Translate script once
-        const scriptId = 'google-translate-script';
-        if (typeof document !== 'undefined' && !document.getElementById(scriptId)) {
-            const script = document.createElement('script');
-            script.id = scriptId;
-            script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-            script.async = true;
-            document.body.appendChild(script);
+        // If user has a previously selected language, load immediately
+        const hasSavedTranslation = document.cookie.includes('googtrans=') && !document.cookie.includes('googtrans=/en/en');
+        if (hasSavedTranslation) {
+            loadTranslateScript();
+        } else {
+            // Otherwise defer until main thread idle to preserve Mobile PageSpeed / TBT scores
+            if ('requestIdleCallback' in window) {
+                (window as any).requestIdleCallback(loadTranslateScript, { timeout: 3500 });
+            } else {
+                setTimeout(loadTranslateScript, 2500);
+            }
         }
 
         // Close on click outside
@@ -89,6 +113,11 @@ export function LanguageSwitcher({
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    const toggleOpen = () => {
+        loadTranslateScript();
+        setIsOpen(!isOpen);
+    };
 
     const selectLanguage = (langCode: string) => {
         setCurrentLang(langCode);
@@ -138,7 +167,7 @@ export function LanguageSwitcher({
             {/* Variant Button Rendering */}
             {variant === 'footer' ? (
                 <button
-                    onClick={() => setIsOpen(!isOpen)}
+                    onClick={toggleOpen}
                     className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:border-gold-500/50 text-gray-300 hover:text-white transition-all text-xs focus:outline-none"
                     aria-label="Select Language (Google Translate)"
                     title="Translate Website"
@@ -150,7 +179,7 @@ export function LanguageSwitcher({
                 </button>
             ) : variant === 'pill' ? (
                 <button
-                    onClick={() => setIsOpen(!isOpen)}
+                    onClick={toggleOpen}
                     className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 transition-all text-sm font-medium focus:outline-none"
                     aria-label="Select Language"
                 >
@@ -164,7 +193,7 @@ export function LanguageSwitcher({
                 </button>
             ) : (
                 <button
-                    onClick={() => setIsOpen(!isOpen)}
+                    onClick={toggleOpen}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-all text-xs border border-transparent hover:border-white/10 focus:outline-none"
                     aria-label="Select Language (Google Translate)"
                     title="Translate Website"
