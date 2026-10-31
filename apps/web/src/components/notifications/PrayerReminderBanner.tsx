@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Bell, BellRing, Send, X, Clock, Sparkles, Check } from 'lucide-react';
+import { subscribeToPush } from '@/lib/push';
 
 const STORAGE_KEY = 'mpt_prayer_reminder_dismissed';
 
@@ -27,9 +28,9 @@ export function PrayerReminderBanner() {
     const handleRequestNotification = async () => {
         if (typeof window !== 'undefined' && 'Notification' in window) {
             try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    setNotifGranted(true);
+                const sub = await subscribeToPush();
+                setNotifGranted(true);
+                if (sub) {
                     new Notification('MyPrayerTower Daily Reminders Active', {
                         body: 'You will receive gentle reminders for 12 PM Angelus & 3 PM Divine Mercy.',
                         icon: '/favicon.ico',

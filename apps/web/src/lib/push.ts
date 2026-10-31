@@ -52,7 +52,7 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
     const registration = await navigator.serviceWorker.ready;
 
     // Get VAPID public key from environment
-    const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BGdBnesIbLMG_805ekmVmaBGIxmzpUlAFwMBJY23rFDffqe1XBD51jrmR0nps5rQIS9_ixo1PA1gR7GsyBFCgoM';
     if (!vapidPublicKey) {
         console.warn('VAPID public key not set');
         return null;

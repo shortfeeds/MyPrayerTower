@@ -12,23 +12,20 @@ const registerSchema = z.object({
 export async function POST(req: Request) {
     try {
         const user = await getUserFromCookie().catch(() => null);
-        if (!user) {
-            return NextResponse.json({ success: true, message: 'Device token noted, awaiting sign-in' });
-        }
-
         const body = await req.json();
         const { token, platform, userAgent } = registerSchema.parse(body);
 
-        // Upsert device token
+        // Upsert device token (works for both authenticated and anonymous devotees)
         await db.deviceToken.upsert({
             where: { token },
             update: {
-                userId: user.id,
+                ...(user?.id ? { userId: user.id } : {}),
                 isActive: true,
+                platform,
                 updatedAt: new Date()
             },
             create: {
-                userId: user.id,
+                userId: user?.id || null,
                 token,
                 platform,
                 userAgent: userAgent || (req.headers.get('user-agent') ?? undefined),

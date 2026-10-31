@@ -9,7 +9,9 @@ export async function POST(req: Request) {
         // Subscription can be a Web Push object or a raw token string
         const tokenString = typeof body === 'string' 
             ? body 
-            : body.endpoint || (body.token ? body.token : JSON.stringify(body));
+            : (body.keys && body.endpoint)
+                ? JSON.stringify(body)
+                : (body.endpoint || (body.token ? body.token : JSON.stringify(body)));
 
         if (!tokenString) {
             return NextResponse.json({ error: 'Valid subscription token is required' }, { status: 400 });
@@ -18,25 +20,23 @@ export async function POST(req: Request) {
         const user = await getUserFromCookie().catch(() => null);
         const userAgent = req.headers.get('user-agent') || undefined;
 
-        // If authenticated, persist to deviceToken table
-        if (user?.id) {
-            await db.deviceToken.upsert({
-                where: { token: tokenString },
-                update: {
-                    userId: user.id,
-                    isActive: true,
-                    userAgent,
-                    updatedAt: new Date()
-                },
-                create: {
-                    userId: user.id,
-                    token: tokenString,
-                    platform: 'web',
-                    userAgent,
-                    isActive: true
-                }
-            });
-        }
+        // Persist to deviceToken table (supports both logged-in and anonymous devotees)
+        await db.deviceToken.upsert({
+            where: { token: tokenString },
+            update: {
+                ...(user?.id ? { userId: user.id } : {}),
+                isActive: true,
+                userAgent,
+                updatedAt: new Date()
+            },
+            create: {
+                userId: user?.id || null,
+                token: tokenString,
+                platform: 'web',
+                userAgent,
+                isActive: true
+            }
+        });
 
         return NextResponse.json({ success: true, message: 'Push subscription processed' });
     } catch (error) {

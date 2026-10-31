@@ -24,6 +24,7 @@ import { GoogleAdUnit } from '@/components/ads/GoogleAdUnit';
 import { trackHubAction } from '@/lib/analytics';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { PrayerReminderBanner } from '@/components/notifications/PrayerReminderBanner';
 
 // ─── Revenue Banners (Emotional pitching) ─────────────────────────────
 // Features moved to ./data/features.ts
@@ -364,6 +365,10 @@ export default function SanctuaryHub() {
         </div>
 
         <HeroSlider />
+
+        <div className="px-4">
+          <PrayerReminderBanner />
+        </div>
 
         {/* Quick Actions (Round Buttons) */}
         <div className="px-6 mb-12">

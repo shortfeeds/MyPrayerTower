@@ -2537,14 +2537,14 @@ model FailedPayment {
 
 model DeviceToken {
   id        String   @id @default(cuid())
-  userId    String
+  userId    String?
   token     String   @unique
   platform  String   // 'android', 'ios', 'web'
   userAgent String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([platform])
