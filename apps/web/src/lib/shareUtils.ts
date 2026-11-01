@@ -1,7 +1,7 @@
 'use client';
 
 // ── Play Store Download Link (Branded Short Link) ──────────────────────────────
-const APP_DOWNLOAD_LINK = 'https://www.myprayertower.com/app';
+const APP_DOWNLOAD_LINK = 'https://www.myprayertower.com/android';
 const SITE_URL = 'https://www.myprayertower.com';
 
 // ── Content Types ─────────────────────────────────────────
