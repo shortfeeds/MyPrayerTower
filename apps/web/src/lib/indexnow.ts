@@ -251,6 +251,7 @@ export async function fetchAllSiteUrls(): Promise<string[]> {
         '/rosary',
         '/sacraments',
         '/saints',
+        '/search',
         '/stations',
         '/summa',
         '/terms',

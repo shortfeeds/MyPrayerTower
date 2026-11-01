@@ -226,10 +226,14 @@ export default async function Home() {
                 '@context': 'https://schema.org',
                 '@type': 'WebSite',
                 name: 'MyPrayerTower',
+                alternateName: ['My Prayer Tower', 'MyPrayerTower Catholic App'],
                 url: 'https://www.myprayertower.com',
                 potentialAction: {
                     '@type': 'SearchAction',
-                    target: 'https://www.myprayertower.com/prayers?q={search_term_string}',
+                    target: {
+                        '@type': 'EntryPoint',
+                        urlTemplate: 'https://www.myprayertower.com/search?q={search_term_string}'
+                    },
                     'query-input': 'required name=search_term_string'
                 }
             }} />

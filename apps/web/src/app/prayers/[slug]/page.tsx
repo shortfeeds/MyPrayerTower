@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { ChevronLeft, Scroll, Sparkles } from 'lucide-react';
 import { PrayerInteractions } from '@/components/prayer/PrayerInteractions';
+import { PrayerReaderExperience } from '@/components/prayer/PrayerReaderExperience';
 import { AnsweredGraces } from '@/components/prayer/AnsweredGraces';
 import { ShareButtons } from '@/components/social/ShareButtons';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
@@ -273,77 +274,15 @@ export default async function PrayerPage({ params }: Props) {
                     )}
                 </div>
 
-                {/* Prayer Content Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 lg:p-16 relative overflow-hidden mb-16">
-                    {/* Background decoration */}
-                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-gold-300 via-gold-500 to-gold-300"></div>
-                    <div className="absolute top-10 right-10 opacity-5 pointer-events-none">
-                        <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                        </svg>
-                    </div>
+                {/* Sacred Reader Experience & Content */}
+                <PrayerReaderExperience
+                    prayer={prayer}
+                    rubrics={rubrics}
+                    bodyParagraphs={bodyParagraphs}
+                    prayerUrl={prayerUrl}
+                />
 
-                    {/* Liturgical Rubrics & Roots Callout Card */}
-                    {rubrics.length > 0 && (
-                        <div className="mb-10 p-6 md:p-7 rounded-2xl bg-gradient-to-br from-amber-50/90 via-orange-50/40 to-amber-50/70 border border-amber-200/90 shadow-sm">
-                            <div className="flex items-center gap-2.5 mb-4 text-amber-900 font-bold text-xs uppercase tracking-wider">
-                                <span className="p-1.5 rounded-lg bg-amber-100 text-amber-800">
-                                    <Scroll className="w-4 h-4" />
-                                </span>
-                                <span>Liturgical Setting, Posture & Origins</span>
-                            </div>
-                            <div className="space-y-3 text-sm md:text-base text-amber-950/90 leading-relaxed font-sans">
-                                {rubrics.map((rubric, rIdx) => (
-                                    <div key={rIdx} className="flex items-start gap-3">
-                                        <span className="mt-2 w-1.5 h-1.5 rounded-full bg-gold-500 shrink-0"></span>
-                                        <p
-                                            className="flex-1"
-                                            dangerouslySetInnerHTML={{
-                                                __html: rubric
-                                                    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-amber-950">$1</strong>')
-                                                    .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
-                                            }}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Sacred Text Content */}
-                    <div className="font-serif text-lg md:text-xl leading-loose text-gray-800 space-y-6">
-                        {bodyParagraphs.map((paragraph, idx) => {
-                            const isHeader = paragraph.startsWith('**') && paragraph.endsWith('**');
-                            const isVersicle = paragraph.startsWith('V.') || paragraph.startsWith('R.') || paragraph.startsWith('Step ');
-
-                            if (isHeader) {
-                                return (
-                                    <h3 key={idx} className="font-sans font-bold text-base md:text-lg text-sacred-900 pt-4 pb-1 tracking-wide border-b border-gray-100">
-                                        {paragraph.replace(/\*\*/g, '')}
-                                    </h3>
-                                );
-                            }
-
-                            return (
-                                <p
-                                    key={idx}
-                                    className={`${idx === 0 ? "first-letter:text-5xl first-letter:font-bold first-letter:text-gold-600 first-letter:float-left first-letter:mr-3 first-letter:mt-[-10px]" : ""} ${isVersicle ? "pl-4 border-l-2 border-gold-400 bg-amber-50/30 py-1 rounded-r-lg text-gray-800" : ""}`}
-                                    dangerouslySetInnerHTML={{
-                                        __html: paragraph
-                                            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
-                                            .replace(/\*(.*?)\*/g, '<em class="italic text-gray-700">$1</em>')
-                                    }}
-                                />
-                            );
-                        })}
-                    </div>
-
-                    {/* Amen footer */}
-                    <div className="mt-16 text-center">
-                        <p className="font-serif text-2xl italic text-gray-400">Amen.</p>
-                    </div>
-
-                    {/* Action Footer */}
+                {/* Action Footer */}
                     <div className="mt-12 pt-8 border-t border-gray-100 flex flex-col items-center justify-center gap-4">
                         <PrayerInteractions
                             prayerId={prayer.id}
@@ -367,7 +306,6 @@ export default async function PrayerPage({ params }: Props) {
                             variant="cta"
                         />
                     </div>
-                </div>
 
                 {/* Living Faith & Answered Graces Testimonials */}
                 <AnsweredGraces category={prayer.category || undefined} />

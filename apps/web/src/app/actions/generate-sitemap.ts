@@ -19,7 +19,7 @@ export async function generateSitemapAction() {
 
         // 1. Static Routes
         const staticRoutes = [
-            '', '/candles', '/prayers', '/saints', '/mass-offerings',
+            '', '/candles', '/prayers', '/saints', '/search', '/mass-offerings',
             '/about', '/contact', '/donate', '/memorials', '/prayer-wall',
             '/journey', '/bible', '/confession', '/rosary', '/groups',
             '/login', '/register'

@@ -83,6 +83,7 @@ export async function GET() {
         '/rosary',
         '/sacraments',
         '/saints',
+        '/search',
         '/stations',
         '/summa',
         '/terms',
