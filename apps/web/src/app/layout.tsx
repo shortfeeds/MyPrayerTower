@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     metadataBase: new URL('https://www.myprayertower.com'),
     title: {
         default: 'MyPrayerTower | Catholic Prayer & Church Finder App',
-        template: '%s | MyPrayerTower'
+        template: '%s'
     },
     description: 'Join the global Catholic community. Find Mass times, submit prayer intentions, light virtual candles, and deepen your faith with daily readings and rosary.',
     keywords: ['Catholic App', 'Mass Times Near Me', 'Online Prayer Request', 'Virtual Candles', 'Catholic Daily Readings', 'Rosary Audio', 'Confession Guide', 'Saints of the Day'],
