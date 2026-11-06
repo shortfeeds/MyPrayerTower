@@ -7,19 +7,21 @@ import { useState, useEffect } from 'react';
 // === QUICK SEARCH TOPICS ===
 const QUICK_SEARCH_CHIPS = [
     { label: "🏥 Major Surgery", query: "surgery" },
-    { label: "🕯️ Desert Fathers", query: "desert fathers" },
-    { label: "😰 Anxiety & Panic", query: "anxiety" },
-    { label: "👶 Childbirth", query: "childbirth" },
-    { label: "🎓 Exams & Study", query: "exams" },
+    { label: "🕯️ Cancer Healing", query: "cancer" },
+    { label: "😰 Anxiety & Peace", query: "anxiety" },
+    { label: "💼 Jobs & Career", query: "job" },
     { label: "⚖️ Court Trial", query: "court" },
+    { label: "💔 Broken Marriage", query: "marriage" },
+    { label: "🕊️ Fallen-Away Children", query: "children" },
+    { label: "👶 Fertility & Pregnancy", query: "pregnancy" },
+    { label: "🎓 Exams & Study", query: "exams" },
+    { label: "🌟 Urgent Needs", query: "urgent" },
+    { label: "🛡️ Spiritual Warfare", query: "protection" },
     { label: "🏠 House Blessing", query: "house blessing" },
     { label: "🚗 Safe Driving", query: "driving" },
-    { label: "🕊️ Deliverance", query: "deliverance" },
-    { label: "🌅 Optina Elders", query: "optina" },
-    { label: "💍 Anniversaries", query: "anniversary" },
-    { label: "🛡️ Police & Military", query: "police" },
-    { label: "💼 New Business", query: "business" },
-    { label: "🍂 Retirement", query: "retirement" },
+    { label: "🕊️ Departed Loved Ones", query: "dead" },
+    { label: "🐕 Sick Pets", query: "animals" },
+    { label: "🕯️ Desert Fathers", query: "desert fathers" },
 ];
 
 const CATEGORY_DISPLAY_NAMES: Record<string, string> = {

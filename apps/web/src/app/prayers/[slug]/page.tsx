@@ -14,6 +14,7 @@ import { ArticleJsonLd, BreadcrumbJsonLd, FaqJsonLd } from '@/components/seo/Jso
 import { FAQModule } from '@/components/seo/FAQModule';
 import { DailyPrayerCTA } from '@/components/seo/DailyPrayerCTA';
 import { getPrayerFAQs } from '@/lib/seo/prayerFAQs';
+import { CATHOLIC_INTENTIONS } from '@/lib/seo/intentionsData';
 
 interface Props {
     params: {
@@ -124,6 +125,12 @@ export default async function PrayerPage({ params }: Props) {
     // Generate FAQs
     const faqs = getPrayerFAQs(prayer.category || 'general', prayer.title);
     const prayerUrl = `${BASE_URL}/prayers/${prayer.slug}`;
+
+    // Find matching Intention Hub for topical authority linking
+    const matchingHub = Object.values(CATHOLIC_INTENTIONS).find(hub => 
+        (prayer.category && hub.categories.includes(prayer.category.toLowerCase())) ||
+        hub.searchTerms.some(term => prayer.title.toLowerCase().includes(term))
+    );
 
     // SEO Schema
     const articleLd = {
@@ -270,6 +277,19 @@ export default async function PrayerPage({ params }: Props) {
                                     #{tag}
                                 </Link>
                             ))}
+                        </div>
+                    )}
+
+                    {/* Topic Cluster: Link to Parent Intention Pillar */}
+                    {matchingHub && (
+                        <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-50/90 dark:bg-amber-950/60 border border-amber-200/80 text-xs text-amber-900 dark:text-amber-200 shadow-sm">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                            <span>
+                                Intention Guide:{' '}
+                                <Link href={`/prayers/intention/${matchingHub.slug}`} className="font-bold underline hover:text-amber-700 ml-1">
+                                    {matchingHub.title}
+                                </Link>
+                            </span>
                         </div>
                     )}
                 </div>

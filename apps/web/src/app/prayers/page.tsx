@@ -175,6 +175,25 @@ export default async function PrayerLibraryPage({ searchParams }: Props) {
                     </div>
                 )}
 
+                {/* Global Candle Lighting Banner */}
+                <div className="mb-10 bg-gradient-to-r from-amber-500/10 via-amber-50 to-amber-500/10 rounded-2xl p-6 border border-amber-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                            <Flame className="w-6 h-6 text-amber-600 animate-pulse" />
+                        </div>
+                        <div>
+                            <h3 className="font-serif font-bold text-gray-900 text-lg">Light a Vigil Candle for Your Special Intention</h3>
+                            <p className="text-xs text-gray-600">Join faithful worldwide by offering a flame in our perpetual virtual chapel and inviting loved ones to pray.</p>
+                        </div>
+                    </div>
+                    <Link
+                        href="/candles"
+                        className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs tracking-wide shadow-md transition-all whitespace-nowrap active:scale-95"
+                    >
+                        Offer a Vigil Candle
+                    </Link>
+                </div>
+
                 {/* High-Intent Catholic Collections (Intention SEO Hub Pills) */}
                 <div className="mb-10 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
                     <div className="flex items-center justify-between mb-4">

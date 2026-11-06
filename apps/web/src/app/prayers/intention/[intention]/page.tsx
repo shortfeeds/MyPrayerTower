@@ -18,7 +18,8 @@ import {
     Clock,
     Share2,
     CheckCircle2,
-    Compass
+    Compass,
+    Flame
 } from 'lucide-react';
 
 const BASE_URL = 'https://www.myprayertower.com';
@@ -198,8 +199,15 @@ export default async function IntentionHubPage({ params }: Props) {
                         </p>
                     </div>
 
-                    {/* Quick WhatsApp Share Pill */}
-                    <div className="mt-6 flex flex-wrap justify-center items-center gap-3">
+                    {/* Action Hub: Light Candle for this Intention + WhatsApp Share */}
+                    <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-3">
+                        <Link
+                            href={`/candles?intention=${encodeURIComponent(hub.shortTitle)}`}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold text-sm shadow-md transition-all hover:scale-105 active:scale-95"
+                        >
+                            <Flame className="w-4 h-4 text-slate-950 animate-pulse" />
+                            <span>Light a Vigil Candle for {hub.shortTitle}</span>
+                        </Link>
                         <ShareButtons
                             url={canonicalUrl}
                             title={hub.title}
