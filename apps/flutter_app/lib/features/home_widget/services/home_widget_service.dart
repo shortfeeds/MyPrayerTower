@@ -37,6 +37,19 @@ class HomeWidgetService {
     }
   }
 
+  /// Convenience method to update widget with Daily Reading
+  static Future<void> updateReadingWidget({
+    String? verse,
+    String? reference,
+  }) async {
+    if (verse == null || verse.isEmpty) return;
+    await updateWidget(
+      title: 'Daily Reading',
+      content: verse,
+      subtext: reference,
+    );
+  }
+
   /// Initialize and potential background work setup
   static Future<void> initialize() async {
     // Determine app group id based on platform if needed

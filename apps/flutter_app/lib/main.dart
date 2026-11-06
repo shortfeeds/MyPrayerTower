@@ -12,6 +12,7 @@ import 'app/app.dart';
 import 'core/constants/app_constants.dart';
 import 'core/services/cache_service.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/scheduled_notification_service.dart';
 import 'features/home_widget/services/home_widget_service.dart';
 import 'features/ads/services/ad_service.dart';
 
@@ -25,7 +26,7 @@ void main() async {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
-      // Set preferred orientations & system overlay
+      // Set preferred orientations & system overlay with full Android 15 Edge-to-Edge compliance
       try {
         await SystemChrome.setPreferredOrientations([
           DeviceOrientation.portraitUp,
@@ -37,7 +38,8 @@ void main() async {
           const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
             statusBarIconBrightness: Brightness.dark,
-            systemNavigationBarColor: Color(0xFFFAF7F2),
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarContrastEnforced: false,
             systemNavigationBarIconBrightness: Brightness.dark,
           ),
         );
@@ -81,7 +83,7 @@ void main() async {
           debugPrint('Cache prewarm error: $e');
         }
 
-        // 2. Initialize Firebase Cloud Messaging
+        // 2. Initialize Firebase Cloud Messaging & Smart Automated Habit Notifications
         try {
           if (!kIsWeb) {
             await Firebase.initializeApp();
@@ -89,7 +91,13 @@ void main() async {
               notificationServiceProvider,
             );
             await notificationService.initialize();
-            notificationService.scheduleAllDailyReminders();
+
+            // Schedule the 6 daily smart engagement reminders
+            final scheduledService = container.read(
+              scheduledNotificationServiceProvider,
+            );
+            await scheduledService.initialize();
+            await scheduledService.scheduleAllDailyNotifications();
           }
         } catch (e) {
           debugPrint('Firebase/Notification setup skipped: $e');
