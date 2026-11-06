@@ -642,7 +642,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess, initialIntenti
                                                 </button>
                                             </div>
                                         </div>
-                                    )
+                                    )}
                                 </div>
                             </div>
                         )}
