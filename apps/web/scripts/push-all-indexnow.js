@@ -105,6 +105,11 @@ async function run() {
     req.write(postData);
     req.end();
   });
+  console.log('IndexNow and WebSub pinging completed successfully!');
+  process.exit(0);
 }
 
-run().catch(console.error);
+run().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
