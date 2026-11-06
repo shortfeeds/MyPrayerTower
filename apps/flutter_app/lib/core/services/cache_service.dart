@@ -6,13 +6,27 @@ class CacheService {
   static const String libraryBox = 'library_cache';
   static const String prayersBox = 'prayers_cache';
   static const String saintsBox = 'saints_cache';
+  static const String apiBox = 'api_cache';
+
+  /// Prewarm all core boxes during startup so reads never block
+  Future<void> prewarmCaches() async {
+    try {
+      await Future.wait([
+        Hive.openBox(libraryBox),
+        Hive.openBox(prayersBox),
+        Hive.openBox(saintsBox),
+        Hive.openBox(apiBox),
+      ]);
+    } catch (e) {
+      debugPrint('Prewarm cache error: $e');
+    }
+  }
 
   Future<void> cacheData(String boxName, String key, dynamic data) async {
     try {
       final box = await Hive.openBox(boxName);
       await box.put(key, data);
     } catch (e) {
-      // Fail silently on cache write error
       debugPrint('Cache write error: $e');
     }
   }

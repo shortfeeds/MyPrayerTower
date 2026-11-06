@@ -20,8 +20,6 @@ class PrayersRepository {
     int page = 1,
     int limit = 20,
   }) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 300));
 
     var results = _allPrayers;
 
@@ -56,8 +54,6 @@ class PrayersRepository {
 
   /// Get specific prayer by ID
   Future<Prayer> getPrayerById(int id) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 100));
 
     return _allPrayers.firstWhere(
       (p) => p.id == id,
@@ -67,13 +63,11 @@ class PrayersRepository {
 
   /// Get multiple prayers by IDs (for favorites/bookmarks)
   Future<List<Prayer>> getPrayersByIds(List<int> ids) async {
-    await Future.delayed(const Duration(milliseconds: 300));
     return _allPrayers.where((p) => ids.contains(p.id)).toList();
   }
 
   /// Get categories with counts
   Future<List<Map<String, dynamic>>> getCategories() async {
-    await Future.delayed(const Duration(milliseconds: 200));
 
     final Map<String, int> counts = {};
     final Map<String, String> labels = {};

@@ -22,8 +22,6 @@ class ChurchesRepository {
     int limit = 20,
     Map<String, dynamic>? filters,
   }) async {
-    // Simulate network delay for realism
-    await Future.delayed(const Duration(milliseconds: 300)); // Changed delay
 
     var results = _allChurches;
 
@@ -74,7 +72,6 @@ class ChurchesRepository {
     required double lng,
     double radiusKm = 10,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 200));
     return _allChurches.take(5).toList();
   }
 }

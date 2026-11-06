@@ -8,15 +8,9 @@ class ApiConstants {
   /// Base URL for the MyPrayerTower API
   /// Base URL for the MyPrayerTower API
   static String get baseUrl {
-    if (kDebugMode) {
-      // For Android Emulator, use 10.0.2.2
-      // For iOS Simulator and Web, use localhost
-      if (!kIsWeb && Platform.isAndroid) {
-        return 'http://10.0.2.2:3005/api';
-      }
-      return 'http://localhost:3005/api';
-    }
-    return 'https://myprayertower.com/api';
+    const customUrl = String.fromEnvironment('API_URL');
+    if (customUrl.isNotEmpty) return customUrl;
+    return 'https://www.myprayertower.com/api';
   }
 
   /// Connection timeout in milliseconds

@@ -1,9 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/app_constants.dart';
 import '../storage/secure_storage.dart';
+import '../services/cache_service.dart';
 
-/// Dio API client provider
+/// Dio API client provider with offline caching and token management
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
     BaseOptions(
@@ -21,7 +23,17 @@ final dioProvider = Provider<Dio>((ref) {
 
   // Add interceptors
   dio.interceptors.add(AuthInterceptor(ref));
-  dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
+  dio.interceptors.add(OfflineCacheInterceptor(ref));
+
+  if (kDebugMode) {
+    dio.interceptors.add(
+      LogInterceptor(
+        requestBody: false,
+        responseBody: false,
+        error: true,
+      ),
+    );
+  }
 
   return dio;
 });
@@ -47,7 +59,6 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    // Get token from secure storage
     final storage = ref.read(secureStorageProvider);
     final token = await storage.getToken();
 
@@ -60,12 +71,62 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    // Handle 401 Unauthorized - token expired
     if (err.response?.statusCode == 401) {
-      // Try to refresh token
-      // For now, just clear the token and redirect to login
       final storage = ref.read(secureStorageProvider);
       await storage.clearToken();
+    }
+    handler.next(err);
+  }
+}
+
+/// Transparent Offline Caching Interceptor
+/// Stores successful GET responses in Hive and serves them immediately when offline
+class OfflineCacheInterceptor extends Interceptor {
+  final Ref ref;
+
+  OfflineCacheInterceptor(this.ref);
+
+  String _cacheKey(RequestOptions options) {
+    return '${options.method}_${options.path}_${options.queryParameters.toString()}';
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) async {
+    if (response.requestOptions.method.toUpperCase() == 'GET' &&
+        response.statusCode == 200 &&
+        response.data != null) {
+      final cacheService = ref.read(cacheServiceProvider);
+      final key = _cacheKey(response.requestOptions);
+      cacheService.cacheData(CacheService.apiBox, key, response.data);
+    }
+    handler.next(response);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    // Only attempt offline fallback for GET queries on network / timeout errors
+    if (err.requestOptions.method.toUpperCase() == 'GET' &&
+        (err.type == DioExceptionType.connectionTimeout ||
+            err.type == DioExceptionType.connectionError ||
+            err.type == DioExceptionType.receiveTimeout)) {
+      final cacheService = ref.read(cacheServiceProvider);
+      final key = _cacheKey(err.requestOptions);
+      final cachedData = await cacheService.getCachedData(
+        CacheService.apiBox,
+        key,
+      );
+
+      if (cachedData != null) {
+        // Resolve with cached data smoothly so UI never shows a network crash
+        return handler.resolve(
+          Response(
+            requestOptions: err.requestOptions,
+            data: cachedData,
+            statusCode: 200,
+            statusMessage: 'Served from Offline Cache',
+          ),
+        );
+      }
     }
 
     handler.next(err);
@@ -78,7 +139,6 @@ class ApiService {
 
   ApiService(this._dio);
 
-  /// GET request
   Future<Response<T>> get<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
@@ -91,7 +151,6 @@ class ApiService {
     );
   }
 
-  /// POST request
   Future<Response<T>> post<T>(
     String path, {
     dynamic data,
@@ -106,7 +165,6 @@ class ApiService {
     );
   }
 
-  /// PUT request
   Future<Response<T>> put<T>(
     String path, {
     dynamic data,
@@ -121,7 +179,6 @@ class ApiService {
     );
   }
 
-  /// DELETE request
   Future<Response<T>> delete<T>(
     String path, {
     dynamic data,
@@ -136,7 +193,6 @@ class ApiService {
     );
   }
 
-  /// PATCH request
   Future<Response<T>> patch<T>(
     String path, {
     dynamic data,
@@ -152,39 +208,19 @@ class ApiService {
   }
 }
 
-// Wrapper to match previous code expectations if needed, or simply alias ApiService
-class ApiClient extends ApiService {
-  ApiClient(super.dio);
-}
+class ApiClient {
+  final Dio _dio;
 
-/// API Response wrapper
-class ApiResponse<T> {
-  final T? data;
-  final String? error;
-  final bool success;
-  final int? statusCode;
+  ApiClient(this._dio);
 
-  ApiResponse({this.data, this.error, required this.success, this.statusCode});
-
-  factory ApiResponse.success(T data, {int? statusCode}) {
-    return ApiResponse(data: data, success: true, statusCode: statusCode);
+  Future<Response<T>> get<T>(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    return _dio.get<T>(path, queryParameters: queryParameters);
   }
 
-  factory ApiResponse.error(String message, {int? statusCode}) {
-    return ApiResponse(error: message, success: false, statusCode: statusCode);
-  }
-}
-
-/// Extension for handling Dio responses
-extension DioResponseExtension on Response {
-  ApiResponse<T> toApiResponse<T>() {
-    if (statusCode != null && statusCode! >= 200 && statusCode! < 300) {
-      return ApiResponse.success(data as T, statusCode: statusCode);
-    } else {
-      return ApiResponse.error(
-        data?['message'] ?? 'Unknown error',
-        statusCode: statusCode,
-      );
-    }
+  Future<Response<T>> post<T>(String path, {dynamic data}) async {
+    return _dio.post<T>(path, data: data);
   }
 }
