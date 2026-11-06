@@ -8,6 +8,7 @@ class PremiumGlassCard extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onTap;
   final bool hasShine;
+  final bool hasGoldBorder;
   final double blurIntensity;
   final Color? color;
 
@@ -18,6 +19,7 @@ class PremiumGlassCard extends StatelessWidget {
     this.padding,
     this.onTap,
     this.hasShine = false,
+    this.hasGoldBorder = false,
     this.blurIntensity = 10.0,
     this.color,
   });
@@ -32,20 +34,22 @@ class PremiumGlassCard extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: blurIntensity, sigmaY: blurIntensity),
         child: Container(
           decoration: BoxDecoration(
-            color: (color ?? const Color(0xFF0D1A2E)).withValues(
-              alpha: 0.7,
-            ), // Semi-transparent sacred navy
+            color: (color ?? const Color(0xFF131D31)).withValues(
+              alpha: 0.72,
+            ), // Cathedral midnight Marian navy glass
             borderRadius: radius,
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.1),
-              width: 1,
+              color: hasGoldBorder
+                  ? const Color(0xFFD4AF37).withValues(alpha: 0.35)
+                  : Colors.white.withValues(alpha: 0.08),
+              width: hasGoldBorder ? 1.2 : 1,
             ),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.white.withValues(alpha: 0.1),
-                Colors.white.withValues(alpha: 0.05),
+                Colors.white.withValues(alpha: 0.09),
+                Colors.white.withValues(alpha: 0.03),
               ],
             ),
           ),
@@ -64,8 +68,8 @@ class PremiumGlassCard extends StatelessWidget {
             HapticFeedback.lightImpact();
             onTap!();
           },
-          splashColor: Colors.white.withValues(alpha: 0.1),
-          highlightColor: Colors.white.withValues(alpha: 0.05),
+          splashColor: const Color(0xFFD4AF37).withValues(alpha: 0.12),
+          highlightColor: Colors.white.withValues(alpha: 0.04),
           child: content,
         ),
       );

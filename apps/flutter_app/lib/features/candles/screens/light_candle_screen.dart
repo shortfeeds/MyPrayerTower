@@ -7,6 +7,7 @@ import '../../payments/services/payment_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:share_plus/share_plus.dart';
 import '../repositories/candle_repository.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../core/services/abandoned_cart_service.dart';
@@ -200,7 +201,7 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
           subtitle: SacredCopy.prayerComplete.primary,
           icon: LucideIcons.flame,
         );
-        if (mounted) context.pop();
+        if (mounted) { _showCandleLitSuccessDialog(); }
       }
     } catch (e) {
       if (mounted) {
@@ -216,6 +217,112 @@ class _LightCandleScreenState extends ConsumerState<LightCandleScreen> {
         setState(() => _isProcessing = false);
       }
     }
+  }
+
+
+  void _showCandleLitSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.marianNavySurface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: AppTheme.sacredGold, width: 1.5),
+        ),
+        title: Center(
+          child: Column(
+            children: [
+              const Icon(LucideIcons.flame, color: AppTheme.sacredGold, size: 48)
+                  .animate(onPlay: (c) => c.repeat(reverse: true))
+                  .scale(
+                    begin: const Offset(1, 1),
+                    end: const Offset(1.15, 1.15),
+                    duration: 1200.ms,
+                  ),
+              const SizedBox(height: 12),
+              Text(
+                'Candle Lit in Prayer',
+                style: GoogleFonts.cinzel(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.sacredGold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Your sacred flame is now burning before the Lord in the Chapel of Light for ' + selectedTier['daysLabel'] + '.',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                color: AppTheme.textSecondary,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            if (_intention.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppTheme.midnightNocturne,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.white10),
+                ),
+                child: Text(
+                  '"' + _intention + '"',
+                  style: GoogleFonts.ebGaramond(
+                    fontSize: 15,
+                    fontStyle: FontStyle.italic,
+                    color: AppTheme.textPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    final shareText = 'I lit a sacred candle at MyPrayerTower for the intention: "' + _intention + '". May God bless and protect you. Pray with us: https://myprayertower.com/candles';
+                    Share.share(shareText, subject: 'A Candle Lit for You in Prayer');
+                  },
+                  icon: const Icon(LucideIcons.share2, size: 16, color: AppTheme.sacredGold),
+                  label: Text('Share Card', style: GoogleFonts.inter(color: AppTheme.sacredGold, fontSize: 13)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppTheme.sacredGold),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    context.pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.sacredGold,
+                    foregroundColor: AppTheme.midnightNocturne,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: Text('Sanctuary', style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 13)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   @override

@@ -47,11 +47,11 @@ class LiturgyUtils {
       case LiturgicalSeason.advent:
         return const Color(0xFF4A148C); // Purple
       case LiturgicalSeason.christmas:
-        return Colors.white;
+        return const Color(0xFFD4AF37);
       case LiturgicalSeason.lent:
         return const Color(0xFF4A148C); // Purple
       case LiturgicalSeason.easter:
-        return Colors.white;
+        return const Color(0xFFD4AF37);
       case LiturgicalSeason.ordinaryTime:
         return const Color(0xFF2E7D32); // Green
       case LiturgicalSeason.triduum:

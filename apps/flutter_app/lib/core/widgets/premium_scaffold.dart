@@ -9,6 +9,8 @@ class PremiumScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;
   final bool extendBody;
   final bool extendBodyBehindAppBar;
+  final Color? auraColor;
+  final bool showCathedralAura;
 
   const PremiumScaffold({
     super.key,
@@ -18,97 +20,122 @@ class PremiumScaffold extends StatelessWidget {
     this.appBar,
     this.extendBody = false,
     this.extendBodyBehindAppBar = false,
+    this.auraColor,
+    this.showCathedralAura = true,
   });
 
   @override
   Widget build(BuildContext context) {
+    final aura = auraColor ?? AppTheme.sacredGold;
+
     return Scaffold(
       extendBody: extendBody,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
       appBar: appBar,
-      backgroundColor: AppTheme.deepSpace,
+      backgroundColor: AppTheme.midnightNocturne,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Base Gradient
+          // 1. Cathedral Base Gradient
           Container(
-            decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF101726),
+                  Color(0xFF090E18),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
           ),
 
-          // 2. Animated Particles / Glows
-          // Top Left Glow
-          Positioned(
-            top: -100,
-            left: -100,
-            child:
-                Container(
-                      width: 300,
-                      height: 300,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppTheme.sacredPurple.withValues(alpha: 0.15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.sacredPurple.withValues(
-                              alpha: 0.15,
-                            ),
-                            blurRadius: 100,
-                            spreadRadius: 50,
-                          ),
-                        ],
-                      ),
-                    )
-                    .animate(
-                      onPlay: (controller) => controller.repeat(reverse: true),
-                    )
-                    .scale(
-                      begin: const Offset(1, 1),
-                      end: const Offset(1.2, 1.2),
-                      duration: 4.seconds,
-                    )
-                    .slide(
-                      begin: const Offset(0, 0),
-                      end: const Offset(10, 10),
-                      duration: 5.seconds,
+          // 2. Cathedral Overhead Stained Glass / Divine Radiance Aura
+          if (showCathedralAura)
+            Positioned(
+              top: -100,
+              left: 0,
+              right: 0,
+              height: 380,
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: const Alignment(0, -0.6),
+                      radius: 0.9,
+                      colors: [
+                        aura.withValues(alpha: 0.18),
+                        aura.withValues(alpha: 0.04),
+                        Colors.transparent,
+                      ],
                     ),
-          ),
+                  ),
+                ),
+              ),
+            ),
 
-          // Bottom Right Glow
+          // 3. Gentle Living Aura Ambient Glows
           Positioned(
-            bottom: -100,
-            right: -100,
-            child:
-                Container(
-                      width: 300,
-                      height: 300,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppTheme.sacredGold.withValues(alpha: 0.1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.sacredGold.withValues(alpha: 0.1),
-                            blurRadius: 100,
-                            spreadRadius: 50,
-                          ),
-                        ],
-                      ),
-                    )
-                    .animate(
-                      onPlay: (controller) => controller.repeat(reverse: true),
-                    )
-                    .scale(
-                      begin: const Offset(1, 1),
-                      end: const Offset(1.3, 1.3),
-                      duration: 6.seconds,
-                    )
-                    .slide(
-                      begin: const Offset(0, 0),
-                      end: const Offset(-20, -20),
-                      duration: 7.seconds,
+            top: -60,
+            left: -60,
+            child: IgnorePointer(
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: aura.withValues(alpha: 0.12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: aura.withValues(alpha: 0.12),
+                      blurRadius: 90,
+                      spreadRadius: 40,
                     ),
+                  ],
+                ),
+              )
+              .animate(
+                onPlay: (controller) => controller.repeat(reverse: true),
+              )
+              .scale(
+                begin: const Offset(1, 1),
+                end: const Offset(1.15, 1.15),
+                duration: 5.seconds,
+              ),
+            ),
           ),
 
-          // 3. Main Content
+          Positioned(
+            bottom: -60,
+            right: -60,
+            child: IgnorePointer(
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppTheme.sacredGold.withValues(alpha: 0.08),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.sacredGold.withValues(alpha: 0.08),
+                      blurRadius: 90,
+                      spreadRadius: 40,
+                    ),
+                  ],
+                ),
+              )
+              .animate(
+                onPlay: (controller) => controller.repeat(reverse: true),
+              )
+              .scale(
+                begin: const Offset(1, 1),
+                end: const Offset(1.2, 1.2),
+                duration: 6.seconds,
+              ),
+            ),
+          ),
+
+          // 4. Main Body Content
           if (body != null) body!,
         ],
       ),
