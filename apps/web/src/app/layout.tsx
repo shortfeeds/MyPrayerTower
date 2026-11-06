@@ -10,6 +10,7 @@ import { LayoutChrome } from '@/components/layout/LayoutChrome';
 import { SpiritualJourneyProvider } from '@/components/journey/SpiritualJourneyProvider';
 import { PricingProvider } from '@/contexts/PricingContext';
 import { AudioProvider } from '@/components/audio/AudioContext';
+import { DailyPrayerCompanionPrompt } from '@/components/notifications/DailyPrayerCompanionPrompt';
 
 // Self-hosted fonts for performance
 const inter = Inter({
