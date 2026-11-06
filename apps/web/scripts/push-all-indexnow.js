@@ -83,6 +83,28 @@ async function run() {
   }
 
   console.log('All batches pushed successfully to IndexNow & Bing!');
+
+  // Ping Google WebSub Hub
+  console.log('Pinging Google WebSub Hub (pubsubhubbub.appspot.com)...');
+  await new Promise(resolve => {
+    const postData = 'hub.mode=publish&hub.url=' + encodeURIComponent('https://www.myprayertower.com/feed.xml');
+    const req = https.request({
+      hostname: 'pubsubhubbub.appspot.com',
+      port: 443,
+      path: '/',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    }, res => {
+      console.log('  -> Google WebSub Hub status:', res.statusCode);
+      resolve();
+    });
+    req.on('error', () => resolve());
+    req.write(postData);
+    req.end();
+  });
 }
 
 run().catch(console.error);

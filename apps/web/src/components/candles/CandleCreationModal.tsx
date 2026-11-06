@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Flame, ChevronRight, Lock, CheckCircle, Smartphone } from 'lucide-react';
+import { X, Flame, ChevronRight, Lock, CheckCircle, Smartphone, Share2, Copy, Check } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import dynamic from 'next/dynamic';
 import { type PayPalSuccessDetails } from '@/components/PayPalCheckout';
 import { lightVirtualCandle, lightBulkCandles } from '@/app/actions/spiritual';
@@ -80,6 +81,7 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess, initialIntenti
         email: '' // Optional for receipt
     });
     const [hasSuccess, setHasSuccess] = useState(false);
+    const [copiedLink, setCopiedLink] = useState(false);
 
     // Sync initialIntention when passed or opened
     useEffect(() => {
@@ -195,13 +197,13 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess, initialIntenti
                     selectedTier.hours
                 );
 
-                // Show Offered
+                // Show Offered & celebrate
                 setStillnessStage('offered');
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
                 setHasSuccess(true);
                 onSuccess();
-                onClose();
+                try {
+                    confetti({ particleCount: 50, spread: 70, origin: { y: 0.5 }, colors: ['#d4af37', '#f59e0b', '#10b981'] });
+                } catch {}
             } catch (err: any) {
                 setIsSacredPausing(false);
                 setError(err.message || 'Failed to light candle');
@@ -591,18 +593,56 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess, initialIntenti
                                             </p>
                                         </>
                                     ) : (
-                                        <>
-                                            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-6 animate-scale-in mx-auto">
-                                                <CheckCircle className="w-8 h-8 text-green-600" />
+                                        <div className="animate-fade-in max-w-sm mx-auto">
+                                            <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4 animate-scale-in mx-auto border border-emerald-200">
+                                                <CheckCircle className="w-8 h-8 text-emerald-600" />
                                             </div>
-                                            <h3 className="text-2xl font-serif font-bold text-gray-900 mb-2 animate-fade-in">
-                                                {formData.quantity > 1 ? 'Candles' : 'Candle'} Lit
+                                            <h3 className="text-2xl font-serif font-bold text-gray-900 mb-1">
+                                                {formData.quantity > 1 ? 'Candles' : 'Candle'} Burning in Chapel
                                             </h3>
-                                            <p className="text-gray-500 font-medium animate-fade-in delay-75">
-                                                Your {formData.quantity > 1 ? 'intentions shine' : 'intention shines'} in our chapel.
+                                            <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                                                Your intention has been lifted before God. Invite family or friends to add their prayers and light a flame with you.
                                             </p>
-                                        </>
-                                    )}
+
+                                            {/* Viral WhatsApp Share Action */}
+                                            <div className="space-y-2.5">
+                                                <a
+                                                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                                                        `🕯️ I just lit a vigil prayer candle on MyPrayerTower for "${formData.intentions.find(Boolean) || 'our family and loved ones'}".\n\nPlease join me in prayer and add your flame:\nhttps://www.myprayertower.com/candles`
+                                                    )}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="w-full flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-semibold text-sm shadow-md transition-all active:scale-95"
+                                                >
+                                                    <Share2 className="w-4 h-4" />
+                                                    <span>Share with Family on WhatsApp</span>
+                                                </a>
+
+                                                <button
+                                                    onClick={() => {
+                                                        const text = `🕯️ I just lit a vigil prayer candle on MyPrayerTower for "${formData.intentions.find(Boolean) || 'our loved ones'}". Join me in prayer: https://www.myprayertower.com/candles`;
+                                                        navigator.clipboard.writeText(text);
+                                                        setCopiedLink(true);
+                                                        setTimeout(() => setCopiedLink(false), 2000);
+                                                    }}
+                                                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-xs transition-colors"
+                                                >
+                                                    {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                                                    <span>{copiedLink ? 'Prayer Link Copied!' : 'Copy Prayer Link'}</span>
+                                                </button>
+
+                                                <button
+                                                    onClick={() => {
+                                                        onSuccess();
+                                                        onClose();
+                                                    }}
+                                                    className="w-full py-2.5 text-xs text-gray-400 hover:text-gray-600 font-medium transition-colors"
+                                                >
+                                                    Return to Chapel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )
                                 </div>
                             </div>
                         )}

@@ -174,6 +174,7 @@ export default function RootLayout({
                                 <LayoutChrome>
                                     {children}
                                 </LayoutChrome>
+                                <DailyPrayerCompanionPrompt />
 
                                 {/* Structured Data */}
                                 <script
@@ -219,7 +220,7 @@ export default function RootLayout({
                                                     },
                                                     potentialAction: {
                                                         '@type': 'SearchAction',
-                                                        target: 'https://www.myprayertower.com/prayers?q={search_term_string}',
+                                                        target: 'https://www.myprayertower.com/search?q={search_term_string}',
                                                         'query-input': 'required name=search_term_string'
                                                     }
                                                 }
