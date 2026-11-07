@@ -23,6 +23,7 @@ import '../features/profile/screens/my_prayer_book_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/auth/screens/onboarding_screen.dart';
+import '../features/search/screens/universal_search_screen.dart';
 
 import '../features/confession/screens/confession_screen.dart';
 import '../features/examen/screens/examen_screen.dart';
@@ -103,6 +104,10 @@ final routerProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: true,
     routes: [
       // Onboarding/Auth routes
+      GoRoute(
+        path: '/search',
+        builder: (context, state) => const UniversalSearchScreen(),
+      ),
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),

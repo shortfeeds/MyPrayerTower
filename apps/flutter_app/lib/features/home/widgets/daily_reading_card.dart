@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/animations/premium_animations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../readings/providers/readings_provider.dart';
+import '../../../core/services/sacred_share_service.dart';
 
 class DailyReadingCard extends ConsumerWidget {
   const DailyReadingCard({super.key});
@@ -55,6 +56,24 @@ class DailyReadingCard extends ConsumerWidget {
                             ),
                           ),
                           const Spacer(),
+                          IconButton(
+                            icon: const Icon(
+                              LucideIcons.share2,
+                              color: AppTheme.gold500,
+                              size: 16,
+                            ),
+                            tooltip: 'Share Scripture',
+                            constraints: const BoxConstraints(),
+                            padding: const EdgeInsets.all(4),
+                            onPressed: () {
+                              SacredShareService.shareScripture(
+                                reference: reading.firstReadingRef ?? 'Daily Lectionary',
+                                text: reading.firstReading ?? 'Liturgy of the Word',
+                                title: reading.feastName,
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 6),
                           const Icon(
                             LucideIcons.arrowRight,
                             color: AppTheme.textMuted,

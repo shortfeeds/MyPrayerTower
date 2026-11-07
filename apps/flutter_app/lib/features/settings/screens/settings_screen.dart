@@ -78,6 +78,12 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             _SettingsTile(
+              icon: LucideIcons.compass,
+              title: 'Spiritual Profile',
+              subtitle: 'Customize devotions & prayer rhythm',
+              onTap: () => context.push('/onboarding'),
+            ),
+            _SettingsTile(
               icon: LucideIcons.globe,
               title: 'Language',
               subtitle: 'English',
@@ -173,7 +179,7 @@ class SettingsScreen extends ConsumerWidget {
             _SettingsTile(
               icon: LucideIcons.info,
               title: 'About My Prayer Tower',
-              subtitle: 'Version 1.0.0',
+              subtitle: 'Version 1.1.0 (Build 38)',
               onTap: () => _showAboutDialog(context),
             ),
             _SettingsTile(
@@ -272,7 +278,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Version 1.0.0\nServing the global Catholic community since 2018.',
+                'Version 1.1.0 (Build 38)\nServing the global Catholic community since 2018.',
                 style: GoogleFonts.inter(color: Colors.white70),
               ),
               const SizedBox(height: 16),

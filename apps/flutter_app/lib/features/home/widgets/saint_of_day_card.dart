@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/animations/premium_animations.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/services/sacred_share_service.dart';
 
 // Minimal generic Saint model for UI display
 class Saint {
@@ -108,15 +109,31 @@ class SaintOfDayCard extends ConsumerWidget {
                             color: AppTheme.gold500,
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Text(
-                            'Saint of the Day',
+                          child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    SacredShareService.shareSaint(
+                                      saintName: saint.name,
+                                      title: saint.title ?? 'Holy Patron',
+                                      bioOrQuote: saint.shortBio ?? 'Pray for us.',
+                                    );
+                                  },
+                                  child: const Icon(LucideIcons.share2, size: 12, color: AppTheme.sacredNavy900),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Saint of the Day',
                             style: GoogleFonts.inter(
                               fontSize: 10, // Reduced from 11
                               fontWeight: FontWeight.bold,
                               color: AppTheme.sacredNavy900,
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                    ),
                       ],
                     ),
                     const SizedBox(height: 12), // Reduced from 16

@@ -25,6 +25,8 @@ coverage/
 .pub-cache/
 .pub_cache/
 *.jar
+*.aab
+*.apk
 .vercel
 .env*.local
 

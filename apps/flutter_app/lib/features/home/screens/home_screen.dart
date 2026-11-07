@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/animations/premium_animations.dart';
+import '../../../core/constants/app_constants.dart';
+import '../../../core/services/review_prompt_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/premium_glass_card.dart';
 import '../../../core/widgets/premium_scaffold.dart';
@@ -14,237 +18,232 @@ import '../widgets/daily_reading_card.dart';
 import '../widgets/saint_of_day_card.dart';
 import '../widgets/quick_access_bar.dart';
 import '../widgets/trending_prayers.dart';
-import '../widgets/home_features_grid.dart'; // Added
-
+import '../widgets/home_features_grid.dart';
 import '../widgets/prayer_wall_preview.dart';
-
+import '../widgets/todays_grace_challenge.dart';
 import '../widgets/premium_home_header.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return PremiumScaffold(
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          // 1. Immersive Header (Pinned)
-          const PremiumHomeHeader(),
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
 
-          // 3. Quick Access Bar
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 0, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Sacred Pathways",
-                    style: GoogleFonts.merriweather(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      final onboarded = prefs.getBool(AppConstants.onboardingKey) ?? false;
+      if (!onboarded && mounted) {
+        context.push('/onboarding');
+      } else if (mounted) {
+        ReviewPromptService.recordAppOpen(context);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PremiumScaffold(
+      body: RefreshIndicator(
+        color: AppTheme.gold500,
+        backgroundColor: AppTheme.sacredNavy900,
+        onRefresh: () async {
+          HapticFeedback.lightImpact();
+          await Future.delayed(const Duration(milliseconds: 600));
+        },
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // 1. Immersive Header (Pinned)
+            const PremiumHomeHeader(),
+
+            // 3. Quick Access Bar
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 0, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Sacred Pathways",
+                      style: GoogleFonts.merriweather(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  const QuickAccessBar(),
-                ],
+                    const SizedBox(height: 16),
+                    const QuickAccessBar(),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          // 5. Today's Highlights Section (Reading & Saint)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Grace for Today",
-                        style: GoogleFonts.merriweather(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => context.push('/readings'),
-                        child: Text(
-                          'View All',
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.gold500,
+            // 4. Daily Spiritual Challenge ("Today's Grace")
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 24, 20, 0),
+                child: TodaysGraceChallenge(),
+              ),
+            ),
+
+            // 5. Today's Highlights Section (Reading & Saint)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Grace for Today",
+                          style: GoogleFonts.merriweather(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 260,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      clipBehavior: Clip.none,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.85,
-                          child: const DailyReadingCard(),
-                        ),
-                        const SizedBox(width: 16),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.85,
-                          child: const SaintOfDayCard(),
+                        TextButton(
+                          onPressed: () => context.push('/readings'),
+                          child: Text(
+                            'View All',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.gold500,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // 6. Trending Prayers
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 28, 0, 0),
-              child: FadeInSlideUp(
-                delay: Duration(milliseconds: 200),
-                child: TrendingPrayersWidget(),
-              ),
-            ),
-          ),
-
-          // 7. Mass Offering CTA Banner
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: FadeInSlideUp(
-                delay: const Duration(milliseconds: 300),
-                child: _buildMassOfferingBanner(context),
-              ),
-            ),
-          ),
-
-          // 8. Explore Grid (Removed for cleaner UI)
-          // SliverToBoxAdapter(
-          //   child: Padding(
-          //     padding: const EdgeInsets.symmetric(horizontal: 20),
-          //     child: Column(
-          //       crossAxisAlignment: CrossAxisAlignment.start,
-          //       children: [
-          //         Row(
-          //           children: [
-          //             Container(
-          //               padding: const EdgeInsets.all(6),
-          //               decoration: BoxDecoration(
-          //                 color: AppTheme.gold500.withValues(alpha: 0.15),
-          //                 borderRadius: BorderRadius.circular(8),
-          //               ),
-          //               child: const Icon(
-          //                 LucideIcons.compass,
-          //                 size: 16,
-          //                 color: AppTheme.gold500,
-          //               ),
-          //             ),
-          //             const SizedBox(width: 10),
-          //             Text(
-          //               'Explore',
-          //               style: GoogleFonts.merriweather(
-          //                 fontSize: 18,
-          //                 fontWeight: FontWeight.bold,
-          //                 color: Colors.white,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //         const SizedBox(height: 16),
-          //         _buildCategorizedFeatures(context),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-
-          // 9. Prayer Wall Preview
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 260,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        clipBehavior: Clip.none,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.pink.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              LucideIcons.heart,
-                              size: 16,
-                              color: Colors.pink,
-                            ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.85,
+                            child: const DailyReadingCard(),
                           ),
-                          const SizedBox(width: 10),
-                          Text(
-                            'Community Prayer',
-                            style: GoogleFonts.merriweather(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                          const SizedBox(width: 16),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.85,
+                            child: const SaintOfDayCard(),
                           ),
                         ],
                       ),
-                      TextButton(
-                        onPressed: () => context.push('/prayer-wall'),
-                        child: Text(
-                          'View All',
-                          style: GoogleFonts.inter(
-                            color: AppTheme.gold500,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  const PrayerWallPreview(),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          // 8. Explore Grid (All Features)
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              child: HomeFeaturesGrid(),
+            // 6. Trending Prayers
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 28, 0, 0),
+                child: FadeInSlideUp(
+                  delay: Duration(milliseconds: 200),
+                  child: TrendingPrayersWidget(),
+                ),
+              ),
             ),
-          ),
 
-          // Smart Ad Banner
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: SmartAdBanner(page: 'home', position: 'bottom'),
+            // 7. Mass Offering CTA Banner
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: FadeInSlideUp(
+                  delay: const Duration(milliseconds: 300),
+                  child: _buildMassOfferingBanner(context),
+                ),
+              ),
             ),
-          ),
 
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 150),
-          ), // Bottom padding for nav bar
-        ],
+            // 8. Prayer Wall Preview
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.pink.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                LucideIcons.heart,
+                                size: 16,
+                                color: Colors.pink,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Community Prayer',
+                              style: GoogleFonts.merriweather(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        TextButton(
+                          onPressed: () => context.push('/prayer-wall'),
+                          child: Text(
+                            'View All',
+                            style: GoogleFonts.inter(
+                              color: AppTheme.gold500,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    const PrayerWallPreview(),
+                  ],
+                ),
+              ),
+            ),
+
+            // 9. Explore Grid (All Features)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                child: HomeFeaturesGrid(),
+              ),
+            ),
+
+            // Smart Ad Banner
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: SmartAdBanner(page: 'home', position: 'bottom'),
+              ),
+            ),
+
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 150),
+            ), // Bottom padding for nav bar
+          ],
+        ),
       ),
     );
   }

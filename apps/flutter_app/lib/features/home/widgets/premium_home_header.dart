@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -53,6 +54,28 @@ class PremiumHomeHeader extends ConsumerWidget {
         ),
       ),
       actions: [
+        Padding(
+          padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.1),
+                width: 0.5,
+              ),
+            ),
+            child: IconButton(
+              icon: const Icon(LucideIcons.search, color: AppTheme.gold500, size: 20),
+              tooltip: 'Search Devotions & Scripture',
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                context.push('/search');
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
         Padding(
           padding: const EdgeInsets.only(right: 20.0, top: 12.0, bottom: 12.0),
           child: GestureDetector(
