@@ -168,35 +168,42 @@ class _TodaysGraceChallengeState extends ConsumerState<TodaysGraceChallenge> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppTheme.gold500.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppTheme.gold500.withValues(alpha: 0.35),
-                      width: 0.8,
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.gold500.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppTheme.gold500.withValues(alpha: 0.35),
+                        width: 0.8,
+                      ),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        devotion['icon'] as IconData,
-                        size: 13,
-                        color: AppTheme.gold400,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        devotion['tag'] as String,
-                        style: GoogleFonts.cinzel(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          devotion['icon'] as IconData,
+                          size: 13,
                           color: AppTheme.gold400,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.8,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            devotion['tag'] as String,
+                            style: GoogleFonts.cinzel(
+                              color: AppTheme.gold400,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.6,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 GestureDetector(
