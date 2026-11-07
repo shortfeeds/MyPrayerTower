@@ -24,6 +24,7 @@ import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/auth/screens/onboarding_screen.dart';
 import '../features/search/screens/universal_search_screen.dart';
+import '../features/sleep_stories/screens/sleep_stories_screen.dart';
 
 import '../features/confession/screens/confession_screen.dart';
 import '../features/examen/screens/examen_screen.dart';
@@ -107,6 +108,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/search',
         builder: (context, state) => const UniversalSearchScreen(),
+      ),
+      GoRoute(
+        path: '/sleep-stories',
+        builder: (context, state) => const SleepStoriesScreen(),
       ),
       GoRoute(
         path: '/onboarding',

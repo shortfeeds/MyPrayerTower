@@ -28,7 +28,7 @@ class HomeWidgetService {
       await HomeWidget.updateWidget(
         name: androidWidgetName,
         iOSName: 'MPTWidget',
-        qualifiedAndroidName: 'com.example.myprayertower.HomeWidgetProvider',
+        qualifiedAndroidName: 'com.myprayertower.myprayertower_app.HomeWidgetProvider',
       );
 
       debugPrint('HomeWidget updated successfully: $title');

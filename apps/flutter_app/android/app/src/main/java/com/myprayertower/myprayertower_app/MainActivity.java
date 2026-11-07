@@ -1,15 +1,13 @@
 package com.myprayertower.myprayertower_app;
 
-import android.os.Build;
 import android.os.Bundle;
-import com.ryanheise.audioservice.AudioServiceActivity;
+import androidx.activity.EdgeToEdge;
+import com.ryanheise.audioservice.AudioServiceFragmentActivity;
 
-public class MainActivity extends AudioServiceActivity {
+public class MainActivity extends AudioServiceFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            getWindow().setDecorFitsSystemWindows(false);
-        }
     }
 }

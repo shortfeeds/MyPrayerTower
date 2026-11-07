@@ -145,6 +145,15 @@ class _UniversalSearchScreenState extends State<UniversalSearchScreen> {
       keywords: ['prayer wall', 'intentions', 'community', 'intercession', 'petition', 'amen'],
     ),
     SearchItem(
+      title: 'Catholic Sleep Stories & Night Audio',
+      subtitle: 'Peaceful biblical narratives, Ignatian examen & monastery night chants',
+      categoryName: 'Devotions',
+      category: SearchCategory.devotions,
+      icon: LucideIcons.moon,
+      route: '/sleep-stories',
+      keywords: ['sleep', 'bedtime', 'night', 'examen', 'benedict', 'peace', 'meditation', 'chant'],
+    ),
+    SearchItem(
       title: 'Saint of the Day & Hagiography',
       subtitle: 'Biographies, patronages, feast days, and saint relics',
       categoryName: 'Saints',

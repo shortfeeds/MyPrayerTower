@@ -7,6 +7,7 @@ import '../../../core/animations/premium_animations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../readings/providers/readings_provider.dart';
 import '../../../core/services/sacred_share_service.dart';
+import '../../home_widget/services/home_widget_service.dart';
 
 class DailyReadingCard extends ConsumerWidget {
   const DailyReadingCard({super.key});
@@ -16,8 +17,17 @@ class DailyReadingCard extends ConsumerWidget {
     final readingAsync = ref.watch(dailyReadingProvider);
 
     return readingAsync.when(
-      data: (reading) => FadeInSlideUp(
-        child: ConstrainedBox(
+      data: (reading) {
+        if (reading.firstReading != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            HomeWidgetService.updateReadingWidget(
+              verse: reading.firstReading,
+              reference: reading.firstReadingRef ?? 'Daily Reading',
+            );
+          });
+        }
+        return FadeInSlideUp(
+          child: ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 260),
           child: Container(
             decoration: AppTheme.sacredCardDecoration,
@@ -135,7 +145,8 @@ class DailyReadingCard extends ConsumerWidget {
             ),
           ),
         ),
-      ),
+      );
+    },
       loading: () => PremiumShimmer(
         child: Container(
           height: 260,

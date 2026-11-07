@@ -291,6 +291,12 @@ class HomeFeaturesGrid extends StatelessWidget {
                   Colors.indigo,
                 ),
                 _FeatureItem(
+                  'Sleep Stories',
+                  LucideIcons.moon,
+                  '/sleep-stories',
+                  Colors.deepPurpleAccent,
+                ),
+                _FeatureItem(
                   'Tracking',
                   LucideIcons.barChart,
                   '/year-in-review',
