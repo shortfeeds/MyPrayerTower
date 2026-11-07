@@ -35,7 +35,7 @@ android {
         applicationId = "com.myprayertower.myprayertower_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23 // Required by firebase_auth and other plugins
+        minSdk = 24 // Required by Google Play Automatic Protection (API 24+)
         targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
