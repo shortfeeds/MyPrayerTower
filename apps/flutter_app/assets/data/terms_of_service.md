@@ -1,120 +1,51 @@
-# Terms of Service for My Prayer Tower
+# Terms of Service
 
-**Effective Date:** January 6, 2026
+**Last Updated: November 7, 2026**
 
-**Company:** My Prayer Tower  
-**Email:** myprayertower2@gmail.com  
-**Contact:** +91 98333 07123  
-**Jurisdiction:** Mumbai, MH, India
+Welcome to MyPrayerTower ("we," "our," or "us"). By accessing or using our website (myprayertower.com), mobile applications, and devotional services (collectively, the "Services"), you agree to be bound by these Terms of Service ("Terms").
 
 ---
 
-## 1. Acceptance of Terms
+## 1. Entity Classification & Legal Status
 
-By downloading, installing, or using the My Prayer Tower mobile application ("App"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use the App.
+MyPrayerTower is an independent digital media platform and devotional technology provider based in Mumbai, India, serving the global Catholic community since 2018.
 
-## 2. Description of Service
+### 1.1 Non-Ecclesiastical & Non-Charitable Classification
+- **We are NOT a 501(c)(3) tax-exempt charity, parish, or diocese.**
+- We do not directly administer Catholic sacraments or govern clergy.
+- We operate as an **independent digital service provider and technology intermediary**.
 
-My Prayer Tower is a Catholic prayer and spiritual growth application that provides:
-- Daily Bible readings and Gospel reflections
-- Prayer library with traditional Catholic prayers
-- Rosary guide and meditation
-- Virtual candle lighting
-- Prayer Wall for community intentions
-- Novenas and devotional content
-- Liturgical calendar
-- Catechism of the Catholic Church reference
-- Daily Examen spiritual practice
-
-## 3. User Accounts
-
-- You may use the App as a guest or create an account
-- You are responsible for maintaining the confidentiality of your account
-- You agree to provide accurate information when submitting prayer requests
-- We reserve the right to suspend accounts that violate these Terms
-
-## 4. Prayer Wall Guidelines
-
-When submitting prayer requests to the Prayer Wall, you agree to:
-- Submit genuine prayer intentions only
-- Not post offensive, inappropriate, or harmful content
-- Not include personal contact information of others
-- Respect the sanctity of the prayer community
-
-All prayer requests are subject to moderation and approval before being displayed.
-
-## 5. Virtual Candles and Offerings
-
-- Virtual candle purchases are handled through Google Play Billing
-- Candle durations (24 hours, 3 days, 7 days, 30 days) are approximate
-- Virtual candles are symbolic representations for spiritual intention
-- Refunds are subject to Google Play Store policies
-
-## 6. Intellectual Property
-
-- All content in the App, including prayers, artwork, and design, is protected by copyright
-- Traditional Catholic prayers are in the public domain
-- You may not reproduce, distribute, or create derivative works without permission
-- The My Prayer Tower name and logo are trademarks of the company
-
-## 7. Prohibited Conduct
-
-You agree NOT to:
-- Use the App for any unlawful purpose
-- Post false, misleading, or defamatory content
-- Attempt to hack, disrupt, or overload the App services
-- Impersonate others or misrepresent your identity
-- Use the App to spam or harass other users
-
-## 8. Disclaimer of Warranties
-
-The App is provided "AS IS" without warranties of any kind. We do not guarantee:
-- Uninterrupted or error-free service
-- Accuracy of third-party content
-- Specific spiritual outcomes from using the App
-
-## 9. Limitation of Liability
-
-To the maximum extent permitted by law, My Prayer Tower shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the App.
-
-## 10. In-App Purchases
-
-- All purchases are processed by Google Play Store
-- Prices are displayed in your local currency
-- Subscriptions auto-renew unless cancelled
-- Refund requests should be directed to Google Play
-
-## 11. Push Notifications
-
-By enabling push notifications, you consent to receive:
-- Morning and evening prayer reminders
-- Daily Gospel and saint notifications
-- Special feast day announcements
-- App updates and new feature alerts
-
-You can disable notifications at any time in your device settings.
-
-## 12. Modifications to Terms
-
-We reserve the right to modify these Terms at any time. Continued use of the App after changes constitutes acceptance of the modified Terms.
-
-## 13. Termination
-
-We may terminate or suspend your access to the App at our sole discretion, without notice, for conduct that violates these Terms or is harmful to other users.
-
-## 14. Governing Law
-
-These Terms shall be governed by and construed in accordance with the laws of India, with exclusive jurisdiction in the courts of Mumbai, Maharashtra.
-
-## 15. Contact Information
-
-For questions about these Terms, please contact:
-
-**My Prayer Tower**  
-Email: myprayertower2@gmail.com  
-Phone: +91 98333 07123  
-Address: Mumbai, MH, India
+### 1.2 Commercial Service Export Fees
+- All user remittances—including Mass intention stipends, virtual candle lighting, digital memorials, sleep story access, and spiritual bouquets—are legally categorized as **commercial service export fees and digital platform facilitation charges** (SAC Code).
+- **Non-Tax-Deductible:** Remittances represent commercial consideration for cross-border digital services and coordination. No tax-exempt charitable receipts are issued.
+- **100% Digital Delivery:** All deliverables are exclusively electronic (PDF certificates, digital chapel shrines, streaming audio, web votives). No physical merchandise or postal shipments apply.
 
 ---
 
-*Thank you for being part of the My Prayer Tower community. God bless you!*
+## 2. Devotional Offering Distribution (70/20/10)
+Devotional contributions are apportioned transparently:
+- **70% Church & Clergy:** Direct Mass stipends forwarded to partner Catholic priests and altar sanctuary upkeep.
+- **20% Pastoral Care:** Intention scheduling, digital certificate verification, and user pastoral support.
+- **10% Infrastructure:** Secure cloud hosting, SSL encryption, database integrity, and mobile app maintenance.
+
+---
+
+## 3. Subscriptions & Payments (Google Play Billing 8.0 & PayPal)
+- **Billing Methods:** Android in-app purchases and subscriptions are processed securely via **Google Play Billing (Library 8.0+)**. Web transactions are processed via **PayPal**.
+- **Auto-Renewal & Cancellation:** Subscriptions renew automatically unless cancelled 24 hours prior to the close of the current billing cycle. Android users can manage or cancel subscriptions anytime in the Google Play Subscriptions Center.
+- **90-Day Mass Guarantee:** If our pastoral team cannot coordinate your Mass within 90 days, we will contact you to offer a 100% refund or alternative arrangement.
+
+---
+
+## 4. Limitation of Liability & Governing Law
+- **No Spiritual Outcome Warranties:** We facilitate prayer with reverence, but make no guarantees regarding miraculous answers or temporal outcomes.
+- **Governing Law:** These Terms are governed by the laws of India. Disputes shall be subject to the exclusive jurisdiction of the competent courts in Mumbai, Maharashtra, India.
+
+---
+
+## 5. Contact Us
+
+**MyPrayerTower Legal Department**  
+Email: legal@myprayertower.com  
+Location: Mumbai, Maharashtra, India  
+Website: https://www.myprayertower.com/terms
