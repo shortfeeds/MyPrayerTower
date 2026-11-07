@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="shortcut_rosary"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_rosary_short"
+        android:shortcutLongLabel="@string/shortcut_rosary_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.myprayertower.myprayertower_app"
+            android:targetClass="com.myprayertower.myprayertower_app.MainActivity"
+            android:data="https://www.myprayertower.com/rosary" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="shortcut_readings"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_readings_short"
+        android:shortcutLongLabel="@string/shortcut_readings_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.myprayertower.myprayertower_app"
+            android:targetClass="com.myprayertower.myprayertower_app.MainActivity"
+            android:data="https://www.myprayertower.com/readings" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="shortcut_churches"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_churches_short"
+        android:shortcutLongLabel="@string/shortcut_churches_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.myprayertower.myprayertower_app"
+            android:targetClass="com.myprayertower.myprayertower_app.MainActivity"
+            android:data="https://www.myprayertower.com/churches" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="shortcut_prayer"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_prayer_short"
+        android:shortcutLongLabel="@string/shortcut_prayer_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.myprayertower.myprayertower_app"
+            android:targetClass="com.myprayertower.myprayertower_app.MainActivity"
+            android:data="https://www.myprayertower.com/prayer-wall" />
+    </shortcut>
+</shortcuts>

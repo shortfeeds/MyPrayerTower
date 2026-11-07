@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -22,6 +23,100 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
   int _currentBeadIndex = 0;
   final int _totalBeads = 67; // 7 Intro + 5 * 12 Decades
   bool _isAudioPlaying = false;
+  String _activeAudioTrackId = 'chant';
+
+  // Enhanced Modes
+  bool _isLatinMode = false;
+  bool _isEyesClosedMode = false; // Tactile prayer mode
+  bool _isHandsFreeMode = false; // Car & commuter auto-advance
+  Timer? _handsFreeTimer;
+  final int _handsFreeDurationSec = 18; // Default 18 sec per bead
+  int _handsFreeCountdown = 18;
+
+  @override
+  void dispose() {
+    _handsFreeTimer?.cancel();
+    super.dispose();
+  }
+
+  void _triggerBeadHaptic(int beadIndex) {
+    if (beadIndex == 0) {
+      // Crucifix: Deep resonant impact
+      HapticFeedback.heavyImpact();
+    } else if (beadIndex == 1 ||
+        beadIndex == 2 ||
+        (beadIndex >= 7 && (beadIndex - 7) % 12 == 0)) {
+      // Creed or Our Father: Double liturgical pulse
+      HapticFeedback.mediumImpact();
+      Future.delayed(const Duration(milliseconds: 120), () {
+        HapticFeedback.lightImpact();
+      });
+    } else if (beadIndex >= 7 && (beadIndex - 7) % 12 == 11) {
+      // Glory Be & Fatima: Solid medium pulse
+      HapticFeedback.mediumImpact();
+    } else {
+      // Hail Mary: Gentle, clean tactile bead click
+      HapticFeedback.lightImpact();
+    }
+  }
+
+  void _advanceBead() {
+    if (_currentBeadIndex < _totalBeads - 1) {
+      setState(() {
+        _currentBeadIndex++;
+        _handsFreeCountdown = _handsFreeDurationSec;
+      });
+      _triggerBeadHaptic(_currentBeadIndex);
+
+      // Periodically trigger ad when past mid-way (only at decade completion)
+      final isDecadeEnd =
+          _currentBeadIndex >= 7 && (_currentBeadIndex - 7) % 12 == 11;
+      if (isDecadeEnd && _currentBeadIndex >= 30) {
+        ref.read(adServiceProvider).loadInterstitialAd(
+              onAdLoaded: (ad) => ad.show(),
+              onAdFailed: (_) {},
+            );
+      }
+    } else {
+      _handsFreeTimer?.cancel();
+      setState(() => _isHandsFreeMode = false);
+      _triggerBeadHaptic(0);
+      _finishRosary();
+    }
+  }
+
+  void _previousBead() {
+    if (_currentBeadIndex > 0) {
+      setState(() {
+        _currentBeadIndex--;
+        _handsFreeCountdown = _handsFreeDurationSec;
+      });
+      _triggerBeadHaptic(_currentBeadIndex);
+    }
+  }
+
+  void _toggleHandsFreeMode() {
+    setState(() {
+      _isHandsFreeMode = !_isHandsFreeMode;
+      _handsFreeCountdown = _handsFreeDurationSec;
+    });
+
+    _handsFreeTimer?.cancel();
+    if (_isHandsFreeMode) {
+      HapticFeedback.mediumImpact();
+      _handsFreeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+        if (_handsFreeCountdown > 1) {
+          setState(() => _handsFreeCountdown--);
+        } else {
+          _advanceBead();
+        }
+      });
+    }
+  }
 
   final List<_MysteryData> _mysteries = [
     _MysteryData(
@@ -104,23 +199,23 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
       name: 'Glorious Mysteries',
       days: 'Wednesday & Sunday',
       icon: '👑',
-      color: const Color(0xFFD4AF37),
+      color: const Color(0xFFF59E0B),
       items: [
         _DecadeItem(
           title: 'The Resurrection',
           fruit: 'Faith',
           scripture:
-              '"The angel said to the women, \'Do not be afraid; for I know that you seek Jesus who was crucified. He is not here; for He has risen, as He said.\'" (Matthew 28:5-6)',
+              '"He is not here; for He has risen, as He said. Come, see the place where He lay." (Matthew 28:6)',
         ),
         _DecadeItem(
           title: 'The Ascension into Heaven',
-          fruit: 'Hope and Longing for Heaven',
+          fruit: 'Christian Hope',
           scripture:
-              '"As they were looking on, He was lifted up, and a cloud took Him out of their sight... He sat down at the right hand of God." (Acts 1:9, Mark 16:19)',
+              '"As they were looking on, He was lifted up, and a cloud took Him out of their sight... He was received up into heaven and sat down at the right hand of God." (Acts 1:9, Mark 16:19)',
         ),
         _DecadeItem(
-          title: 'The Descent of the Holy Spirit',
-          fruit: 'Love of God & Zeal',
+          title: 'Descent of the Holy Spirit',
+          fruit: 'Gifts of the Holy Spirit',
           scripture:
               '"There appeared to them tongues as of fire, distributed and resting on each one of them. And they were all filled with the Holy Spirit." (Acts 2:3-4)',
         ),
@@ -134,7 +229,7 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
           title: 'The Coronation of Mary',
           fruit: 'Trust in Mary\'s Intercession',
           scripture:
-              '"You are the highest honor of our race... May you be blessed by the Most High God forever and ever!" (Judith 15:9-10)',
+              '"Thou art the glory of Jerusalem, thou art the joy of Israel, thou art the honor of our people." (Judith 15:9)',
         ),
       ],
     ),
@@ -142,23 +237,23 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
       name: 'Luminous Mysteries',
       days: 'Thursday',
       icon: '✨',
-      color: const Color(0xFF0EA5E9),
+      color: const Color(0xFF3B82F6),
       items: [
         _DecadeItem(
           title: 'The Baptism in the Jordan',
           fruit: 'Openness to the Holy Spirit',
           scripture:
-              '"When Jesus was baptized, the heavens were opened and He saw the Spirit of God descending like a dove. And a voice from heaven said, \'This is my beloved Son, with whom I am well pleased.\'" (Matthew 3:16-17)',
+              '"When Jesus was baptized, the heavens were opened and he saw the Spirit of God descending like a dove, and alight on him; and lo, a voice from heaven, saying, \'This is my beloved Son, with whom I am well pleased.\'" (Matthew 3:16-17)',
         ),
         _DecadeItem(
           title: 'The Wedding at Cana',
           fruit: 'To Jesus through Mary',
           scripture:
-              '"His mother said to the servants, \'Do whatever He tells you.\' Jesus did this, the first of His signs, and revealed His glory." (John 2:5, 11)',
+              '"His mother said to the servants, \'Do whatever he tells you.\' Jesus said to them, \'Fill the jars with water.\' And they filled them up to the brim." (John 2:5,7)',
         ),
         _DecadeItem(
           title: 'Proclamation of the Kingdom',
-          fruit: 'Repentance and Trust',
+          fruit: 'Repentance and Trust in God',
           scripture:
               '"Jesus came into Galilee, preaching the gospel of God, and saying, \'The time is fulfilled, and the kingdom of God is at hand; repent, and believe in the gospel.\'" (Mark 1:14-15)',
         ),
@@ -166,13 +261,13 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
           title: 'The Transfiguration',
           fruit: 'Desire for Holiness',
           scripture:
-              '"He was transfigured before them, and His face shone like the sun, and His garments became white as light... A voice said, \'This is my beloved Son; listen to Him.\'" (Matthew 17:2, 5)',
+              '"And he was transfigured before them, and his face shone like the sun, and his garments became white as light." (Matthew 17:2)',
         ),
         _DecadeItem(
-          title: 'Institution of the Holy Eucharist',
+          title: 'Institution of the Eucharist',
           fruit: 'Eucharistic Adoration',
           scripture:
-              '"Jesus took bread, and blessed, and broke it, and gave it to the disciples and said, \'Take, eat; this is my body.\' And He took a cup, \'This is my blood of the covenant.\'" (Matthew 26:26-28)',
+              '"And he took bread, and when he had given thanks he broke it and gave it to them, saying, \'This is my body which is given for you. Do this in remembrance of me.\'" (Luke 22:19)',
         ),
       ],
     ),
@@ -192,15 +287,48 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
           style: GoogleFonts.cinzel(fontWeight: FontWeight.w600),
         ),
         actions: [
-          if (_selectedMystery != -1)
+          if (_selectedMystery != -1) ...[
+            // Latin / English Toggle
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+              child: OutlinedButton(
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isLatinMode = !_isLatinMode);
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor:
+                      _isLatinMode ? AppTheme.sacredGold : Colors.white,
+                  side: BorderSide(
+                    color: _isLatinMode
+                        ? AppTheme.sacredGold
+                        : Colors.white.withValues(alpha: 0.3),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  _isLatinMode ? 'LATIN' : 'EN',
+                  style: GoogleFonts.cinzel(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            // Ambient Audio Sheet
             IconButton(
               icon: Icon(
                 _isAudioPlaying ? LucideIcons.volume2 : LucideIcons.volumeX,
                 color: AppTheme.sacredGold,
               ),
-              tooltip: 'Sacred Chant Accompaniment',
-              onPressed: _toggleAudio,
+              tooltip: 'Sacred Ambient Accompaniment',
+              onPressed: _showAmbientAudioSheet,
             ),
+          ],
         ],
       ),
       body: _selectedMystery == -1
@@ -209,15 +337,129 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
     );
   }
 
-  void _toggleAudio() {
-    final audio = ref.read(sacredAudioServiceProvider);
-    if (_isAudioPlaying) {
-      audio.stop();
-      setState(() => _isAudioPlaying = false);
-    } else {
-      audio.playTrack(sacredTracks.first.url, 'chant');
-      setState(() => _isAudioPlaying = true);
-    }
+  void _showAmbientAudioSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.marianNavySurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          final audio = ref.read(sacredAudioServiceProvider);
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text('🎶', style: TextStyle(fontSize: 24)),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Sacred Ambient Sanctuary',
+                      style: GoogleFonts.cinzel(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.sacredGold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Immerse your prayer in monastic chants and reverent cathedral ambiance.',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                ...sacredTracks.map((track) {
+                  final isSelected = _activeAudioTrackId == track.id;
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppTheme.sacredGold.withValues(alpha: 0.2)
+                            : Colors.white.withValues(alpha: 0.05),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isSelected && _isAudioPlaying
+                            ? LucideIcons.pause
+                            : LucideIcons.play,
+                        color: isSelected ? AppTheme.sacredGold : Colors.white70,
+                        size: 18,
+                      ),
+                    ),
+                    title: Text(
+                      track.title,
+                      style: GoogleFonts.inter(
+                        color: isSelected ? AppTheme.sacredGold : Colors.white,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                    trailing: isSelected && _isAudioPlaying
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppTheme.sacredGold.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'Playing',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: AppTheme.sacredGold,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        : null,
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      if (_activeAudioTrackId == track.id && _isAudioPlaying) {
+                        audio.stop();
+                        setState(() => _isAudioPlaying = false);
+                        setSheetState(() {});
+                      } else {
+                        audio.playTrack(track.url, track.id);
+                        setState(() {
+                          _activeAudioTrackId = track.id;
+                          _isAudioPlaying = true;
+                        });
+                        setSheetState(() {});
+                      }
+                    },
+                  );
+                }),
+                const SizedBox(height: 16),
+                Center(
+                  child: TextButton.icon(
+                    onPressed: () {
+                      audio.stop();
+                      setState(() => _isAudioPlaying = false);
+                      Navigator.pop(ctx);
+                    },
+                    icon: const Icon(LucideIcons.square, size: 16),
+                    label: const Text('Mute All Ambient Audio'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.red.shade300,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildMysterySelection() {
@@ -259,7 +501,7 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Select today\'s mystery for guided contemplation and prayer.',
+                        'Select today\'s mystery with tactile haptics & traditional Latin options.',
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           color: AppTheme.textSecondary,
@@ -379,26 +621,76 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Back button
-          TextButton.icon(
-            onPressed: () {
-              HapticFeedback.lightImpact();
-              setState(() => _selectedMystery = -1);
-            },
-            icon: const Icon(
-              LucideIcons.arrowLeft,
-              size: 18,
-              color: AppTheme.sacredGold,
-            ),
-            label: Text(
-              'Back to Mysteries',
-              style: GoogleFonts.inter(color: AppTheme.sacredGold),
-            ),
+          // Top Navigation Controls Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  _handsFreeTimer?.cancel();
+                  setState(() {
+                    _selectedMystery = -1;
+                    _isHandsFreeMode = false;
+                  });
+                },
+                icon: const Icon(
+                  LucideIcons.arrowLeft,
+                  size: 18,
+                  color: AppTheme.sacredGold,
+                ),
+                label: Text(
+                  'Mysteries',
+                  style: GoogleFonts.inter(color: AppTheme.sacredGold),
+                ),
+              ),
+              // Quick Mode Chips (Eyes Closed & Commuter)
+              Row(
+                children: [
+                  // Eyes Closed Mode Toggle
+                  IconButton(
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      setState(() => _isEyesClosedMode = !_isEyesClosedMode);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(_isEyesClosedMode
+                              ? 'Tactile Eyes-Closed Mode active: Tap anywhere on the card to advance beads.'
+                              : 'Standard Mode active.'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      _isEyesClosedMode ? LucideIcons.eyeOff : LucideIcons.eye,
+                      size: 20,
+                      color: _isEyesClosedMode
+                          ? AppTheme.sacredGold
+                          : Colors.white60,
+                    ),
+                    tooltip: 'Tactile Eyes-Closed Mode',
+                  ),
+                  // Hands-Free / Commuter Mode Toggle
+                  IconButton(
+                    onPressed: _toggleHandsFreeMode,
+                    icon: Icon(
+                      _isHandsFreeMode
+                          ? LucideIcons.pauseCircle
+                          : LucideIcons.playCircle,
+                      size: 20,
+                      color:
+                          _isHandsFreeMode ? Colors.greenAccent : Colors.white60,
+                    ),
+                    tooltip: 'Hands-Free Commuter Mode',
+                  ),
+                ],
+              ),
+            ],
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
-          // Header
+          // Header Card
           Container(
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
@@ -431,10 +723,14 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Interactive Contemplative Guide',
+                        _isHandsFreeMode
+                            ? 'Hands-Free Auto-Advance: Next in ${_handsFreeCountdown}s'
+                            : (_isEyesClosedMode
+                                ? 'Tactile Mode: Tap card to pray with eyes closed'
+                                : 'Interactive Contemplative Guide'),
                         style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: Colors.white.withValues(alpha: 0.85),
+                          fontSize: 12,
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                     ],
@@ -563,36 +859,48 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
 
   Widget _buildInteractivePrayer(_MysteryData mystery) {
     String prayerTitle = 'Sign of the Cross';
-    String prayerText =
+    String prayerTextEn =
         'In the name of the Father, and of the Son, and of the Holy Spirit. Amen.';
+    String prayerTextLa =
+        'In nómine Patris, et Fílii, et Spíritus Sancti. Amen.';
     String subNote = 'Begin with the holy sign of our redemption.';
 
     if (_currentBeadIndex == 0) {
       prayerTitle = 'Sign of the Cross';
-      prayerText =
+      prayerTextEn =
           'In the name of the Father, and of the Son, and of the Holy Spirit. Amen.';
+      prayerTextLa =
+          'In nómine Patris, et Fílii, et Spíritus Sancti. Amen.';
       subNote = 'Holding the crucifix, make the sign of the cross.';
     } else if (_currentBeadIndex == 1) {
       prayerTitle = 'The Apostles\' Creed';
-      prayerText =
+      prayerTextEn =
           'I believe in God, the Father Almighty, Creator of heaven and earth; and in Jesus Christ, His only Son, our Lord: Who was conceived by the Holy Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, died, and was buried. He descended into hell; on the third day He rose again from the dead; He ascended into heaven, and sits at the right hand of God the Father Almighty; from thence He shall come to judge the living and the dead.\n\nI believe in the Holy Spirit, the holy Catholic Church, the communion of saints, the forgiveness of sins, the resurrection of the body, and life everlasting. Amen.';
+      prayerTextLa =
+          'Credo in Deum Patrem omnipoténtem, Creatórem cæli et terræ. Et in Iesum Christum, Fílium eius únicum, Dóminum nostrum, qui concéptus est de Spíritu Sancto, natus ex María Vírgine, passus sub Póntio Piláto, crucifíxus, mórtuus, et sepúltus, descéndit ad ínferos, tértia die resurréxit a mórtuis, ascéndit ad cælos, sedet ad déxteram Dei Patris omnipoténtis, inde ventúrus est iudicáre vivos et mórtuos.\n\nCredo in Spíritum Sanctum, sanctam Ecclésiam cathólicam, sanctórum communiónem, remissiónem peccatórum, carnis resurrectiónem, vitam ætérnam. Amen.';
       subNote = 'Recite our ancient profession of faith.';
     } else if (_currentBeadIndex == 2) {
       prayerTitle = 'Our Father (Pater Noster)';
-      prayerText =
+      prayerTextEn =
           'Our Father, who art in heaven, hallowed be Thy name; Thy kingdom come; Thy will be done on earth as it is in heaven. Give us this day our daily bread; and forgive us our trespasses as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.';
+      prayerTextLa =
+          'Pater noster, qui es in cælis, sanctificétur nomen tuum. Advéniat regnum tuum. Fiat volúntas tua, sicut in cælo et in terra. Panem nostrum quotidiánum da nobis hódie, et dimítte nobis débita nostra, sicut et nos dimíttimus debitóribus nostris. Et ne nos indúcas in tentatiónem: sed líbera nos a malo. Amen.';
       subNote = 'For the intentions of the Holy Father.';
     } else if (_currentBeadIndex >= 3 && _currentBeadIndex <= 5) {
       final virtues = ['Faith', 'Hope', 'Charity'];
       final virtue = virtues[_currentBeadIndex - 3];
       prayerTitle = 'Hail Mary ($virtue)';
-      prayerText =
+      prayerTextEn =
           'Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.';
+      prayerTextLa =
+          'Ave María, grátia plena, Dóminus tecum. Benedícta tu in muliéribus, et benedíctus fructus ventris tui, Iesus. Sancta María, Mater Dei, ora pro nobis peccatóribus, nunc et in hora mortis nostræ. Amen.';
       subNote = 'Prayed for the increase of the theological virtue of $virtue.';
     } else if (_currentBeadIndex == 6) {
       prayerTitle = 'Glory Be (Gloria Patri)';
-      prayerText =
+      prayerTextEn =
           'Glory be to the Father, and to the Son, and to the Holy Spirit: as it was in the beginning, is now, and ever shall be, world without end. Amen.';
+      prayerTextLa =
+          'Glória Patri, et Fílio, et Spíritui Sancto. Sicut erat in princípio, et nunc, et semper, et in sǽcula sæculórum. Amen.';
       subNote = 'Concluding the introductory prayers.';
     } else {
       final decadeOffset = _currentBeadIndex - 7;
@@ -602,233 +910,246 @@ class _RosaryScreenState extends ConsumerState<RosaryScreen> {
 
       if (stepInDecade == 0) {
         prayerTitle = 'Our Father - ${item.title}';
-        prayerText =
+        prayerTextEn =
             'Our Father, who art in heaven, hallowed be Thy name; Thy kingdom come; Thy will be done on earth as it is in heaven. Give us this day our daily bread; and forgive us our trespasses as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.';
+        prayerTextLa =
+            'Pater noster, qui es in cælis, sanctificétur nomen tuum. Advéniat regnum tuum. Fiat volúntas tua, sicut in cælo et in terra. Panem nostrum quotidiánum da nobis hódie, et dimítte nobis débita nostra, sicut et nos dimíttimus debitóribus nostris. Et ne nos indúcas in tentatiónem: sed líbera nos a malo. Amen.';
         subNote = 'Meditating on ${item.title} (Fruit: ${item.fruit})';
       } else if (stepInDecade >= 1 && stepInDecade <= 10) {
         prayerTitle = 'Hail Mary (Bead $stepInDecade of 10)';
-        prayerText =
+        prayerTextEn =
             'Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.';
+        prayerTextLa =
+            'Ave María, grátia plena, Dóminus tecum. Benedícta tu in muliéribus, et benedíctus fructus ventris tui, Iesus. Sancta María, Mater Dei, ora pro nobis peccatóribus, nunc et in hora mortis nostræ. Amen.';
         subNote = 'Decade ${decadeIndex + 1}: ${item.title}';
       } else {
         prayerTitle = 'Glory Be & Fatima Prayer';
-        prayerText =
+        prayerTextEn =
             'Glory be to the Father, and to the Son, and to the Holy Spirit: as it was in the beginning, is now, and ever shall be, world without end. Amen.\n\nO my Jesus, forgive us our sins, save us from the fires of hell; lead all souls to Heaven, especially those most in need of Thy mercy.';
+        prayerTextLa =
+            'Glória Patri, et Fílio, et Spíritui Sancto. Sicut erat in princípio, et nunc, et semper, et in sǽcula sæculórum. Amen.\n\nO mi Iesu, dimítte nobis peccáta nostra, líbera nos ab ígnibus inférni, pérdue in cælum omnes ánimas, prœsértim eas quæ máxime índigent misericórdia tua.';
         subNote = 'End of Decade ${decadeIndex + 1}';
       }
     }
 
     final double progress = (_currentBeadIndex / _totalBeads).clamp(0.0, 1.0);
+    final String activePrayerText =
+        _isLatinMode ? prayerTextLa : prayerTextEn;
 
-    return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: AppTheme.marianNavySurface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: mystery.color.withValues(alpha: 0.35),
-          width: 1.2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+    return GestureDetector(
+      onTap: _isEyesClosedMode ? _advanceBead : null,
+      child: Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          color: AppTheme.marianNavySurface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: _isEyesClosedMode
+                ? AppTheme.sacredGold
+                : mystery.color.withValues(alpha: 0.35),
+            width: _isEyesClosedMode ? 2.0 : 1.2,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'BEAD ${_currentBeadIndex + 1} OF $_totalBeads',
-                style: GoogleFonts.cinzel(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: AppTheme.sacredGold,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: mystery.color.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${(progress * 100).toInt()}% Done',
-                  style: GoogleFonts.inter(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'BEAD ${_currentBeadIndex + 1} OF $_totalBeads',
+                  style: GoogleFonts.cinzel(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: mystery.color,
+                    letterSpacing: 1.2,
+                    color: AppTheme.sacredGold,
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            prayerTitle,
-            style: GoogleFonts.cinzel(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+                Row(
+                  children: [
+                    if (_isHandsFreeMode) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        margin: const EdgeInsets.only(right: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: Colors.greenAccent.withValues(alpha: 0.4)),
+                        ),
+                        child: Text(
+                          '${_handsFreeCountdown}s',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.greenAccent,
+                          ),
+                        ),
+                      ),
+                    ],
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: mystery.color.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${(progress * 100).toInt()}% Done',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: mystery.color,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            subNote,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              color: AppTheme.textMuted,
-              fontStyle: FontStyle.italic,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 18),
-
-          // Scripture / Devotional Contemplation Box
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF090E18),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.06),
-              ),
-            ),
-            child: Text(
-              prayerText,
-              style: GoogleFonts.ebGaramond(
-                fontSize: 16,
+            const SizedBox(height: 16),
+            Text(
+              prayerTitle,
+              style: GoogleFonts.cinzel(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
                 color: AppTheme.textPrimary,
-                height: 1.65,
-                letterSpacing: 0.2,
               ),
               textAlign: TextAlign.center,
             ),
-          ),
-
-          const SizedBox(height: 18),
-
-          // Linear Progress Indicator
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.white10,
-              valueColor: AlwaysStoppedAnimation(mystery.color),
-              minHeight: 8,
+            const SizedBox(height: 6),
+            Text(
+              _isEyesClosedMode
+                  ? '👁️ Eyes-Closed Mode: Tap card to advance with tactile haptic pulse'
+                  : subNote,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: _isEyesClosedMode
+                    ? AppTheme.sacredGold
+                    : AppTheme.textMuted,
+                fontStyle: FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
+            const SizedBox(height: 18),
 
-          const SizedBox(height: 18),
-
-          // Visual Rosary Beads Chain
-          VisualRosaryBeads(
-            currentBead: _currentBeadIndex,
-            totalBeads: _totalBeads,
-            activeColor: mystery.color,
-            onTapBead: () {
-              HapticFeedback.selectionClick();
-            },
-          ),
-
-          const SizedBox(height: 22),
-
-          // Prayer Navigation Controls
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                onPressed: _currentBeadIndex > 0
-                    ? () {
-                        HapticFeedback.lightImpact();
-                        setState(() => _currentBeadIndex--);
-                      }
-                    : null,
-                icon: const Icon(LucideIcons.chevronLeft),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white.withValues(alpha: 0.08),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.all(14),
+            // Scripture / Devotional Contemplation Box
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF090E18),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.06),
                 ),
               ),
-              ElevatedButton.icon(
-                onPressed: () {
-                  if (_currentBeadIndex < _totalBeads - 1) {
-                    final isGloryBe =
-                        _currentBeadIndex >= 7 &&
-                        (_currentBeadIndex - 7) % 12 == 11;
-
-                    if (isGloryBe) {
-                      HapticFeedback.mediumImpact();
-                      // Show celebratory interstitial ad periodically
-                      if (_currentBeadIndex >= 30) {
-                        ref
-                            .read(adServiceProvider)
-                            .loadInterstitialAd(
-                              onAdLoaded: (ad) => ad.show(),
-                              onAdFailed: (_) {},
-                            );
-                      }
-                    } else {
-                      HapticFeedback.lightImpact();
-                    }
-
-                    setState(() => _currentBeadIndex++);
-                  } else {
-                    HapticFeedback.heavyImpact();
-                    _finishRosary();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: mystery.color,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 28,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+              child: Text(
+                activePrayerText,
+                style: GoogleFonts.ebGaramond(
+                  fontSize: 17,
+                  color: AppTheme.textPrimary,
+                  height: 1.65,
+                  letterSpacing: 0.2,
                 ),
-                icon: Icon(
-                  _currentBeadIndex < _totalBeads - 1
-                      ? LucideIcons.arrowRight
-                      : LucideIcons.checkCheck,
-                  size: 18,
-                ),
-                label: Text(
-                  _currentBeadIndex < _totalBeads - 1
-                      ? 'Next Bead'
-                      : 'Complete Rosary',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
+                textAlign: TextAlign.center,
               ),
-              IconButton(
-                onPressed: () {
-                  HapticFeedback.selectionClick();
-                  setState(() => _currentBeadIndex = 0);
-                },
-                icon: const Icon(LucideIcons.refreshCw),
-                tooltip: 'Restart from beginning',
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white.withValues(alpha: 0.08),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.all(14),
-                ),
+            ),
+
+            const SizedBox(height: 18),
+
+            // Linear Progress Indicator
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.white10,
+                valueColor: AlwaysStoppedAnimation(mystery.color),
+                minHeight: 8,
               ),
-            ],
-          ),
-        ],
+            ),
+
+            const SizedBox(height: 18),
+
+            // Visual Rosary Beads Chain
+            VisualRosaryBeads(
+              currentBead: _currentBeadIndex,
+              totalBeads: _totalBeads,
+              activeColor: mystery.color,
+              onTapBead: () {
+                _advanceBead();
+              },
+            ),
+
+            const SizedBox(height: 22),
+
+            // Prayer Navigation Controls
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: _currentBeadIndex > 0 ? _previousBead : null,
+                  icon: const Icon(LucideIcons.chevronLeft),
+                  tooltip: 'Previous Bead',
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.white.withValues(alpha: 0.08),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.all(14),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: _advanceBead,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: mystery.color,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  icon: Icon(
+                    _currentBeadIndex < _totalBeads - 1
+                        ? LucideIcons.arrowRight
+                        : LucideIcons.checkCheck,
+                    size: 18,
+                  ),
+                  label: Text(
+                    _currentBeadIndex < _totalBeads - 1
+                        ? 'Next Bead'
+                        : 'Complete Rosary',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _currentBeadIndex = 0);
+                  },
+                  icon: const Icon(LucideIcons.refreshCw),
+                  tooltip: 'Restart from beginning',
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.white.withValues(alpha: 0.08),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.all(14),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

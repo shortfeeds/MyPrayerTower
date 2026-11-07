@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,15 +22,50 @@ class PrayerRequestCard extends ConsumerStatefulWidget {
 class _PrayerRequestCardState extends ConsumerState<PrayerRequestCard> {
   bool _isPrayed = false;
   bool _isSaved = false;
+  late int _prayerCount;
+
+  @override
+  void initState() {
+    super.initState();
+    _prayerCount = widget.request.prayerCount;
+  }
 
   void _handlePray() {
     if (_isPrayed) return;
-    setState(() => _isPrayed = true);
+    HapticFeedback.mediumImpact();
+    setState(() {
+      _isPrayed = true;
+      _prayerCount++;
+    });
 
     // Call repository
     ref.read(prayerWallRepositoryProvider).prayForRequest(widget.request.id);
 
-    // Trigger visual feedback (could be animation)
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(LucideIcons.heartHandshake, color: AppTheme.gold500, size: 18),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Amen! You and $_prayerCount souls are united in prayer for this intention.',
+                style: GoogleFonts.inter(fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFF0F172A),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: AppTheme.sacredGold, width: 1),
+        ),
+      ),
+    );
+
+    // Trigger visual feedback
     if (widget.onPray != null) widget.onPray!();
   }
 
@@ -257,7 +293,7 @@ class _PrayerRequestCardState extends ConsumerState<PrayerRequestCard> {
                                 ),
                           const SizedBox(width: 8),
                           Text(
-                            _isPrayed ? 'Prayed' : 'I Pray',
+                            _isPrayed ? 'Prayed ($_prayerCount)' : 'I Pray (${_prayerCount > 0 ? _prayerCount : "Amen"})',
                             style: GoogleFonts.outfit(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,

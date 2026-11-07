@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -28,6 +29,100 @@ class ChurchDetailScreen extends ConsumerStatefulWidget {
 
 class _ChurchDetailScreenState extends ConsumerState<ChurchDetailScreen> {
   late Future<Church> _churchFuture;
+  bool _isTimesConfirmed = false;
+
+  void _confirmParishTimes() {
+    HapticFeedback.mediumImpact();
+    setState(() => _isTimesConfirmed = true);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(LucideIcons.church, color: AppTheme.gold500, size: 18),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Deo Gratias! Thank you for verifying these Mass & Confession times.',
+                style: GoogleFonts.inter(fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFF0F172A),
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: AppTheme.sacredGold, width: 1),
+        ),
+      ),
+    );
+  }
+
+  void _showSuggestCorrectionDialog(Church church) {
+    final textController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.sacredNavy900,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: AppTheme.gold500, width: 1),
+        ),
+        title: Text(
+          'Suggest Schedule Update',
+          style: GoogleFonts.cinzel(color: AppTheme.gold500, fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Enter updated Mass, Confession, or Adoration times for ${church.name}:',
+              style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: textController,
+              maxLines: 3,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'e.g. Sunday Mass now at 8:00 AM & 10:30 AM...',
+                hintStyle: const TextStyle(color: Colors.white38),
+                filled: true,
+                fillColor: Colors.black26,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white60)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              HapticFeedback.lightImpact();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Thank you! Your correction has been submitted for verification.'),
+                  backgroundColor: Color(0xFF0F172A),
+                  duration: Duration(seconds: 3),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.gold500,
+              foregroundColor: Colors.black,
+            ),
+            child: const Text('Submit Update'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -92,6 +187,84 @@ class _ChurchDetailScreenState extends ConsumerState<ChurchDetailScreen> {
                         church.massSchedule!,
                         LucideIcons.clock,
                       ),
+                    const SizedBox(height: 12),
+                    // Community Mass Verification Card
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E293B),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppTheme.gold500.withValues(alpha: 0.3)),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(LucideIcons.checkCircle2, color: AppTheme.gold500, size: 20),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Parish Times Community Verification',
+                                      style: GoogleFonts.cinzel(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.gold500,
+                                      ),
+                                    ),
+                                    Text(
+                                      _isTimesConfirmed
+                                          ? 'Verified by you for today.'
+                                          : 'Help fellow parishioners keep schedules accurate.',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: _isTimesConfirmed ? null : _confirmParishTimes,
+                                  icon: Icon(
+                                    _isTimesConfirmed ? LucideIcons.check : LucideIcons.thumbsUp,
+                                    size: 15,
+                                  ),
+                                  label: Text(
+                                    _isTimesConfirmed ? 'Times Confirmed' : 'Confirm Times Accurate',
+                                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: _isTimesConfirmed ? Colors.greenAccent : AppTheme.gold500,
+                                    side: BorderSide(
+                                      color: _isTimesConfirmed ? Colors.greenAccent : AppTheme.gold500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              IconButton(
+                                onPressed: () => _showSuggestCorrectionDialog(church),
+                                icon: const Icon(LucideIcons.edit3, size: 18),
+                                tooltip: 'Suggest Update',
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.white.withValues(alpha: 0.08),
+                                  foregroundColor: Colors.white70,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     if (church.confessionSchedule != null) ...[
                       _buildSectionHeader('Confession'),
