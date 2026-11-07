@@ -22,7 +22,10 @@ export async function generateSitemapAction() {
             '', '/candles', '/prayers', '/saints', '/search', '/mass-offerings',
             '/about', '/contact', '/donate', '/memorials', '/prayer-wall',
             '/journey', '/bible', '/confession', '/rosary', '/groups',
-            '/login', '/register'
+            '/login', '/register', '/android', '/bot', '/blessings', '/bouquets',
+            '/my-vigils', '/live-mass', '/pilgrimages', '/art', '/stations',
+            '/privacy', '/terms', '/refunds', '/cookies', '/dmca', '/guidelines',
+            '/reading-plans', '/readings', '/novenas', '/sacraments', '/summa'
         ];
 
         staticRoutes.forEach(r => {

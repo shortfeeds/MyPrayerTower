@@ -1,15 +1,15 @@
 export const revalidate = 86400; // Cache for 24 hours (0 CPU on Vercel CDN)
 import { Metadata } from 'next';
-import { FileText, Users, AlertTriangle, Ban, CreditCard, Shield, Scale, Mail } from 'lucide-react';
+import { FileText, Users, AlertTriangle, Ban, CreditCard, Shield, Scale, Mail, Sparkles } from 'lucide-react';
 
 export const metadata: Metadata = {
     title: 'Terms of Service | MyPrayerTower',
-    description: 'Terms of Service for MyPrayerTower - Rules and conditions for using our Catholic prayer and church finder app.',
+    description: 'Terms of Service for MyPrayerTower - Rules and conditions for using our Catholic prayer, devotional, and church finder platform.',
 };
 
 export default function TermsOfServicePage() {
-    const lastUpdated = 'October 29, 2026';
-    const effectiveDate = 'October 29, 2026';
+    const lastUpdated = 'November 7, 2026';
+    const effectiveDate = 'November 7, 2026';
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -19,7 +19,7 @@ export default function TermsOfServicePage() {
                     <FileText className="w-16 h-16 mx-auto mb-4 opacity-80" />
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">Terms of Service</h1>
                     <p className="text-sacred-100 max-w-2xl mx-auto">
-                        Please read these Terms of Service carefully before using MyPrayerTower.
+                        Please review these Terms of Service carefully before utilizing MyPrayerTower.
                     </p>
                     <p className="text-sm text-sacred-200 mt-4">
                         Effective Date: {effectiveDate} | Last Updated: {lastUpdated}
@@ -35,7 +35,7 @@ export default function TermsOfServicePage() {
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">1. Acceptance of Terms</h2>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            By accessing or using MyPrayerTower's website (myprayertower.com) and mobile applications ("Services"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use our Services. We reserve the right to update these Terms at any time. Continued use of our Services constitutes acceptance of any changes.
+                            By accessing or using MyPrayerTower's website (myprayertower.com), progressive web application, and mobile applications ("Services"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please refrain from using our Services. Continued use of our Services constitutes binding acceptance of any updates.
                         </p>
                     </section>
 
@@ -43,220 +43,134 @@ export default function TermsOfServicePage() {
                     <section className="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/60">
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Nature of Our Services & Platform Classification</h2>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                            <strong>MyPrayerTower is an independent digital media and devotional technology platform based in Mumbai, India.</strong> We develop software tools, liturgical resources, and digital coordination systems connecting Catholic faithful with partner parishes globally.
-                        </p>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                            <strong>Entity Classification & Service Remittances:</strong>
+                            <strong>MyPrayerTower is an independent digital media and devotional technology platform based in Mumbai, India, serving the Catholic faithful worldwide since 2018.</strong>
                         </p>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2 mb-4">
-                            <li>MyPrayerTower operates as an independent digital technology facilitator and is not a 501(c)(3) tax-exempt religious charity, trust, or ecclesiastical diocese. We do not directly administer sacramental rites or govern clergy.</li>
-                            <li><strong>Commercial Service Facilitation:</strong> All user remittances—including Mass intention stipends, virtual candle lighting, digital memorials, and devotional packages—are legally classified as <strong>commercial service export fees and digital platform facilitation charges</strong> under applicable software and online electronic services classifications (SAC code).</li>
-                            <li><strong>Devotional Consideration:</strong> Remittances are processed to honor partner clergy stipends and sustain global digital infrastructure. Payments represent consideration for cross-border spiritual coordination and information services, and are not tax-deductible charitable contributions.</li>
+                            <li><strong>Non-Ecclesiastical Entity:</strong> MyPrayerTower is not a registered 501(c)(3) tax-exempt religious charity, trust, parish, or diocese. We do not directly administer sacramental rites or govern clergy.</li>
+                            <li><strong>Commercial Service Facilitation:</strong> All user remittances—including Mass intention stipends, virtual candles, digital memorials, and devotional packages—are legally classified as <strong>commercial service export fees and digital platform facilitation charges</strong> under applicable online electronic services classifications (SAC code).</li>
+                            <li><strong>Non-Tax-Deductible:</strong> Remittances are processed to honor partner clergy stipends and sustain global digital infrastructure. Payments represent consideration for cross-border spiritual coordination and information services, and are not tax-deductible charitable contributions.</li>
+                            <li><strong>100% Digital Delivery:</strong> All deliverables, including memorial chapels, spiritual bouquets, sleep stories, blessing certificates, and sanctuary vigils, are provided in 100% digital electronic form. No physical tangible merchandise or postal shipment is involved.</li>
                         </ul>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            We operate as a trusted <strong>intermediary technology provider</strong>, facilitating the reverent fulfillment of devotional requests by ordained partner clergy while delivering 100% digital devotional tools to users worldwide.
+                            We operate as a trusted <strong>technology intermediary</strong>, facilitating the reverent fulfillment of devotional requests by ordained partner clergy while delivering high-quality digital devotional tools to users worldwide.
                         </p>
+                    </section>
+
+                    {/* Devotional Consideration Distribution */}
+                    <section className="p-6 bg-amber-50/60 dark:bg-amber-950/20 rounded-xl border border-amber-200/80 dark:border-amber-800/50">
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                            Devotional Offering & Fee Transparency (70/20/10)
+                        </h2>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
+                            To ensure total integrity and transparent stewardship, devotional contributions are apportioned as follows:
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                            <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-amber-200 dark:border-amber-900">
+                                <span className="text-xl font-bold text-amber-600 dark:text-amber-400">70%</span>
+                                <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 mt-1">Church & Clergy</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Direct stipends for celebrating priests and sanctuary altar upkeep</p>
+                            </div>
+                            <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-emerald-200 dark:border-emerald-900">
+                                <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">20%</span>
+                                <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 mt-1">Pastoral Care</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Intention scheduling, digital certificate verification & support</p>
+                            </div>
+                            <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-sky-200 dark:border-sky-900">
+                                <span className="text-xl font-bold text-sky-600 dark:text-sky-400">10%</span>
+                                <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 mt-1">Infrastructure</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Encrypted cloud servers, SSL, mobile app updates & maintenance</p>
+                            </div>
+                        </div>
                     </section>
 
                     {/* No Guarantee of Spiritual Outcomes */}
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">3. No Guarantee of Spiritual Outcomes</h2>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            We facilitate spiritual services with sincerity and reverence for the Catholic faith. However, we make <strong>no representations or warranties</strong> regarding the spiritual efficacy of any prayer, Mass, candle, or spiritual bouquet. Faith is deeply personal, and we cannot and do not guarantee answers to prayers, miraculous interventions, or specific spiritual outcomes. By using our Services, you acknowledge and accept this limitation.
+                            We facilitate spiritual services with sincerity and profound reverence for Catholic tradition. However, we make <strong>no representations, promises, or warranties</strong> regarding the spiritual efficacy of any prayer, Mass intention, candle, sleep story, or blessing. Faith is deeply personal; we cannot and do not guarantee miraculous interventions, temporal prosperity, or specific spiritual outcomes.
                         </p>
                     </section>
 
-                    {/* Description */}
+                    {/* Description of Services */}
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">4. Description of Services</h2>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                            MyPrayerTower provides a Catholic spiritual platform including:
-                        </p>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li>Church finder with Mass times and contact information</li>
-                            <li>Prayer wall for sharing and praying for intentions</li>
-                            <li>Prayer library with traditional and contemporary prayers</li>
-                            <li>Daily readings and saint information</li>
-                            <li>Rosary and devotional guides</li>
-                            <li>Community features and prayer groups</li>
-                            <li>Virtual candles and spiritual bouquets (digital representations)</li>
-                            <li>Mass offering coordination with partner churches</li>
+                            <li><strong>Catholic Sleep Stories:</strong> Ambient audio narratives with cathedral chimes, soft orchestral pads, and timer controls for evening rest.</li>
+                            <li><strong>Church Finder:</strong> Global directory of Catholic parishes with Mass, Confession, and Adoration schedules.</li>
+                            <li><strong>Global Prayer Wall:</strong> 24/7 mutual intercession community where users post and pray for intentions.</li>
+                            <li><strong>Prayer Library & Rosary:</strong> Over 3,900 prayers, litanies, interactive Rosary, and novena trackers.</li>
+                            <li><strong>Daily Liturgical Readings:</strong> Official scripture readings and Catholic saints reflections.</li>
+                            <li><strong>Mass Offerings:</strong> Coordination of Mass intentions with partner clergy worldwide.</li>
+                            <li><strong>Virtual Candles & Sanctuary Vigils:</strong> Real-time digital votive displays and tabernacle lamps.</li>
                         </ul>
-                    </section>
-
-                    {/* User Accounts */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <Users className="w-6 h-6 text-sacred-600" />
-                            5. User Accounts
-                        </h2>
-                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li>You must be at least 13 years old (or 16 in the EU) to create an account</li>
-                            <li>You are responsible for maintaining the confidentiality of your account</li>
-                            <li>You must provide accurate and complete information</li>
-                            <li>You may not share your account credentials with others</li>
-                            <li>You are responsible for all activities under your account</li>
-                            <li>Notify us immediately of any unauthorized use of your account</li>
-                        </ul>
-                    </section>
-
-                    {/* Virtual Offerings */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">6. Virtual Offerings and Digital Memorials</h2>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                            MyPrayerTower offers various virtual spiritual services including candles, Mass offerings, spiritual bouquets, and digital chapels ("Offerings").
-                        </p>
-                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li><strong>Virtual Candles:</strong> Digital representations of prayer intentions displayed on our platform for a specified period. Physical candles are lit periodically in partner churches as part of our regular spiritual offering program, but individual physical lighting is not guaranteed for each virtual candle.</li>
-                            <li><strong>Mass Offerings:</strong> We collect Mass requests and forward stipends to partner Catholic churches. The scheduling and celebration of Masses are at the sole discretion of the receiving clergy. We strive to ensure fulfillment within 90 days; otherwise, we will contact you regarding refund or alternative arrangements.</li>
-                            <li><strong>Spiritual Bouquets:</strong> Digital spiritual gift packages representing prayers and offerings for loved ones.</li>
-                            <li><strong>Occasion Blessings and Rituals (/blessings):</strong> Digital liturgical ceremonies and personalized consecration certificates for milestones (homes, travel, surgeries, examinations, anniversaries). These are digital commemorative artifacts and intercessory intentions; no physical blessed items, tangible oils, or sacramentals are physically delivered.</li>
-                            <li><strong>Sanctuary Vigils & Tabernacle Lamps (/my-vigils):</strong> Real-time digital sanctuary lamp visualizations maintained in the virtual sanctuary for specified durations with verifiable commemorative digital certificates.</li>
-                            <li><strong>Digital Memorials:</strong> Hosted memorial pages. We reserve the right to remove content that violates Catholic values or these Terms.</li>
-                            <li><strong>100% Digital Delivery:</strong> All services, candles, Mass requests, spiritual bouquets, and blessings are delivered exclusively in digital format. No physical goods or shipments are provided.</li>
-                            <li><strong>Service Fees:</strong> All prices are in USD. Payments are processed securely via third-party providers (PayPal, Google Play).</li>
-                        </ul>
-                    </section>
-
-                    {/* Abandoned Transactions */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">7. Abandoned Transactions</h2>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            If you initiate a transaction but do not complete it, we may retain your provided contact information to send reminders about your pending offering, subject to our Privacy Policy.
-                        </p>
-                    </section>
-
-                    {/* User Content */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">8. User Content</h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            You retain ownership of content you submit ("User Content"). By posting content, you grant us a worldwide, non-exclusive, royalty-free license to use, display, and distribute your content in connection with our Services.
-                        </p>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            <strong>You represent that:</strong> You own or have the right to post all content you submit, and your content does not violate any third-party rights or any applicable laws.
-                        </p>
-
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Moderation Policy</h3>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            All user-submitted content, including but not limited to Prayer Requests, Memorials, and Spiritual Bouquets, is subject to moderation. Free submissions are typically held in a "Pending" state until approved by an administrator to ensure they align with our community guidelines and Catholic values. We reserve the right to reject or remove any content at our sole discretion.
-                        </p>
-                    </section>
-
-                    {/* Prohibited Conduct */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <Ban className="w-6 h-6 text-sacred-600" />
-                            9. Prohibited Conduct
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-4">You agree NOT to:</p>
-                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li>Post content that is hateful, threatening, harassing, or defamatory</li>
-                            <li>Post spam, advertisements, or solicitations</li>
-                            <li>Impersonate any person or entity</li>
-                            <li>Post false or misleading information</li>
-                            <li>Violate any applicable laws or regulations</li>
-                            <li>Interfere with or disrupt our Services</li>
-                            <li>Attempt to gain unauthorized access to our systems</li>
-                            <li>Use automated means to access our Services without permission</li>
-                            <li>Post content that violates Catholic moral teaching</li>
-                            <li>Collect personal information from other users</li>
-                        </ul>
-                    </section>
-
-                    {/* Church Information */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">10. Church Information Disclaimer</h2>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            Church information including Mass times, addresses, and contact details is provided for informational purposes only. While we strive for accuracy, we cannot guarantee that all information is current or correct. Always verify directly with churches before visiting. We are not responsible for any errors or omissions in church data.
-                        </p>
                     </section>
 
                     {/* Subscriptions & Payments */}
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                             <CreditCard className="w-6 h-6 text-sacred-600" />
-                            11. Subscriptions & Payments
+                            5. Subscriptions, Payments & Google Play Billing 8.0
                         </h2>
 
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-4 mb-3">Subscription Plans</h3>
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-4 mb-2">Billing Processors</h3>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li><strong>Free:</strong> Community prayer wall, basic church locator, and daily liturgical readings.</li>
-                            <li><strong>Plus:</strong> $4.99/month or $39.99/year - Ad-free spiritual sanctuary, offline audio guides, priority prayer wall placement, and family devotion sharing.</li>
+                            <li><strong>Android App:</strong> In-app purchases, Mass offerings, and subscriptions are processed securely through <strong>Google Play Billing (Library 8.0+)</strong> in strict compliance with Google Play monetization policies.</li>
+                            <li><strong>Web Platform:</strong> Transactions are securely processed through PayPal.</li>
                         </ul>
 
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Payment Processing</h3>
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-4 mb-2">Auto-Renewal & Cancellation</h3>
                         <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li><strong>Android App:</strong> Payments are processed via Google Play Billing</li>
-                            <li><strong>Web:</strong> Payments are processed via PayPal</li>
-                            <li>Subscriptions purchased on one platform are valid across all platforms when logged in</li>
-                        </ul>
-
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">Auto-Renewal & Cancellation</h3>
-                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li>Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period</li>
-                            <li>You may cancel your subscription at any time through Google Play Store or your account settings</li>
-                            <li>After cancellation, you retain access until the end of your billing period</li>
-                            <li>Refunds are handled according to Google Play Store or PayPal policies</li>
-                        </ul>
-
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">One-Time Purchases</h3>
-                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-                            <li><strong>Virtual Candles:</strong> Digital prayer candles with set durations (1-30 days)</li>
-                            <li><strong>Mass Offerings:</strong> Requests for Masses to be offered for specific intentions</li>
-                            <li><strong>Platform Support Services:</strong> Digital platform facilitation fees to support continuous server hosting, content curation, and mobile app maintenance (classified as commercial service fees, non-tax-deductible)</li>
-                            <li><strong>Spiritual Bouquets:</strong> Gift packages of prayers sent to loved ones</li>
+                            <li>Subscriptions renew automatically unless cancelled at least 24 hours prior to the close of the current billing cycle.</li>
+                            <li>Android users may manage or cancel subscriptions anytime in the Google Play Subscriptions Center (Play Store &gt; Profile &gt; Payments &amp; Subscriptions &gt; Subscriptions).</li>
+                            <li>Web users can manage recurring payments within their PayPal account settings or MyPrayerTower profile.</li>
+                            <li>Upon cancellation, premium access remains active through the remainder of the paid period.</li>
                         </ul>
                     </section>
 
-                    {/* Intellectual Property */}
+                    {/* User Accounts & Content */}
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <Shield className="w-6 h-6 text-sacred-600" />
-                            12. Intellectual Property
+                            <Users className="w-6 h-6 text-sacred-600" />
+                            6. User Accounts & Content Moderation
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            All content, features, and functionality of our Services (excluding User Content) are owned by MyPrayerTower and are protected by copyright, trademark, and other intellectual property laws. You may not copy, modify, distribute, or create derivative works without our prior written consent. Traditional prayers in the public domain remain in the public domain.
-                        </p>
+                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+                            <li>You must be at least 13 years old (or 16 in the European Union) to register an account.</li>
+                            <li>You are solely responsible for maintaining credentials confidentiality.</li>
+                            <li><strong>Content Moderation:</strong> All user-submitted content (prayer wall petitions, memorial tributes, testimonies) is moderated to preserve reverent decorum and Catholic moral teaching. We reserve the absolute right to remove inappropriate, profane, defamatory, or commercial spam content without notice.</li>
+                        </ul>
                     </section>
 
-                    {/* Disclaimers */}
+                    {/* Prohibited Conduct */}
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <AlertTriangle className="w-6 h-6 text-sacred-600" />
-                            13. Disclaimers
+                            <Ban className="w-6 h-6 text-sacred-600" />
+                            7. Prohibited Conduct
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                            OUR SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED. WE DO NOT WARRANT THAT OUR SERVICES WILL BE UNINTERRUPTED, ERROR-FREE, OR SECURE.
-                        </p>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            We are not affiliated with the Vatican, any diocese, or any specific church unless explicitly stated. Content provided is for spiritual enrichment and is not intended as professional religious, legal, or medical advice.
-                        </p>
+                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+                            <li>Do not post hateful, blasphemous, defamatory, or abusive material.</li>
+                            <li>Do not harvest user email addresses or personal information.</li>
+                            <li>Do not conduct unauthorized automated scraping, API extraction, or denial-of-service attacks.</li>
+                            <li>Do not misrepresent identity or claim false ordination as Catholic clergy.</li>
+                        </ul>
                     </section>
 
                     {/* Limitation of Liability */}
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                             <Scale className="w-6 h-6 text-sacred-600" />
-                            14. Limitation of Liability
+                            8. Limitation of Liability
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            TO THE MAXIMUM EXTENT PERMITTED BY LAW, MYPRAYERTOWER SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, OR GOODWILL, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF OUR SERVICES.
+                            TO THE MAXIMUM EXTENT PERMITTED UNDER APPLICABLE LAW, MYPRAYERTOWER AND ITS OPERATORS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL, OR PUNITIVE DAMAGES ARISING FROM THE USE OR INABILITY TO USE OUR SERVICES, THIRD-PARTY PAYMENT NETWORKS, OR CLERGY SCHEDULING DELAYS.
                         </p>
                     </section>
 
-                    {/* Termination */}
+                    {/* Governing Law & Dispute Resolution */}
                     <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">15. Termination</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">9. Governing Law & Jurisdiction</h2>
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            We may terminate or suspend your account at any time for violations of these Terms or for any other reason at our sole discretion. Upon termination, your right to use our Services will immediately cease. Provisions that by their nature should survive termination will survive.
-                        </p>
-                    </section>
-
-                    {/* Governing Law */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">16. Governing Law</h2>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                            These Terms shall be governed by and construed in accordance with the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Mumbai, Maharashtra, India.
+                            These Terms shall be governed by and construed in accordance with the substantive laws of India. Any disputes arising under or in connection with these Terms shall be subject to the exclusive jurisdiction of the competent courts in Mumbai, Maharashtra, India.
                         </p>
                     </section>
 
@@ -264,22 +178,23 @@ export default function TermsOfServicePage() {
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                             <Mail className="w-6 h-6 text-sacred-600" />
-                            17. Contact Us
+                            10. Contact Us
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            If you have questions about these Terms, please contact us:
+                        <p className="text-gray-600 dark:text-gray-400">
+                            For legal notices or questions regarding these Terms:
                         </p>
-                        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/60 rounded-xl">
                             <p className="text-gray-700 dark:text-gray-300">
-                                <strong>MyPrayerTower</strong><br />
-                                Email: legal@myprayertower.com<br />
-                                Website: https://myprayertower.com/contact
+                                <strong>MyPrayerTower Legal Department</strong><br />
+                                Email: <a href="mailto:legal@myprayertower.com" className="text-sacred-600 dark:text-sacred-400 underline">legal@myprayertower.com</a><br />
+                                Location: Mumbai, Maharashtra, India<br />
+                                Web Portal: <a href="https://www.myprayertower.com/contact" className="text-sacred-600 dark:text-sacred-400 underline">https://www.myprayertower.com/contact</a>
                             </p>
                         </div>
                     </section>
 
                 </div>
             </div>
-        </div >
+        </div>
     );
 }

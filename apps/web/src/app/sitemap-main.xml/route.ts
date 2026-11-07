@@ -9,12 +9,14 @@ export async function GET() {
         '/actions',
         '/advertise',
         '/ai-companion',
+        '/android',
         '/anniversaries',
         '/app',
         '/art',
         '/bible',
         '/blessings',
         '/blog',
+        '/bot',
         '/bouquets',
         '/calendar',
         '/campaigns',
@@ -60,6 +62,7 @@ export async function GET() {
         '/leaderboard',
         '/library',
         '/live-mass',
+        '/login',
         '/mass-offerings',
         '/mass-times',
         '/memorials',
@@ -80,10 +83,12 @@ export async function GET() {
         '/reading-plans',
         '/readings',
         '/refunds',
+        '/register',
         '/rosary',
         '/sacraments',
         '/saints',
         '/search',
+        '/settings',
         '/stations',
         '/summa',
         '/terms',
@@ -103,7 +108,7 @@ export async function GET() {
     <loc>${baseUrl}${route}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>daily</changefreq>
-    <priority>${route === '' ? '1.0' : route === '/mass-offerings' || route === '/candles' || route === '/blessings' || route === '/bouquets' || route === '/my-vigils' || route === '/rosary' || route === '/live-mass' ? '0.9' : '0.8'}</priority>
+    <priority>${route === '' ? '1.0' : ['/mass-offerings', '/candles', '/blessings', '/bouquets', '/my-vigils', '/rosary', '/live-mass', '/churches', '/prayers', '/saints'].includes(route) ? '0.9' : '0.8'}</priority>
   </url>`
       )
       .join('')}

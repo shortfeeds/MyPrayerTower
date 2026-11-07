@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { RefreshCcw, AlertCircle, Clock, Mail, ChevronLeft, CreditCard, HelpCircle } from 'lucide-react';
+import { RefreshCcw, AlertCircle, Clock, Mail, ChevronLeft, CreditCard, HelpCircle, ShieldCheck } from 'lucide-react';
 
 export default function RefundsPage() {
     return (
@@ -19,7 +19,7 @@ export default function RefundsPage() {
                         </div>
                         <div>
                             <h1 className="text-4xl font-serif font-bold">Refund & Cancellation Policy</h1>
-                            <p className="text-primary-200">Last updated: October 29, 2026</p>
+                            <p className="text-primary-200">Last updated: November 7, 2026</p>
                         </div>
                     </div>
                 </div>
@@ -32,30 +32,27 @@ export default function RefundsPage() {
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <CreditCard className="w-6 h-6 text-primary-500" />
-                            Overview
+                            Overview & Digital Delivery
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                            At MyPrayerTower, we strive to provide meaningful spiritual services. This policy outlines
-                            our refund and cancellation procedures for all paid services on our platform.
+                            At MyPrayerTower, we are committed to reverent, transparent stewardship. All services offered through our website and mobile application—including Mass intention coordination, virtual candles, digital memorials, sleep stories, and blessings—are <strong>100% digital electronic services</strong>. This policy details our refund criteria, cancellation windows, and resolution mechanisms.
                         </p>
                     </section>
 
                     {/* Services & Refund Eligibility */}
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                            Services & Refund Eligibility
+                            Services & Refund Criteria
                         </h2>
 
                         <div className="space-y-6">
                             {/* Virtual Candles */}
                             <div className="border-l-4 border-amber-500 pl-4">
-                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Virtual Prayer Candles</h3>
+                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Virtual Prayer Candles & Sanctuary Lamps</h3>
                                 <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
-                                    <li>• <strong>1 Day Candle:</strong> Free - No refund applicable</li>
-                                    <li>• <strong>3 Day Candle:</strong> $3 - Non-refundable once lit</li>
-                                    <li>• <strong>7 Day Candle:</strong> $6 - Non-refundable once lit</li>
-                                    <li>• <strong>30 Day Featured Candle:</strong> $15 - Refund within 24 hours if not displayed</li>
-                                    <li>• <strong>Digital Chapel Setup:</strong> Basic (Free) / Featured ($50) - Refundable within 48h if unsatisfied</li>
+                                    <li>• <strong>1 Day Candle:</strong> Free devotional offering - No refund applicable.</li>
+                                    <li>• <strong>3 Day &amp; 7 Day Candles:</strong> Non-refundable once ignited and displayed in the virtual sanctuary.</li>
+                                    <li>• <strong>30 Day Featured Candles &amp; Perpetual Sanctuary Lamps:</strong> Eligible for refund within 24 hours of purchase if display technical failure occurs.</li>
                                 </ul>
                             </div>
 
@@ -63,41 +60,28 @@ export default function RefundsPage() {
                             <div className="border-l-4 border-blue-500 pl-4">
                                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">Mass Offering Stipends</h3>
                                 <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
-                                    <li>• <strong>Single Mass:</strong> $10</li>
-                                    <li>• <strong>Novena of Masses:</strong> $75</li>
-                                    <li>• <strong>Gregorian Masses:</strong> $200</li>
-                                    <li>• <strong>Perpetual Enrollment:</strong> $100</li>
+                                    <li>• <strong>Single Mass ($10), Novena ($75), Gregorian Masses ($200):</strong> Mass offering stipends forwarded to partner Catholic priests cannot be cancelled once scheduled.</li>
+                                    <li>• <strong>90-Day Fulfillment Guarantee:</strong> If our pastoral team is unable to coordinate the celebration of your requested Mass intention within 90 days, we will proactively notify you to issue an immediate 100% full refund or alternative arrangement.</li>
                                 </ul>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
-                                    Mass requests forwarded to partner churches cannot be refunded. If we are unable to arrange for a Mass to be celebrated within 90 days, we will contact you to offer a full refund or alternative arrangement.
-                                </p>
                             </div>
 
-                            {/* Spiritual Bouquets & Blessings */}
+                            {/* Subscriptions & In-App Purchases */}
+                            <div className="border-l-4 border-emerald-500 pl-4">
+                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Subscriptions &amp; App In-App Purchases (Google Play / Web)</h3>
+                                <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
+                                    <li>• <strong>Android In-App Purchases:</strong> Processed through Google Play Billing (Library 8.0+). You can cancel subscriptions at any time via the Google Play Subscriptions Center. Refund requests submitted within 48 hours of billing may be requested directly through Google Play Support or our team.</li>
+                                    <li>• <strong>Web Subscriptions:</strong> Can be cancelled at any time; future billing stops immediately while access continues until the end of the paid period.</li>
+                                </ul>
+                            </div>
+
+                            {/* Spiritual Bouquets & Occasion Blessings */}
                             <div className="border-l-4 border-purple-500 pl-4">
-                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Spiritual Bouquets & Blessings</h3>
+                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Spiritual Bouquets &amp; Occasion Blessings</h3>
                                 <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
-                                    <li>• <strong>Spiritual Bouquets:</strong> Non-refundable once generated, personalized, and dispatched.</li>
-                                    <li>• <strong>Occasion Blessings & Consecrations:</strong> Non-refundable once the consecration ritual has concluded and the digital certificate has been issued.</li>
-                                    <li>• <strong>Tabernacle Lamp & Perpetual Vigils:</strong> Non-refundable once activated and burning in the live sanctuary registry.</li>
-                                    <li>• <strong>All Services 100% Digital:</strong> All deliverables are electronic (PDF certificates, digital cards, sanctuary visualizations). No physical returns or shipments apply.</li>
+                                    <li>• <strong>Spiritual Bouquets:</strong> Non-refundable once generated, personalized, and dispatched electronically to the recipient.</li>
+                                    <li>• <strong>Occasion Blessings &amp; Consecrations:</strong> Non-refundable once the digital certificate has been issued and stored in the verification registry.</li>
                                 </ul>
                             </div>
-
-                            {/* Platform Support Contributions */}
-                            <div className="border-l-4 border-green-500 pl-4">
-                                <h3 className="font-bold text-gray-900 dark:text-white mb-2">Platform Support Contributions</h3>
-                                <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-                                    Voluntary contributions to support MyPrayerTower's operations, server hosting, and devotional outreach. Contributions are classified as digital platform service remittances and are not tax-deductible as charitable donations.
-                                </p>
-                                <ul className="text-gray-600 dark:text-gray-300 space-y-1 text-sm">
-                                    <li>• <strong>One-Time Contributions:</strong> Generally non-refundable</li>
-                                    <li>• <strong>Made in Error:</strong> Contact us within 7 days for consideration</li>
-                                    <li>• <strong>Recurring Contributions:</strong> Can be cancelled at any time; future payments will stop, but past contributions are non-refundable</li>
-                                </ul>
-                            </div>
-
-                            
                         </div>
                     </section>
 
@@ -105,20 +89,20 @@ export default function RefundsPage() {
                     <section>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <AlertCircle className="w-6 h-6 text-red-500" />
-                            Cancellation Policy
+                            Cancellation Guidelines
                         </h2>
                         <ul className="text-gray-600 dark:text-gray-300 space-y-3">
                             <li className="flex items-start gap-2">
                                 <Clock className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
-                                <span><strong>Cancellation requests</strong> must be made within 24 hours of purchase for eligible services.</span>
+                                <span><strong>Pending Orders:</strong> Orders that have not yet been activated or transmitted to partner clergy may be cancelled within 24 hours of payment.</span>
                             </li>
                             <li className="flex items-start gap-2">
                                 <Clock className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
-                                <span><strong>Recurring contributions</strong> can be cancelled at any time. Future payments will stop, but past contributions are non-refundable.</span>
+                                <span><strong>Recurring Subscriptions:</strong> May be cancelled anytime prior to the renewal date. Previous billing cycles are non-refundable.</span>
                             </li>
                             <li className="flex items-start gap-2">
                                 <Clock className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
-                                <span><strong>Digital services</strong> that have been delivered or activated cannot be cancelled.</span>
+                                <span><strong>100% Digital Fulfillment:</strong> Because all deliverables are electronic, physical product returns do not apply.</span>
                             </li>
                         </ul>
                     </section>
@@ -130,23 +114,22 @@ export default function RefundsPage() {
                             How to Request a Refund
                         </h2>
                         <ol className="text-gray-600 dark:text-gray-300 space-y-3 list-decimal list-inside">
-                            <li>Email us at <a href="mailto:refunds@myprayertower.com" className="text-primary-600 hover:underline">refunds@myprayertower.com</a></li>
-                            <li>Include your order ID/transaction reference</li>
-                            <li>Provide the reason for your refund request</li>
-                            <li>Our team will review and respond within 3-5 business days</li>
-                            <li>Approved refunds will be processed to the original payment method within 7-10 business days</li>
+                            <li>Email our support desk at <a href="mailto:refunds@myprayertower.com" className="text-primary-600 dark:text-primary-400 underline font-medium">refunds@myprayertower.com</a>.</li>
+                            <li>Include your transaction reference, order ID, and account email address.</li>
+                            <li>State the reason for your request.</li>
+                            <li>Our support team will review and reply within 2–3 business days.</li>
+                            <li>Approved refunds are credited back to the original payment method (PayPal or Google Play) within 5–7 business days.</li>
                         </ol>
                     </section>
 
-                    {/* Exceptions */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                            Exceptions
+                    {/* Exceptional Circumstances */}
+                    <section className="p-5 bg-amber-50/70 dark:bg-amber-950/20 rounded-xl border border-amber-200/80 dark:border-amber-800/50">
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                            <ShieldCheck className="w-5 h-5 text-amber-600" />
+                            Technical Errors &amp; Duplicate Billing
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                            In cases of technical errors, duplicate charges, or fraudulent transactions,
-                            we will issue a full refund regardless of the above policies. Please contact us
-                            immediately if you experience any payment issues.
+                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                            In the rare event of a payment gateway glitch, duplicate charge, or system error, we issue an immediate, no-questions-asked 100% full refund. Please reach out to us right away so we can resolve it promptly.
                         </p>
                     </section>
 
@@ -157,11 +140,11 @@ export default function RefundsPage() {
                             Contact Us
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300">
-                            For refund requests or questions about this policy, please contact us at{' '}
-                            <a href="mailto:support@myprayertower.com" className="text-primary-600 hover:underline">
-                                support@myprayertower.com
+                            For refund inquiries or assistance, email us directly at{' '}
+                            <a href="mailto:refunds@myprayertower.com" className="text-primary-600 dark:text-primary-400 font-semibold underline">
+                                refunds@myprayertower.com
                             </a>
-                            {' '}or visit our <Link href="/contact" className="text-primary-600 hover:underline">Contact Page</Link>.
+                            {' '}or visit our <Link href="/contact" className="text-primary-600 dark:text-primary-400 font-semibold underline">Contact Support Portal</Link>.
                         </p>
                     </section>
                 </div>
