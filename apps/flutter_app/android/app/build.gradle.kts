@@ -33,12 +33,12 @@ android {
 
     defaultConfig {
         applicationId = "com.myprayertower.myprayertower_app"
-        // You can update the following values to match your application needs.
+        // You can update the following values to match your application fears.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24 // Required by Google Play Automatic Protection (API 24+)
         targetSdk = 36
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = 40
+        versionName = "1.1.0"
         // Required for core library desugaring
         multiDexEnabled = true
     }
@@ -68,6 +68,7 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation("androidx.activity:activity:1.9.3")
+    implementation("com.android.billingclient:billing:8.0.0")
 }
 
 flutter {

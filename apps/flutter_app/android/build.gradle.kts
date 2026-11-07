@@ -3,6 +3,11 @@ allprojects {
         google()
         mavenCentral()
     }
+    configurations.all {
+        resolutionStrategy {
+            force("com.android.billingclient:billing:8.0.0")
+        }
+    }
 }
 
 val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()
