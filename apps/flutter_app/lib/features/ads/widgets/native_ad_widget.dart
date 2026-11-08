@@ -11,7 +11,7 @@ class NativeAdListItem extends ConsumerStatefulWidget {
 
   const NativeAdListItem({
     super.key,
-    this.adUnitId = 'ca-app-pub-3940256099942544/2247696110', // Test ID
+    this.adUnitId = 'ca-app-pub-1009360672921924/9865948318', // Test ID
   });
 
   @override
@@ -108,7 +108,7 @@ class NativeAdCard extends ConsumerStatefulWidget {
 
   const NativeAdCard({
     super.key,
-    this.adUnitId = 'ca-app-pub-3940256099942544/2247696110', // Test ID
+    this.adUnitId = 'ca-app-pub-1009360672921924/9865948318', // Test ID
     this.height = 200,
   });
 

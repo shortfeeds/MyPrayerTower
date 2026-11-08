@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { Memorial, MemorialsResponse } from '@/lib/types/memorials';
 import { revalidatePath } from 'next/cache';
 import { getUserFromCookie } from '@/lib/auth';
+import { inspectSpamContent } from '@/lib/spam-protection';
 
 export async function getMemorials(page = 1, search = ''): Promise<MemorialsResponse> {
     try {
@@ -251,8 +252,18 @@ export async function prayForMemorial(id: string): Promise<number> {
     }
 }
 
-export async function addMemorialCondolence(memorialId: string, guestName: string, message: string) {
+export async function addMemorialCondolence(memorialId: string, guestName: string, message: string, honeypot?: string) {
     try {
+        if (honeypot && honeypot.trim().length > 0) {
+            console.warn('[SPAM SHIELD] Memorial condolence honeypot caught bot');
+            return { success: false, error: 'Spam detected' };
+        }
+
+        const spamCheck = inspectSpamContent({ name: guestName, message });
+        if (spamCheck.isSpam) {
+            return { success: false, error: spamCheck.reason || 'Content rejected as promotional or spam' };
+        }
+
         const user = await getUserFromCookie().catch(() => null);
         const entry = await db.memorialGuestbook.create({
             data: {

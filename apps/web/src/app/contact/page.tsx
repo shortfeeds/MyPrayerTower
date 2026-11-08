@@ -1,11 +1,10 @@
 'use client';
-import React from 'react';
-import { Mail, Phone, Clock, MapPin } from 'lucide-react';
+import React, { Suspense } from 'react';
+import { Mail, Clock } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { trackQualifyLead } from '@/lib/analytics';
-
-import { Suspense } from 'react';
+import { SpamShield } from '@/components/common/SpamShield';
 
 export default function ContactPage() {
     return (
@@ -34,7 +33,7 @@ export default function ContactPage() {
                                     <a href="mailto:info@myprayertower.com" className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600">info@myprayertower.com</a>
                                 </div>
                             </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">For general inquiries and support.</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">For general inquiries, prayer intentions, and pastoral coordination.</p>
                         </div>
 
                         <div className="card-premium p-6">
@@ -47,7 +46,7 @@ export default function ContactPage() {
                                     <p className="text-sm text-gray-500 dark:text-gray-400">Within 24-48 hours</p>
                                 </div>
                             </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">We'll get back to you as soon as possible.</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Every message is read and attended to with care.</p>
                         </div>
                     </div>
 
@@ -95,6 +94,10 @@ function ContactForm() {
             email: formData.get('email') as string,
             subject: formData.get('subject') as string,
             message: formData.get('message') as string,
+            // Anti-Spam Shield Payloads
+            website_url: formData.get('website_url') as string,
+            company_verification: formData.get('company_verification') as string,
+            _f_time: formData.get('_f_time') as string,
         };
 
         try {
@@ -122,6 +125,9 @@ function ContactForm() {
 
     return (
         <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Anti-Bot Spam Shield */}
+            <SpamShield honeypotName="website_url" secondaryTrapName="company_verification" />
+
             {status && (
                 <div className={`p-4 rounded-xl ${status.type === 'success' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}`}>
                     {status.message}
@@ -130,24 +136,24 @@ function ContactForm() {
             <div className="grid md:grid-cols-2 gap-6">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name</label>
-                    <input name="firstName" required type="text" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="John" />
+                    <input name="firstName" required type="text" maxLength={60} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="John" />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last Name</label>
-                    <input name="lastName" required type="text" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="Doe" />
+                    <input name="lastName" required type="text" maxLength={60} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="Doe" />
                 </div>
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
-                <input name="email" required type="email" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="john@example.com" />
+                <input name="email" required type="email" maxLength={100} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="john@example.com" />
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject</label>
-                <input name="subject" defaultValue={defaultSubject} required type="text" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="How can we help?" />
+                <input name="subject" defaultValue={defaultSubject} required type="text" maxLength={150} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all" placeholder="How can we help?" />
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label>
-                <textarea name="message" defaultValue={defaultMessage} required rows={5} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-none" placeholder="How can we help you?"></textarea>
+                <textarea name="message" defaultValue={defaultMessage} required minLength={10} maxLength={3000} rows={5} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-none" placeholder="How can we help you?"></textarea>
             </div>
             <button
                 type="submit"

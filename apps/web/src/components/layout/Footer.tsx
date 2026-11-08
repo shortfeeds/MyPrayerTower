@@ -9,6 +9,7 @@ import { UniversalOfferingModal } from '@/components/offerings/UniversalOffering
 import { MobileBottomNav } from './MobileBottomNav';
 import { useAppMode } from '@/contexts/AppModeContext';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { SpamShield } from '@/components/common/SpamShield';
 
 // App Store Button Component
 function AppStoreButton({ store }: { store: 'telegram' | 'google' }) {
@@ -62,15 +63,19 @@ function NewsletterForm() {
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!email) return;
         setStatus('loading');
         try {
+            const formData = new FormData(e.currentTarget);
+            const website_url = formData.get('website_url') as string;
+            const _f_time = formData.get('_f_time') as string;
+
             const res = await fetch('/api/newsletter', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, website_url, _f_time }),
             });
             setStatus(res.ok ? 'success' : 'error');
             if (res.ok) setEmail('');
@@ -83,9 +88,11 @@ function NewsletterForm() {
     return (
         <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
             <h4 className="text-white font-bold text-sm mb-2">Spiritual Nourishment</h4>
-            <form onSubmit={handleSubmit} className="flex gap-2">
+            <form onSubmit={handleSubmit} className="flex gap-2 relative">
+                <SpamShield honeypotName="website_url" />
                 <input
                     type="email"
+                    name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Receive daily grace..."

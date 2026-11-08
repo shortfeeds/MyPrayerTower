@@ -14,6 +14,7 @@ import { SmartAdSlot } from '@/components/ads';
 import { PrayerCompletionModal } from '@/components/prayer/PrayerCompletionModal';
 import { useNativeAds } from '@/hooks/useNativeAds';
 import { trackQualifyLead } from '@/lib/analytics';
+import { SpamShield } from '@/components/common/SpamShield';
 
 export interface Prayer {
     id: string;
@@ -719,8 +720,8 @@ export default function PrayerWallClient({ initialPrayers, currentUserId }: { in
                                             placeholder="Your name"
                                             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sacred-500 focus:border-transparent"
                                         />
-                                        {/* Honeypot for spam bots */}
-                                        <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" />
+                                        {/* Honeypot Spam Shield */}
+                                        <SpamShield honeypotName="website" secondaryTrapName="website_url" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">

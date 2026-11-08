@@ -65,13 +65,13 @@ class AdService {
     if (Platform.isAndroid) {
       switch (adType) {
         case 'banner':
-          return 'ca-app-pub-3940256099942544/6300978111';
+          return 'ca-app-pub-1009360672921924/8257353171'; // MPT Banner
         case 'native':
-          return 'ca-app-pub-3940256099942544/2247696110';
+          return 'ca-app-pub-1009360672921924/9865948318'; // MPT Native
         case 'interstitial':
-          return 'ca-app-pub-3940256099942544/1033173712';
+          return 'ca-app-pub-1009360672921924/8169723267'; // MPT Interstitial
         case 'rewarded':
-          return 'ca-app-pub-3940256099942544/5224354917';
+          return 'ca-app-pub-1009360672921924/1561928795'; // MPT Rewarded
       }
     } else if (Platform.isIOS) {
       switch (adType) {

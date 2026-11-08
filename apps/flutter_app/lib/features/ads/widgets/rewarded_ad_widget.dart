@@ -10,7 +10,7 @@ class RewardedAdService {
   bool _isLoading = false;
 
   // Test ad unit ID - replace with production ID
-  static const String _adUnitId = 'ca-app-pub-3940256099942544/5224354917';
+  static const String _adUnitId = 'ca-app-pub-1009360672921924/1561928795';
 
   /// Load a rewarded ad
   Future<void> loadAd() async {

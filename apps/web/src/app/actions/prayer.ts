@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getUserFromCookie } from '@/lib/auth';
 import { notifyIndexNow } from '@/lib/indexnow';
+import { moderateContent } from '@/lib/moderation';
+import { validateHoneypot, validateTimeTrap, inspectSpamContent } from '@/lib/spam-protection';
 
 // Alias db to prisma for compatibility
 const prisma = db;
@@ -71,20 +73,34 @@ export async function getPrayerRequests(page = 1, limit = 10, category?: string)
     }
 }
 
-import { moderateContent } from '@/lib/moderation';
-
 export async function submitPrayerRequest(prevState: any, formData: FormData) {
     try {
         const content = formData.get('content') as string;
         const category = formData.get('category') as string;
         const visibility = formData.get('visibility') as string;
-        // Honeypot check (assume field name 'website_url' exists in form)
-        const honeypot = formData.get('website');
-        if (honeypot) {
+
+        // 1. Anti-Spam: Honeypot check
+        const honeypot = formData.get('website') as string;
+        const honeypotSecondary = formData.get('website_url') as string;
+        if (!validateHoneypot(honeypot, honeypotSecondary)) {
+            console.warn('[SPAM SHIELD] Prayer request honeypot caught bot');
             return { success: false, message: 'Spam detected.' };
         }
 
-        // 1. Content Moderation
+        // 2. Anti-Spam: Time-trap check
+        const timeToken = formData.get('_f_time') as string;
+        if (timeToken && !validateTimeTrap(timeToken, 2.0)) {
+            console.warn('[SPAM SHIELD] Prayer request sub-human submission speed');
+            return { success: false, message: 'Submission too rapid. Please try again.' };
+        }
+
+        // 3. Anti-Spam: Keyword and promotional link inspection
+        const spamCheck = inspectSpamContent({ message: content });
+        if (spamCheck.isSpam) {
+            return { success: false, message: spamCheck.reason || 'Content rejected as promotional or spam.' };
+        }
+
+        // 4. Content Moderation (profanity & link filtering)
         const moderation = moderateContent(content);
         if (!moderation.isValid) {
             return { success: false, message: moderation.reason || 'Content rejected.' };
@@ -106,7 +122,7 @@ export async function submitPrayerRequest(prevState: any, formData: FormData) {
                 content,
                 category: categoryEnum as any,
                 visibility: visibilityEnum as any,
-                userId: userId, // Mock user ID for now
+                userId: userId,
                 // All free listings sent to admin panel (PENDING)
                 status: 'PENDING',
                 updatedAt: new Date(),
@@ -212,21 +228,17 @@ export async function markPrayerAnswered(prayerId: string) {
 export async function reportPrayer(prayerId: string, reason: string) {
     try {
         const user = await getUserFromCookie();
-        // Allow anonymous reports but tag them? Or require login? 
-        // Safer to require login for now to prevent spam.
         if (!user) {
             return { success: false, message: 'Please login to report.' };
         }
         const userId = user.id;
 
-        // Map reason string to Enum if needed, or assume frontend sends valid enum string
-        // Default to OTHER if invalid
         const validReasons = ['SPAM', 'HARASSMENT', 'INAPPROPRIATE_CONTENT', 'IMPERSONATION', 'MALICIOUS_LINKS', 'OTHER'];
         const reasonEnum = validReasons.includes(reason) ? reason : 'OTHER';
 
         await prisma.report.create({
             data: {
-                reason: reasonEnum as any, // Cast to ReportReason
+                reason: reasonEnum as any,
                 status: 'PENDING',
                 targetType: 'PRAYER_REQUEST',
                 targetId: prayerId,
@@ -261,7 +273,7 @@ export async function getUserPrayerRequests() {
         return prayers.map(p => ({
             ...p,
             date: new Date(p.createdAt).toLocaleDateString(),
-            status: p.isAnswered ? 'ANSWERED' : 'ACTIVE' // Helper for UI
+            status: p.isAnswered ? 'ANSWERED' : 'ACTIVE'
         }));
 
     } catch (error) {
