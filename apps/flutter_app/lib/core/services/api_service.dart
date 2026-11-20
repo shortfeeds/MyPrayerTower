@@ -1,20 +1,20 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../constants/app_constants.dart';
 
 class ApiService {
   late final Dio _dio;
   final SupabaseClient _supabase;
 
-  // Use appropriate URL for your environment (10.0.2.2 for Android Emulator)
-  static const String _baseUrl = 'http://localhost:4000/api/v1';
+  static String get _baseUrl => ApiConstants.baseUrl;
 
   ApiService(this._supabase) {
     _dio = Dio(
       BaseOptions(
         baseUrl: _baseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
       ),
     );
 

@@ -44,8 +44,16 @@ class ScheduledNotificationService {
       AndroidNotificationChannel(
         'daily_prayers',
         'Daily Prayer Reminders',
-        description: 'Morning, Angelus, and Night prayer reminders',
+        description: 'Morning, Gospel, and Night prayer reminders',
         importance: Importance.high,
+      ),
+      AndroidNotificationChannel(
+        'angelus_bells',
+        'The Angelus Bells',
+        description: 'Authentic church bells for morning, noon, and sunset Angelus',
+        importance: Importance.high,
+        sound: RawResourceAndroidNotificationSound('angelus_chimes'),
+        playSound: true,
       ),
       AndroidNotificationChannel(
         'streak_reminders',
@@ -86,14 +94,14 @@ class ScheduledNotificationService {
       payload: '/readings',
     );
 
-    // 2. Angelus (12:00 PM)
+    // 2. Angelus (12:00 PM) - Dedicated Angelus Bells channel
     await _scheduleDaily(
       id: 2,
       hour: 12,
       minute: 0,
       title: '🔔 The Angelus',
       body: 'The Angel of the Lord declared unto Mary...',
-      channelId: 'daily_prayers',
+      channelId: 'angelus_bells',
       payload: '/prayers',
     );
 
@@ -125,7 +133,7 @@ class ScheduledNotificationService {
       hour: 21,
       minute: 0,
       title: '🌙 Night Prayer',
-      body: 'End your day with Compline',
+      body: 'End your day in peace with Compline',
       channelId: 'daily_prayers',
       payload: '/prayers',
     );
@@ -136,7 +144,7 @@ class ScheduledNotificationService {
       hour: 8,
       minute: 0,
       title: '⭐ Saint of the Day',
-      body: 'Discover today\'s saint and their story',
+      body: 'Discover today\'s saint and their inspiring story',
       channelId: 'daily_prayers',
       payload: '/saints',
     );
@@ -166,6 +174,25 @@ class ScheduledNotificationService {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
 
+    String channelName;
+    switch (channelId) {
+      case 'angelus_bells':
+        channelName = 'The Angelus Bells';
+        break;
+      case 'streak_reminders':
+        channelName = 'Streak Reminders';
+        break;
+      case 'broadcasts':
+        channelName = 'Announcements';
+        break;
+      case 'daily_prayers':
+      default:
+        channelName = 'Daily Prayer Reminders';
+        break;
+    }
+
+    final isAngelus = channelId == 'angelus_bells';
+
     await _notifications.zonedSchedule(
       id,
       title,
@@ -174,15 +201,18 @@ class ScheduledNotificationService {
       NotificationDetails(
         android: AndroidNotificationDetails(
           channelId,
-          channelId == 'daily_prayers'
-              ? 'Daily Prayer Reminders'
-              : channelId == 'streak_reminders'
-              ? 'Streak Reminders'
-              : 'Announcements',
+          channelName,
           importance: Importance.high,
           priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+          sound: isAngelus
+              ? const RawResourceAndroidNotificationSound('angelus_chimes')
+              : null,
+          playSound: true,
         ),
-        iOS: const DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(
+          sound: isAngelus ? 'angelus_chimes.wav' : null,
+        ),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time, // Repeat daily
@@ -203,7 +233,6 @@ class ScheduledNotificationService {
   /// Enable/disable specific notification types
   Future<void> toggleNotification(int id, bool enabled) async {
     if (enabled) {
-      // Re-schedule based on ID
       switch (id) {
         case 1:
           await _scheduleDaily(
@@ -216,7 +245,61 @@ class ScheduledNotificationService {
             payload: '/readings',
           );
           break;
-        // Add other cases as needed
+        case 2:
+          await _scheduleDaily(
+            id: 2,
+            hour: 12,
+            minute: 0,
+            title: '🔔 The Angelus',
+            body: 'The Angel of the Lord declared unto Mary...',
+            channelId: 'angelus_bells',
+            payload: '/prayers',
+          );
+          break;
+        case 3:
+          await _scheduleDaily(
+            id: 3,
+            hour: 15,
+            minute: 0,
+            title: '✝️ Divine Mercy Hour',
+            body: 'For the sake of His sorrowful Passion...',
+            channelId: 'daily_prayers',
+            payload: '/prayers',
+          );
+          break;
+        case 4:
+          await _scheduleDaily(
+            id: 4,
+            hour: 18,
+            minute: 0,
+            title: '🔥 Keep Your Streak!',
+            body: 'Don\'t forget to open the app today',
+            channelId: 'streak_reminders',
+            payload: '/',
+          );
+          break;
+        case 5:
+          await _scheduleDaily(
+            id: 5,
+            hour: 21,
+            minute: 0,
+            title: '🌙 Night Prayer',
+            body: 'End your day in peace with Compline',
+            channelId: 'daily_prayers',
+            payload: '/prayers',
+          );
+          break;
+        case 6:
+          await _scheduleDaily(
+            id: 6,
+            hour: 8,
+            minute: 0,
+            title: '⭐ Saint of the Day',
+            body: 'Discover today\'s saint and their inspiring story',
+            channelId: 'daily_prayers',
+            payload: '/saints',
+          );
+          break;
       }
     } else {
       await cancelNotification(id);
@@ -255,21 +338,7 @@ class BroadcastNotificationService {
 
   /// Check for pending broadcasts from server
   Future<void> checkPendingBroadcasts() async {
-    // In production, fetch from Supabase/API
-    // Example:
-    // final response = await supabase
-    //     .from('Broadcasts')
-    //     .select('*')
-    //     .eq('sentToMobile', false)
-    //     .order('createdAt');
-    //
-    // for (final broadcast in response) {
-    //   await showBroadcast(
-    //     title: broadcast['title'],
-    //     body: broadcast['body'],
-    //     payload: broadcast['payload'],
-    //   );
-    // }
+    // In production, fetch from Supabase/API if needed
   }
 }
 
