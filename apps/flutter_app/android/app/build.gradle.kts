@@ -37,8 +37,8 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24 // Required by Google Play Automatic Protection (API 24+)
         targetSdk = 36
-        versionCode = 41
-        versionName = "1.1.1"
+        versionCode = 42
+        versionName = "1.1.2"
         // Required for core library desugaring
         multiDexEnabled = true
     }

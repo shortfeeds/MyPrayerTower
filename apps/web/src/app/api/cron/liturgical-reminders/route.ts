@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { broadcastServerNotification } from '@/lib/serverNotifications';
+import { broadcastServerNotification, broadcastToFcmTopic } from '@/lib/serverNotifications';
 import { getReadings } from '@/lib/readings';
 
 export const runtime = 'nodejs';
@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
     let title = '';
     let body = '';
     let url = '/app';
+    let channelId = 'broadcasts';
 
     try {
         if (slot === 'morning' || (!slot && (utcHours >= 1 && utcHours <= 3))) { // ~6:30 - 8:30 AM IST
@@ -36,21 +37,25 @@ export async function GET(req: NextRequest) {
             title = '🌅 Morning Offering & Gospel';
             body = `Today's Gospel (${citation}): Take 2 minutes to offer your morning to Christ.`;
             url = '/readings';
+            channelId = 'daily_gospel';
 
         } else if (slot === 'angelus' || (!slot && (utcHours >= 6 && utcHours <= 7))) { // ~11:30 AM - 12:30 PM IST
             title = '🔔 The Angelus (Noon Prayer)';
             body = '"The Angel of the Lord declared unto Mary..." Pause with Our Lady in prayer.';
-            url = '/prayers/the-angelus';
+            url = '/prayers';
+            channelId = 'angelus_bells';
 
         } else if (slot === 'mercy' || (!slot && (utcHours >= 9 && utcHours <= 10))) { // ~2:30 - 3:30 PM IST
             title = '✝️ 3:00 PM Hour of Great Mercy';
             body = '"For the sake of His sorrowful Passion, have mercy on us and on the whole world."';
-            url = '/prayers/divine-mercy-chaplet';
+            url = '/chaplets';
+            channelId = 'divine_mercy';
 
         } else if (slot === 'evening' || (!slot && (utcHours >= 14 && utcHours <= 16))) { // ~7:30 - 9:30 PM IST
             title = '📿 Evening Rosary & Night Peace';
             body = 'Rest your soul in prayer tonight. Enter the Sanctuary to pray the Holy Rosary.';
             url = '/rosary';
+            channelId = 'daily_prayers';
 
         } else {
             // Default seasonal / daily reminder
@@ -72,6 +77,16 @@ export async function GET(req: NextRequest) {
             }
         }
 
+        // 1. Broadcast to FCM topic for native mobile apps
+        await broadcastToFcmTopic({
+            topic: 'liturgical_feasts',
+            title,
+            body,
+            url,
+            channelId,
+        }).catch(() => {});
+
+        // 2. Broadcast to WebPush and in-app users
         const result = await broadcastServerNotification({
             title,
             body,

@@ -44,6 +44,7 @@ import '../features/challenges/screens/challenges_screen.dart';
 // import '../features/quiz/screens/quiz_screen.dart';
 
 import '../features/settings/screens/settings_screen.dart';
+import '../features/settings/screens/notification_settings_screen.dart';
 import '../features/settings/screens/legal_screen.dart';
 import '../features/mass_offering/screens/mass_offering_screen.dart';
 
@@ -291,6 +292,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/settings',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: SettingsScreen()),
+          ),
+          GoRoute(
+            path: '/settings/notifications',
+            pageBuilder: (context, state) =>
+                const MaterialPage(child: NotificationSettingsScreen()),
           ),
           GoRoute(
             path: '/legal',

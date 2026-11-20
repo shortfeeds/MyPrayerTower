@@ -38,7 +38,7 @@ class SettingsScreen extends ConsumerWidget {
               icon: LucideIcons.bell,
               title: 'Notifications',
               subtitle: 'Manage prayer reminders',
-              onTap: () {},
+              onTap: () => context.push('/settings/notifications'),
             ),
             const _SettingsTile(
               icon: LucideIcons.moon,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -42,18 +43,34 @@ class ScheduledNotificationService {
   Future<void> _createNotificationChannels() async {
     const channels = [
       AndroidNotificationChannel(
-        'daily_prayers',
-        'Daily Prayer Reminders',
-        description: 'Morning, Gospel, and Night prayer reminders',
-        importance: Importance.high,
-      ),
-      AndroidNotificationChannel(
         'angelus_bells',
         'The Angelus Bells',
-        description: 'Authentic church bells for morning, noon, and sunset Angelus',
-        importance: Importance.high,
+        description: 'Authentic cathedral bells for morning, noon, and sunset Angelus',
+        importance: Importance.max,
         sound: RawResourceAndroidNotificationSound('angelus_chimes'),
         playSound: true,
+      ),
+      AndroidNotificationChannel(
+        'divine_mercy',
+        'Hour of Great Mercy',
+        description: 'Reverent sacred chime for 3:00 PM Hour of Mercy and Chaplet',
+        importance: Importance.high,
+        sound: RawResourceAndroidNotificationSound('divine_mercy_chime'),
+        playSound: true,
+      ),
+      AndroidNotificationChannel(
+        'daily_gospel',
+        'Daily Gospel & Readings',
+        description: 'Monastic chord chime for morning Gospel verses and Scripture',
+        importance: Importance.high,
+        sound: RawResourceAndroidNotificationSound('gospel_chime'),
+        playSound: true,
+      ),
+      AndroidNotificationChannel(
+        'daily_prayers',
+        'Daily Prayer Reminders',
+        description: 'Morning, Saint, and Night prayer reminders',
+        importance: Importance.high,
       ),
       AndroidNotificationChannel(
         'streak_reminders',
@@ -74,8 +91,10 @@ class ScheduledNotificationService {
           AndroidFlutterLocalNotificationsPlugin
         >();
 
-    for (final channel in channels) {
-      await androidPlugin?.createNotificationChannel(channel);
+    if (androidPlugin != null) {
+      for (final channel in channels) {
+        await androidPlugin.createNotificationChannel(channel);
+      }
     }
   }
 
@@ -83,71 +102,173 @@ class ScheduledNotificationService {
   Future<void> scheduleAllDailyNotifications() async {
     await cancelAllNotifications();
 
-    // 1. Morning Prayer (7:00 AM)
-    await _scheduleDaily(
-      id: 1,
-      hour: 7,
-      minute: 0,
-      title: '🌅 Good Morning!',
-      body: 'Start your day with today\'s Gospel reading',
-      channelId: 'daily_prayers',
-      payload: '/readings',
-    );
+    final prefs = await SharedPreferences.getInstance();
+    final morningEnabled = prefs.getBool('pref_notif_morning') ?? true;
+    final angelusEnabled = prefs.getBool('pref_notif_angelus') ?? true;
+    final mercyEnabled = prefs.getBool('pref_notif_mercy') ?? true;
+    final streakEnabled = prefs.getBool('pref_notif_streak') ?? true;
+    final nightEnabled = prefs.getBool('pref_notif_night') ?? true;
+    final saintEnabled = prefs.getBool('pref_notif_saint') ?? true;
 
-    // 2. Angelus (12:00 PM) - Dedicated Angelus Bells channel
-    await _scheduleDaily(
-      id: 2,
-      hour: 12,
-      minute: 0,
-      title: '🔔 The Angelus',
-      body: 'The Angel of the Lord declared unto Mary...',
-      channelId: 'angelus_bells',
-      payload: '/prayers',
-    );
+    // 1. Morning Gospel & Meditation (7:00 AM)
+    if (morningEnabled) {
+      await _scheduleDaily(
+        id: 1,
+        hour: 7,
+        minute: 0,
+        title: '🌅 Today\'s Holy Gospel',
+        body: 'Start your morning in communion with Christ. Tap to read or listen.',
+        channelId: 'daily_gospel',
+        payload: '/readings',
+      );
+    }
 
-    // 3. Afternoon Prayer (3:00 PM - Divine Mercy)
-    await _scheduleDaily(
-      id: 3,
-      hour: 15,
-      minute: 0,
-      title: '✝️ Divine Mercy Hour',
-      body: 'For the sake of His sorrowful Passion...',
-      channelId: 'daily_prayers',
-      payload: '/prayers',
-    );
+    // 2. Saint of the Day (8:00 AM)
+    if (saintEnabled) {
+      await _scheduleDaily(
+        id: 2,
+        hour: 8,
+        minute: 0,
+        title: '⭐ Saint of the Day',
+        body: 'Discover today\'s saint, their holy life, and prayer of intercession.',
+        channelId: 'daily_prayers',
+        payload: '/saints',
+      );
+    }
 
-    // 4. Evening Reminder (6:00 PM)
-    await _scheduleDaily(
-      id: 4,
-      hour: 18,
-      minute: 0,
-      title: '🔥 Keep Your Streak!',
-      body: 'Don\'t forget to open the app today',
-      channelId: 'streak_reminders',
-      payload: '/',
-    );
+    // 3. The Angelus (12:00 PM) - Dedicated Angelus Cathedral Bells
+    if (angelusEnabled) {
+      await _scheduleDaily(
+        id: 3,
+        hour: 12,
+        minute: 0,
+        title: '🔔 The Angelus',
+        body: 'The Angel of the Lord declared unto Mary. And she conceived of the Holy Spirit.',
+        channelId: 'angelus_bells',
+        payload: '/prayers',
+      );
+    }
 
-    // 5. Night Prayer (9:00 PM)
-    await _scheduleDaily(
-      id: 5,
-      hour: 21,
-      minute: 0,
-      title: '🌙 Night Prayer',
-      body: 'End your day in peace with Compline',
-      channelId: 'daily_prayers',
-      payload: '/prayers',
-    );
+    // 4. Hour of Great Mercy (3:00 PM - Divine Mercy Chime)
+    if (mercyEnabled) {
+      await _scheduleDaily(
+        id: 4,
+        hour: 15,
+        minute: 0,
+        title: '✝️ Hour of Great Mercy',
+        body: 'For the sake of His sorrowful Passion, have mercy on us and on the whole world.',
+        channelId: 'divine_mercy',
+        payload: '/chaplets',
+      );
+    }
 
-    // 6. Saint of the Day (8:00 AM)
-    await _scheduleDaily(
-      id: 6,
-      hour: 8,
-      minute: 0,
-      title: '⭐ Saint of the Day',
-      body: 'Discover today\'s saint and their inspiring story',
-      channelId: 'daily_prayers',
-      payload: '/saints',
-    );
+    // 5. Evening Streak Reminder (6:00 PM)
+    if (streakEnabled) {
+      await _scheduleDaily(
+        id: 5,
+        hour: 18,
+        minute: 0,
+        title: '🔥 Keep Your Daily Devotion Alive',
+        body: 'Take 2 minutes to offer an evening prayer and sustain your holy streak.',
+        channelId: 'streak_reminders',
+        payload: '/',
+      );
+    }
+
+    // 6. Night Prayer & Examen (9:00 PM)
+    if (nightEnabled) {
+      await _scheduleDaily(
+        id: 6,
+        hour: 21,
+        minute: 0,
+        title: '🌙 Night Compline & Examen',
+        body: 'End your day in peace. Reflect in gratitude before the Lord.',
+        channelId: 'daily_prayers',
+        payload: '/prayers',
+      );
+    }
+
+    debugPrint('All 6 daily Catholic devotional reminders scheduled with exact alarms.');
+  }
+
+  RawResourceAndroidNotificationSound? _getSoundForChannel(String channelId) {
+    switch (channelId) {
+      case 'angelus_bells':
+        return const RawResourceAndroidNotificationSound('angelus_chimes');
+      case 'divine_mercy':
+        return const RawResourceAndroidNotificationSound('divine_mercy_chime');
+      case 'daily_gospel':
+        return const RawResourceAndroidNotificationSound('gospel_chime');
+      default:
+        return null;
+    }
+  }
+
+  String? _getIosSoundForChannel(String channelId) {
+    switch (channelId) {
+      case 'angelus_bells':
+        return 'angelus_chimes.wav';
+      case 'divine_mercy':
+        return 'divine_mercy_chime.wav';
+      case 'daily_gospel':
+        return 'gospel_chime.wav';
+      default:
+        return null;
+    }
+  }
+
+  List<AndroidNotificationAction>? _getActionsForChannel(String channelId) {
+    switch (channelId) {
+      case 'angelus_bells':
+        return const [
+          AndroidNotificationAction(
+            'action_pray_angelus',
+            '🕊️ Pray Angelus',
+            showsUserInterface: true,
+          ),
+          AndroidNotificationAction(
+            'action_snooze_15',
+            '⏰ Snooze 15m',
+            showsUserInterface: false,
+            cancelNotification: true,
+          ),
+        ];
+      case 'divine_mercy':
+        return const [
+          AndroidNotificationAction(
+            'action_pray_chaplet',
+            '✝️ Pray Chaplet',
+            showsUserInterface: true,
+          ),
+          AndroidNotificationAction(
+            'action_mercy_amen',
+            '🙏 Jesus I Trust In You',
+            showsUserInterface: false,
+            cancelNotification: true,
+          ),
+        ];
+      case 'daily_gospel':
+        return const [
+          AndroidNotificationAction(
+            'action_read_gospel',
+            '📖 Read Gospel',
+            showsUserInterface: true,
+          ),
+          AndroidNotificationAction(
+            'action_listen_gospel',
+            '🎧 Listen',
+            showsUserInterface: true,
+          ),
+          AndroidNotificationAction(
+            'action_amen',
+            '🙏 Amen',
+            showsUserInterface: false,
+            cancelNotification: true,
+          ),
+        ];
+      default:
+        return null;
+    }
   }
 
   Future<void> _scheduleDaily({
@@ -179,6 +300,12 @@ class ScheduledNotificationService {
       case 'angelus_bells':
         channelName = 'The Angelus Bells';
         break;
+      case 'divine_mercy':
+        channelName = 'Hour of Great Mercy';
+        break;
+      case 'daily_gospel':
+        channelName = 'Daily Gospel & Readings';
+        break;
       case 'streak_reminders':
         channelName = 'Streak Reminders';
         break;
@@ -191,7 +318,9 @@ class ScheduledNotificationService {
         break;
     }
 
-    final isAngelus = channelId == 'angelus_bells';
+    final sound = _getSoundForChannel(channelId);
+    final iosSound = _getIosSoundForChannel(channelId);
+    final actions = _getActionsForChannel(channelId);
 
     await _notifications.zonedSchedule(
       id,
@@ -202,20 +331,27 @@ class ScheduledNotificationService {
         android: AndroidNotificationDetails(
           channelId,
           channelName,
-          importance: Importance.high,
+          importance: Importance.max,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
-          sound: isAngelus
-              ? const RawResourceAndroidNotificationSound('angelus_chimes')
-              : null,
+          sound: sound,
           playSound: true,
+          actions: actions,
+          styleInformation: BigTextStyleInformation(
+            body,
+            contentTitle: title,
+            summaryText: 'MyPrayerTower Devotion',
+          ),
         ),
         iOS: DarwinNotificationDetails(
-          sound: isAngelus ? 'angelus_chimes.wav' : null,
+          sound: iosSound,
+          presentSound: true,
+          presentAlert: true,
+          presentBadge: true,
         ),
       ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time, // Repeat daily
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time, // Repeat daily at specified time
       payload: payload,
     );
   }
@@ -230,180 +366,16 @@ class ScheduledNotificationService {
     await _notifications.cancel(id);
   }
 
-  /// Enable/disable specific notification types
-  Future<void> toggleNotification(int id, bool enabled) async {
-    if (enabled) {
-      switch (id) {
-        case 1:
-          await _scheduleDaily(
-            id: 1,
-            hour: 7,
-            minute: 0,
-            title: '🌅 Good Morning!',
-            body: 'Start your day with today\'s Gospel reading',
-            channelId: 'daily_prayers',
-            payload: '/readings',
-          );
-          break;
-        case 2:
-          await _scheduleDaily(
-            id: 2,
-            hour: 12,
-            minute: 0,
-            title: '🔔 The Angelus',
-            body: 'The Angel of the Lord declared unto Mary...',
-            channelId: 'angelus_bells',
-            payload: '/prayers',
-          );
-          break;
-        case 3:
-          await _scheduleDaily(
-            id: 3,
-            hour: 15,
-            minute: 0,
-            title: '✝️ Divine Mercy Hour',
-            body: 'For the sake of His sorrowful Passion...',
-            channelId: 'daily_prayers',
-            payload: '/prayers',
-          );
-          break;
-        case 4:
-          await _scheduleDaily(
-            id: 4,
-            hour: 18,
-            minute: 0,
-            title: '🔥 Keep Your Streak!',
-            body: 'Don\'t forget to open the app today',
-            channelId: 'streak_reminders',
-            payload: '/',
-          );
-          break;
-        case 5:
-          await _scheduleDaily(
-            id: 5,
-            hour: 21,
-            minute: 0,
-            title: '🌙 Night Prayer',
-            body: 'End your day in peace with Compline',
-            channelId: 'daily_prayers',
-            payload: '/prayers',
-          );
-          break;
-        case 6:
-          await _scheduleDaily(
-            id: 6,
-            hour: 8,
-            minute: 0,
-            title: '⭐ Saint of the Day',
-            body: 'Discover today\'s saint and their inspiring story',
-            channelId: 'daily_prayers',
-            payload: '/saints',
-          );
-          break;
-      }
-    } else {
-      await cancelNotification(id);
-    }
+  /// Toggle and save preference for specific notification
+  Future<void> setDevotionEnabled(String key, bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, enabled);
+    await scheduleAllDailyNotifications();
   }
 }
 
-/// Service for admin-triggered broadcast notifications
-class BroadcastNotificationService {
-  final FlutterLocalNotificationsPlugin _notifications =
-      FlutterLocalNotificationsPlugin();
-
-  /// Show an immediate broadcast notification
-  Future<void> showBroadcast({
-    required String title,
-    required String body,
-    String? payload,
-  }) async {
-    await _notifications.show(
-      DateTime.now().millisecondsSinceEpoch.remainder(100000),
-      title,
-      body,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'broadcasts',
-          'Announcements',
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
-        ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      payload: payload,
-    );
-  }
-
-  /// Check for pending broadcasts from server
-  Future<void> checkPendingBroadcasts() async {
-    // In production, fetch from Supabase/API if needed
-  }
-}
-
-/// Service for inactive user re-engagement
-class ReengagementService {
-  final SharedPreferences _prefs;
-  // ignore: unused_field - Reserved for future scheduled notification integration
-  final ScheduledNotificationService _scheduledNotifications;
-
-  static const _lastActiveKey = 'last_active_timestamp';
-  static const _reengagementSentKey = 'reengagement_sent';
-
-  ReengagementService(this._prefs, this._scheduledNotifications);
-
-  /// Record user activity
-  Future<void> recordActivity() async {
-    await _prefs.setInt(_lastActiveKey, DateTime.now().millisecondsSinceEpoch);
-    await _prefs.setBool(_reengagementSentKey, false);
-  }
-
-  /// Check if user is inactive and should receive re-engagement
-  Future<bool> shouldSendReengagement() async {
-    final lastActive = _prefs.getInt(_lastActiveKey);
-    final alreadySent = _prefs.getBool(_reengagementSentKey) ?? false;
-
-    if (lastActive == null || alreadySent) return false;
-
-    final lastActiveDate = DateTime.fromMillisecondsSinceEpoch(lastActive);
-    final daysSinceActive = DateTime.now().difference(lastActiveDate).inDays;
-
-    return daysSinceActive >= 3; // Send after 3 days of inactivity
-  }
-
-  /// Schedule re-engagement notification
-  Future<void> scheduleReengagement() async {
-    if (!await shouldSendReengagement()) return;
-
-    final notifications = FlutterLocalNotificationsPlugin();
-    await notifications.show(
-      999,
-      '🙏 We miss you!',
-      'Come back and continue your prayer journey. Your streak is waiting!',
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'streak_reminders',
-          'Streak Reminders',
-          importance: Importance.high,
-          priority: Priority.high,
-        ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      payload: '/',
-    );
-
-    await _prefs.setBool(_reengagementSentKey, true);
-  }
-}
-
-/// Providers
+/// Provider for ScheduledNotificationService
 final scheduledNotificationServiceProvider =
     Provider<ScheduledNotificationService>((ref) {
-      return ScheduledNotificationService();
-    });
-
-final broadcastNotificationServiceProvider =
-    Provider<BroadcastNotificationService>((ref) {
-      return BroadcastNotificationService();
-    });
+  return ScheduledNotificationService();
+});
