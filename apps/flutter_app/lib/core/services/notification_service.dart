@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../app/routes.dart';
 import 'api_service.dart';
 
 /// Top-level background message handler for FCM
@@ -81,6 +82,24 @@ class NotificationService {
       // 5. Handle notification click when app opened from background
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         debugPrint('FCM notification clicked in background: ${message.data}');
+        final targetRoute = message.data['route'] ??
+            message.data['url'] ??
+            message.data['slug'] ??
+            '/';
+        navigateToNotificationTarget(targetRoute);
+      });
+
+      // Check for cold-start initial notification tap
+      _fcm.getInitialMessage().then((RemoteMessage? initialMessage) {
+        if (initialMessage != null) {
+          debugPrint('FCM notification opened app from terminated state: ${initialMessage.data}');
+          final targetRoute = initialMessage.data['route'] ??
+              initialMessage.data['url'] ??
+              initialMessage.data['slug'];
+          if (targetRoute != null) {
+            navigateToNotificationTarget(targetRoute);
+          }
+        }
       });
 
       // 6. Token Check & Device Registration
@@ -282,6 +301,8 @@ class NotificationService {
           'token': token,
           'platform': platform,
           'provider': 'firebase',
+          'timezone': DateTime.now().timeZoneName,
+          'timezoneOffsetMinutes': DateTime.now().timeZoneOffset.inMinutes,
         },
       );
       debugPrint('FCM Device Registered with Backend: $token');
@@ -399,6 +420,29 @@ class NotificationService {
     if (actionId == 'action_amen' || actionId == 'action_mercy_amen') {
       debugPrint('Devotee affirmed Amen to devotional notification');
       return;
+    }
+
+    // Action button targeted deep linking
+    if (actionId == 'action_read_gospel' || actionId == 'action_listen_gospel') {
+      navigateToNotificationTarget('/readings');
+      return;
+    }
+    if (actionId == 'action_pray_angelus') {
+      navigateToNotificationTarget('/prayers');
+      return;
+    }
+    if (actionId == 'action_pray_chaplet') {
+      navigateToNotificationTarget('/chaplets');
+      return;
+    }
+    if (actionId == 'action_pray_back') {
+      navigateToNotificationTarget('/prayer-wall');
+      return;
+    }
+
+    // Direct notification tap routing
+    if (payload != null && payload.isNotEmpty) {
+      navigateToNotificationTarget(payload);
     }
   }
 

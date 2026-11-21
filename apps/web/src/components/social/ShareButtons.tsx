@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Share2, Copy, Check, X } from 'lucide-react';
+import { Share2, Copy, Check, X, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { HolyCardGeneratorModal } from '@/components/prayer/HolyCardGeneratorModal';
 import {
   buildShareText,
   getSharePlatforms,
@@ -40,6 +41,7 @@ export function ShareButtons({
   className = '',
 }: ShareButtonsProps) {
   const [showModal, setShowModal] = useState(false);
+  const [showHolyCardModal, setShowHolyCardModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const shareText = buildShareText({ title, description, fullText, type: contentType, url });
@@ -91,6 +93,16 @@ export function ShareButtons({
             <span>{label}</span>
           </button>
 
+          {/* Create Holy Card for Socials */}
+          <button
+            onClick={() => setShowHolyCardModal(true)}
+            className="flex items-center gap-2 px-5 py-3.5 bg-gradient-to-r from-purple-950 via-indigo-950 to-sacred-950 hover:from-purple-900 hover:to-indigo-900 text-amber-300 font-semibold rounded-2xl transition-all active:scale-95 text-sm border border-amber-500/40 shadow-sm hover:shadow-md"
+            title="Generate beautiful Catholic Holy Card for WhatsApp and Instagram"
+          >
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>Create Holy Card</span>
+          </button>
+
           {/* Copy Prayer Text */}
           <button
             onClick={handleCopy}
@@ -111,6 +123,14 @@ export function ShareButtons({
           contentType={contentType}
           onCopy={handleCopy}
           copied={copied}
+        />
+
+        <HolyCardGeneratorModal
+          isOpen={showHolyCardModal}
+          onClose={() => setShowHolyCardModal(false)}
+          title={title}
+          prayerText={fullText || description || title}
+          category={contentType}
         />
       </>
     );
@@ -136,6 +156,14 @@ export function ShareButtons({
           contentType={contentType}
           onCopy={handleCopy}
           copied={copied}
+        />
+
+        <HolyCardGeneratorModal
+          isOpen={showHolyCardModal}
+          onClose={() => setShowHolyCardModal(false)}
+          title={title}
+          prayerText={fullText || description || title}
+          category={contentType}
         />
       </>
     );
@@ -281,6 +309,7 @@ export function ShareTrigger({
   className?: string;
 }) {
   const [showModal, setShowModal] = useState(false);
+  const [showHolyCardModal, setShowHolyCardModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const shareText = buildShareText({ title, description, type: contentType, url });

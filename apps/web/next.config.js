@@ -106,7 +106,11 @@ const nextConfig = {
             'gcatholic.org', 
             'localhost', 
             'images.unsplash.com', 
-            'htgvilktnadnwlforyjt.supabase.co'
+            'htgvilktnadnwlforyjt.supabase.co',
+            'i.ytimg.com',
+            'img.youtube.com',
+            'i9.ytimg.com',
+            'youtube.com'
         ],
     },
 
@@ -224,7 +228,7 @@ const nextConfig = {
                             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com",
                             "font-src 'self' https://fonts.gstatic.com",
                             "object-src 'self' data: https:;",
-                            "img-src 'self' data: https: blob: https://*.paypal.com https://c.clarity.ms https://*.google-analytics.com https://google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+                            "img-src 'self' data: https: blob: https://*.ytimg.com https://*.youtube.com https://i.ytimg.com https://img.youtube.com https://*.paypal.com https://c.clarity.ms https://*.google-analytics.com https://google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
                             "connect-src 'self' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google-analytics.com https://google-analytics.com https://*.analytics.google.com https://analytics.google.com https://*.doubleclick.net https://stats.g.doubleclick.net https://*.googlesyndication.com https://*.gstatic.com https://*.adtrafficquality.google https://*.supabase.co https://*.neon.tech https://bible-api.com https://translate.googleapis.com https://www.clarity.ms https://c.clarity.ms",
                             "frame-src 'self' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google.com https://*.youtube.com https://*.vimeo.com https://*.doubleclick.net https://*.googlesyndication.com https://*.adtrafficquality.google",
                         ].join('; '),

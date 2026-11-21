@@ -11,6 +11,7 @@ import { SpiritualJourneyProvider } from '@/components/journey/SpiritualJourneyP
 import { PricingProvider } from '@/contexts/PricingContext';
 import { AudioProvider } from '@/components/audio/AudioContext';
 import { DailyPrayerCompanionPrompt } from '@/components/notifications/DailyPrayerCompanionPrompt';
+import { SacredAmbiancePlayer } from '@/components/audio/SacredAmbiancePlayer';
 
 // Self-hosted fonts for performance
 const inter = Inter({
@@ -176,6 +177,7 @@ export default function RootLayout({
                                     {children}
                                 </LayoutChrome>
                                 <DailyPrayerCompanionPrompt />
+                                <SacredAmbiancePlayer />
 
                                 {/* Structured Data */}
                                 <script

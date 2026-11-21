@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/supabase_provider.dart';
@@ -198,15 +200,46 @@ class PrayerWallRepository {
   }) async {
     try {
       final user = _supabase.auth.currentUser;
+      final effectiveUserId = user?.id ?? userId;
+
+      // 1. Primary: Submit through secure Backend API for Auto-moderation, Spam defense, and Admin logging
+      try {
+        final response = await http.post(
+          Uri.parse('https://www.myprayertower.com/api/prayers/submit'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'intention': intention,
+            'userName': userName,
+            'category': category ?? 'General',
+            'country': country,
+            'userId': effectiveUserId,
+            'visibility': visibility,
+            'isAnonymous': isAnonymous,
+          }),
+        ).timeout(const Duration(seconds: 8));
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          final resData = jsonDecode(response.body);
+          if (resData['success'] == true) {
+            return true;
+          }
+        }
+      } catch (_) {
+        // Fallback to direct Supabase client if API is unreachable
+      }
+
+      // 2. Fallback: Direct Supabase insert with clean status auto-approval
+      final isClean = !intention.toLowerCase().contains('http') &&
+          intention.trim().length >= 10;
 
       await _supabase.from('PrayerRequest').insert({
         'content': intention,
-        'userId': user?.id ?? userId, // Fallback if needed
+        'userId': effectiveUserId,
         'category': category?.toUpperCase() ?? 'OTHER',
         'isAnonymous': isAnonymous,
         'visibility': visibility,
         'country': country,
-        'status': 'PENDING',
+        'status': isClean ? 'APPROVED' : 'PENDING',
         'prayerCount': 0,
         'createdAt': DateTime.now().toIso8601String(),
         'updatedAt': DateTime.now().toIso8601String(),

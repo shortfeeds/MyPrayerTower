@@ -114,12 +114,26 @@ export async function getPrayerCategories() {
 
 export async function getPrayerBySlug(slug: string) {
     try {
-        const prayer = await db.prayer.findFirst({
+        let prayer = await db.prayer.findFirst({
             where: {
                 slug: slug,
                 is_active: true
             }
         });
+
+        // Resilient smart lookup: if exact slug is not found, try slug contains or title match
+        if (!prayer) {
+            const normalized = slug.replace(/-/g, ' ').trim();
+            prayer = await db.prayer.findFirst({
+                where: {
+                    is_active: true,
+                    OR: [
+                        { slug: { contains: slug, mode: 'insensitive' } },
+                        { title: { contains: normalized, mode: 'insensitive' } },
+                    ]
+                }
+            });
+        }
 
         if (!prayer) return null;
 

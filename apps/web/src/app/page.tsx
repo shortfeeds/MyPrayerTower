@@ -21,6 +21,7 @@ import { SeoContentSection } from '@/components/home/SeoContentSection';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { YouTubeChannelSection } from '@/components/home/YouTubeChannelSection';
+import { SanctuaryMemorialsWall } from '@/components/offerings/SanctuaryMemorialsWall';
 import { fetchYouTubeVideos } from '@/lib/youtube';
 
 async function AsyncDailyFocus() {
@@ -191,6 +192,12 @@ async function LoggedOutHomePage() {
                 Goal: Content discovery & engagement
             ============================================ */}
             <YouTubeChannelSection videos={youtubeVideos} />
+
+            {/* ============================================
+                SECTION 5.6: SANCTUARY MEMORIALS & OFFERINGS WALL
+                Goal: Social proof & communal reverence
+            ============================================ */}
+            <SanctuaryMemorialsWall />
 
             {/* ============================================
                 SECTION 6: INVITATION TO RETURN

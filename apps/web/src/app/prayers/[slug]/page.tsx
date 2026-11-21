@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { getPrayerBySlug, getLibraryPrayers } from '@/app/actions/prayer-library';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ChevronLeft, Scroll, Sparkles } from 'lucide-react';
@@ -90,6 +90,10 @@ export default async function PrayerPage({ params }: Props) {
 
     if (!prayer) {
         notFound();
+    }
+
+    if (prayer.slug && prayer.slug !== params.slug) {
+        redirect(`/prayers/${prayer.slug}`);
     }
 
     // Fetch related prayers (same category, exclude current)

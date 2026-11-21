@@ -116,6 +116,13 @@ export async function submitPrayerRequest(prevState: any, formData: FormData) {
         const categoryEnum = category.toUpperCase();
         const visibilityEnum = visibility.toUpperCase();
 
+        // Auto-approve reverent intentions that pass all spam & toxicity filters
+        const isAutoApproved = moderation.isValid && !spamCheck.isSpam;
+        const status = isAutoApproved ? 'APPROVED' : 'PENDING';
+        const moderationNotes = isAutoApproved
+            ? 'Auto-moderated: Approved (Reverent Catholic Intention)'
+            : 'Auto-moderated: Flagged for manual review';
+
         const prayer = await prisma.prayerRequest.create({
             data: {
                 id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
@@ -123,8 +130,10 @@ export async function submitPrayerRequest(prevState: any, formData: FormData) {
                 category: categoryEnum as any,
                 visibility: visibilityEnum as any,
                 userId: userId,
-                // All free listings sent to admin panel (PENDING)
-                status: 'PENDING',
+                status: status as any,
+                moderationNotes,
+                moderatedAt: new Date(),
+                moderatedBy: 'SYSTEM_AUTO_MODERATOR',
                 updatedAt: new Date(),
             }
         });
@@ -134,7 +143,12 @@ export async function submitPrayerRequest(prevState: any, formData: FormData) {
         // Auto-notify search engines of new content
         await notifyIndexNow('/prayer-wall');
 
-        return { success: true, message: 'Prayer request submitted for review!' };
+        return {
+            success: true,
+            message: isAutoApproved
+                ? 'Your prayer intention has been placed on the Sacred Altar.'
+                : 'Prayer request submitted for review!'
+        };
 
     } catch (error) {
         console.error('Error submitting prayer:', error);

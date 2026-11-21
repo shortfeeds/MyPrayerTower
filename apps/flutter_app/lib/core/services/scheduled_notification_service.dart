@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../app/routes.dart';
 
 /// Scheduled notification service for daily reminders
 class ScheduledNotificationService {
@@ -12,11 +13,12 @@ class ScheduledNotificationService {
 
   bool _isInitialized = false;
 
-  /// Initialize the notification service
+  /// Initialize the notification service with user device timezone
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     tz_data.initializeTimeZones();
+    _configureLocalTimezone();
 
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
@@ -32,12 +34,44 @@ class ScheduledNotificationService {
       iOS: iosSettings,
     );
 
-    await _notifications.initialize(initSettings);
+    await _notifications.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (details) {
+        if (details.payload != null && details.payload!.isNotEmpty) {
+          debugPrint('[Scheduled Notification] Clicked with route: ${details.payload}');
+          navigateToNotificationTarget(details.payload);
+        }
+      },
+    );
 
     // Create notification channels
     await _createNotificationChannels();
 
     _isInitialized = true;
+  }
+
+  /// Automatically configure user device local timezone
+  void _configureLocalTimezone() {
+    try {
+      final String timeZoneName = DateTime.now().timeZoneName;
+      try {
+        tz.setLocalLocation(tz.getLocation(timeZoneName));
+        debugPrint('[Timezone] Initialized with location name: $timeZoneName');
+        return;
+      } catch (_) {
+        // Fallback: match by current device UTC offset
+        final offset = DateTime.now().timeZoneOffset;
+        for (final loc in tz.timeZoneDatabase.locations.values) {
+          if (loc.currentTimeZone.offset == offset.inMilliseconds) {
+            tz.setLocalLocation(loc);
+            debugPrint('[Timezone] Initialized with matched offset: ${loc.name}');
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('[Timezone] Note initializing local timezone: $e');
+    }
   }
 
   Future<void> _createNotificationChannels() async {
@@ -280,20 +314,22 @@ class ScheduledNotificationService {
     required String channelId,
     String? payload,
   }) async {
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
+    // Determine the user's exact local wall-clock target time
+    final deviceNow = DateTime.now();
+    var targetLocalTime = DateTime(
+      deviceNow.year,
+      deviceNow.month,
+      deviceNow.day,
       hour,
       minute,
     );
 
-    // If time has passed for today, schedule for tomorrow
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    // If the local hour has already passed today, schedule for tomorrow
+    if (targetLocalTime.isBefore(deviceNow)) {
+      targetLocalTime = targetLocalTime.add(const Duration(days: 1));
     }
+
+    final scheduledDate = tz.TZDateTime.from(targetLocalTime, tz.local);
 
     String channelName;
     switch (channelId) {

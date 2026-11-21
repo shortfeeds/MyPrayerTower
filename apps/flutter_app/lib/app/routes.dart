@@ -99,11 +99,58 @@ import '../features/prayer_groups/screens/group_detail_screen.dart';
 import '../features/prayer_groups/screens/community_dashboard_screen.dart';
 
 import '../widgets/main_scaffold.dart';
+import '../core/services/analytics_service.dart';
+
+/// Global root navigator key for deep linking from push notifications & background actions
+final GlobalKey<NavigatorState> rootNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'rootNav');
+
+/// Central deep link navigator for notifications and background clicks
+void navigateToNotificationTarget(String? target) {
+  if (target == null || target.trim().isEmpty) return;
+  String clean = target.trim();
+  if (clean.startsWith('https://www.myprayertower.com')) {
+    clean = clean.replaceFirst('https://www.myprayertower.com', '');
+  } else if (clean.startsWith('http://localhost:3000')) {
+    clean = clean.replaceFirst('http://localhost:3000', '');
+  }
+  if (!clean.startsWith('/')) {
+    clean = '/$clean';
+  }
+
+  // Handle known routes and aliases
+  if (clean == '/daily-gospel' || clean == '/gospel') {
+    clean = '/readings';
+  } else if (clean == '/angelus' || clean == '/angelus-bells') {
+    clean = '/prayers';
+  } else if (clean == '/divine-mercy' || clean == '/mercy') {
+    clean = '/chaplets';
+  }
+
+  final context = rootNavigatorKey.currentContext;
+  if (context != null) {
+    debugPrint('[DeepLink] Navigating to: $clean');
+    GoRouter.of(context).push(clean);
+  } else {
+    // If context isn't ready yet (app starting), retry after a short delay
+    Future.delayed(const Duration(milliseconds: 600), () {
+      final retryContext = rootNavigatorKey.currentContext;
+      if (retryContext != null) {
+        debugPrint('[DeepLink Delayed] Navigating to: $clean');
+        GoRouter.of(retryContext).push(clean);
+      }
+    });
+  }
+}
 
 final routerProvider = Provider<GoRouter>((ref) {
+  final analyticsObserver = ref.watch(analyticsObserverProvider);
+
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: true,
+    observers: [analyticsObserver],
     routes: [
       // Onboarding/Auth routes
       GoRoute(

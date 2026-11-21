@@ -178,29 +178,35 @@ class _PremiumFloatingNavBar extends ConsumerWidget {
     return Center(
       child: SizedBox(
         width: barWidth,
-        height: 72,
+        height: 74,
         child: Stack(
           children: [
-            // Premium Glass Container
+            // Bold Sanctuary Glass Container with Gold Accents
             ClipRRect(
               borderRadius: BorderRadius.circular(32),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                 child: Container(
-                  height: 72,
+                  height: 74,
                   decoration: BoxDecoration(
-                    color: AppTheme.sacredNavy900.withValues(alpha: 0.6),
+                    color: const Color(0xFF0D0818).withValues(alpha: 0.94),
                     borderRadius: BorderRadius.circular(32),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      width: 1.5,
+                      color: AppTheme.gold500.withValues(alpha: 0.45),
+                      width: 1.8,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        blurRadius: 30,
-                        spreadRadius: -4,
+                        color: Colors.black.withValues(alpha: 0.7),
+                        blurRadius: 32,
+                        spreadRadius: 2,
                         offset: const Offset(0, 10),
+                      ),
+                      BoxShadow(
+                        color: AppTheme.gold500.withValues(alpha: 0.15),
+                        blurRadius: 18,
+                        spreadRadius: -2,
+                        offset: const Offset(0, -2),
                       ),
                     ],
                   ),
@@ -208,32 +214,54 @@ class _PremiumFloatingNavBar extends ConsumerWidget {
               ),
             ),
 
-            // Sliding Indicator - Premium Glow
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.elasticOut,
-              left: selectedIndex * itemWidth + (itemWidth - 56) / 2,
-              top: 8,
+            // Top Gilded Halo Line
+            Positioned(
+              top: 0,
+              left: 24,
+              right: 24,
               child: Container(
-                width: 56,
+                height: 2,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      AppTheme.gold400.withValues(alpha: 0.8),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Sliding Active Capsule - Bold Golden Glow
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 350),
+              curve: Curves.easeOutCubic,
+              left: selectedIndex * itemWidth + (itemWidth - 60) / 2,
+              top: 9,
+              child: Container(
+                width: 60,
                 height: 56,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Theme.of(context).primaryColor.withValues(alpha: 0.25),
-                      Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                      AppTheme.gold500.withValues(alpha: 0.35),
+                      AppTheme.gold600.withValues(alpha: 0.18),
                     ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: AppTheme.gold400.withValues(alpha: 0.6),
+                    width: 1.4,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(
-                        context,
-                      ).primaryColor.withValues(alpha: 0.2),
-                      blurRadius: 10,
-                      spreadRadius: -2,
+                      color: AppTheme.gold500.withValues(alpha: 0.35),
+                      blurRadius: 16,
+                      spreadRadius: -1,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -242,7 +270,7 @@ class _PremiumFloatingNavBar extends ConsumerWidget {
 
             // Nav Items Row
             SizedBox(
-              height: 72,
+              height: 74,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(items.length, (index) {
@@ -254,7 +282,10 @@ class _PremiumFloatingNavBar extends ConsumerWidget {
                       icon: isActive ? item.activeIcon : item.icon,
                       label: item.label,
                       isActive: isActive,
-                      onTap: () => context.go(item.path),
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        context.go(item.path);
+                      },
                     ),
                   );
                 }),
@@ -290,36 +321,28 @@ class _PremiumNavButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: EdgeInsets.all(isActive ? 10 : 8),
-            decoration: BoxDecoration(
-              color: isActive
-                  ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
-                  : Colors.transparent,
-              shape: BoxShape.circle,
-            ),
+            duration: const Duration(milliseconds: 250),
+            padding: const EdgeInsets.all(6),
             child: Icon(
               icon,
-              color: isActive ? Theme.of(context).primaryColor : Colors.white60,
+              color: isActive
+                  ? AppTheme.gold400
+                  : Colors.white.withValues(alpha: 0.85),
               size: isActive ? 26 : 22,
             ),
           ),
-          const SizedBox(height: 4),
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: isActive ? 1.0 : 0.4,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                label,
-                style: GoogleFonts.inter(
-                  fontSize: 10,
-                  fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-                  color: isActive
-                      ? Theme.of(context).primaryColor
-                      : Colors.white,
-                  letterSpacing: 0.5,
-                ),
+          const SizedBox(height: 2),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+                color: isActive
+                    ? AppTheme.gold300
+                    : Colors.white.withValues(alpha: 0.85),
+                letterSpacing: 0.4,
               ),
             ),
           ),

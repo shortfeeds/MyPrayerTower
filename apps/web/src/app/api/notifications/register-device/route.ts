@@ -6,7 +6,10 @@ import { getUserFromCookie } from '@/lib/auth';
 const registerSchema = z.object({
     token: z.string().min(1, "Token is required"),
     platform: z.enum(['android', 'ios', 'web']).default('web'),
-    userAgent: z.string().optional()
+    userAgent: z.string().optional(),
+    provider: z.string().optional(),
+    timezone: z.string().optional(),
+    timezoneOffsetMinutes: z.number().optional(),
 });
 
 export async function POST(req: Request) {

@@ -18,6 +18,18 @@ export function YouTubeVideoCard({ id, title, thumbnail, publishedAt, descriptio
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isShared, setIsShared] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [fallbackStep, setFallbackStep] = useState(0);
+
+    // Initial thumbnail fallback ladder (including first-party proxy immune to ad-blockers)
+    const primaryThumb = thumbnail || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+    const secondaryThumb = `/api/youtube/thumbnail?id=${id}`;
+    const tertiaryThumb = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+
+    const currentThumb = fallbackStep === 0
+        ? primaryThumb
+        : fallbackStep === 1
+        ? secondaryThumb
+        : tertiaryThumb;
 
     // Fix hydration mismatch for dates
     useEffect(() => {
@@ -67,12 +79,23 @@ export function YouTubeVideoCard({ id, title, thumbnail, publishedAt, descriptio
                 >
 
 
-                    <img
-                        src={thumbnail}
-                        alt={title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                    />
+                    {fallbackStep < 3 ? (
+                        <img
+                            src={currentThumb}
+                            alt={title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                            referrerPolicy="no-referrer"
+                            onError={() => {
+                                setFallbackStep(prev => prev + 1);
+                            }}
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#120a24] via-[#1f103c] to-[#0a0515] flex flex-col items-center justify-center p-4 text-center">
+                            <Youtube className="w-10 h-10 text-red-500 mb-2 drop-shadow-[0_0_12px_rgba(239,68,68,0.5)]" />
+                            <span className="text-xs font-serif text-amber-200 line-clamp-2 px-2">{title}</span>
+                        </div>
+                    )}
                     {/* Play Overlay */}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
                         <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300 shadow-2xl">

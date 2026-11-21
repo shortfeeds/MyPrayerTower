@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -53,19 +54,24 @@ class FrostedBottomNavBar extends ConsumerWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
-            height: 72,
+            height: 74,
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.4),
+              color: const Color(0xFF0D0818).withValues(alpha: 0.94),
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
-                width: 1,
+                color: AppTheme.gold500.withValues(alpha: 0.45),
+                width: 1.8,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 20,
+                  color: Colors.black.withValues(alpha: 0.7),
+                  blurRadius: 28,
                   offset: const Offset(0, 10),
+                ),
+                BoxShadow(
+                  color: AppTheme.gold500.withValues(alpha: 0.15),
+                  blurRadius: 16,
+                  offset: const Offset(0, -2),
                 ),
               ],
             ),
@@ -79,7 +85,10 @@ class FrostedBottomNavBar extends ConsumerWidget {
                   icon: isActive ? item.activeIcon : item.icon,
                   label: item.label,
                   isActive: isActive,
-                  onTap: () => onTap(index),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    onTap(index);
+                  },
                 );
               }),
             ),
@@ -116,33 +125,38 @@ class _NavButton extends StatelessWidget {
         ),
         decoration: isActive
             ? BoxDecoration(
-                color: AppTheme.gold500.withValues(alpha: 0.2),
+                color: AppTheme.gold500.withValues(alpha: 0.28),
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: AppTheme.gold400.withValues(alpha: 0.5),
+                  width: 1.2,
+                ),
               )
             : null,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             AnimatedScale(
-              scale: isActive ? 1.1 : 1.0,
+              scale: isActive ? 1.15 : 1.0,
               duration: const Duration(milliseconds: 200),
               child: Icon(
                 icon,
                 color: isActive
-                    ? AppTheme.gold500
-                    : Colors.white.withValues(alpha: 0.6),
-                size: 22,
+                    ? AppTheme.gold400
+                    : Colors.white.withValues(alpha: 0.85),
+                size: isActive ? 24 : 22,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 200),
               style: GoogleFonts.inter(
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
                 color: isActive
-                    ? AppTheme.gold500
-                    : Colors.white.withValues(alpha: 0.6),
+                    ? AppTheme.gold300
+                    : Colors.white.withValues(alpha: 0.85),
+                letterSpacing: 0.4,
               ),
               child: Text(label),
             ),
