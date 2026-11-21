@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../constants/api_constants.dart';
+import '../constants/app_constants.dart';
 
 /// Service to track screen views and user actions across Android app
 class AnalyticsService {
