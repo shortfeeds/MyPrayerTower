@@ -115,10 +115,10 @@ export function getAdSlot(page: keyof typeof AD_SLOTS, position: string): string
 }
 
 /**
- * Check if ads are enabled (client ID exists)
+ * Check if ads are enabled (globally disabled per user request)
  */
 export function isAdsEnabled(): boolean {
-    return !!(process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1009360672921924');
+    return false;
 }
 
 /**

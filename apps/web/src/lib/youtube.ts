@@ -105,7 +105,7 @@ export async function fetchYouTubeVideos(limit: number = 30, playlistId?: string
                         id,
                         title: item.snippet?.title || '',
                         description: cleanDescription(item.snippet?.description || ''),
-                        thumbnail: item.snippet?.thumbnails?.high?.url || item.snippet?.thumbnails?.medium?.url || '',
+                        thumbnail: `/api/youtube/thumbnail?id=${id}`,
                         publishedAt: item.snippet?.publishedAt || '',
                         type
                     };
@@ -142,7 +142,7 @@ export async function fetchYouTubeVideos(limit: number = 30, playlistId?: string
                 id,
                 title,
                 description,
-                thumbnail: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
+                thumbnail: `/api/youtube/thumbnail?id=${id}`,
                 publishedAt: entry.match(/<published>(.*?)<\/published>/)?.[1] || new Date().toISOString(),
                 type
             };

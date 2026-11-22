@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { CoreActions } from '@/components/home/CoreActions';
 import { SocialReassurance } from '@/components/home/SocialReassurance';
-import { WhyWeExist } from '@/components/home/WhyWeExist';
 import { FeatureDiscovery } from '@/components/home/FeatureDiscovery';
 import { InvitationToReturn } from '@/components/home/InvitationToReturn';
 import { DailyFocus } from '@/components/home/DailyFocus';
@@ -19,7 +18,6 @@ import { WelcomeGreeting } from '@/components/home/WelcomeGreeting';
 import { GlobalPerpetualFlame } from '@/components/novenas/GlobalPerpetualFlame';
 import { SeoContentSection } from '@/components/home/SeoContentSection';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { SmartAdSlot } from '@/components/ads/SmartAdSlot';
 import { YouTubeChannelSection } from '@/components/home/YouTubeChannelSection';
 import { SanctuaryMemorialsWall } from '@/components/offerings/SanctuaryMemorialsWall';
 import { fetchYouTubeVideos } from '@/lib/youtube';
@@ -166,21 +164,10 @@ async function LoggedOutHomePage() {
             <SocialReassurance />
 
             {/* ============================================
-                SECTION 4: WHY WE EXIST
-                Goal: Meaning before monetization
-            ============================================ */}
-            <WhyWeExist />
-
-            {/* ============================================
-                SECTION 5: FEATURE DISCOVERY
+                SECTION 4: FEATURE DISCOVERY
                 Goal: Exploration, not conversion
             ============================================ */}
             <FeatureDiscovery />
-
-            {/* Ad Slot — Between Features and Testimonials */}
-            <div className="container mx-auto px-4 py-6">
-                <SmartAdSlot page="home" position="inline" showPlaceholder={false} />
-            </div>
 
             {/* Testimonials - Social Proof (Soft) */}
             <div className="bg-slate-50 dark:bg-slate-900 py-16 border-t border-gray-100 dark:border-slate-800">
@@ -207,11 +194,6 @@ async function LoggedOutHomePage() {
 
             {/* App Download */}
             <AppDownloadBanner />
-
-            {/* Ad Slot — Pre-footer */}
-            <div className="container mx-auto px-4 py-6">
-                <SmartAdSlot page="home" position="bottom" showPlaceholder={false} />
-            </div>
 
             {/* Closing Benediction */}
             <div className="py-12 text-center">

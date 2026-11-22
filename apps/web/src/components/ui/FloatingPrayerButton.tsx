@@ -56,7 +56,7 @@ export function FloatingPrayerButton({
     if (!enabled || isDismissed || !isVisible) return null;
 
     return (
-        <div className="fixed bottom-32 md:bottom-8 right-6 z-[60] flex flex-col items-end gap-2 drop-shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+        <div className="fixed bottom-32 md:bottom-24 right-6 z-[60] flex flex-col items-end gap-2 drop-shadow-[0_0_20px_rgba(212,175,55,0.2)]">
             {/* Dismiss button removed for Hub persistency */}
 
             <Link

@@ -20,9 +20,9 @@ export function YouTubeVideoCard({ id, title, thumbnail, publishedAt, descriptio
     const [isMounted, setIsMounted] = useState(false);
     const [fallbackStep, setFallbackStep] = useState(0);
 
-    // Initial thumbnail fallback ladder (including first-party proxy immune to ad-blockers)
-    const primaryThumb = thumbnail || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-    const secondaryThumb = `/api/youtube/thumbnail?id=${id}`;
+    // Primary: First-party server proxy immune to ad-blockers, ISP blocks, and privacy filters
+    const primaryThumb = `/api/youtube/thumbnail?id=${id}`;
+    const secondaryThumb = thumbnail && !thumbnail.includes('api/youtube') ? thumbnail : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
     const tertiaryThumb = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
 
     const currentThumb = fallbackStep === 0
@@ -81,10 +81,13 @@ export function YouTubeVideoCard({ id, title, thumbnail, publishedAt, descriptio
 
                     {fallbackStep < 3 ? (
                         <img
+                            key={currentThumb}
                             src={currentThumb}
-                            alt={title}
+                            alt=""
+                            aria-hidden="true"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             loading="lazy"
+                            decoding="async"
                             referrerPolicy="no-referrer"
                             onError={() => {
                                 setFallbackStep(prev => prev + 1);

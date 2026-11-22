@@ -4,22 +4,14 @@ import { SocialProofToast } from '@/components/engagement/SocialProofToast';
 import { PushNotificationPrompt } from '@/components/engagement/PushNotificationPrompt';
 import { FloatingPrayerButton } from '@/components/ui/FloatingPrayerButton';
 import { PwaInstallBanner } from '@/components/pwa/PwaInstallBanner';
-
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
-import { useAdStore } from '@/store/useAdStore';
+
 /**
  * Global engagement components that appear across the site
  * Includes social proof toasts, push notification prompts, and floating buttons
  */
 export function GlobalEngagement() {
     const pathname = usePathname();
-
-    const fetchAds = useAdStore(state => state.fetchAds);
-
-    useEffect(() => {
-        fetchAds();
-    }, [fetchAds]);
 
     // Don't show engagement components on admin or payment pages
     const excludedPaths = ['/admin', '/checkout', '/payment'];
