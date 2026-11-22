@@ -15,7 +15,8 @@ import {
     ArrowUpRight,
     RefreshCw,
     Layers,
-    Heart
+    Heart,
+    CheckCircle2
 } from 'lucide-react';
 import { db } from '@/lib/db';
 
@@ -24,23 +25,42 @@ export const dynamic = 'force-dynamic';
 interface PageProps {
     searchParams?: {
         days?: string;
+        category?: string;
         platform?: string;
     };
 }
 
-async function InteractionsOverview({ days = 30, platformFilter }: { days: number; platformFilter?: string }) {
+async function InteractionsOverview({
+    days = 30,
+    categoryFilter,
+    platformFilter
+}: {
+    days: number;
+    categoryFilter?: string;
+    platformFilter?: string;
+}) {
     const sinceDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
 
-    const platformWhere = platformFilter ? { platform: platformFilter } : {};
+    const baseWhere: any = { createdAt: { gte: sinceDate } };
+    if (categoryFilter && categoryFilter !== 'all') {
+        baseWhere.category = categoryFilter;
+    }
+    if (platformFilter) {
+        baseWhere.platform = platformFilter;
+    }
 
     let totalClicks = 0;
     let todayClicks = 0;
     let webClicks = 0;
     let appClicks = 0;
+    let prayedClicks = 0;
+    let amenClicks = 0;
+    let candleClicks = 0;
+    let audioClicks = 0;
+    let offeringClicks = 0;
     let topTargets: any[] = [];
-    let categoryStats: any[] = [];
     let recentClicks: any[] = [];
 
     try {
@@ -49,30 +69,33 @@ async function InteractionsOverview({ days = 30, platformFilter }: { days: numbe
             today,
             web,
             app,
+            prayed,
+            amen,
+            candle,
+            audio,
+            offering,
             targets,
-            categories,
             recents
         ] = await Promise.all([
-            (db as any).customerInteraction.count({ where: { createdAt: { gte: sinceDate }, ...platformWhere } }).catch(() => 0),
-            (db as any).customerInteraction.count({ where: { createdAt: { gte: startOfToday }, ...platformWhere } }).catch(() => 0),
-            (db as any).customerInteraction.count({ where: { platform: 'web', createdAt: { gte: sinceDate } } }).catch(() => 0),
-            (db as any).customerInteraction.count({ where: { platform: { in: ['android', 'ios'] }, createdAt: { gte: sinceDate } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: baseWhere }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { ...baseWhere, createdAt: { gte: startOfToday } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { ...baseWhere, platform: 'web' } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { ...baseWhere, platform: { in: ['android', 'ios'] } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { category: 'prayer', createdAt: { gte: sinceDate } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { category: 'amen', createdAt: { gte: sinceDate } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { category: 'candle', createdAt: { gte: sinceDate } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { category: 'audio', createdAt: { gte: sinceDate } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { category: 'offering', createdAt: { gte: sinceDate } } }).catch(() => 0),
             (db as any).customerInteraction.groupBy({
                 by: ['target', 'category'],
                 _count: { target: true },
-                where: { createdAt: { gte: sinceDate }, ...platformWhere },
+                where: baseWhere,
                 orderBy: { _count: { target: 'desc' } },
-                take: 15,
-            }).catch(() => []),
-            (db as any).customerInteraction.groupBy({
-                by: ['category'],
-                _count: { category: true },
-                where: { createdAt: { gte: sinceDate }, ...platformWhere },
-                orderBy: { _count: { category: 'desc' } },
+                take: 20,
             }).catch(() => []),
             (db as any).customerInteraction.findMany({
-                where: { ...platformWhere },
-                take: 25,
+                where: baseWhere,
+                take: 30,
                 orderBy: { createdAt: 'desc' },
                 select: {
                     id: true,
@@ -91,8 +114,12 @@ async function InteractionsOverview({ days = 30, platformFilter }: { days: numbe
         todayClicks = today;
         webClicks = web;
         appClicks = app;
+        prayedClicks = prayed;
+        amenClicks = amen;
+        candleClicks = candle;
+        audioClicks = audio;
+        offeringClicks = offering;
         topTargets = targets;
-        categoryStats = categories;
         recentClicks = recents;
     } catch (e) {
         console.error('Failed to load customer interactions overview:', e);
@@ -105,66 +132,78 @@ async function InteractionsOverview({ days = 30, platformFilter }: { days: numbe
 
     return (
         <div className="space-y-8">
-            {/* Top Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {/* Total Clicks */}
-                <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Interactions</span>
-                        <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600">
-                            <MousePointer className="w-5 h-5" />
+            {/* Devotional Engagement Key Metrics */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                {/* Total Engagements */}
+                <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Actions</span>
+                        <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+                            <Activity className="w-4 h-4" />
                         </div>
                     </div>
-                    <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{totalClicks.toLocaleString()}</p>
-                    <p className="text-xs text-slate-500 mt-2 flex items-center gap-1 font-medium">
-                        <Activity className="w-3.5 h-3.5 text-blue-500" />
-                        <span>Logged in past {days} days</span>
-                    </p>
+                    <p className="text-2xl font-black text-slate-900">{totalClicks.toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Past {days} days</p>
                 </div>
 
-                {/* Today's Clicks */}
-                <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Today's Clicks</span>
-                        <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
-                            <TrendingUp className="w-5 h-5" />
+                {/* "I Prayed for This" */}
+                <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-rose-500">I Prayed for This</span>
+                        <div className="p-2 rounded-lg bg-rose-50 text-rose-600">
+                            <Heart className="w-4 h-4" />
                         </div>
                     </div>
-                    <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{todayClicks.toLocaleString()}</p>
-                    <p className="text-xs text-emerald-600 mt-2 font-medium flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>Since midnight today</span>
-                    </p>
+                    <p className="text-2xl font-black text-rose-600">{prayedClicks.toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Prayers offered</p>
                 </div>
 
-                {/* Website Clicks */}
-                <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Website Actions</span>
-                        <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600">
-                            <Globe className="w-5 h-5" />
+                {/* "Say Amen" */}
+                <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Say Amen</span>
+                        <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                            <CheckCircle2 className="w-4 h-4" />
                         </div>
                     </div>
-                    <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{webClicks.toLocaleString()}</p>
-                    <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
-                        <span>Web Share</span>
-                        <span className="font-bold text-indigo-600">{webPercent}%</span>
-                    </div>
+                    <p className="text-2xl font-black text-emerald-600">{amenClicks.toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Affirmations sealed</p>
                 </div>
 
-                {/* Mobile App Clicks */}
-                <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Android App Actions</span>
-                        <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600">
-                            <Smartphone className="w-5 h-5" />
+                {/* Candles Lit */}
+                <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-amber-500">Candles Lit</span>
+                        <div className="p-2 rounded-lg bg-amber-50 text-amber-600">
+                            <Flame className="w-4 h-4" />
                         </div>
                     </div>
-                    <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{appClicks.toLocaleString()}</p>
-                    <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
-                        <span>Mobile Share</span>
-                        <span className="font-bold text-amber-600">{appPercent}%</span>
+                    <p className="text-2xl font-black text-amber-600">{candleClicks.toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Vigil intentions</p>
+                </div>
+
+                {/* Sacred Ambiance Audio */}
+                <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-purple-600">Sacred Ambiance</span>
+                        <div className="p-2 rounded-lg bg-purple-50 text-purple-600">
+                            <Volume2 className="w-4 h-4" />
+                        </div>
                     </div>
+                    <p className="text-2xl font-black text-purple-600">{audioClicks.toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Chimes & Chants</p>
+                </div>
+
+                {/* Mass Offerings */}
+                <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600">Offerings</span>
+                        <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                            <Sparkles className="w-4 h-4" />
+                        </div>
+                    </div>
+                    <p className="text-2xl font-black text-indigo-600">{offeringClicks.toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Dedications initiated</p>
                 </div>
             </div>
 
@@ -172,8 +211,8 @@ async function InteractionsOverview({ days = 30, platformFilter }: { days: numbe
             <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div>
-                        <h2 className="text-base font-bold text-slate-900">Traffic Source Split</h2>
-                        <p className="text-xs text-slate-500">Customer engagement distribution across platform touchpoints</p>
+                        <h2 className="text-base font-bold text-slate-900">Engagement Touchpoint Split</h2>
+                        <p className="text-xs text-slate-500">Live breakdown of engagement actions performed on Website vs Android App</p>
                     </div>
                     <div className="flex items-center gap-4 text-xs">
                         <div className="flex items-center gap-1.5">
@@ -192,18 +231,48 @@ async function InteractionsOverview({ days = 30, platformFilter }: { days: numbe
                 </div>
             </div>
 
-            {/* Grid: Top Clicked Targets & Categories */}
+            {/* Filter Tabs by Button Category */}
+            <div className="flex flex-wrap items-center gap-2">
+                {[
+                    { key: 'all', label: 'All Buttons', icon: Layers },
+                    { key: 'prayer', label: '🙏 "I Prayed for This"', icon: Heart },
+                    { key: 'amen', label: '🕊️ "Say Amen"', icon: CheckCircle2 },
+                    { key: 'candle', label: '🕯️ Candle Lighting', icon: Flame },
+                    { key: 'audio', label: '🔔 Sacred Audio & Bells', icon: Volume2 },
+                    { key: 'offering', label: '✝️ Mass Offerings', icon: Sparkles },
+                    { key: 'social', label: '📤 Share Prayer', icon: Share2 },
+                ].map((cat) => {
+                    const isActive = (!categoryFilter && cat.key === 'all') || categoryFilter === cat.key;
+                    const Icon = cat.icon;
+                    return (
+                        <Link
+                            key={cat.key}
+                            href={`/admin/interactions?days=${days}&category=${cat.key}${platformFilter ? `&platform=${platformFilter}` : ''}`}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                                isActive
+                                    ? 'bg-slate-900 text-white shadow-sm'
+                                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                            }`}
+                        >
+                            <Icon className="w-3.5 h-3.5" />
+                            <span>{cat.label}</span>
+                        </Link>
+                    );
+                })}
+            </div>
+
+            {/* Grid: Top Specific Engagement Buttons & Realtime Stream */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Top Clicked Actions Table */}
+                {/* Specific Engagement Buttons Table */}
                 <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col justify-between">
                     <div>
                         <div className="flex items-center justify-between mb-6">
                             <div>
-                                <h2 className="text-base font-bold text-slate-900">Most Clicked Interactions</h2>
-                                <p className="text-xs text-slate-500">Highest volume buttons, features, and prayers clicked by customers</p>
+                                <h2 className="text-base font-bold text-slate-900">Customer Engagement Buttons Ranked</h2>
+                                <p className="text-xs text-slate-500">Every specific button clicked by faithful visitors to pray, affirm, or dedicate</p>
                             </div>
                             <span className="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full">
-                                Top {topTargets.length}
+                                {topTargets.length} Distinct Buttons
                             </span>
                         </div>
 
@@ -212,6 +281,15 @@ async function InteractionsOverview({ days = 30, platformFilter }: { days: numbe
                                 {topTargets.map((item, idx) => {
                                     const count = item._count?.target || 0;
                                     const percent = Math.round((count / maxTargetCount) * 100);
+
+                                    // Category color badge
+                                    let badgeColor = 'bg-slate-100 text-slate-700';
+                                    if (item.category === 'prayer') badgeColor = 'bg-rose-50 text-rose-700 border border-rose-200';
+                                    else if (item.category === 'amen') badgeColor = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+                                    else if (item.category === 'candle') badgeColor = 'bg-amber-50 text-amber-700 border border-amber-200';
+                                    else if (item.category === 'audio') badgeColor = 'bg-purple-50 text-purple-700 border border-purple-200';
+                                    else if (item.category === 'offering') badgeColor = 'bg-indigo-50 text-indigo-700 border border-indigo-200';
+
                                     return (
                                         <div key={idx} className="group">
                                             <div className="flex items-center justify-between text-xs mb-1.5">
@@ -220,17 +298,23 @@ async function InteractionsOverview({ days = 30, platformFilter }: { days: numbe
                                                     <span className="font-semibold text-slate-800 truncate group-hover:text-blue-600 transition-colors">
                                                         {item.target}
                                                     </span>
-                                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-medium uppercase tracking-wider shrink-0">
+                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${badgeColor}`}>
                                                         {item.category}
                                                     </span>
                                                 </div>
-                                                <div className="font-extrabold text-slate-900 text-right shrink-0 ml-3">
-                                                    {count.toLocaleString()} <span className="text-[10px] font-normal text-slate-400">clicks</span>
+                                                <div className="font-mono font-bold text-slate-900 shrink-0">
+                                                    {count.toLocaleString()} <span className="text-slate-400 font-normal">clicks</span>
                                                 </div>
                                             </div>
                                             <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                                                 <div
-                                                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-500"
+                                                    className={`h-full rounded-full transition-all duration-500 ${
+                                                        item.category === 'prayer' ? 'bg-rose-500' :
+                                                        item.category === 'amen' ? 'bg-emerald-500' :
+                                                        item.category === 'candle' ? 'bg-amber-500' :
+                                                        item.category === 'audio' ? 'bg-purple-500' :
+                                                        'bg-indigo-500'
+                                                    }`}
                                                     style={{ width: `${percent}%` }}
                                                 />
                                             </div>
@@ -239,224 +323,137 @@ async function InteractionsOverview({ days = 30, platformFilter }: { days: numbe
                                 })}
                             </div>
                         ) : (
-                            <div className="text-center py-12 text-slate-400 text-sm">
-                                <MousePointer className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                                <p>No interaction clicks logged yet for this period.</p>
-                                <p className="text-xs text-slate-400 mt-1">Interactions will stream here live as users click on the website and app.</p>
+                            <div className="text-center py-12 text-slate-400 text-xs">
+                                No engagement button interactions recorded yet in this time window.
                             </div>
                         )}
                     </div>
+
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                        <span>Showing verified customer engagement buttons only</span>
+                        <span>Auto-deduplicated</span>
+                    </div>
                 </div>
 
-                {/* Categories Breakdown */}
+                {/* Real-time Interaction Feed */}
                 <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col justify-between">
                     <div>
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h2 className="text-base font-bold text-slate-900">Interaction Categories</h2>
-                                <p className="text-xs text-slate-500">Distribution by intent and ministry</p>
-                            </div>
-                            <Layers className="w-4 h-4 text-slate-400" />
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+                                Real-time Stream
+                            </h2>
+                            <span className="text-xs text-slate-400">Latest 30</span>
                         </div>
+                        <p className="text-xs text-slate-500 mb-4">Live stream of customers praying, affirming, or lighting candles</p>
 
-                        {categoryStats.length > 0 ? (
-                            <div className="space-y-4">
-                                {categoryStats.map((cat, idx) => {
-                                    const count = cat._count?.category || 0;
-                                    const percent = totalClicks > 0 ? Math.round((count / totalClicks) * 100) : 0;
-                                    
-                                    let icon = Activity;
-                                    let badgeColor = 'text-blue-600 bg-blue-50';
-                                    if (cat.category === 'devotional') {
-                                        icon = Flame;
-                                        badgeColor = 'text-rose-600 bg-rose-50';
-                                    } else if (cat.category === 'offering') {
-                                        icon = Heart;
-                                        badgeColor = 'text-amber-600 bg-amber-50';
-                                    } else if (cat.category === 'audio') {
-                                        icon = Volume2;
-                                        badgeColor = 'text-purple-600 bg-purple-50';
-                                    } else if (cat.category === 'social') {
-                                        icon = Share2;
-                                        badgeColor = 'text-emerald-600 bg-emerald-50';
-                                    }
-
-                                    const IconComp = icon;
-
+                        <div className="space-y-2.5 max-h-[560px] overflow-y-auto pr-1">
+                            {recentClicks.length > 0 ? (
+                                recentClicks.map((click) => {
+                                    const timeAgo = formatTimeAgo(click.createdAt);
+                                    const isAndroid = click.platform === 'android';
                                     return (
-                                        <div key={idx} className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-100">
-                                            <div className="flex items-center justify-between text-xs mb-2">
-                                                <div className="flex items-center gap-2">
-                                                    <div className={`p-1.5 rounded-lg ${badgeColor}`}>
-                                                        <IconComp className="w-3.5 h-3.5" />
-                                                    </div>
-                                                    <span className="font-bold text-slate-800 capitalize">{cat.category}</span>
-                                                </div>
-                                                <span className="font-extrabold text-slate-900">{count.toLocaleString()} ({percent}%)</span>
+                                        <div
+                                            key={click.id}
+                                            className="p-3 bg-slate-50/80 hover:bg-slate-100/80 rounded-xl border border-slate-100 transition-colors text-xs"
+                                        >
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="font-bold text-slate-800 truncate mr-2">{click.target}</span>
+                                                <span className="text-[10px] text-slate-400 whitespace-nowrap">{timeAgo}</span>
                                             </div>
-                                            <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                                <div className="h-full bg-slate-700 rounded-full" style={{ width: `${percent}%` }} />
+                                            <div className="flex items-center justify-between text-[11px] text-slate-500">
+                                                <span className="truncate max-w-[140px] text-slate-400" title={click.path || '/'}>
+                                                    {click.path || '/'}
+                                                </span>
+                                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                                                    isAndroid ? 'bg-amber-100 text-amber-700' : 'bg-indigo-100 text-indigo-700'
+                                                }`}>
+                                                    {isAndroid ? 'Android' : 'Web'}
+                                                </span>
                                             </div>
                                         </div>
                                     );
-                                })}
-                            </div>
-                        ) : (
-                            <div className="text-center py-10 text-slate-400 text-xs">
-                                No category data available.
-                            </div>
-                        )}
+                                })
+                            ) : (
+                                <div className="text-center py-12 text-slate-400 text-xs">
+                                    No interactions recorded yet. Click buttons on the site or app to see them stream here.
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                        <span>Includes Web, TWA, and Android</span>
-                        <span className="font-medium text-emerald-600 flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live Tracking
-                        </span>
+                    <div className="mt-4 pt-4 border-t border-slate-100 text-center">
+                        <Link
+                            href="/admin/interactions"
+                            className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center justify-center gap-1"
+                        >
+                            <RefreshCw className="w-3.5 h-3.5" /> Refresh Live Stream
+                        </Link>
                     </div>
                 </div>
-            </div>
-
-            {/* Live Customer Interaction Feed */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 className="text-base font-bold text-slate-900">Live Customer Activity Stream</h2>
-                        <p className="text-xs text-slate-500">Chronological feed of real customer clicks as they navigate</p>
-                    </div>
-                    <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        Realtime Stream
-                    </span>
-                </div>
-
-                {recentClicks.length > 0 ? (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs">
-                            <thead>
-                                <tr className="border-b border-slate-100 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                                    <th className="pb-3 pl-2">Time</th>
-                                    <th className="pb-3">Platform</th>
-                                    <th className="pb-3">Action / Target</th>
-                                    <th className="pb-3">Category</th>
-                                    <th className="pb-3">Path / Screen</th>
-                                    <th className="pb-3 pr-2 text-right">Location</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-50">
-                                {recentClicks.map((click) => {
-                                    const timeStr = new Date(click.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                                    const isApp = click.platform === 'android' || click.platform === 'ios';
-                                    return (
-                                        <tr key={click.id} className="hover:bg-slate-50/80 transition-colors">
-                                            <td className="py-3 pl-2 font-mono text-slate-500 text-[11px] whitespace-nowrap">{timeStr}</td>
-                                            <td className="py-3">
-                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                                    isApp ? 'bg-amber-100 text-amber-800' : 'bg-indigo-100 text-indigo-800'
-                                                }`}>
-                                                    {isApp ? <Smartphone className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
-                                                    {click.platform}
-                                                </span>
-                                            </td>
-                                            <td className="py-3 font-semibold text-slate-800 max-w-xs truncate">{click.target}</td>
-                                            <td className="py-3">
-                                                <span className="text-[10px] uppercase tracking-wider font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                                                    {click.category}
-                                                </span>
-                                            </td>
-                                            <td className="py-3 font-mono text-slate-500 text-[11px] max-w-xs truncate">{click.path || '—'}</td>
-                                            <td className="py-3 pr-2 text-right font-medium text-slate-600">{click.country || 'Global'}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                    <div className="text-center py-8 text-slate-400 text-xs">
-                        No recent interaction events captured yet.
-                    </div>
-                )}
             </div>
         </div>
     );
 }
 
-export default function AdminInteractionsPage({ searchParams }: PageProps) {
+function formatTimeAgo(dateString: string | Date): string {
+    const diff = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
+}
+
+export default async function CustomerInteractionsPage({ searchParams }: PageProps) {
     const days = parseInt(searchParams?.days || '30', 10);
-    const platform = searchParams?.platform || '';
+    const category = searchParams?.category;
+    const platform = searchParams?.platform;
 
     return (
-        <div className="space-y-6">
-            {/* Header with Title and Range Filters */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-8">
+            {/* Page Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                        <MousePointer className="w-7 h-7 text-blue-600" />
-                        Customer Interaction &amp; Click Ledger
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600 mb-1">
+                        <MousePointer className="w-4 h-4" />
+                        <span>Faith &amp; Devotion Analytics</span>
+                    </div>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                        Customer Engagement &amp; Button Clicks
                     </h1>
-                    <p className="text-xs md:text-sm text-slate-500 mt-1">
-                        High-precision count of customer button taps, devotional actions, and prayer clicks across Web &amp; Android
+                    <p className="text-sm text-slate-500 mt-1">
+                        Real-time tracking of specific engagement buttons ("I Prayed for This", "Say Amen", "Light a Candle", "Sacred Ambiance") across Web and Android App.
                     </p>
                 </div>
 
-                {/* Filters */}
-                <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
-                    {/* Timeframe pills */}
-                    <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 text-xs shadow-xs">
+                {/* Days Filter */}
+                <div className="flex items-center gap-2">
+                    {[
+                        { label: '7 Days', val: 7 },
+                        { label: '30 Days', val: 30 },
+                        { label: '90 Days', val: 90 },
+                    ].map((tab) => (
                         <Link
-                            href="/admin/interactions?days=1"
-                            className={`px-3 py-1.5 rounded-lg font-medium transition-all ${days === 1 ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                            key={tab.val}
+                            href={`/admin/interactions?days=${tab.val}${category ? `&category=${category}` : ''}${platform ? `&platform=${platform}` : ''}`}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                                days === tab.val
+                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                            }`}
                         >
-                            Today
+                            {tab.label}
                         </Link>
-                        <Link
-                            href="/admin/interactions?days=7"
-                            className={`px-3 py-1.5 rounded-lg font-medium transition-all ${days === 7 ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
-                        >
-                            7 Days
-                        </Link>
-                        <Link
-                            href="/admin/interactions?days=30"
-                            className={`px-3 py-1.5 rounded-lg font-medium transition-all ${days === 30 ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
-                        >
-                            30 Days
-                        </Link>
-                    </div>
-
-                    {/* Platform filter */}
-                    <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 text-xs shadow-xs">
-                        <Link
-                            href={`/admin/interactions?days=${days}`}
-                            className={`px-2.5 py-1.5 rounded-lg font-medium transition-all ${!platform ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
-                        >
-                            All
-                        </Link>
-                        <Link
-                            href={`/admin/interactions?days=${days}&platform=web`}
-                            className={`px-2.5 py-1.5 rounded-lg font-medium transition-all ${platform === 'web' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
-                        >
-                            Web
-                        </Link>
-                        <Link
-                            href={`/admin/interactions?days=${days}&platform=android`}
-                            className={`px-2.5 py-1.5 rounded-lg font-medium transition-all ${platform === 'android' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
-                        >
-                            App
-                        </Link>
-                    </div>
+                    ))}
                 </div>
             </div>
 
-            {/* Suspended Overview Content */}
-            <Suspense fallback={
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-                    {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="h-32 bg-slate-100 rounded-2xl animate-pulse" />
-                    ))}
-                </div>
-            }>
-                <InteractionsOverview days={days} platformFilter={platform} />
+            <Suspense fallback={<div className="p-12 text-center text-slate-400 text-sm">Loading engagement analytics...</div>}>
+                <InteractionsOverview
+                    days={days}
+                    categoryFilter={category}
+                    platformFilter={platform}
+                />
             </Suspense>
         </div>
     );

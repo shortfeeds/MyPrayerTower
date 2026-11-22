@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@mpt/database';
+import { db as prisma } from '@/lib/db';
 import { SignJWT } from 'jose';
 import { compare } from 'bcryptjs';
 import { cookies } from 'next/headers';
 
-const prisma = new PrismaClient();
 const JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || 'default-secret-key-change-this-in-prod'
 );
 
 export async function POST(request: NextRequest) {
     try {
-        const { email, password } = await request.json();
+        const body = await request.json();
+        const email = (body.email || '').trim().toLowerCase();
+        const password = body.password || '';
 
         if (!email || !password) {
             return NextResponse.json(
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
 
         // Find user in the AdminUser table
         const user = await prisma.adminUser.findUnique({
-            where: { email: email.toLowerCase() },
+            where: { email },
         });
 
         if (!user) {
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Verify password
+        // Verify password with bcrypt
         let isValid = false;
         try {
             isValid = await compare(password, user.passwordHash);
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
             isValid = false;
         }
 
+        // Fallback for plain text matching (legacy safety)
         if (!isValid && password === user.passwordHash) {
             isValid = true;
         }
@@ -85,6 +87,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             success: true,
+            token,
             user: {
                 id: user.id,
                 email: user.email,
@@ -99,7 +102,5 @@ export async function POST(request: NextRequest) {
             { error: 'Internal server error' },
             { status: 500 }
         );
-    } finally {
-        await prisma.$disconnect();
     }
 }

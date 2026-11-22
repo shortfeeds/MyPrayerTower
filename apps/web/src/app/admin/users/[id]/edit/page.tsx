@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { ArrowLeft, Loader2, Save, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 
-export default function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+export default function EditUserPage({ params }: { params: { id: string } }) {
+    const id = params?.id;
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);

@@ -138,6 +138,8 @@ export function PrayerInteractions({ prayerId, prayerTitle, initialCount = 42 }:
                     type="button"
                     onClick={handlePray}
                     disabled={hasPrayed}
+                    data-engagement="Say Amen & Seal This Prayer"
+                    data-category="amen"
                     className={`
                         relative group flex items-center justify-center gap-3 px-8 py-4 rounded-full font-bold text-base md:text-lg transition-all duration-300 shadow-lg
                         ${hasPrayed

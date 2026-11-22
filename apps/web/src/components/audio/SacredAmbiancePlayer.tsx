@@ -154,6 +154,8 @@ export function SacredAmbiancePlayer() {
                         <div className="flex flex-col gap-1.5">
                             <button
                                 onClick={() => handleSelectMode('chimes')}
+                                data-engagement="Cathedral Chimes"
+                                data-category="audio"
                                 className={`px-3 py-2 rounded-xl border flex items-center gap-2.5 transition-all text-left ${
                                     soundMode === 'chimes'
                                         ? 'bg-amber-500/20 border-amber-400 text-amber-200'
@@ -169,6 +171,8 @@ export function SacredAmbiancePlayer() {
 
                             <button
                                 onClick={() => handleSelectMode('gregorian')}
+                                data-engagement="Monastic Chants"
+                                data-category="audio"
                                 className={`px-3 py-2 rounded-xl border flex items-center gap-2.5 transition-all text-left ${
                                     soundMode === 'gregorian'
                                         ? 'bg-amber-500/20 border-amber-400 text-amber-200'
@@ -184,6 +188,8 @@ export function SacredAmbiancePlayer() {
 
                             <button
                                 onClick={() => handleSelectMode('off')}
+                                data-engagement="Silence Sacred Ambiance"
+                                data-category="audio"
                                 className={`px-3 py-1.5 rounded-xl border text-center transition-all ${
                                     soundMode === 'off'
                                         ? 'bg-white/10 border-white/20 text-gray-300'

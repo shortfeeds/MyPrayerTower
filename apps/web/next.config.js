@@ -116,7 +116,6 @@ const nextConfig = {
 
     // Experimental optimizations
     experimental: {
-        trustHostHeader: true,
         optimizePackageImports: [
             'lucide-react',
             '@headlessui/react',
@@ -230,7 +229,7 @@ const nextConfig = {
                             "font-src 'self' https://fonts.gstatic.com",
                             "object-src 'self' data: https:;",
                             "img-src 'self' data: https: blob: https://*.ytimg.com https://*.youtube.com https://i.ytimg.com https://img.youtube.com https://*.paypal.com https://c.clarity.ms https://*.google-analytics.com https://google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
-                            "connect-src 'self' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google-analytics.com https://google-analytics.com https://*.analytics.google.com https://analytics.google.com https://*.doubleclick.net https://stats.g.doubleclick.net https://*.googlesyndication.com https://*.gstatic.com https://*.adtrafficquality.google https://*.supabase.co https://*.neon.tech https://bible-api.com https://translate.googleapis.com https://www.clarity.ms https://c.clarity.ms",
+                            "connect-src 'self' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google-analytics.com https://google-analytics.com https://*.analytics.google.com https://analytics.google.com https://*.doubleclick.net https://stats.g.doubleclick.net https://*.googlesyndication.com https://*.gstatic.com https://*.adtrafficquality.google https://*.supabase.co https://*.neon.tech https://bible-api.com https://translate.googleapis.com https://translate.google.com https://www.clarity.ms https://c.clarity.ms",
                             "frame-src 'self' https://*.paypal.com https://*.paypalobjects.com https://*.stripe.com https://*.google.com https://*.youtube.com https://*.vimeo.com https://*.doubleclick.net https://*.googlesyndication.com https://*.adtrafficquality.google",
                         ].join('; '),
                     },

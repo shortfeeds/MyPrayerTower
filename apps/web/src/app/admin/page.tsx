@@ -152,22 +152,28 @@ async function CustomerInteractionSummary() {
     let webClicks = 0;
     let appClicks = 0;
     let todayClicks = 0;
+    let prayedClicks = 0;
+    let amenClicks = 0;
+    let candleClicks = 0;
     let topInteractions: any[] = [];
 
     try {
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
 
-        const [total, web, app, today, top] = await Promise.all([
+        const [total, web, app, today, prayed, amen, candle, top] = await Promise.all([
             (db as any).customerInteraction.count().catch(() => 0),
             (db as any).customerInteraction.count({ where: { platform: 'web' } }).catch(() => 0),
             (db as any).customerInteraction.count({ where: { platform: { in: ['android', 'ios'] } } }).catch(() => 0),
             (db as any).customerInteraction.count({ where: { createdAt: { gte: startOfToday } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { category: 'prayer' } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { category: 'amen' } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { category: 'candle' } }).catch(() => 0),
             (db as any).customerInteraction.groupBy({
                 by: ['target', 'category', 'platform'],
                 _count: { target: true },
                 orderBy: { _count: { target: 'desc' } },
-                take: 5,
+                take: 6,
             }).catch(() => []),
         ]);
 
@@ -175,6 +181,9 @@ async function CustomerInteractionSummary() {
         webClicks = web;
         appClicks = app;
         todayClicks = today;
+        prayedClicks = prayed;
+        amenClicks = amen;
+        candleClicks = candle;
         topInteractions = top;
     } catch (e) {
         console.error('Failed to load interaction summary:', e);
@@ -186,34 +195,35 @@ async function CustomerInteractionSummary() {
                 <div>
                     <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                         <MousePointer className="w-5 h-5 text-blue-600" />
-                        Customer Interaction &amp; Click Ledger
+                        Customer Engagement &amp; Button Clicks
                     </h2>
-                    <p className="text-xs text-gray-500 mt-0.5">Live click tracking across Website and Android App</p>
+                    <p className="text-xs text-gray-500 mt-0.5">Live tracking for specific engagement buttons ("I Prayed for This", "Amen", "Candles", "Ambiance")</p>
                 </div>
                 <Link
                     href="/admin/interactions"
                     className="text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
                 >
-                    Detailed Ledger <ArrowRight className="w-3.5 h-3.5" />
+                    Full Engagement Ledger <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
             </div>
 
+            {/* Quick Devotional Engagement Counters */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-                <div className="bg-slate-50 rounded-xl p-3.5 text-center">
-                    <p className="text-2xl font-bold text-slate-900">{totalInteractions.toLocaleString()}</p>
-                    <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mt-0.5">Total Clicks</p>
+                <div className="bg-rose-50 rounded-xl p-3.5 text-center">
+                    <p className="text-2xl font-bold text-rose-700">{prayedClicks.toLocaleString()}</p>
+                    <p className="text-[11px] font-medium text-rose-600 uppercase tracking-wider mt-0.5">"I Prayed" Clicks</p>
                 </div>
                 <div className="bg-emerald-50 rounded-xl p-3.5 text-center">
-                    <p className="text-2xl font-bold text-emerald-700">{todayClicks.toLocaleString()}</p>
-                    <p className="text-[11px] font-medium text-emerald-600 uppercase tracking-wider mt-0.5">Today's Clicks</p>
-                </div>
-                <div className="bg-indigo-50 rounded-xl p-3.5 text-center">
-                    <p className="text-2xl font-bold text-indigo-700">{webClicks.toLocaleString()}</p>
-                    <p className="text-[11px] font-medium text-indigo-600 uppercase tracking-wider mt-0.5">Website</p>
+                    <p className="text-2xl font-bold text-emerald-700">{amenClicks.toLocaleString()}</p>
+                    <p className="text-[11px] font-medium text-emerald-600 uppercase tracking-wider mt-0.5">"Amen" Affirmations</p>
                 </div>
                 <div className="bg-amber-50 rounded-xl p-3.5 text-center">
-                    <p className="text-2xl font-bold text-amber-700">{appClicks.toLocaleString()}</p>
-                    <p className="text-[11px] font-medium text-amber-600 uppercase tracking-wider mt-0.5">Android App</p>
+                    <p className="text-2xl font-bold text-amber-700">{candleClicks.toLocaleString()}</p>
+                    <p className="text-[11px] font-medium text-amber-600 uppercase tracking-wider mt-0.5">Candles Lit</p>
+                </div>
+                <div className="bg-indigo-50 rounded-xl p-3.5 text-center">
+                    <p className="text-2xl font-bold text-indigo-700">{todayClicks.toLocaleString()}</p>
+                    <p className="text-[11px] font-medium text-indigo-600 uppercase tracking-wider mt-0.5">Today's Engagements</p>
                 </div>
             </div>
 

@@ -178,6 +178,8 @@ export function PrayerReaderExperience({
                                 handlePray();
                                 setIsFocusMode(false);
                             }}
+                            data-engagement="Say Amen & Seal This Prayer"
+                            data-category="amen"
                             className="w-full py-3.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-[#0a0612] font-serif font-bold text-base shadow-lg transition-all"
                         >
                             Say Amen & Return

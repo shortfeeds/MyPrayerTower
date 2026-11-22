@@ -4,10 +4,137 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 /**
- * Global Customer Click & Interaction Tracker
- * Automatically captures button clicks, devotional actions, and navigation taps
- * across Website and PWA/TWA app, feeding live counts to the Admin Panel.
+ * Targeted Engagement Action Tracker
+ * Specifically measures genuine user engagement & devotional interactions:
+ * - "I Prayed for this" / "Pray Now"
+ * - "Amen" / "Say Amen & Seal Prayer"
+ * - "Light a Candle" / "Vigil Lamp"
+ * - "Cathedral Chimes" / "Monastic Chants" / "Sacred Ambiance"
+ * - "Dedicate an Offering" / "Holy Mass Intention"
+ * - "Holy Rosary & Mysteries"
+ * - "Share Prayer / Faith Testimony"
+ * 
+ * Generic site clicks (navigation links, menu toggles, footer links) are ignored.
  */
+function extractEngagementAction(targetEl: HTMLElement): { target: string; category: string; eventType: string } | null {
+    // 1. Explicit engagement attributes
+    const explicitAction = targetEl.getAttribute('data-engagement') || targetEl.getAttribute('data-track');
+    const explicitCategory = targetEl.getAttribute('data-category');
+
+    // 2. Extract button text, aria-label, title
+    const rawText = (targetEl.innerText || targetEl.textContent || '').trim().replace(/\s+/g, ' ');
+    const ariaLabel = targetEl.getAttribute('aria-label') || '';
+    const title = targetEl.getAttribute('title') || '';
+    const combined = `${explicitAction || ''} ${rawText} ${ariaLabel} ${title}`.toLowerCase();
+
+    // 3. Match engagement patterns:
+    // Prayer & Amen
+    if (/say amen|seal this prayer|\bamen\b/i.test(combined)) {
+        return {
+            target: 'Say Amen & Seal Prayer',
+            category: 'amen',
+            eventType: 'amen_affirmation'
+        };
+    }
+
+    if (/i prayed for this|i prayed|prayed for this|prayed!|pray now|\bpray\b|anchor your intention/i.test(combined)) {
+        return {
+            target: 'I Prayed for This',
+            category: 'prayer',
+            eventType: 'prayer_action'
+        };
+    }
+
+    // Candle Lighting
+    if (/light a candle|light candle|light vigil|relight candle|virtual candle|vigil lamp/i.test(combined)) {
+        return {
+            target: 'Light a Candle',
+            category: 'candle',
+            eventType: 'candle_action'
+        };
+    }
+
+    // Sacred Ambiance & Audio
+    if (/cathedral chimes|authentic roman bells/i.test(combined)) {
+        return {
+            target: 'Cathedral Chimes (Ambiance)',
+            category: 'audio',
+            eventType: 'audio_play'
+        };
+    }
+
+    if (/monastic chants|contemplative choir drone|chant/i.test(combined)) {
+        return {
+            target: 'Monastic Chants (Ambiance)',
+            category: 'audio',
+            eventType: 'audio_play'
+        };
+    }
+
+    if (/silence audio|silence ambiance|stop audio/i.test(combined)) {
+        return {
+            target: 'Silence Sacred Ambiance',
+            category: 'audio',
+            eventType: 'audio_stop'
+        };
+    }
+
+    if (/sacred ambiance player/i.test(combined)) {
+        return {
+            target: 'Open Sacred Ambiance',
+            category: 'audio',
+            eventType: 'audio_toggle'
+        };
+    }
+
+    // Offerings & Mass Intentions
+    if (/dedicate an offering|holy mass intention|perpetual mass|mass offering|spiritual bouquet/i.test(combined)) {
+        return {
+            target: 'Dedicate an Offering / Mass Intention',
+            category: 'offering',
+            eventType: 'offering_action'
+        };
+    }
+
+    // Rosary & Mysteries
+    if (/rosary|next mystery|previous mystery|holy rosary|decade/i.test(combined)) {
+        return {
+            target: 'Holy Rosary Mystery / Decade',
+            category: 'rosary',
+            eventType: 'rosary_action'
+        };
+    }
+
+    // Share & Community Faith
+    if (/share this prayer|share prayer|share intention|copy link|copy prayer/i.test(combined)) {
+        return {
+            target: 'Share Prayer / Intention',
+            category: 'social',
+            eventType: 'share_action'
+        };
+    }
+
+    if (/submit intention|submit prayer|request prayer/i.test(combined)) {
+        return {
+            target: 'Submit Prayer Intention',
+            category: 'prayer',
+            eventType: 'intention_submission'
+        };
+    }
+
+    // Fallback: If explicit action attribute exists
+    if (explicitAction) {
+        return {
+            target: explicitAction,
+            category: explicitCategory || 'devotional',
+            eventType: 'engagement_click'
+        };
+    }
+
+    // Otherwise, not an engagement action -> do not track
+    return null;
+}
+
 export function CustomerClickTracker() {
     const pathname = usePathname();
     const lastClickRef = useRef<{ target: string; time: number }>({ target: '', time: 0 });
@@ -15,57 +142,28 @@ export function CustomerClickTracker() {
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
             try {
-                const targetEl = (e.target as HTMLElement)?.closest('button, a, [role="button"], [data-track]') as HTMLElement | null;
+                const targetEl = (e.target as HTMLElement)?.closest('button, a, [role="button"], [data-engagement], [data-track]') as HTMLElement | null;
                 if (!targetEl) return;
 
-                // Extract friendly target description
-                let target = targetEl.getAttribute('data-track') ||
-                             targetEl.getAttribute('aria-label') ||
-                             targetEl.getAttribute('title') ||
-                             '';
-
-                if (!target) {
-                    const text = (targetEl.innerText || targetEl.textContent || '').trim().replace(/\s+/g, ' ');
-                    if (text && text.length <= 40) {
-                        target = text;
-                    } else if (targetEl.tagName.toLowerCase() === 'a') {
-                        const href = targetEl.getAttribute('href');
-                        if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
-                            target = `Link: ${href}`;
-                        }
-                    }
-                }
-
-                if (!target) return;
-
-                // Deduplicate immediate double clicks (<600ms on same target)
-                const now = Date.now();
-                if (lastClickRef.current.target === target && (now - lastClickRef.current.time) < 600) {
+                const engagement = extractEngagementAction(targetEl);
+                if (!engagement) {
+                    // Ignore non-engagement clicks (menus, links, navigation, etc.)
                     return;
                 }
-                lastClickRef.current = { target, time: now };
 
-                // Auto categorize
-                const lowerTarget = target.toLowerCase();
-                let category = 'general';
-                if (/pray|rosary|intention|novena|divine mercy|chaplet/i.test(lowerTarget)) {
-                    category = 'devotional';
-                } else if (/candle|vigil|mass|offering|tribute|memorial|donation|tithing|gift/i.test(lowerTarget)) {
-                    category = 'offering';
-                } else if (/chimes|chant|sound|audio|silence|ambiance|music|bells/i.test(lowerTarget)) {
-                    category = 'audio';
-                } else if (/telegram|share|whatsapp|facebook|twitter|youtube/i.test(lowerTarget)) {
-                    category = 'social';
-                } else if (/menu|explore|search|learn|home|readings|bible|saints/i.test(lowerTarget)) {
-                    category = 'navigation';
+                // Deduplicate immediate repeat clicks (<600ms on same action)
+                const now = Date.now();
+                if (lastClickRef.current.target === engagement.target && (now - lastClickRef.current.time) < 600) {
+                    return;
                 }
+                lastClickRef.current = { target: engagement.target, time: now };
 
                 const payload = JSON.stringify({
-                    eventType: 'click',
-                    target: target.slice(0, 150),
-                    category,
+                    eventType: engagement.eventType,
+                    target: engagement.target,
+                    category: engagement.category,
                     path: pathname || window.location.pathname,
-                    platform: window.location.search.includes('source=twa') ? 'android' : 'web',
+                    platform: (window.location.search.includes('source=twa') || document.cookie.includes('is_twa=1')) ? 'android' : 'web',
                 });
 
                 if (navigator.sendBeacon) {
