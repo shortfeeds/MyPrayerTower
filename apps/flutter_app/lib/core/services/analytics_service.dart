@@ -77,18 +77,32 @@ class AnalyticsService {
 
     try {
       final uri = Uri.parse('${ApiConstants.baseUrl}/analytics/track');
+      final target = parameters?['target'] ?? parameters?['label'] ?? eventName;
+      final category = parameters?['category'] ?? 'devotional';
+
       http.post(
         uri,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'eventType': eventName,
+          'eventType': eventName.contains('click') ? 'click' : eventName,
+          'target': target,
+          'category': category,
           'parameters': parameters ?? {},
           'clientId': _clientId,
-          'platform': defaultTargetPlatform.name.toLowerCase(),
+          'platform': 'android',
           'timestamp': DateTime.now().toIso8601String(),
         }),
       ).timeout(const Duration(seconds: 4)).ignore();
     } catch (_) {}
+  }
+
+  /// Track customer click interaction on mobile buttons/actions
+  Future<void> trackClick(String buttonOrTarget, {String category = 'devotional', Map<String, dynamic>? parameters}) async {
+    return trackEvent('click', parameters: {
+      'target': buttonOrTarget,
+      'category': category,
+      ...?parameters,
+    });
   }
 }
 

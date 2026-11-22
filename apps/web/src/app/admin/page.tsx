@@ -33,6 +33,8 @@ async function DashboardStats() {
     let saintCount = 0;
     let prayerCount = 0;
     let prayersToday = 0;
+    let totalClicks = 0;
+    let todayClicks = 0;
 
     try {
         const now = new Date();
@@ -47,7 +49,9 @@ async function DashboardStats() {
             churchesVer,
             saints,
             prayers,
-            prayersT
+            prayersT,
+            clicksAll,
+            clicksToday
         ] = await Promise.all([
             db.user.count().catch(() => 0),
             db.user.count({ where: { createdAt: { gte: startOfMonth } } }).catch(() => 0),
@@ -57,6 +61,8 @@ async function DashboardStats() {
             db.saint.count().catch(() => 0),
             db.prayerRequest.count().catch(() => 0),
             db.prayerRequest.count({ where: { createdAt: { gte: startOfToday } } }).catch(() => 0),
+            (db as any).customerInteraction.count().catch(() => 0),
+            (db as any).customerInteraction.count({ where: { createdAt: { gte: startOfToday } } }).catch(() => 0),
         ]);
 
         userCount = users;
@@ -67,6 +73,8 @@ async function DashboardStats() {
         saintCount = saints;
         prayerCount = prayers;
         prayersToday = prayersT;
+        totalClicks = clicksAll;
+        todayClicks = clicksToday;
     } catch (e) {
         console.error('Failed to query dashboard stats:', e);
     }
@@ -82,6 +90,15 @@ async function DashboardStats() {
             href: '/admin/users'
         },
         {
+            label: 'Customer Clicks',
+            value: totalClicks.toLocaleString(),
+            change: `+${todayClicks} today (Web & App)`,
+            trend: 'up',
+            icon: MousePointer,
+            color: 'from-emerald-500 to-teal-600',
+            href: '/admin/interactions'
+        },
+        {
             label: 'Churches',
             value: churchCount.toLocaleString(),
             change: `${verifiedChurches} verified`,
@@ -89,15 +106,6 @@ async function DashboardStats() {
             icon: Church,
             color: 'from-indigo-500 to-indigo-600',
             href: '/admin/churches'
-        },
-        {
-            label: 'Saints Database',
-            value: saintCount.toLocaleString(),
-            change: 'Complete collection',
-            trend: 'neutral',
-            icon: Crown,
-            color: 'from-amber-500 to-amber-600',
-            href: '/admin/cms/saints'
         },
         {
             label: 'Prayer Requests',
@@ -135,6 +143,103 @@ async function DashboardStats() {
                     </div>
                 </Link>
             ))}
+        </div>
+    );
+}
+
+async function CustomerInteractionSummary() {
+    let totalInteractions = 0;
+    let webClicks = 0;
+    let appClicks = 0;
+    let todayClicks = 0;
+    let topInteractions: any[] = [];
+
+    try {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const [total, web, app, today, top] = await Promise.all([
+            (db as any).customerInteraction.count().catch(() => 0),
+            (db as any).customerInteraction.count({ where: { platform: 'web' } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { platform: { in: ['android', 'ios'] } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { createdAt: { gte: startOfToday } } }).catch(() => 0),
+            (db as any).customerInteraction.groupBy({
+                by: ['target', 'category', 'platform'],
+                _count: { target: true },
+                orderBy: { _count: { target: 'desc' } },
+                take: 5,
+            }).catch(() => []),
+        ]);
+
+        totalInteractions = total;
+        webClicks = web;
+        appClicks = app;
+        todayClicks = today;
+        topInteractions = top;
+    } catch (e) {
+        console.error('Failed to load interaction summary:', e);
+    }
+
+    return (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                        <MousePointer className="w-5 h-5 text-blue-600" />
+                        Customer Interaction &amp; Click Ledger
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-0.5">Live click tracking across Website and Android App</p>
+                </div>
+                <Link
+                    href="/admin/interactions"
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
+                >
+                    Detailed Ledger <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                <div className="bg-slate-50 rounded-xl p-3.5 text-center">
+                    <p className="text-2xl font-bold text-slate-900">{totalInteractions.toLocaleString()}</p>
+                    <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mt-0.5">Total Clicks</p>
+                </div>
+                <div className="bg-emerald-50 rounded-xl p-3.5 text-center">
+                    <p className="text-2xl font-bold text-emerald-700">{todayClicks.toLocaleString()}</p>
+                    <p className="text-[11px] font-medium text-emerald-600 uppercase tracking-wider mt-0.5">Today's Clicks</p>
+                </div>
+                <div className="bg-indigo-50 rounded-xl p-3.5 text-center">
+                    <p className="text-2xl font-bold text-indigo-700">{webClicks.toLocaleString()}</p>
+                    <p className="text-[11px] font-medium text-indigo-600 uppercase tracking-wider mt-0.5">Website</p>
+                </div>
+                <div className="bg-amber-50 rounded-xl p-3.5 text-center">
+                    <p className="text-2xl font-bold text-amber-700">{appClicks.toLocaleString()}</p>
+                    <p className="text-[11px] font-medium text-amber-600 uppercase tracking-wider mt-0.5">Android App</p>
+                </div>
+            </div>
+
+            {topInteractions.length > 0 ? (
+                <div className="space-y-2.5">
+                    <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Top Customer Actions</p>
+                    {topInteractions.map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-2.5 bg-gray-50 hover:bg-gray-100/70 rounded-xl transition-colors text-xs">
+                            <div className="flex items-center gap-2 min-w-0">
+                                <span className="font-mono text-gray-400 font-bold text-[10px]">#{idx + 1}</span>
+                                <span className="font-semibold text-gray-800 truncate">{item.target}</span>
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-white text-gray-500 uppercase tracking-wider border border-gray-200">
+                                    {item.category}
+                                </span>
+                            </div>
+                            <div className="text-right shrink-0 font-bold text-gray-900">
+                                {item._count?.target?.toLocaleString() || 0} <span className="text-[10px] text-gray-400 font-normal">clicks</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center py-6 text-gray-400 text-xs">
+                    Interactions will stream here live as users click on the website and app.
+                </div>
+            )}
         </div>
     );
 }
@@ -422,8 +527,11 @@ export default function AdminDashboard() {
 
             {/* Main Grid */}
             <div className="grid lg:grid-cols-3 gap-6">
-                {/* Left Column - Recent Activity */}
+                {/* Left Column - Recent Activity & Customer Click Interactions */}
                 <div className="lg:col-span-2 space-y-6">
+                    <Suspense fallback={<div className="h-64 bg-gray-100 rounded-2xl animate-pulse" />}>
+                        <CustomerInteractionSummary />
+                    </Suspense>
                     <Suspense fallback={<div className="h-96 bg-gray-100 rounded-2xl animate-pulse" />}>
                         <RecentActivity />
                     </Suspense>

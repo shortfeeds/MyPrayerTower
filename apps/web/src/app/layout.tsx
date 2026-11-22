@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { GoogleAnalyticsTracker } from '@/components/analytics/GoogleAnalyticsTracker';
+import { CustomerClickTracker } from '@/components/analytics/CustomerClickTracker';
 import { Inter, Merriweather, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -237,6 +238,7 @@ export default function RootLayout({
 
                 <Suspense fallback={null}>
                     <GoogleAnalyticsTracker />
+                    <CustomerClickTracker />
                 </Suspense>
 
                 {/* Google tag (gtag.js) - lazyOnload preserves TBT while dataLayer safely buffers events */}

@@ -157,6 +157,7 @@ export function AdminSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen
             defaultHref: '/admin/analytics',
             children: [
                 { name: 'Platform Analytics', href: '/admin/analytics' },
+                { name: 'Customer Clicks & Actions', href: '/admin/interactions' },
                 { name: 'Sponsor Advertisements', href: '/admin/ads' },
                 { name: 'Instant Indexing (SEO)', href: '/admin/indexing' },
                 { name: 'Newsletter Subscribers', href: '/admin/newsletter' },

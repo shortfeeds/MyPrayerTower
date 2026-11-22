@@ -17,11 +17,15 @@ import {
 } from 'lucide-react';
 import { db } from '@/lib/db';
 
+import Link from 'next/link';
+
 export const dynamic = 'force-dynamic';
 
 async function OverviewStats() {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
 
     const [
         totalUsers,
@@ -30,8 +34,8 @@ async function OverviewStats() {
         totalSaints,
         totalPrayers,
         newPrayersThisWeek,
-        adImpressions,
-        adClicks,
+        customerClicks,
+        customerClicksToday,
         offeringRevenue,
         donationRevenue
     ] = await Promise.all([
@@ -41,8 +45,8 @@ async function OverviewStats() {
         db.saint.count(),
         db.prayerRequest.count(),
         db.prayerRequest.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
-        db.sponsoredContent.aggregate({ _sum: { impressions: true } }),
-        db.sponsoredContent.aggregate({ _sum: { clicks: true } }),
+        (db as any).customerInteraction.count().catch(() => 0),
+        (db as any).customerInteraction.count({ where: { createdAt: { gte: startOfToday } } }).catch(() => 0),
         db.massOffering.aggregate({ where: { status: 'PAID' }, _sum: { amount: true } }),
         db.platformDonation.aggregate({ where: { status: 'COMPLETED' }, _sum: { amount: true } })
     ]);
@@ -52,11 +56,11 @@ async function OverviewStats() {
 
     const stats = [
         { label: 'Total Users', value: totalUsers.toLocaleString(), change: `+${newUsersThisMonth} this month`, icon: Users, color: 'text-blue-600' },
+        { label: 'Customer Clicks', value: customerClicks.toLocaleString(), change: `+${customerClicksToday} today (Web/App)`, icon: MousePointer, color: 'text-purple-600' },
         { label: 'Revenue', value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totalRevenue), change: 'Total platform sales', icon: DollarSign, color: 'text-emerald-600' },
         { label: 'Prayer Requests', value: totalPrayers.toLocaleString(), change: `+${newPrayersThisWeek} this week`, icon: Heart, color: 'text-rose-600' },
         { label: 'Churches', value: totalChurches.toLocaleString(), change: 'Active listings', icon: Church, color: 'text-indigo-600' },
         { label: 'Saints', value: totalSaints.toLocaleString(), change: 'In database', icon: Crown, color: 'text-amber-600' },
-        { label: 'Ad Clicks', value: (adClicks._sum.clicks || 0).toLocaleString(), change: 'Total engagement', icon: MousePointer, color: 'text-purple-600' },
     ];
 
     return (
@@ -269,9 +273,18 @@ export default function AdminAnalyticsPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
-                <p className="text-gray-500 mt-1">Platform performance and insights</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
+                    <p className="text-gray-500 mt-1">Platform performance and customer engagement insights</p>
+                </div>
+                <Link
+                    href="/admin/interactions"
+                    className="self-start sm:self-auto inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors"
+                >
+                    <MousePointer className="w-4 h-4" />
+                    <span>Customer Clicks &amp; Actions Ledger →</span>
+                </Link>
             </div>
 
             {/* Overview Stats */}

@@ -2674,3 +2674,27 @@ model TelegramInteraction {
   @@schema("public")
 }
 
+model CustomerInteraction {
+  id          String   @id @default(cuid())
+  platform    String   @default("web") // "web", "android", "ios"
+  eventType   String   @default("click") // "click", "screen_view", "action"
+  target      String   // e.g. "pray_button", "light_candle", "sacred_chimes", "submit_prayer", "share_button"
+  category    String   @default("general") // "devotional", "navigation", "audio", "offering", "social", "prayer", "general"
+  path        String?  // page URL or mobile route
+  metadata    Json?    // extra parameters e.g. { title, label, value }
+  clientId    String?  // anonymous client identifier
+  userId      String?  // optional authenticated user id
+  ipAddress   String?  // client IP
+  userAgent   String?  // browser/app user-agent
+  country     String?  // country
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([platform, createdAt])
+  @@index([eventType, createdAt])
+  @@index([target])
+  @@index([category])
+  @@schema("public")
+}
+
+

@@ -33,13 +33,14 @@ export function getPlatformType(): 'twa' | 'pwa' | 'web' {
 }
 
 /**
- * Universal Event Tracker for Google Analytics
+ * Universal Event Tracker for Google Analytics & Internal Customer Interaction Ledger
  */
 export function trackEvent(eventName: string, params: Record<string, any> = {}) {
     if (typeof window === 'undefined') return;
 
+    const platform = getPlatformType();
     const enrichedParams = {
-        platform: getPlatformType(),
+        platform,
         timestamp: new Date().toISOString(),
         page_location: window.location.href,
         ...params
@@ -52,7 +53,43 @@ export function trackEvent(eventName: string, params: Record<string, any> = {}) 
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: eventName, ...enrichedParams });
     }
+
+    // Persist customer interaction to internal Database for Admin Panel
+    try {
+        const payload = JSON.stringify({
+            eventType: eventName.includes('click') ? 'click' : (params.eventType || 'action'),
+            target: params.target || params.action_name || params.event_label || eventName,
+            category: params.event_category || params.category || 'general',
+            path: window.location.pathname,
+            platform: platform === 'twa' ? 'android' : 'web',
+            metadata: params,
+        });
+
+        if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+            navigator.sendBeacon('/api/analytics/track', new Blob([payload], { type: 'application/json' }));
+        } else {
+            fetch('/api/analytics/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: payload,
+                keepalive: true,
+            }).catch(() => {});
+        }
+    } catch (_) {}
 }
+
+/**
+ * Explicit Customer Interaction Click Tracker for buttons, CTAs, and spiritual actions
+ */
+export function trackCustomerInteraction(target: string, options: { category?: string; path?: string; metadata?: Record<string, any> } = {}) {
+    trackEvent('customer_click', {
+        target,
+        category: options.category || 'general',
+        path: options.path || (typeof window !== 'undefined' ? window.location.pathname : undefined),
+        ...options.metadata
+    });
+}
+
 
 /* =====================================================================
    GA4 STANDARD E-COMMERCE FUNNEL EVENTS
