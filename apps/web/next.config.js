@@ -116,6 +116,7 @@ const nextConfig = {
 
     // Experimental optimizations
     experimental: {
+        trustHostHeader: true,
         optimizePackageImports: [
             'lucide-react',
             '@headlessui/react',

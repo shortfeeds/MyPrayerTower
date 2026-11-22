@@ -27,6 +27,13 @@ const getSecurityHeaders = (pathname: string) => {
 // Rate limiting removed from middleware to save CPU cycles.
 // Recommendation: Use a dedicated service like Upstash for serverless rate limiting if needed.
 
+// Helper to build reliable public redirects behind reverse proxies
+function getAbsoluteRedirectUrl(request: NextRequest, targetPath: string): URL {
+    const proto = request.headers.get('x-forwarded-proto') || 'https';
+    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'www.myprayertower.com';
+    return new URL(targetPath, `${proto}://${host}`);
+}
+
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
@@ -47,8 +54,7 @@ export async function middleware(request: NextRequest) {
 
     // Redirect root to /app ONLY if launched from native app with ?source=twa
     if (isTwaSource && pathname === '/') {
-        const url = request.nextUrl.clone();
-        url.pathname = '/app';
+        const url = getAbsoluteRedirectUrl(request, '/app');
         const resp = NextResponse.redirect(url);
         resp.cookies.set('is_twa', '1', { path: '/', maxAge: 60 * 60 * 24 * 365 });
         return resp;
@@ -88,8 +94,7 @@ export async function middleware(request: NextRequest) {
 
         const token = request.cookies.get('admin_session')?.value;
         if (!token) {
-            const url = request.nextUrl.clone();
-            url.pathname = '/admin/login';
+            const url = getAbsoluteRedirectUrl(request, '/admin/login');
             return NextResponse.redirect(url);
         }
 
@@ -100,16 +105,14 @@ export async function middleware(request: NextRequest) {
             const { payload } = await import('jose').then(m => m.jwtVerify(token, secret));
             if (!payload || !payload.isAdmin) throw new Error();
         } catch {
-            const url = request.nextUrl.clone();
-            url.pathname = '/admin/login';
+            const url = getAbsoluteRedirectUrl(request, '/admin/login');
             return NextResponse.redirect(url);
         }
     }
 
     if (pathname.startsWith('/dashboard') || pathname.startsWith('/journey')) {
         if (!request.cookies.has('user_session')) {
-            const url = request.nextUrl.clone();
-            url.pathname = '/login';
+            const url = getAbsoluteRedirectUrl(request, '/login');
             url.searchParams.set('redirect', pathname);
             return NextResponse.redirect(url);
         }
