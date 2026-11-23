@@ -14,7 +14,11 @@ import { usePathname } from 'next/navigation';
  * - "Holy Rosary & Mysteries"
  * - "Share Prayer / Faith Testimony"
  * 
- * Generic site clicks (navigation links, menu toggles, footer links) are ignored.
+ * STRICTLY EXCLUDED:
+ * - All admin panel pages and buttons (/admin/*)
+ * - Sign in / Login / Logout buttons
+ * - Close / Dismiss / Cancel buttons
+ * - General navigation links & menus
  */
 function extractEngagementAction(targetEl: HTMLElement): { target: string; category: string; eventType: string } | null {
     // 1. Explicit engagement attributes
@@ -27,7 +31,16 @@ function extractEngagementAction(targetEl: HTMLElement): { target: string; categ
     const title = targetEl.getAttribute('title') || '';
     const combined = `${explicitAction || ''} ${rawText} ${ariaLabel} ${title}`.toLowerCase();
 
-    // 3. Match engagement patterns:
+    // 3. STRICT EXCLUSIONS: Skip sign in, login, logout, close, dismiss, cancel
+    if (
+        /sign in|sign-in|login|log in|logout|log out|close|dismiss|cancel|clear|esc\b/i.test(combined) ||
+        targetEl.closest('[aria-label*="close" i], [title*="close" i], .close-button, [data-dismiss]') ||
+        rawText === '×' || rawText === '✕' || rawText === 'X' || rawText.toLowerCase() === 'close'
+    ) {
+        return null;
+    }
+
+    // 4. Match genuine devotional engagement patterns:
     // Prayer & Amen
     if (/say amen|seal this prayer|\bamen\b/i.test(combined)) {
         return {
@@ -122,8 +135,8 @@ function extractEngagementAction(targetEl: HTMLElement): { target: string; categ
         };
     }
 
-    // Fallback: If explicit action attribute exists
-    if (explicitAction) {
+    // Fallback: If explicit action attribute exists AND is not administrative/auth
+    if (explicitAction && !/admin|sign|login|close/i.test(explicitAction)) {
         return {
             target: explicitAction,
             category: explicitCategory || 'devotional',
@@ -139,15 +152,26 @@ export function CustomerClickTracker() {
     const pathname = usePathname();
     const lastClickRef = useRef<{ target: string; time: number }>({ target: '', time: 0 });
 
+    // NEVER run tracking inside Admin Panel
+    const isAdmin = pathname?.startsWith('/admin') || (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin'));
+
     useEffect(() => {
+        if (isAdmin) return;
+
         const handleClick = (e: MouseEvent) => {
             try {
+                // Secondary check: Never track if currently within /admin
+                const currentPath = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
+                if (currentPath.startsWith('/admin')) {
+                    return;
+                }
+
                 const targetEl = (e.target as HTMLElement)?.closest('button, a, [role="button"], [data-engagement], [data-track]') as HTMLElement | null;
                 if (!targetEl) return;
 
                 const engagement = extractEngagementAction(targetEl);
                 if (!engagement) {
-                    // Ignore non-engagement clicks (menus, links, navigation, etc.)
+                    // Ignore non-engagement clicks (menus, links, navigation, sign-in, close buttons, etc.)
                     return;
                 }
 
@@ -162,7 +186,7 @@ export function CustomerClickTracker() {
                     eventType: engagement.eventType,
                     target: engagement.target,
                     category: engagement.category,
-                    path: pathname || window.location.pathname,
+                    path: currentPath,
                     platform: (window.location.search.includes('source=twa') || document.cookie.includes('is_twa=1')) ? 'android' : 'web',
                 });
 
@@ -183,7 +207,7 @@ export function CustomerClickTracker() {
         return () => {
             document.removeEventListener('click', handleClick, { capture: true });
         };
-    }, [pathname]);
+    }, [pathname, isAdmin]);
 
     return null;
 }

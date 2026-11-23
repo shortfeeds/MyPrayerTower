@@ -43,7 +43,14 @@ async function InteractionsOverview({
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
 
-    const baseWhere: any = { createdAt: { gte: sinceDate } };
+    const baseWhere: any = {
+        createdAt: { gte: sinceDate },
+        NOT: [
+            { path: { startsWith: '/admin' } },
+            { category: 'general' },
+            { target: { in: ['Sign In', 'Close', 'Edit User', 'Abandoned Carts', 'Failed Payments'] } },
+        ]
+    };
     if (categoryFilter && categoryFilter !== 'all') {
         baseWhere.category = categoryFilter;
     }

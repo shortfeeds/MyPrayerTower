@@ -161,17 +161,26 @@ async function CustomerInteractionSummary() {
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
 
+        const cleanDevotionalWhere = {
+            NOT: [
+                { path: { startsWith: '/admin' } },
+                { category: 'general' },
+                { target: { in: ['Sign In', 'Close', 'Edit User', 'Abandoned Carts', 'Failed Payments'] } },
+            ],
+        };
+
         const [total, web, app, today, prayed, amen, candle, top] = await Promise.all([
-            (db as any).customerInteraction.count().catch(() => 0),
-            (db as any).customerInteraction.count({ where: { platform: 'web' } }).catch(() => 0),
-            (db as any).customerInteraction.count({ where: { platform: { in: ['android', 'ios'] } } }).catch(() => 0),
-            (db as any).customerInteraction.count({ where: { createdAt: { gte: startOfToday } } }).catch(() => 0),
-            (db as any).customerInteraction.count({ where: { category: 'prayer' } }).catch(() => 0),
-            (db as any).customerInteraction.count({ where: { category: 'amen' } }).catch(() => 0),
-            (db as any).customerInteraction.count({ where: { category: 'candle' } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: cleanDevotionalWhere }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { ...cleanDevotionalWhere, platform: 'web' } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { ...cleanDevotionalWhere, platform: { in: ['android', 'ios'] } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { ...cleanDevotionalWhere, createdAt: { gte: startOfToday } } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { ...cleanDevotionalWhere, category: 'prayer' } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { ...cleanDevotionalWhere, category: 'amen' } }).catch(() => 0),
+            (db as any).customerInteraction.count({ where: { ...cleanDevotionalWhere, category: 'candle' } }).catch(() => 0),
             (db as any).customerInteraction.groupBy({
                 by: ['target', 'category', 'platform'],
                 _count: { target: true },
+                where: cleanDevotionalWhere,
                 orderBy: { _count: { target: 'desc' } },
                 take: 6,
             }).catch(() => []),

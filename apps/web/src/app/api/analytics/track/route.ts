@@ -20,7 +20,22 @@ export async function POST(req: NextRequest) {
         const rawEvents = Array.isArray(body.events) ? body.events : [body];
 
         const records = rawEvents
-            .filter((e) => e && (e.target || e.eventType || e.screenName))
+            .filter((e) => {
+                if (!e || (!e.target && !e.eventType && !e.screenName)) return false;
+                const path = String(e.path || e.screenName || '').toLowerCase();
+                const target = String(e.target || e.action || '').toLowerCase();
+
+                // STRICT: Never track any admin panel paths
+                if (path.startsWith('/admin') || path.includes('/admin/')) return false;
+
+                // STRICT: Skip sign in, login, close, dismiss, cancel buttons
+                if (/sign in|sign-in|login|log in|logout|log out|close|dismiss|cancel|\bcancel\b/i.test(target)) return false;
+
+                // STRICT: Skip administrative labels
+                if (/edit user|abandoned|failed payment|total user|customer click/i.test(target)) return false;
+
+                return true;
+            })
             .map((e) => {
                 const isScreenView = e.eventType === 'screen_view' || !!e.screenName;
                 const eventType = isScreenView ? 'screen_view' : (e.eventType || 'click');
