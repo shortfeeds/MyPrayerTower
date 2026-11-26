@@ -25,7 +25,8 @@ export async function generateSitemapAction() {
             '/login', '/register', '/android', '/bot', '/blessings', '/bouquets',
             '/my-vigils', '/live-mass', '/pilgrimages', '/art', '/stations',
             '/privacy', '/terms', '/cookies', '/dmca', '/guidelines',
-            '/reading-plans', '/readings', '/novenas', '/sacraments', '/summa'
+            '/reading-plans', '/readings', '/novenas', '/sacraments', '/summa',
+            '/sanctuary/es', '/sanctuary/pt', '/sanctuary/fil', '/sanctuary/it', '/sanctuary/fr'
         ];
 
         staticRoutes.forEach(r => {

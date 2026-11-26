@@ -1,7 +1,10 @@
 export const revalidate = 3600; // 1 hour
 import { HomeSessionWrapper } from '@/components/home/HomeSessionWrapper';
 import { SanctuaryHero } from '@/components/home/SanctuaryHero';
+import { GlobalSanctuaryTicker } from '@/components/home/GlobalSanctuaryTicker';
+import { MorningSanctuaryRoutine } from '@/components/home/MorningSanctuaryRoutine';
 import { SanctuaryGateways } from '@/components/home/SanctuaryGateways';
+import { FaithJourneyRecap } from '@/components/home/FaithJourneyRecap';
 import { SponsoredEventsShowcase } from '@/components/home/SponsoredEventsShowcase';
 import { PerpetualAndSeasonalOfferings } from '@/components/home/PerpetualAndSeasonalOfferings';
 import { CompleteCatholicDirectory } from '@/components/home/CompleteCatholicDirectory';
@@ -41,6 +44,8 @@ async function LoggedOutHomePage() {
         <div className="flex flex-col min-h-screen bg-[#120E0A] text-[#FAF6EE] selection:bg-gold-500/30 selection:text-gold-200">
             {/* 1. Candlelit Basilica Hero & Intention Selector */}
             <SanctuaryHero />
+            <GlobalSanctuaryTicker />
+            <MorningSanctuaryRoutine />
 
             {/* 2. 4 Gothic Arch Sacred Gateways */}
             <SanctuaryGateways />
@@ -62,6 +67,7 @@ async function LoggedOutHomePage() {
             {/* 6. Sacred Media & Live Sanctuary Wall */}
             <YouTubeChannelSection videos={youtubeVideos} />
             <SanctuaryMemorialsWall />
+            <FaithJourneyRecap />
 
             {/* 7. Google Play App Download Showcase */}
             <AppDownloadSection />
@@ -122,7 +128,7 @@ export default async function Home() {
                         name: 'How do virtual prayer candles work?',
                         acceptedAnswer: {
                             '@type': 'Answer',
-                            text: 'You can light a virtual candle for an intention starting from free. It burns on our sanctuary altar for your chosen duration, allowing the global community to pray with you.'
+                            text: 'You can light a virtual candle for an intention for free. It burns on our sanctuary altar for your chosen duration, allowing the global community to pray with you.'
                         }
                     },
                     {

@@ -6,6 +6,8 @@ const SETTING_KEY = 'sponsored_events_config';
 const DEFAULT_CONFIG = {
     tonightSponsor: {
         family: 'The Rodriguez Family',
+        city: 'Madrid',
+        country: 'Spain',
         dedication: 'In loving memory of Grandma Rosa',
         faithfulCount: 2847,
         eventTitle: "Tonight's Rosary Marathon",
@@ -22,6 +24,8 @@ const DEFAULT_CONFIG = {
         {
             id: 'sp_1',
             family: 'The Rodriguez Family',
+            city: 'Madrid',
+            country: 'Spain',
             dedication: 'In loving memory of Grandma Rosa',
             packageTitle: 'Nightly Rosary Stream',
             amount: 25,
@@ -70,25 +74,36 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: true, config: updated });
         }
 
-        // Public new sponsorship submission (from Website or Android App)
+        // Public new sponsorship or free Rosary Prayer Roll submission (from Website or Android App)
+        const amount = Number(body.amount ?? 25);
+        const isFreeRoll = Boolean(body.isFreeRoll) || amount === 0;
         const newEntry = {
             id: `sp_${Date.now()}`,
-            family: body.family || 'Faithful Family',
-            dedication: body.dedication || 'In thanksgiving & protection of our family',
-            packageTitle: body.packageTitle || 'Nightly Rosary Stream',
-            amount: Number(body.amount || 25),
+            family: (body.family || 'Faithful Family').trim(),
+            city: (body.city || '').trim(),
+            country: (body.country || '').trim(),
+            dedication: (body.dedication || 'In thanksgiving & protection of our family').trim(),
+            packageTitle: isFreeRoll ? 'Rosary Prayer Roll (Free)' : (body.packageTitle || 'Nightly Rosary Stream'),
+            amount: isFreeRoll ? 0 : amount,
             createdAt: new Date().toISOString(),
         };
 
         const updated = {
             ...current,
-            tonightSponsor: {
-                ...current.tonightSponsor,
-                family: newEntry.family,
-                dedication: newEntry.dedication,
-                faithfulCount: (current.tonightSponsor.faithfulCount || 2847) + 1,
-            },
-            recentSponsors: [newEntry, ...(current.recentSponsors || [])].slice(0, 25),
+            tonightSponsor: isFreeRoll
+                ? {
+                    ...current.tonightSponsor,
+                    faithfulCount: (current.tonightSponsor.faithfulCount || 2847) + 1,
+                }
+                : {
+                    ...current.tonightSponsor,
+                    family: newEntry.family,
+                    city: newEntry.city,
+                    country: newEntry.country,
+                    dedication: newEntry.dedication,
+                    faithfulCount: (current.tonightSponsor.faithfulCount || 2847) + 1,
+                },
+            recentSponsors: [newEntry, ...(current.recentSponsors || [])].slice(0, 50),
         };
 
         await db.systemSetting.upsert({

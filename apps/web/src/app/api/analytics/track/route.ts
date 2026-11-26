@@ -20,10 +20,16 @@ export async function POST(req: NextRequest) {
         const rawEvents = Array.isArray(body.events) ? body.events : [body];
 
         const records = rawEvents
-            .filter((e) => {
-                if (!e || (!e.target && !e.eventType && !e.screenName)) return false;
+            .filter((e: any) => {
+                if (!e || (!e.target && !e.eventType)) return false;
                 const path = String(e.path || e.screenName || '').toLowerCase();
                 const target = String(e.target || e.action || '').toLowerCase();
+                const category = String(e.category || '').toLowerCase();
+                const eventType = String(e.eventType || '').toLowerCase();
+
+                // STRICT: Only track genuine customer engagement buttons (sharing, downloads, interactions)
+                if (eventType === 'screen_view' || category === 'navigation' || category === 'general') return false;
+                if (/instance of|routesettings|notransitionpage|materialpage|pagebased/i.test(target)) return false;
 
                 // STRICT: Never track any admin panel paths
                 if (path.startsWith('/admin') || path.includes('/admin/')) return false;
@@ -36,7 +42,7 @@ export async function POST(req: NextRequest) {
 
                 return true;
             })
-            .map((e) => {
+            .map((e: any) => {
                 const isScreenView = e.eventType === 'screen_view' || !!e.screenName;
                 const eventType = isScreenView ? 'screen_view' : (e.eventType || 'click');
                 const target = e.target || e.screenName || e.action || 'general_click';
@@ -91,6 +97,18 @@ export async function GET(req: NextRequest) {
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
 
+        const engagementWhere = {
+            eventType: { not: 'screen_view' },
+            category: { in: ['prayer', 'amen', 'candle', 'audio', 'offering', 'rosary', 'social', 'share', 'download', 'devotional'] },
+            NOT: [
+                { path: { startsWith: '/admin' } },
+                { target: { contains: 'Instance Of' } },
+                { target: { contains: 'RouteSettings' } },
+                { target: { contains: 'NoTransitionPage' } },
+                { target: { contains: 'MaterialPage' } },
+            ],
+        };
+
         // Fetch aggregated interaction data
         const [
             totalInteractions,
@@ -100,18 +118,19 @@ export async function GET(req: NextRequest) {
             topTargets,
             recentInteractions
         ] = await Promise.all([
-            (db as any).customerInteraction.count(),
-            (db as any).customerInteraction.count({ where: { createdAt: { gte: startOfToday } } }),
-            (db as any).customerInteraction.count({ where: { platform: 'web' } }),
-            (db as any).customerInteraction.count({ where: { platform: { in: ['android', 'ios'] } } }),
+            (db as any).customerInteraction.count({ where: engagementWhere }),
+            (db as any).customerInteraction.count({ where: { ...engagementWhere, createdAt: { gte: startOfToday } } }),
+            (db as any).customerInteraction.count({ where: { ...engagementWhere, platform: 'web' } }),
+            (db as any).customerInteraction.count({ where: { ...engagementWhere, platform: { in: ['android', 'ios'] } } }),
             (db as any).customerInteraction.groupBy({
                 by: ['target', 'category', 'platform'],
                 _count: { target: true },
-                where: { createdAt: { gte: sinceDate } },
+                where: { ...engagementWhere, createdAt: { gte: sinceDate } },
                 orderBy: { _count: { target: 'desc' } },
                 take: 12,
             }),
             (db as any).customerInteraction.findMany({
+                where: engagementWhere,
                 take: 10,
                 orderBy: { createdAt: 'desc' },
                 select: {

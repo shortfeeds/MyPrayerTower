@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../widgets/post_prayer_offering_sheet.dart';
 
@@ -76,22 +80,57 @@ const _intentions = [
 ];
 
 /// Option 2: Marian Midnight & Gold Sanctuary Hero + Interactive Intention Selector
-class SanctuaryHeroCard extends StatefulWidget {
+class SanctuaryHeroCard extends ConsumerStatefulWidget {
   const SanctuaryHeroCard({super.key});
 
   @override
-  State<SanctuaryHeroCard> createState() => _SanctuaryHeroCardState();
+  ConsumerState<SanctuaryHeroCard> createState() => _SanctuaryHeroCardState();
 }
 
-class _SanctuaryHeroCardState extends State<SanctuaryHeroCard> {
+class _SanctuaryHeroCardState extends ConsumerState<SanctuaryHeroCard> {
   String _selectedId = 'healing';
   bool _prayed = false;
+  String _candlesCount = '12,847';
+  String? _remoteHeroTitle;
+  String? _remoteHeroSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _syncFrontendConfig();
+  }
+
+  Future<void> _syncFrontendConfig() async {
+    try {
+      final res = await http
+          .get(Uri.parse('https://www.myprayertower.com/api/frontend-config'))
+          .timeout(const Duration(seconds: 6));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        final cfg = data['config'];
+        if (cfg != null && mounted) {
+          setState(() {
+            _candlesCount = cfg['candlesBurningCount'] ?? _candlesCount;
+            _remoteHeroTitle = cfg['heroTitle'];
+            _remoteHeroSub = cfg['heroSubtitle'];
+          });
+        }
+      }
+    } catch (_) {}
+  }
 
   _IntentionOption get _active =>
       _intentions.firstWhere((e) => e.id == _selectedId, orElse: () => _intentions.first);
 
   @override
   Widget build(BuildContext context) {
+    final lang = ref.watch(localeProvider).languageCode;
+    final heroTitle = (lang == 'en' && _remoteHeroTitle != null)
+        ? _remoteHeroTitle!
+        : AppStrings.tr(lang, 'hero_title');
+    final heroSub = (lang == 'en' && _remoteHeroSub != null)
+        ? _remoteHeroSub!
+        : AppStrings.tr(lang, 'hero_sub');
     return Column(
       children: [
         // Marian Midnight Hero Card
@@ -125,7 +164,7 @@ class _SanctuaryHeroCardState extends State<SanctuaryHeroCard> {
                   const Icon(LucideIcons.flame, size: 14, color: AppTheme.goldLight),
                   const SizedBox(width: 6),
                   Text(
-                    'PERPETUAL MARIAN VIGIL · 12,847 CANDLES',
+                    'PERPETUAL MARIAN VIGIL · $_candlesCount CANDLES',
                     style: GoogleFonts.inter(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w700,
@@ -137,7 +176,7 @@ class _SanctuaryHeroCardState extends State<SanctuaryHeroCard> {
               ),
               const SizedBox(height: 10),
               Text(
-                'A Quiet Catholic Sanctuary in Your Pocket',
+                heroTitle,
                 style: GoogleFonts.cinzel(
                   fontSize: 21,
                   fontWeight: FontWeight.w700,
@@ -147,7 +186,7 @@ class _SanctuaryHeroCardState extends State<SanctuaryHeroCard> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Light a vigil candle, pray the Rosary, or entrust your family to the Holy Sacrifice of the Mass.',
+                heroSub,
                 style: GoogleFonts.cormorantGaramond(
                   fontSize: 15,
                   fontStyle: FontStyle.italic,
@@ -165,7 +204,7 @@ class _SanctuaryHeroCardState extends State<SanctuaryHeroCard> {
                   },
                   icon: const Icon(LucideIcons.flame, size: 18),
                   label: Text(
-                    'Light a Candle — From Free',
+                    AppStrings.tr(lang, 'light_candle'),
                     style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 13.5),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -188,7 +227,7 @@ class _SanctuaryHeroCardState extends State<SanctuaryHeroCard> {
                   },
                   icon: const Icon(LucideIcons.church, size: 17, color: AppTheme.goldLight),
                   label: Text(
-                    'Request a Holy Mass — \$10',
+                    AppStrings.tr(lang, 'request_mass'),
                     style: GoogleFonts.inter(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
@@ -221,7 +260,7 @@ class _SanctuaryHeroCardState extends State<SanctuaryHeroCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'WHAT WEIGHS ON YOUR HEART TODAY?',
+                AppStrings.tr(lang, 'whats_on_heart'),
                 style: GoogleFonts.cinzel(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
@@ -324,7 +363,7 @@ class _SanctuaryHeroCardState extends State<SanctuaryHeroCard> {
                               ),
                             ),
                             child: Text(
-                              _prayed ? '✠ Amen Offered' : 'Pray Now (✠ Amen)',
+                              _prayed ? AppStrings.tr(lang, 'amen_offered') : AppStrings.tr(lang, 'pray_now'),
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,
@@ -343,7 +382,7 @@ class _SanctuaryHeroCardState extends State<SanctuaryHeroCard> {
                             ),
                           ),
                           child: Text(
-                            'Explore',
+                            AppStrings.tr(lang, 'explore'),
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               color: AppTheme.goldLight,

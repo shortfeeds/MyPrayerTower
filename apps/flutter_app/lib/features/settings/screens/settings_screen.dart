@@ -7,6 +7,8 @@ import '../../../core/services/biometric_service.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/l10n/app_localizations.dart';
+import '../../../core/services/offline_prayer_pack_service.dart';
 import '../../settings/providers/settings_provider.dart';
 import 'legal_screen.dart';
 
@@ -85,9 +87,14 @@ class SettingsScreen extends ConsumerWidget {
             ),
             _SettingsTile(
               icon: LucideIcons.globe,
-              title: 'Language',
-              subtitle: 'English',
-              onTap: () {},
+              title: AppStrings.tr(ref.watch(localeProvider).languageCode, 'language'),
+              subtitle: supportedAppLanguages
+                  .firstWhere(
+                    (l) => l.code == ref.watch(localeProvider).languageCode,
+                    orElse: () => supportedAppLanguages.first,
+                  )
+                  .nativeName,
+              onTap: () => _showLanguageSheet(context, ref),
             ),
           ]),
           const SizedBox(height: 24),
@@ -175,11 +182,34 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ]),
           const SizedBox(height: 24),
+          _buildSection('Offline & Church Pew Mode', [
+            _SettingsTile(
+              icon: LucideIcons.download,
+              title: 'Download Offline Prayer Pack',
+              subtitle: 'Cache Today\'s Readings & Saints for church pews',
+              onTap: () async {
+                final ok = await OfflinePrayerPackService.downloadOfflinePack();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        ok
+                            ? 'Offline Prayer Pack saved for Church Pew mode.'
+                            : 'Could not sync offline pack. Please check your connection.',
+                      ),
+                      backgroundColor: AppTheme.marianNavySurface,
+                    ),
+                  );
+                }
+              },
+            ),
+          ]),
+          const SizedBox(height: 24),
           _buildSection('About', [
             _SettingsTile(
               icon: LucideIcons.info,
               title: 'About My Prayer Tower',
-              subtitle: 'Version 1.1.0 (Build 38)',
+              subtitle: 'Version 1.2.0 (Build 44)',
               onTap: () => _showAboutDialog(context),
             ),
             _SettingsTile(
@@ -224,6 +254,54 @@ class SettingsScreen extends ConsumerWidget {
           ]),
           const SizedBox(height: 120),
         ],
+      ),
+    );
+  }
+
+  void _showLanguageSheet(BuildContext context, WidgetRef ref) {
+    final currentCode = ref.read(localeProvider).languageCode;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.marianNavySurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(20),
+          children: [
+            Text(
+              AppStrings.tr(currentCode, 'choose_language'),
+              style: GoogleFonts.cinzel(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.goldLight,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ...supportedAppLanguages.map((lang) {
+              final selected = lang.code == currentCode;
+              return ListTile(
+                leading: Text(lang.flag, style: const TextStyle(fontSize: 22)),
+                title: Text(
+                  lang.nativeName,
+                  style: GoogleFonts.inter(
+                    color: AppTheme.textPrimary,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+                trailing: selected
+                    ? const Icon(LucideIcons.check, color: AppTheme.goldLight)
+                    : null,
+                onTap: () {
+                  ref.read(localeProvider.notifier).setLocale(lang.code);
+                  Navigator.pop(ctx);
+                },
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
@@ -278,7 +356,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Version 1.1.0 (Build 38)\nServing the global Catholic community since 2018.',
+                'Version 1.2.0 (Build 44)\nServing the global Catholic community since 2018.',
                 style: GoogleFonts.inter(color: Colors.white70),
               ),
               const SizedBox(height: 16),

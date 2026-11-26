@@ -310,12 +310,27 @@ export function CertificateModal({
                             {/* Print */}
                             <button
                                 onClick={handlePrint}
+                                data-engagement="Download Certificate / Print"
+                                data-category="download"
                                 className="px-3.5 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition-colors font-medium flex items-center gap-1.5"
                                 title="Print Certificate"
                             >
                                 <Printer className="w-3.5 h-3.5" />
                                 <span className="hidden sm:inline">Print / Frame</span>
                             </button>
+
+                            {/* QR Memorial Card */}
+                            <a
+                                href={`https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(shareUrl)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                data-engagement="Download QR Keepsake"
+                                data-category="download"
+                                className="px-3.5 py-1.5 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 transition-colors font-medium flex items-center gap-1.5"
+                                title="Scannable QR code for funeral programs or parish bulletins"
+                            >
+                                <span>QR Card</span>
+                            </a>
                         </div>
                     </div>
                 </div>

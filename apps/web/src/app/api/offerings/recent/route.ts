@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
 export const runtime = 'nodejs';
-export const revalidate = 60; // 1 minute ISR
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {
@@ -24,10 +24,11 @@ export async function GET() {
                 },
             }),
             db.massOffering.findMany({
-                take: 6,
+                take: 10,
                 orderBy: { createdAt: 'desc' },
                 select: {
                     id: true,
+                    name: true,
                     intentionFor: true,
                     specialIntention: true,
                     offeringType: true,
@@ -73,7 +74,7 @@ export async function GET() {
             title: m.offeringType === 'NOVENA' ? '9-Day Novena Mass' : 'Holy Mass Intention',
             dedicationType: 'IN_MEMORY',
             intention: m.specialIntention || `For ${m.intentionFor || 'Special Intention'}`,
-            offeredBy: 'Faithful Soul',
+            offeredBy: m.name || 'Faithful Soul',
             isAnonymous: false,
             prayerCount: 1,
             createdAt: m.createdAt.toISOString(),

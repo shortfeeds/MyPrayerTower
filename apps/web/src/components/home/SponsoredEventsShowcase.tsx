@@ -63,19 +63,41 @@ const SPONSOR_PACKAGES: SponsorPackage[] = [
     },
 ];
 
+interface RecentSponsorEntry {
+    id: string;
+    family: string;
+    city?: string;
+    country?: string;
+    dedication: string;
+    packageTitle: string;
+    amount: number;
+    createdAt: string;
+}
+
+function formatSponsorDisplay(family: string, city?: string, country?: string) {
+    const loc = [city, country].map(s => (s || '').trim()).filter(Boolean).join(', ');
+    return loc ? `${family} (${loc})` : family;
+}
+
 export function SponsoredEventsShowcase() {
     const [selectedPkg, setSelectedPkg] = useState<SponsorPackage | null>(null);
     const [sponsorName, setSponsorName] = useState('');
+    const [sponsorCity, setSponsorCity] = useState('');
+    const [sponsorCountry, setSponsorCountry] = useState('');
     const [dedication, setDedication] = useState('');
     const [email, setEmail] = useState('');
+    const [isFreeRoll, setIsFreeRoll] = useState(false);
     const [step, setStep] = useState<'form' | 'pay' | 'done'>('form');
 
-    // Demo live sponsored banner state (updates immediately when user sponsors!)
+    // Live sponsored banner & recent sponsors roster (newest on top)
     const [tonightSponsor, setTonightSponsor] = useState({
         family: 'The Rodriguez Family',
+        city: 'Madrid',
+        country: 'Spain',
         dedication: 'In loving memory of Grandma Rosa',
         faithfulCount: 2847,
     });
+    const [recentSponsors, setRecentSponsors] = useState<RecentSponsorEntry[]>([]);
 
     useEffect(() => {
         fetch('/api/events/sponsored')
@@ -84,33 +106,61 @@ export function SponsoredEventsShowcase() {
                 if (data?.config?.tonightSponsor) {
                     setTonightSponsor(data.config.tonightSponsor);
                 }
+                if (Array.isArray(data?.config?.recentSponsors)) {
+                    setRecentSponsors(data.config.recentSponsors);
+                }
             })
             .catch(() => {});
     }, []);
 
-    const openSponsorModal = (pkg: SponsorPackage) => {
+    const openSponsorModal = (pkg: SponsorPackage, freeRoll = false) => {
         setSelectedPkg(pkg);
+        setIsFreeRoll(freeRoll);
         setStep('form');
     };
 
     const handlePaySuccess = async () => {
         if (sponsorName.trim()) {
             const nextFamily = sponsorName.trim();
+            const nextCity = sponsorCity.trim();
+            const nextCountry = sponsorCountry.trim();
             const nextDedication = dedication.trim() || 'In thanksgiving & protection of our family';
-            setTonightSponsor({
+            const effectiveAmount = isFreeRoll ? 0 : (selectedPkg?.price || 25);
+            const effectiveTitle = isFreeRoll ? 'Rosary Prayer Roll (Free)' : (selectedPkg?.title || 'Nightly Rosary Stream');
+            const nextEntry: RecentSponsorEntry = {
+                id: `sp_${Date.now()}`,
                 family: nextFamily,
+                city: nextCity,
+                country: nextCountry,
                 dedication: nextDedication,
-                faithfulCount: tonightSponsor.faithfulCount + 1,
-            });
+                packageTitle: effectiveTitle,
+                amount: effectiveAmount,
+                createdAt: new Date().toISOString(),
+            };
+            setTonightSponsor(prev => isFreeRoll
+                ? { ...prev, faithfulCount: prev.faithfulCount + 1 }
+                : {
+                    family: nextFamily,
+                    city: nextCity,
+                    country: nextCountry,
+                    dedication: nextDedication,
+                    faithfulCount: prev.faithfulCount + 1,
+                }
+            );
+            // Prepend newest sponsor/prayer roll on top, pushing older entries down
+            setRecentSponsors(prev => [nextEntry, ...prev].slice(0, 50));
             try {
                 await fetch('/api/events/sponsored', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         family: nextFamily,
+                        city: nextCity,
+                        country: nextCountry,
                         dedication: nextDedication,
-                        packageTitle: selectedPkg?.title || 'Nightly Rosary Stream',
-                        amount: selectedPkg?.price || 25,
+                        packageTitle: effectiveTitle,
+                        amount: effectiveAmount,
+                        isFreeRoll,
                     }),
                 });
             } catch {
@@ -133,7 +183,9 @@ export function SponsoredEventsShowcase() {
                     </div>
                     <h3 className="font-display text-2xl sm:text-3xl font-bold text-[#FAF6EE]">
                         Sponsored with love by{' '}
-                        <span className="text-gold-300">✨ {tonightSponsor.family} ✨</span>
+                        <span className="text-gold-300">
+                            ✨ {formatSponsorDisplay(tonightSponsor.family, tonightSponsor.city, tonightSponsor.country)} ✨
+                        </span>
                     </h3>
                     <p className="font-serif italic text-lg text-[#CFC5B4] mt-1.5">
                         &ldquo;{tonightSponsor.dedication}&rdquo;
@@ -146,16 +198,62 @@ export function SponsoredEventsShowcase() {
                         <span className="text-gold-500/40">•</span>
                         <span>Only 3 sponsorship slots remain this week</span>
                     </div>
-                    <div className="mt-6">
+                    <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                         <button
                             type="button"
-                            onClick={() => openSponsorModal(SPONSOR_PACKAGES[0])}
+                            onClick={() => openSponsorModal(SPONSOR_PACKAGES[0], true)}
                             className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-gradient-to-r from-[#E8CA68] to-[#D4AF37] text-[#120E0A] font-extrabold text-sm shadow-lg hover:brightness-110 transition-all"
                         >
-                            <Crown className="w-4 h-4" />
-                            <span>Sponsor Tomorrow&apos;s Rosary — $25</span>
+                            <Heart className="w-4 h-4 fill-current" />
+                            <span>Join Tonight&apos;s Rosary Roll — Free</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => openSponsorModal(SPONSOR_PACKAGES[0], false)}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/15 text-[#FAF6EE] border border-gold-400/40 font-bold text-sm transition-all"
+                        >
+                            <Crown className="w-4 h-4 text-gold-300" />
+                            <span>Sponsor a Night of Prayer</span>
                         </button>
                     </div>
+
+                    {/* Recent Event Sponsors Roster (Newest on Top) */}
+                    {recentSponsors.length > 0 && (
+                        <div className="mt-7 pt-5 border-t border-gold-500/20 text-left max-w-3xl mx-auto">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-[11px] font-bold uppercase tracking-widest text-gold-300">
+                                    Recent Sanctuary Sponsors &amp; Offerings
+                                </span>
+                                <span className="text-[11px] text-[#CFC5B4]/75">
+                                    Newest on top
+                                </span>
+                            </div>
+                            <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                                {recentSponsors.map((sp, idx) => (
+                                    <div
+                                        key={sp.id || idx}
+                                        className={`flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 px-3.5 py-2.5 rounded-xl border ${
+                                            idx === 0
+                                                ? 'bg-gold-500/10 border-gold-400/40'
+                                                : 'bg-[#120E0A]/70 border-gold-500/15'
+                                        }`}
+                                    >
+                                        <div>
+                                            <span className="text-xs font-bold text-[#FAF6EE]">
+                                                {formatSponsorDisplay(sp.family, sp.city, sp.country)}
+                                            </span>
+                                            <p className="text-[11px] italic text-[#CFC5B4] line-clamp-1">
+                                                &ldquo;{sp.dedication}&rdquo;
+                                            </p>
+                                        </div>
+                                        <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-500/15 text-gold-300 border border-gold-500/25 self-start sm:self-center shrink-0">
+                                            {sp.packageTitle}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Sponsorship Tiers */}
@@ -182,6 +280,8 @@ export function SponsoredEventsShowcase() {
                                     <img
                                         src={pkg.image}
                                         alt={pkg.title}
+                                        loading="lazy"
+                                        decoding="async"
                                         className="w-full h-full object-cover opacity-85"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#120E0A] via-[#120E0A]/30 to-transparent" />
@@ -195,8 +295,8 @@ export function SponsoredEventsShowcase() {
                                         {pkg.frequency}
                                     </span>
                                     <h3 className="font-display text-lg font-bold text-[#FAF6EE]">{pkg.title}</h3>
-                                    <div className="text-2xl font-mono font-black text-gold-300 mt-1">
-                                        ${pkg.price} <span className="text-xs font-normal text-[#CFC5B4]">offering</span>
+                                    <div className="text-xs font-semibold text-gold-300 mt-1">
+                                        Free Prayer Roll • Optional Stipend
                                     </div>
                                     <p className="text-xs text-[#CFC5B4] mt-2.5 leading-relaxed">{pkg.description}</p>
                                     <ul className="mt-4 space-y-1.5">
@@ -213,10 +313,10 @@ export function SponsoredEventsShowcase() {
                             <div className="p-5 pt-4">
                                 <button
                                     type="button"
-                                    onClick={() => openSponsorModal(pkg)}
+                                    onClick={() => openSponsorModal(pkg, false)}
                                     className="w-full py-2.5 px-4 rounded-xl bg-gold-500/15 hover:bg-gold-500 text-gold-200 hover:text-[#120E0A] border border-gold-500/40 font-bold text-xs transition-all"
                                 >
-                                    Sponsor This Event
+                                    Dedicate This Event
                                 </button>
                             </div>
                         </div>
@@ -240,9 +340,34 @@ export function SponsoredEventsShowcase() {
                         {step === 'form' && (
                             <div className="space-y-4">
                                 <div>
-                                    <span className="text-[10px] uppercase tracking-widest text-gold-400 font-bold">Sacred Event Sponsorship</span>
-                                    <h3 className="font-display text-xl font-bold text-[#FAF6EE] mt-1">{selectedPkg.title}</h3>
-                                    <p className="text-xs text-[#CFC5B4]">Suggested offering: <strong className="text-gold-300">${selectedPkg.price} USD</strong></p>
+                                    <span className="text-[10px] uppercase tracking-widest text-gold-400 font-bold">
+                                        {isFreeRoll ? 'Global Rosary Prayer Roll' : 'Sacred Event Sponsorship'}
+                                    </span>
+                                    <h3 className="font-display text-xl font-bold text-[#FAF6EE] mt-1">
+                                        {isFreeRoll ? "Tonight's Rosary Prayer Roll" : selectedPkg.title}
+                                    </h3>
+                                    <p className="text-xs text-[#CFC5B4]">
+                                        {isFreeRoll
+                                            ? 'Free inclusion in tonight’s global Rosary intentions.'
+                                            : <>Suggested offering: <strong className="text-gold-300">${selectedPkg.price} USD</strong> (supports sanctuary hosting &amp; free daily prayers)</>}
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[#120E0A] border border-gold-500/20 text-xs font-bold">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsFreeRoll(true)}
+                                        className={`py-2 rounded-lg transition-all ${isFreeRoll ? 'bg-gold-500 text-[#120E0A]' : 'text-[#CFC5B4] hover:text-white'}`}
+                                    >
+                                        Prayer Roll (Free)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsFreeRoll(false)}
+                                        className={`py-2 rounded-lg transition-all ${!isFreeRoll ? 'bg-gold-500 text-[#120E0A]' : 'text-[#CFC5B4] hover:text-white'}`}
+                                    >
+                                        Featured Sponsor (${selectedPkg.price})
+                                    </button>
                                 </div>
 
                                 <div>
@@ -254,6 +379,31 @@ export function SponsoredEventsShowcase() {
                                         onChange={e => setSponsorName(e.target.value)}
                                         className="w-full px-3.5 py-2.5 rounded-xl bg-[#120E0A] border border-gold-500/30 text-sm text-white"
                                     />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-2.5">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-gold-200 mb-1">
+                                            City <span className="text-white/40 font-normal">(optional)</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. Manila"
+                                            value={sponsorCity}
+                                            onChange={e => setSponsorCity(e.target.value)}
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#120E0A] border border-gold-500/30 text-sm text-white"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-gold-200 mb-1">Country</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. Philippines"
+                                            value={sponsorCountry}
+                                            onChange={e => setSponsorCountry(e.target.value)}
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#120E0A] border border-gold-500/30 text-sm text-white"
+                                        />
+                                    </div>
                                 </div>
 
                                 <div>
@@ -281,10 +431,10 @@ export function SponsoredEventsShowcase() {
                                 <button
                                     type="button"
                                     disabled={!sponsorName.trim()}
-                                    onClick={() => setStep('pay')}
+                                    onClick={() => isFreeRoll ? handlePaySuccess() : setStep('pay')}
                                     className="w-full py-3 rounded-xl bg-gradient-to-r from-[#E8CA68] to-[#D4AF37] text-[#120E0A] font-extrabold text-sm disabled:opacity-50"
                                 >
-                                    Proceed to Offering — ${selectedPkg.price}
+                                    {isFreeRoll ? "Join Tonight's Rosary Roll — Free" : `Continue with Suggested Offering — $${selectedPkg.price}`}
                                 </button>
                             </div>
                         )}

@@ -37,8 +37,8 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24 // Required by Google Play Automatic Protection (API 24+)
         targetSdk = 36
-        versionCode = 43
-        versionName = "1.1.3"
+        versionCode = 44
+        versionName = "1.2.0"
         // Required for core library desugaring
         multiDexEnabled = true
     }
@@ -65,8 +65,12 @@ android {
             if (keystorePropertiesFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }

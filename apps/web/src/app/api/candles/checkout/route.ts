@@ -8,7 +8,8 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { duration, amount, intention, name, isAnonymous, email, paypalOrderId, paypalPayerEmail } = body;
+        const { duration, amount, intention, name, city, country, isAnonymous, email, paypalOrderId, paypalPayerEmail } = body;
+        const locationLabel = [city, country].map((s: any) => (s || '').trim()).filter(Boolean).join(', ');
 
         // Validate required fields
         if (!duration || amount === undefined || !intention) {
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest) {
                     intention,
                     isAnonymous: !!isAnonymous,
                     name: customerName,
+                    country: locationLabel || null,
                     email: email || (user as any)?.email || '',
                     amount: Math.round(Number(amount) * 100),
                     duration: normalizedDuration,

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Bell, Music, Sparkles } from 'lucide-react';
+import { Volume2, VolumeX, Bell, Music, Sparkles, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type SoundMode = 'chimes' | 'gregorian' | 'off';
@@ -10,9 +10,26 @@ export function SacredAmbiancePlayer() {
     const [soundMode, setSoundMode] = useState<SoundMode>('off');
     const [volume, setVolume] = useState<number>(0.3);
     const [isOpen, setIsOpen] = useState(false);
+    const [sleepMinutes, setSleepMinutes] = useState<number | null>(null);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const intervalRef = useRef<any>(null);
     const droneGainRef = useRef<GainNode | null>(null);
+    const sleepTimerRef = useRef<any>(null);
+
+    const setSleepTimer = (mins: number | null) => {
+        if (sleepTimerRef.current) {
+            clearTimeout(sleepTimerRef.current);
+            sleepTimerRef.current = null;
+        }
+        setSleepMinutes(mins);
+        if (mins && mins > 0) {
+            sleepTimerRef.current = setTimeout(() => {
+                stopAudio();
+                setSoundMode('off');
+                setSleepMinutes(null);
+            }, mins * 60 * 1000);
+        }
+    };
 
     // Initialize Web Audio Context lazily on user gesture
     const getAudioContext = () => {
@@ -198,6 +215,28 @@ export function SacredAmbiancePlayer() {
                             >
                                 Silence Audio
                             </button>
+
+                            <div className="pt-2 mt-1 border-t border-white/10 flex items-center justify-between gap-1">
+                                <span className="text-[10px] text-amber-200/70 flex items-center gap-1">
+                                    <Moon className="w-3 h-3" /> Sleep
+                                </span>
+                                <div className="flex items-center gap-1">
+                                    {[15, 30, 45].map(m => (
+                                        <button
+                                            key={m}
+                                            type="button"
+                                            onClick={() => setSleepTimer(sleepMinutes === m ? null : m)}
+                                            className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all ${
+                                                sleepMinutes === m
+                                                    ? 'bg-amber-500 text-black'
+                                                    : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                                            }`}
+                                        >
+                                            {m}m
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </motion.div>
                 )}

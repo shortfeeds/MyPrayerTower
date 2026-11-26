@@ -117,6 +117,18 @@ export function SanctuaryHero() {
                     <span>{cms.faithfulOfferedCount} faithful offered this month</span>
                     <span className="text-gold-500/40 hidden sm:inline">•</span>
                     <span className="hidden sm:inline text-emerald-300/90">✠ Catholic Digital Sanctuary</span>
+                    <span className="text-gold-500/40 hidden md:inline">•</span>
+                    <span className="hidden md:inline-flex items-center gap-1.5 text-purple-300 font-semibold">
+                        <span className="w-2 h-2 rounded-full bg-purple-400" />
+                        {(() => {
+                            const m = new Date().getMonth() + 1;
+                            const d = new Date().getDate();
+                            if ((m === 11 && d >= 27) || (m === 12 && d <= 24)) return 'Advent • Violet';
+                            if ((m === 12 && d >= 25) || (m === 1 && d <= 12)) return 'Christmas • Gold';
+                            if (m === 3 || (m === 4 && d <= 10)) return 'Lent / Paschal • Violet';
+                            return 'Ordinary Time • Green';
+                        })()}
+                    </span>
                 </div>
 
                 {/* Liturgical Headline */}
@@ -136,7 +148,7 @@ export function SanctuaryHero() {
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-gradient-to-r from-[#E8CA68] via-[#D4AF37] to-[#B8942C] hover:brightness-110 text-[#120E0A] font-extrabold text-base shadow-[0_0_30px_rgba(212,175,55,0.45)] transition-all hover:scale-[1.03] active:scale-95"
                     >
                         <Flame className="w-5 h-5 fill-current animate-pulse" />
-                        <span>Light a Candle — From Free</span>
+                        <span>Light a Candle — Free</span>
                     </button>
 
                     <button
@@ -145,7 +157,7 @@ export function SanctuaryHero() {
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-full bg-[#7A1E24] hover:bg-[#9B2C33] text-[#FAF6EE] font-bold text-base border border-gold-400/30 shadow-xl transition-all hover:scale-[1.02]"
                     >
                         <Church className="w-5 h-5 text-gold-300" />
-                        <span>Request a Holy Mass — $10</span>
+                        <span>Request a Holy Mass</span>
                     </button>
 
                     <Link

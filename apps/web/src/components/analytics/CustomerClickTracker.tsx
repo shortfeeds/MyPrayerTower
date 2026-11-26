@@ -118,12 +118,20 @@ function extractEngagementAction(targetEl: HTMLElement): { target: string; categ
         };
     }
 
-    // Share & Community Faith
-    if (/share this prayer|share prayer|share intention|copy link|copy prayer/i.test(combined)) {
+    // Share & Downloads & Community Faith
+    if (/share this prayer|share prayer|share intention|copy link|copy prayer|\bshare\b/i.test(combined)) {
         return {
             target: 'Share Prayer / Intention',
             category: 'social',
             eventType: 'share_action'
+        };
+    }
+
+    if (/download|certificate|pdf|get the app|google play|play store|install app/i.test(combined)) {
+        return {
+            target: rawText ? rawText.slice(0, 60) : 'Download / App Action',
+            category: 'download',
+            eventType: 'download_action'
         };
     }
 

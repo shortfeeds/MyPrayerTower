@@ -60,7 +60,7 @@ export function PostPrayerOfferingModal() {
                             <Flame className="w-5 h-5 fill-current" />
                             <span>Light a Vigil Candle</span>
                         </span>
-                        <span className="text-xs font-mono bg-[#120E0A]/15 px-2.5 py-0.5 rounded-full">From Free</span>
+                        <span className="text-xs font-mono bg-[#120E0A]/15 px-2.5 py-0.5 rounded-full">Free</span>
                     </button>
 
                     <button

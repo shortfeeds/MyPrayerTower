@@ -8,7 +8,7 @@ const GATEWAYS = [
     {
         id: 'candles',
         title: 'Virtual Candle Altar',
-        subtitle: 'From Free • 24h to 30-Day Vigils',
+        subtitle: 'Free • 24h to 30-Day Vigils',
         description: 'Place a glowing vigil flame before the sanctuary altar for your loved ones.',
         image: '/images/sanctuary/card_candles.jpg',
         href: '/candles',
@@ -47,7 +47,7 @@ const GATEWAYS = [
     {
         id: 'mass',
         title: 'Holy Mass & Bouquets',
-        subtitle: 'Single Mass $10 • Novena $85',
+        subtitle: 'Community Intentions & Priest Masses',
         description: 'Entrust your intentions to ordained Catholic priests celebrating the Holy Sacrifice.',
         image: '/images/sanctuary/card_mass.jpg',
         href: '/mass-offerings',

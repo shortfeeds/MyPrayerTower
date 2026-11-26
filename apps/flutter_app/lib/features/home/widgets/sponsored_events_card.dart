@@ -1,16 +1,77 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 
-/// Displays Tonight's Sponsored Rosary / Novena Event & quick sponsorship CTA
-class SponsoredEventsCard extends StatelessWidget {
+/// Displays Tonight's Sponsored Rosary / Novena Event synced with Admin Panel
+class SponsoredEventsCard extends ConsumerStatefulWidget {
   const SponsoredEventsCard({super.key});
 
   @override
+  ConsumerState<SponsoredEventsCard> createState() => _SponsoredEventsCardState();
+}
+
+class _SponsoredEventsCardState extends ConsumerState<SponsoredEventsCard> {
+  String _family = 'The Rodriguez Family';
+  String _city = 'Madrid';
+  String _country = 'Spain';
+  String _dedication = 'In loving memory of Grandma Rosa';
+  int _faithfulCount = 2847;
+  List<Map<String, dynamic>> _recentSponsors = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLiveSponsor();
+  }
+
+  String _formatSponsorName(String family, String? city, String? country) {
+    final loc = [city ?? '', country ?? '']
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .join(', ');
+    return loc.isNotEmpty ? '$family ($loc)' : family;
+  }
+
+  Future<void> _fetchLiveSponsor() async {
+    try {
+      final res = await http
+          .get(Uri.parse('https://www.myprayertower.com/api/events/sponsored'))
+          .timeout(const Duration(seconds: 6));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        final ts = data['config']?['tonightSponsor'];
+        final recent = data['config']?['recentSponsors'];
+        if (mounted) {
+          setState(() {
+            if (ts != null) {
+              _family = ts['family'] ?? _family;
+              _city = ts['city'] ?? '';
+              _country = ts['country'] ?? '';
+              _dedication = ts['dedication'] ?? _dedication;
+              _faithfulCount = ts['faithfulCount'] ?? _faithfulCount;
+            }
+            if (recent is List) {
+              _recentSponsors = recent
+                  .whereType<Map>()
+                  .map((e) => Map<String, dynamic>.from(e))
+                  .toList();
+            }
+          });
+        }
+      }
+    } catch (_) {}
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final lang = ref.watch(localeProvider).languageCode;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -32,7 +93,7 @@ class SponsoredEventsCard extends StatelessWidget {
               border: Border.all(color: AppTheme.sacredGold.withValues(alpha: 0.35)),
             ),
             child: Text(
-              "TONIGHT'S SPONSORED ROSARY MARATHON",
+              AppStrings.tr(lang, 'tonight_rosary'),
               style: GoogleFonts.inter(
                 fontSize: 9.5,
                 fontWeight: FontWeight.w800,
@@ -43,9 +104,9 @@ class SponsoredEventsCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            '✨ The Rodriguez Family ✨',
+            '✨ ${_formatSponsorName(_family, _city, _country)} ✨',
             style: GoogleFonts.cinzel(
-              fontSize: 17,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
               color: AppTheme.textPrimary,
             ),
@@ -53,7 +114,7 @@ class SponsoredEventsCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '"In loving memory of Grandma Rosa"',
+            '"$_dedication"',
             style: GoogleFonts.cormorantGaramond(
               fontSize: 15,
               fontStyle: FontStyle.italic,
@@ -63,9 +124,75 @@ class SponsoredEventsCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            '2,847 faithful praying together tonight',
+            '$_faithfulCount faithful praying together tonight',
             style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textMuted),
           ),
+          if (_recentSponsors.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.22),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: AppTheme.sacredGold.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'RECENT SPONSORS & OFFERINGS',
+                    style: GoogleFonts.inter(
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.0,
+                      color: AppTheme.goldLight,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ..._recentSponsors.take(4).map((sp) {
+                    final display = _formatSponsorName(
+                      (sp['family'] ?? 'Faithful Family').toString(),
+                      sp['city']?.toString(),
+                      sp['country']?.toString(),
+                    );
+                    final pkg = (sp['packageTitle'] ?? 'Event Sponsor').toString();
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        children: [
+                          const Icon(LucideIcons.sparkles,
+                              size: 12, color: AppTheme.goldLight),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              display,
+                              style: GoogleFonts.inter(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textPrimary,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            pkg,
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              color: AppTheme.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
@@ -76,7 +203,7 @@ class SponsoredEventsCard extends StatelessWidget {
               },
               icon: const Icon(LucideIcons.crown, size: 16),
               label: Text(
-                "Sponsor Tomorrow's Rosary — \$25",
+                AppStrings.tr(lang, 'sponsor_tomorrow'),
                 style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 12.5),
               ),
               style: ElevatedButton.styleFrom(

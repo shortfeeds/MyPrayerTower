@@ -45,10 +45,15 @@ async function InteractionsOverview({
 
     const baseWhere: any = {
         createdAt: { gte: sinceDate },
+        eventType: { not: 'screen_view' },
+        category: { in: ['prayer', 'amen', 'candle', 'audio', 'offering', 'rosary', 'social', 'share', 'download', 'devotional'] },
         NOT: [
             { path: { startsWith: '/admin' } },
-            { category: 'general' },
-            { target: { in: ['Sign In', 'Close', 'Edit User', 'Abandoned Carts', 'Failed Payments'] } },
+            { target: { contains: 'Instance Of' } },
+            { target: { contains: 'RouteSettings' } },
+            { target: { contains: 'NoTransitionPage' } },
+            { target: { contains: 'MaterialPage' } },
+            { target: { in: ['Sign In', 'Close', 'Edit User', 'Abandoned Carts', 'Failed Payments', 'Login', 'Search', 'Onboarding'] } },
         ]
     };
     if (categoryFilter && categoryFilter !== 'all') {

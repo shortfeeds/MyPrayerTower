@@ -10,6 +10,8 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const {
             familyName,
+            city,
+            country,
             intention,
             email,
             durationDays = 7,
@@ -18,6 +20,7 @@ export async function POST(req: NextRequest) {
         } = body;
 
         const safeFamilyName = (familyName || 'The Faithful Family').trim();
+        const locationLabel = [city, country].map((s: any) => (s || '').trim()).filter(Boolean).join(', ');
         const safeIntention = (intention || 'In Adoration & Protection of Catholic Families').trim();
         const days = Number(durationDays) || 7;
 
@@ -42,6 +45,7 @@ export async function POST(req: NextRequest) {
                 id: orderId,
                 userId: user?.id || null,
                 name: safeFamilyName,
+                country: locationLabel || null,
                 email: email || (user as any)?.email || '',
                 intention: `Tabernacle Lamp: ${safeIntention}`,
                 amount: priceCents,

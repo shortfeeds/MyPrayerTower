@@ -6,7 +6,9 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
         console.log('Mass Offering Checkout Request:', JSON.stringify(body, null, 2));
-        const { offeringId, amount, intention, name, date, email, paypalOrderId, paypalPayerEmail } = body;
+        const { offeringId, amount, intention, name, city, country, date, email, paypalOrderId, paypalPayerEmail } = body;
+        const locationLabel = [city, country].map((s: any) => (s || '').trim()).filter(Boolean).join(', ');
+        const displayDonorName = locationLabel ? `${name || 'Faithful Soul'} (${locationLabel})` : (name || 'Faithful Soul');
 
         if (!offeringId || !amount || !intention) {
             return NextResponse.json(
@@ -27,7 +29,7 @@ export async function POST(req: NextRequest) {
                     amount: amount,
                     intentionFor: intention,
                     email: email || '',
-                    name: name || 'Guest',
+                    name: displayDonorName,
                     phone: '9999999999',
                     status: paypalOrderId ? 'PAID' : 'PENDING_PAYMENT',
                     paidAt: paypalOrderId ? new Date() : null,

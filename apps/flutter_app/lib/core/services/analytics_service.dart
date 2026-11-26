@@ -29,7 +29,7 @@ class AnalyticsService {
     }
   }
 
-  /// Track a screen view (e.g. "Holy Rosary", "Prayer Wall", "Daily Gospel")
+  /// Track a screen view in GA4 only (DB engagement tracker records button interactions only)
   Future<void> trackScreenView(String screenName, {String? screenClass}) async {
     debugPrint('[Analytics] Screen View: $screenName ($screenClass)');
 
@@ -37,26 +37,7 @@ class AnalyticsService {
       await _initClientId();
     }
 
-    // 1. Send to Backend Telemetry / Database
-    try {
-      final uri = Uri.parse('${ApiConstants.baseUrl}/analytics/track');
-      http.post(
-        uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'eventType': 'screen_view',
-          'screenName': screenName,
-          'screenClass': screenClass ?? screenName,
-          'clientId': _clientId,
-          'platform': defaultTargetPlatform.name.toLowerCase(),
-          'timestamp': DateTime.now().toIso8601String(),
-        }),
-      ).timeout(const Duration(seconds: 4)).ignore();
-    } catch (e) {
-      debugPrint('[Analytics] Backend logging note: $e');
-    }
-
-    // 2. Send to Google Analytics 4 (GA4 Measurement Hit)
+    // Send to Google Analytics 4 (GA4 Measurement Hit)
     try {
       final gaUrl = Uri.parse(
         'https://www.google-analytics.com/g/collect?v=2&tid=$_gaMeasurementId&cid=$_clientId&en=screen_view&ep.screen_name=${Uri.encodeComponent(screenName)}&ep.platform=android',

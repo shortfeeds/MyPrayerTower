@@ -14,6 +14,8 @@ import '../../../core/widgets/premium_glass_card.dart';
 import '../../../core/widgets/premium_scaffold.dart';
 
 import '../widgets/sanctuary_hero_card.dart';
+import '../widgets/global_sanctuary_ticker.dart';
+import '../widgets/morning_sanctuary_card.dart';
 import '../widgets/sponsored_events_card.dart';
 import '../widgets/daily_reading_card.dart';
 import '../widgets/saint_of_day_card.dart';
@@ -67,6 +69,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(20, 18, 20, 0),
                 child: SanctuaryHeroCard(),
+              ),
+            ),
+
+            // 2b. Live Global Sanctuary Ticker
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 14, 20, 0),
+                child: GlobalSanctuaryTicker(),
+              ),
+            ),
+
+            // 2c. 60-Second Morning Sanctuary Routine
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 14, 20, 0),
+                child: MorningSanctuaryCard(),
               ),
             ),
 

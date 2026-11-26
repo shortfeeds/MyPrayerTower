@@ -51,7 +51,7 @@ void showPostPrayerOfferingSheet(BuildContext context, {String intention = ''}) 
                 },
                 icon: const Icon(LucideIcons.flame, size: 18),
                 label: Text(
-                  'Light a Vigil Candle — From Free',
+                  'Light a Vigil Candle — Free',
                   style: GoogleFonts.inter(fontWeight: FontWeight.w800),
                 ),
                 style: ElevatedButton.styleFrom(

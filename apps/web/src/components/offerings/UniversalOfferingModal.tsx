@@ -66,16 +66,18 @@ export function UniversalOfferingModal({
     // Form inputs
     const [recipientName, setRecipientName] = useState(initialRecipient);
     const [donorName, setDonorName] = useState('');
+    const [donorCity, setDonorCity] = useState('');
+    const [donorCountry, setDonorCountry] = useState('');
     const [donorEmail, setDonorEmail] = useState('');
     const [intention, setIntention] = useState(initialIntention);
 
-    // Specific offering configurations
-    const [candleDuration, setCandleDuration] = useState<'FREE' | '3_DAYS' | '7_DAYS' | '14_DAYS' | '30_DAYS'>('7_DAYS');
-    const [massType, setMassType] = useState<'SINGLE' | 'NOVENA_SERIES'>('SINGLE');
+    // Specific offering configurations (Free base tiers by default)
+    const [candleDuration, setCandleDuration] = useState<'FREE' | '3_DAYS' | '7_DAYS' | '14_DAYS' | '30_DAYS'>('FREE');
+    const [massType, setMassType] = useState<'COMMUNITY' | 'SINGLE' | 'NOVENA_SERIES'>('COMMUNITY');
     const [bouquetItems, setBouquetItems] = useState({
-        masses: 1,
+        masses: 0,
         rosaries: 2,
-        candles: 1,
+        candles: 0,
         prayers: 5
     });
 
@@ -138,9 +140,10 @@ export function UniversalOfferingModal({
                     default: return 5.99;
                 }
             case 'mass':
-                return massType === 'SINGLE' ? 10.00 : 85.00;
+                return massType === 'COMMUNITY' ? 0 : massType === 'SINGLE' ? 10.00 : 85.00;
             case 'bouquet':
-                return (bouquetItems.masses * 10) + (bouquetItems.rosaries * 5) + (bouquetItems.candles * 5);
+                // Prayers & Rosaries are always Free; optional Masses ($10) & Candles ($5)
+                return (bouquetItems.masses * 10) + (bouquetItems.candles * 5);
             case 'tabernacle':
                 return 25.00;
             case 'blessing':
@@ -163,6 +166,8 @@ export function UniversalOfferingModal({
 
     const handleSuccess = async (details?: any) => {
         const callerName = donorName || recipientName || 'Faithful Soul';
+        const callerCity = donorCity.trim();
+        const callerCountry = donorCountry.trim();
         const callerEmail = donorEmail || '';
 
         // Call live backend APIs based on offering type
@@ -179,6 +184,38 @@ export function UniversalOfferingModal({
                         amount: price,
                         intention: intention || 'Special Sanctuary Intention',
                         name: callerName,
+                        city: callerCity,
+                        country: callerCountry,
+                        email: callerEmail,
+                        paypalOrderId: details?.id,
+                    })
+                });
+            } else if (activeTab === 'mass') {
+                await fetch('/api/mass-offerings/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        offeringId: massType === 'NOVENA_SERIES' ? 'NOVENA' : 'REGULAR',
+                        amount: Math.round(price * 100),
+                        intention: intention || recipientName || 'Community Daily Mass Intention',
+                        name: callerName,
+                        city: callerCity,
+                        country: callerCountry,
+                        email: callerEmail,
+                        paypalOrderId: details?.id || (price === 0 ? `FREE_MASS_${Date.now()}` : undefined),
+                    })
+                });
+            } else if (activeTab === 'bouquet') {
+                await fetch('/api/candles/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        duration: 'ONE_DAY',
+                        amount: price,
+                        intention: intention || `Spiritual Bouquet: ${bouquetItems.rosaries} Rosaries, ${bouquetItems.prayers} Prayers`,
+                        name: callerName,
+                        city: callerCity,
+                        country: callerCountry,
                         email: callerEmail,
                         paypalOrderId: details?.id,
                     })
@@ -189,6 +226,8 @@ export function UniversalOfferingModal({
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         familyName: callerName,
+                        city: callerCity,
+                        country: callerCountry,
                         intention: intention || 'In Adoration & Protection of Catholic Families',
                         email: callerEmail,
                         durationDays: 7,
@@ -197,6 +236,7 @@ export function UniversalOfferingModal({
                     })
                 });
             }
+            window.dispatchEvent(new Event('mpt-offerings-updated'));
         } catch (apiErr) {
             console.error('Failed to sync offering with backend API:', apiErr);
         }
@@ -366,9 +406,22 @@ export function UniversalOfferingModal({
                                 {activeTab === 'mass' && (
                                     <div className="space-y-3">
                                         <label className="block text-xs font-bold uppercase tracking-wider text-purple-300">
-                                            Mass Offering Selection
+                                            Mass Intention Selection
                                         </label>
-                                        <div className="grid grid-cols-2 gap-2">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setMassType('COMMUNITY')}
+                                                className={`p-3 rounded-2xl border text-left transition-all ${
+                                                    massType === 'COMMUNITY'
+                                                        ? 'border-amber-400 bg-amber-500/20 shadow-md'
+                                                        : 'border-white/10 bg-white/5'
+                                                }`}
+                                            >
+                                                <span className="block text-xs font-bold text-white">Community Mass</span>
+                                                <span className="text-[10px] text-amber-200/75 block mt-0.5">Daily parish prayer roll</span>
+                                                <span className="text-sm font-black text-amber-300 font-mono mt-1 block">Free</span>
+                                            </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setMassType('SINGLE')}
@@ -379,8 +432,8 @@ export function UniversalOfferingModal({
                                                 }`}
                                             >
                                                 <span className="block text-xs font-bold text-white">Single Holy Mass</span>
-                                                <span className="text-[10px] text-purple-200/70 block mt-0.5">Celebrated by ordained priest</span>
-                                                <span className="text-sm font-black text-purple-300 font-mono mt-1 block">$10.00 USD</span>
+                                                <span className="text-[10px] text-purple-200/70 block mt-0.5">Individual priest intention</span>
+                                                <span className="text-sm font-black text-purple-300 font-mono mt-1 block">$10.00</span>
                                             </button>
                                             <button
                                                 type="button"
@@ -391,9 +444,9 @@ export function UniversalOfferingModal({
                                                         : 'border-white/10 bg-white/5'
                                                 }`}
                                             >
-                                                <span className="block text-xs font-bold text-white">9-Day Novena Series</span>
-                                                <span className="text-[10px] text-purple-200/70 block mt-0.5">9 consecutive holy masses</span>
-                                                <span className="text-sm font-black text-purple-300 font-mono mt-1 block">$85.00 USD</span>
+                                                <span className="block text-xs font-bold text-white">9-Day Novena</span>
+                                                <span className="text-[10px] text-purple-200/70 block mt-0.5">9 consecutive masses</span>
+                                                <span className="text-sm font-black text-purple-300 font-mono mt-1 block">$85.00</span>
                                             </button>
                                         </div>
                                     </div>
@@ -403,23 +456,23 @@ export function UniversalOfferingModal({
                                 {activeTab === 'bouquet' && (
                                     <div className="space-y-2">
                                         <label className="block text-xs font-bold uppercase tracking-wider text-rose-300">
-                                            Custom Spiritual Bouquet
+                                            Custom Spiritual Bouquet (Prayers &amp; Rosaries Free)
                                         </label>
                                         <div className="grid grid-cols-3 gap-2 text-xs">
+                                            <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
+                                                <span className="block font-semibold">📿 Rosaries (Free)</span>
+                                                <div className="flex items-center justify-center gap-2 mt-1.5 font-mono">
+                                                    <button type="button" onClick={() => setBouquetItems(b => ({ ...b, rosaries: Math.max(0, b.rosaries - 1) }))} className="w-6 h-6 rounded bg-white/10">-</button>
+                                                    <span className="font-bold">{bouquetItems.rosaries}</span>
+                                                    <button type="button" onClick={() => setBouquetItems(b => ({ ...b, rosaries: b.rosaries + 1 }))} className="w-6 h-6 rounded bg-white/10">+</button>
+                                                </div>
+                                            </div>
                                             <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
                                                 <span className="block font-semibold">✝ Masses ($10)</span>
                                                 <div className="flex items-center justify-center gap-2 mt-1.5 font-mono">
                                                     <button type="button" onClick={() => setBouquetItems(b => ({ ...b, masses: Math.max(0, b.masses - 1) }))} className="w-6 h-6 rounded bg-white/10">-</button>
                                                     <span className="font-bold">{bouquetItems.masses}</span>
                                                     <button type="button" onClick={() => setBouquetItems(b => ({ ...b, masses: b.masses + 1 }))} className="w-6 h-6 rounded bg-white/10">+</button>
-                                                </div>
-                                            </div>
-                                            <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
-                                                <span className="block font-semibold">📿 Rosaries ($5)</span>
-                                                <div className="flex items-center justify-center gap-2 mt-1.5 font-mono">
-                                                    <button type="button" onClick={() => setBouquetItems(b => ({ ...b, rosaries: Math.max(0, b.rosaries - 1) }))} className="w-6 h-6 rounded bg-white/10">-</button>
-                                                    <span className="font-bold">{bouquetItems.rosaries}</span>
-                                                    <button type="button" onClick={() => setBouquetItems(b => ({ ...b, rosaries: b.rosaries + 1 }))} className="w-6 h-6 rounded bg-white/10">+</button>
                                                 </div>
                                             </div>
                                             <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
@@ -488,25 +541,59 @@ export function UniversalOfferingModal({
                                             />
                                         </div>
                                     </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                        <div>
+                                            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-200/80 mb-1">
+                                                City <span className="text-white/40 font-normal lowercase">(optional)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Manila, Rome, Chicago"
+                                                value={donorCity}
+                                                onChange={e => setDonorCity(e.target.value)}
+                                                className="w-full px-3 py-2 rounded-xl border border-white/15 bg-white/5 text-white text-xs"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-200/80 mb-1">
+                                                Country
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Philippines, USA, India"
+                                                value={donorCountry}
+                                                onChange={e => setDonorCountry(e.target.value)}
+                                                className="w-full px-3 py-2 rounded-xl border border-white/15 bg-white/5 text-white text-xs"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* Price Total & Action Button */}
-                                <div className="pt-4 mt-3 border-t border-white/10 flex items-center justify-between gap-4">
-                                    <div>
-                                        <span className="text-[10px] uppercase font-bold text-white/50 block">Stipend / Offering</span>
-                                        <span className="text-xl font-mono font-black text-amber-300">
-                                            {price === 0 ? 'Free Offering' : `$${price.toFixed(2)} USD`}
-                                        </span>
-                                    </div>
+                                <div className="pt-4 mt-3 border-t border-white/10 space-y-2.5">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div>
+                                            <span className="text-[10px] uppercase font-bold text-white/50 block">Suggested Offering</span>
+                                            <span className="text-xl font-mono font-black text-amber-300">
+                                                {price === 0 ? 'Free' : `$${price.toFixed(2)} USD`}
+                                            </span>
+                                        </div>
 
-                                    <button
-                                        type="button"
-                                        onClick={handleProceedToPayment}
-                                        className="py-3 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2"
-                                    >
-                                        <span>{price === 0 ? 'Complete Offering' : 'Proceed to Offering'}</span>
-                                        <ArrowRight className="w-4 h-4" />
-                                    </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleProceedToPayment}
+                                            className="py-3 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2"
+                                        >
+                                            <span>{price === 0 ? 'Offer Intention — Free' : 'Proceed with Offering'}</span>
+                                            <ArrowRight className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                    {price > 0 && (
+                                        <p className="text-[10.5px] text-white/55 leading-relaxed">
+                                            Your voluntary stipend supports ordained Mass intentions, sanctuary hosting, and keeping daily prayers free worldwide.
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -565,6 +652,15 @@ export function UniversalOfferingModal({
                                     <Download className="w-4 h-4" />
                                     <span>Download Official Consecration Certificate</span>
                                 </button>
+                                {price === 0 && (
+                                    <p className="text-[11px] text-white/60 max-w-sm mx-auto leading-relaxed pt-2">
+                                        Your intention is now before the altar. If this sanctuary has blessed you, you may{' '}
+                                        <a href="/donate" className="text-amber-300 underline hover:text-amber-200">
+                                            leave a voluntary offering
+                                        </a>{' '}
+                                        to help keep daily prayers free for others.
+                                    </p>
+                                )}
                             </div>
                         )}
                     </div>

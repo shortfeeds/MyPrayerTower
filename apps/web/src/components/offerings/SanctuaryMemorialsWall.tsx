@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Flame, Cross, Heart, Sparkles, Plus, Clock, Users } from 'lucide-react';
+import { Flame, Cross, Heart, Sparkles, Plus, Share2 } from 'lucide-react';
 import { openOfferingModal } from '@/components/offerings/UniversalOfferingModal';
 
 interface MemorialItem {
@@ -39,14 +39,39 @@ export function SanctuaryMemorialsWall() {
             }
         }
         fetchRecent();
+        const onUpdated = () => fetchRecent();
+        window.addEventListener('mpt-offerings-updated', onUpdated);
+        return () => window.removeEventListener('mpt-offerings-updated', onUpdated);
     }, []);
 
-    const handlePrayForMemorial = (id: string) => {
+    const handlePrayForMemorial = (id: string, type: 'candle' | 'mass' = 'candle') => {
         if (prayedIds.has(id)) return;
         setPrayedIds(prev => new Set(prev).add(id));
         setMemorials(prev =>
             prev.map(m => (m.id === id ? { ...m, prayerCount: m.prayerCount + 1 } : m))
         );
+        try {
+            const count = parseInt(localStorage.getItem('mpt_prayed_count') || '0', 10) + 1;
+            localStorage.setItem('mpt_prayed_count', String(count));
+        } catch {}
+        fetch('/api/offerings/pray', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, type }),
+        }).catch(() => {});
+    };
+
+    const handleShareMemorial = async (item: MemorialItem) => {
+        const text = `🕯️ Pray with me for ${item.offeredBy}:\n"${item.intention}"\n\n🙏 Tap "I Prayed" on MyPrayerTower: https://www.myprayertower.com/candles`;
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: 'Pray With Me — MyPrayerTower', text, url: 'https://www.myprayertower.com/candles' });
+                return;
+            } catch {}
+        }
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch {}
     };
 
     const getDedicationBadge = (type: string) => {
@@ -170,19 +195,34 @@ export function SanctuaryMemorialsWall() {
                                             </span>
                                         </div>
 
-                                        <button
-                                            onClick={() => handlePrayForMemorial(item.id)}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-95 ${
-                                                hasPrayed
-                                                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                                    : 'bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white border border-white/10'
-                                            }`}
-                                        >
-                                            <Heart
-                                                className={`w-3.5 h-3.5 ${hasPrayed ? 'fill-amber-400 text-amber-400' : ''}`}
-                                            />
-                                            <span>{item.prayerCount} Prayed</span>
-                                        </button>
+                                        <div className="flex items-center gap-1.5">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleShareMemorial(item)}
+                                                data-engagement="Share Prayer / Intention"
+                                                data-category="social"
+                                                aria-label="Share intention"
+                                                className="p-1.5 rounded-xl bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white border border-white/10 transition-all"
+                                            >
+                                                <Share2 className="w-3.5 h-3.5" />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handlePrayForMemorial(item.id, item.type)}
+                                                data-engagement="I Prayed for This"
+                                                data-category="prayer"
+                                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-95 ${
+                                                    hasPrayed
+                                                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                                        : 'bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white border border-white/10'
+                                                }`}
+                                            >
+                                                <Heart
+                                                    className={`w-3.5 h-3.5 ${hasPrayed ? 'fill-amber-400 text-amber-400' : ''}`}
+                                                />
+                                                <span>{item.prayerCount} Prayed</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             );
