@@ -75,11 +75,34 @@ module.exports = {
                     600: '#7a3d10',
                     700: '#69350e',
                 },
+                // Style A: Candlelit Basilica Sanctuary Palette
+                basilica: {
+                    950: '#0D0A07',
+                    900: '#120E0A', // Obsidian-Umber
+                    800: '#18120D', // Sacristy Bronze
+                    700: '#1F1711', // Elevated card bronze
+                    600: '#2A2018',
+                },
+                crimson: {
+                    500: '#9B2C33',
+                    600: '#7A1E24', // Eucharistic Crimson
+                    700: '#5E161B',
+                },
+                marian: {
+                    600: '#1E3559',
+                    700: '#172844', // Marian Deep Navy
+                    800: '#0E1A2F',
+                },
+                ivory: {
+                    50: '#FAF6EE', // Warm Manuscript Ivory
+                    100: '#F2EAD9',
+                    200: '#CFC5B4', // Muted parchment
+                },
             },
             fontFamily: {
-                sans: ['Inter', 'system-ui', 'sans-serif'],
-                serif: ['Merriweather', 'Georgia', 'serif'],
-                display: ['Playfair Display', 'Georgia', 'serif'],
+                sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+                serif: ['var(--font-cormorant)', 'Cormorant Garamond', 'Merriweather', 'Georgia', 'serif'],
+                display: ['var(--font-cinzel)', 'Cinzel', 'Playfair Display', 'Georgia', 'serif'],
             },
             animation: {
                 'fade-in': 'fadeIn 0.6s ease-out',

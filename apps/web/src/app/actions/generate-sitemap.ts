@@ -24,7 +24,7 @@ export async function generateSitemapAction() {
             '/journey', '/bible', '/confession', '/rosary', '/groups',
             '/login', '/register', '/android', '/bot', '/blessings', '/bouquets',
             '/my-vigils', '/live-mass', '/pilgrimages', '/art', '/stations',
-            '/privacy', '/terms', '/refunds', '/cookies', '/dmca', '/guidelines',
+            '/privacy', '/terms', '/cookies', '/dmca', '/guidelines',
             '/reading-plans', '/readings', '/novenas', '/sacraments', '/summa'
         ];
 

@@ -631,6 +631,16 @@ export function CandleCreationModal({ isOpen, onClose, onSuccess, initialIntenti
                                                     <span>{copiedLink ? 'Prayer Link Copied!' : 'Copy Prayer Link'}</span>
                                                 </button>
 
+                                                <a
+                                                    href="https://play.google.com/store/apps/details?id=com.myprayertower.myprayertower_app"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-semibold text-xs transition-colors"
+                                                >
+                                                    <Smartphone className="w-3.5 h-3.5 text-amber-600" />
+                                                    <span>Watch Your Candle Burn Live on Android App</span>
+                                                </a>
+
                                                 <button
                                                     onClick={() => {
                                                         onSuccess();

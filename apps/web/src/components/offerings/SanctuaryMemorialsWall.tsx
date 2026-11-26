@@ -68,7 +68,7 @@ export function SanctuaryMemorialsWall() {
     });
 
     return (
-        <section className="py-16 bg-[#0a0515] border-t border-b border-amber-500/20 text-white relative overflow-hidden">
+        <section className="py-16 bg-[#120E0A] border-t border-b border-gold-500/20 text-[#FAF6EE] relative overflow-hidden">
             {/* Ambient Background Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-amber-500/5 blur-[120px] pointer-events-none rounded-full" />
 
@@ -116,7 +116,7 @@ export function SanctuaryMemorialsWall() {
                 </div>
 
                 {/* Memorials Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
                     {loading ? (
                         Array.from({ length: 6 }).map((_, i) => (
                             <div

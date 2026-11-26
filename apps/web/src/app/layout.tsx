@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { GoogleAnalyticsTracker } from '@/components/analytics/GoogleAnalyticsTracker';
 import { CustomerClickTracker } from '@/components/analytics/CustomerClickTracker';
-import { Inter, Merriweather, Playfair_Display } from 'next/font/google';
+import { Inter, Merriweather, Playfair_Display, Cinzel, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { LayoutChrome } from '@/components/layout/LayoutChrome';
@@ -35,14 +35,29 @@ const playfair = Playfair_Display({
     display: 'swap',
 });
 
+const cinzel = Cinzel({
+    subsets: ['latin'],
+    weight: ['500', '600', '700', '800'],
+    variable: '--font-cinzel',
+    display: 'swap',
+});
+
+const cormorant = Cormorant_Garamond({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+    style: ['normal', 'italic'],
+    variable: '--font-cormorant',
+    display: 'swap',
+});
+
 export const metadata: Metadata = {
     metadataBase: new URL('https://www.myprayertower.com'),
     title: {
-        default: 'MyPrayerTower | Catholic Prayer & Church Finder App',
+        default: 'MyPrayerTower | Catholic Prayer Sanctuary, Virtual Candles & Mass Offerings',
         template: '%s'
     },
-    description: 'Join the global Catholic community. Find Mass times, submit prayer intentions, light virtual candles, and deepen your faith with daily readings and rosary.',
-    keywords: ['Catholic App', 'Mass Times Near Me', 'Online Prayer Request', 'Virtual Candles', 'Catholic Daily Readings', 'Rosary Audio', 'Confession Guide', 'Saints of the Day'],
+    description: 'Enter a sacred Catholic sanctuary online. Light virtual prayer candles, submit intentions to the Prayer Wall, pray the Holy Rosary, read daily Mass readings, and request Holy Mass offerings.',
+    keywords: ['light a virtual catholic candle', 'catholic prayer request wall', 'pray the rosary online', 'request a catholic mass intention online', 'daily catholic mass readings', 'saint of the day', '9 day novena tracker', 'catholic church near me'],
     authors: [{ name: 'MyPrayerTower Team', url: 'https://www.myprayertower.com' }],
     creator: 'MyPrayerTower',
     publisher: 'MyPrayerTower',
@@ -117,6 +132,7 @@ export const metadata: Metadata = {
     },
     other: {
         'mobile-web-app-capable': 'yes',
+        'google-play-app': 'app-id=com.myprayertower.myprayertower_app',
     },
 };
 
@@ -126,7 +142,7 @@ export const viewport = {
     maximumScale: 5,
     userScalable: true,
     viewportFit: 'cover',
-    themeColor: '#0a0612',
+    themeColor: '#120E0A',
 };
 
 export default function RootLayout({
@@ -137,7 +153,7 @@ export default function RootLayout({
     const gaId = (process.env.NEXT_PUBLIC_GA_ID || 'G-XHPBKVZBZH').trim();
 
     return (
-        <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable}`} suppressHydrationWarning>
+        <html lang="en" className={`${inter.variable} ${merriweather.variable} ${playfair.variable} ${cinzel.variable} ${cormorant.variable}`} suppressHydrationWarning>
             <head>
                 {/* Preconnect + DNS Prefetch for critical domains */}
                 <link rel="manifest" href="/manifest.json" />

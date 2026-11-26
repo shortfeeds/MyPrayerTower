@@ -22,24 +22,24 @@ export function YouTubeChannelSection({ videos }: YouTubeChannelSectionProps) {
     if (!videos || videos.length === 0) return null;
 
     return (
-        <section className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 relative overflow-hidden">
+        <section className="py-20 bg-[#18120D] border-t border-gold-500/15 text-[#FAF6EE] relative overflow-hidden">
             {/* Decorative Background */}
-            <div className="absolute inset-0 pointer-events-none opacity-5">
-                <div className="absolute top-10 right-10 w-96 h-96 bg-red-500 rounded-full blur-[150px]" />
-                <div className="absolute bottom-10 left-10 w-72 h-72 bg-red-600 rounded-full blur-[120px]" />
+            <div className="absolute inset-0 pointer-events-none opacity-10">
+                <div className="absolute top-10 right-10 w-96 h-96 bg-crimson-600 rounded-full blur-[150px]" />
+                <div className="absolute bottom-10 left-10 w-72 h-72 bg-gold-500 rounded-full blur-[120px]" />
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
                 {/* Section Header */}
                 <div className="text-center mb-12">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 rounded-full text-sm text-red-600 dark:text-red-400 mb-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-crimson-600/25 border border-gold-500/30 rounded-full text-sm text-gold-300 mb-6">
                         <Youtube className="w-4 h-4" />
                         <span className="font-medium">Watch &amp; Be Inspired</span>
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 dark:text-white mb-4">
+                    <h2 className="text-3xl md:text-4xl font-display font-bold text-[#FAF6EE] mb-4">
                         Latest from Our Channel
                     </h2>
-                    <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-lg">
+                    <p className="text-[#CFC5B4] max-w-xl mx-auto text-lg">
                         Short messages of hope, prayers, and daily reminders that Jesus loves you.
                     </p>
                 </div>

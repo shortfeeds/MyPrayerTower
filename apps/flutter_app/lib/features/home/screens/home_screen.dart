@@ -12,8 +12,9 @@ import '../../../core/services/review_prompt_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/premium_glass_card.dart';
 import '../../../core/widgets/premium_scaffold.dart';
-import '../../ads/widgets/smart_ad_banner.dart';
 
+import '../widgets/sanctuary_hero_card.dart';
+import '../widgets/sponsored_events_card.dart';
 import '../widgets/daily_reading_card.dart';
 import '../widgets/saint_of_day_card.dart';
 import '../widgets/quick_access_bar.dart';
@@ -61,7 +62,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             // 1. Immersive Header (Pinned)
             const PremiumHomeHeader(),
 
-            // 3. Quick Access Bar
+            // 2. Option 2 Marian Midnight Hero + 6-Intention Selector
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 18, 20, 0),
+                child: SanctuaryHeroCard(),
+              ),
+            ),
+
+            // 3. Tonight's Sponsored Rosary & Event Patronage
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 18, 20, 0),
+                child: SponsoredEventsCard(),
+              ),
+            ),
+
+            // 4. Quick Access Bar
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 24, 0, 0),
@@ -228,14 +245,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
                 child: HomeFeaturesGrid(),
-              ),
-            ),
-
-            // Smart Ad Banner
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: SmartAdBanner(page: 'home', position: 'bottom'),
               ),
             ),
 

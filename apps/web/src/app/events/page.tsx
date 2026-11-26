@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Calendar, MapPin, Search, Filter, Clock, Users, ChevronDown, Globe } from 'lucide-react';
+import { SponsoredEventsShowcase } from '@/components/home/SponsoredEventsShowcase';
 
 interface Event {
     id: string;
@@ -61,12 +62,15 @@ export default function EventsPage() {
                         <span className="text-gold-400 font-medium uppercase tracking-widest text-sm">Catholic Events</span>
                     </div>
 
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Discover Events Near You</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Discover &amp; Sponsor Catholic Events</h1>
                     <p className="text-primary-100 text-lg max-w-2xl">
-                        Find retreats, conferences, pilgrimages, and special Masses happening at Catholic parishes worldwide.
+                        Sponsor online Rosary nights and Novenas in honor of your loved ones, or find retreats and special Masses at parishes worldwide.
                     </p>
                 </div>
             </div>
+
+            {/* Online Event Sponsorships */}
+            <SponsoredEventsShowcase />
 
             {/* Filters */}
             <div className="bg-white border-b border-gray-200 sticky top-0 z-20">

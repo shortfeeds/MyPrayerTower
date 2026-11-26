@@ -82,7 +82,6 @@ export async function GET() {
         '/quiz',
         '/reading-plans',
         '/readings',
-        '/refunds',
         '/register',
         '/rosary',
         '/sacraments',
@@ -108,7 +107,7 @@ export async function GET() {
     <loc>${baseUrl}${route}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>daily</changefreq>
-    <priority>${route === '' ? '1.0' : ['/mass-offerings', '/candles', '/blessings', '/bouquets', '/my-vigils', '/rosary', '/live-mass', '/churches', '/prayers', '/saints'].includes(route) ? '0.9' : '0.8'}</priority>
+    <priority>${route === '' ? '1.0' : ['/mass-offerings', '/candles', '/blessings', '/bouquets', '/my-vigils', '/rosary', '/live-mass', '/churches', '/prayers', '/saints', '/events', '/readings', '/prayer-wall', '/novenas', '/memorials', '/donate'].includes(route) ? '0.9' : '0.8'}</priority>
   </url>`
       )
       .join('')}

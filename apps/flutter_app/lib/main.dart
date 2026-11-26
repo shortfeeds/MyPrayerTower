@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'app/app.dart';
@@ -14,7 +13,6 @@ import 'core/services/cache_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/scheduled_notification_service.dart';
 import 'features/home_widget/services/home_widget_service.dart';
-import 'features/ads/services/ad_service.dart';
 
 void main() async {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -103,17 +101,7 @@ void main() async {
           debugPrint('Firebase/Notification setup skipped: $e');
         }
 
-        // 3. Initialize Google Mobile Ads SDK
-        if (!kIsWeb) {
-          try {
-            await MobileAds.instance.initialize();
-            container.read(adServiceProvider).initialize();
-          } catch (e) {
-            debugPrint('AdMob init error: $e');
-          }
-        }
-
-        // 4. Initialize Home Widget
+        // 3. Initialize Home Widget
         try {
           await HomeWidgetService.initialize();
         } catch (e) {

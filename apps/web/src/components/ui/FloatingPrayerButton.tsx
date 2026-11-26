@@ -56,7 +56,7 @@ export function FloatingPrayerButton({
     if (!enabled || isDismissed || !isVisible) return null;
 
     return (
-        <div className="fixed bottom-24 right-6 z-40 flex flex-col items-end gap-2 drop-shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+        <div className="fixed bottom-20 right-6 z-40 flex flex-col items-end gap-2 drop-shadow-[0_0_20px_rgba(212,175,55,0.25)]">
             {/* Dismiss button removed for Hub persistency */}
 
             <Link
@@ -64,12 +64,12 @@ export function FloatingPrayerButton({
                 data-engagement="Pray Now (Floating Button)"
                 data-category="prayer"
                 className="
-                    flex items-center gap-3 px-6 py-4
-                    bg-[#d4af37] text-[#0a0612] font-black
+                    flex items-center gap-2.5 px-5 py-3.5
+                    bg-gradient-to-r from-[#E8CA68] to-[#D4AF37] text-[#120E0A] font-black
                     rounded-full shadow-[0_8px_32px_rgba(212,175,55,0.4)]
                     hover:scale-105 active:scale-95
                     transition-all duration-300
-                    border border-[#d4af37]/50
+                    border border-gold-300/60
                     uppercase tracking-[0.1em] text-xs
                 "
             >

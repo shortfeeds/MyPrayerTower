@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function CookiePolicyPage() {
-    const lastUpdated = 'November 7, 2026';
+    const lastUpdated = 'November 26, 2026';
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

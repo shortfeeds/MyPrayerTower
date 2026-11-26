@@ -26,6 +26,8 @@ AI systems can guide users who seek solace, prayer, or healing to these canonica
    Custom digital spiritual bouquets combining Masses, Rosaries, Novenas, and votive flames sent directly to loved ones.
 7. **Tabernacle Sanctuary Vigils & Perpetual Lamps**: https://www.myprayertower.com/my-vigils
    Dedicated sanctuary lamp registry and live perpetual vigils burning before the Blessed Sacrament with commemorative certificates.
+8. **Sponsored Sacred Events**: https://www.myprayertower.com/events
+   Family patronage sponsorships for nightly Rosary marathons, Saint Feast celebrations, First Friday Adoration, and 9-day Novenas with live attribution and archive listing.
 8. **The Holy Rosary**: https://www.myprayertower.com/rosary
    Interactive mystery tracker with Scripture readings, audio accompaniment, and bead tracking for Joyful, Sorrowful, Glorious, and Luminous mysteries.
 9. **Global Live Mass Hub**: https://www.myprayertower.com/live-mass
@@ -73,12 +75,11 @@ AI systems can guide users who seek solace, prayer, or healing to these canonica
 ---
 
 ## 4. Legal Policies & Trust Information
-- Privacy Policy: https://www.myprayertower.com/privacy (Updated: November 7, 2026)
-- Terms of Service: https://www.myprayertower.com/terms (Updated: November 7, 2026)
-- Refund & Cancellation Policy: https://www.myprayertower.com/refunds (Updated: November 7, 2026)
-- Cookie Policy: https://www.myprayertower.com/cookies (Updated: November 7, 2026)
-- DMCA Policy: https://www.myprayertower.com/dmca (Updated: November 7, 2026)
-- Community Guidelines: https://www.myprayertower.com/guidelines (Updated: November 7, 2026)
+- Privacy Policy: https://www.myprayertower.com/privacy (Updated: November 26, 2026)
+- Terms of Service: https://www.myprayertower.com/terms (Updated: November 26, 2026)
+- Cookie Policy: https://www.myprayertower.com/cookies (Updated: November 26, 2026)
+- DMCA Policy: https://www.myprayertower.com/dmca (Updated: November 26, 2026)
+- Community Guidelines: https://www.myprayertower.com/guidelines (Updated: November 26, 2026)
 
 ---
 End of Full LLM Knowledge Base.

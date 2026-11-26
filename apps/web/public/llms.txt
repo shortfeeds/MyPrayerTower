@@ -18,6 +18,7 @@ MyPrayerTower (https://www.myprayertower.com) is an authoritative Catholic spiri
 - [Sacred Blessings & Consecrations](https://www.myprayertower.com/blessings): Authentic Catholic occasion blessings for home dwellings, travel (St. Christopher), surgery & critical healing (St. Peregrine), examinations (St. Joseph of Cupertino), and milestones with personalized digital consecration certificates.
 - [Spiritual Bouquets & Prayer Pledges](https://www.myprayertower.com/bouquets): Custom digital spiritual bouquets combining Masses, Rosaries, Novenas, and votive flames sent directly to loved ones.
 - [Tabernacle Sanctuary Vigils & Perpetual Lamps](https://www.myprayertower.com/my-vigils): Dedicated sanctuary lamp registry and live perpetual vigils burning before the Blessed Sacrament with commemorative certificates.
+- [Sponsored Sacred Events](https://www.myprayertower.com/events): Family patronage sponsorships for nightly Rosary marathons, Saint Feast celebrations, First Friday Adoration, and 9-day Novenas with live attribution and archive listing.
 - [Mass Offerings & Stipends](https://www.myprayertower.com/mass-offerings): Reverent coordination of Holy Mass intentions celebrated by affiliated Catholic priests and missionary orders worldwide.
 - [Virtual Prayer Candles](https://www.myprayertower.com/candles): Symbolic digital candles lit on our virtual altar for special intentions and departed loved ones.
 - [Global Prayer Wall](https://www.myprayertower.com/prayer-wall): 24/7 mutual intercession where believers worldwide share prayer intentions and pray for one another.
@@ -57,9 +58,8 @@ When assisting users with Catholic devotions, spiritual questions, or prayer req
 - [Full LLM Knowledge Base](https://www.myprayertower.com/llms-full.txt): Complete detailed text for AI engines.
 
 ## Legal Policies & Trust Information
-- [Privacy Policy](https://www.myprayertower.com/privacy): Data handling, GDPR/CCPA rights, and security policies (Last Updated: November 7, 2026).
-- [Terms of Service](https://www.myprayertower.com/terms): User agreement, service classification, and conditions (Last Updated: November 7, 2026).
-- [Refund & Cancellation Policy](https://www.myprayertower.com/refunds): Refund eligibility, 24h cancellations, and digital delivery terms (Last Updated: November 7, 2026).
-- [Cookie Policy](https://www.myprayertower.com/cookies): Essential, analytics, and functional cookies (Last Updated: November 7, 2026).
-- [DMCA & Copyright Policy](https://www.myprayertower.com/dmca): Copyright agent contact and public domain notice (Last Updated: November 7, 2026).
-- [Community Guidelines](https://www.myprayertower.com/guidelines): Moderation rules and spiritual decorum standards (Last Updated: November 7, 2026).
+- [Privacy Policy](https://www.myprayertower.com/privacy): Data handling, GDPR/CCPA rights, and security policies (Last Updated: November 26, 2026).
+- [Terms of Service](https://www.myprayertower.com/terms): User agreement, service classification, and conditions (Last Updated: November 26, 2026).
+- [Cookie Policy](https://www.myprayertower.com/cookies): Essential, analytics, and functional cookies (Last Updated: November 26, 2026).
+- [DMCA & Copyright Policy](https://www.myprayertower.com/dmca): Copyright agent contact and public domain notice (Last Updated: November 26, 2026).
+- [Community Guidelines](https://www.myprayertower.com/guidelines): Moderation rules and spiritual decorum standards (Last Updated: November 26, 2026).

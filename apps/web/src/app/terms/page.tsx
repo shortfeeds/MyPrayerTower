@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default function TermsOfServicePage() {
-    const lastUpdated = 'November 7, 2026';
-    const effectiveDate = 'November 7, 2026';
+    const lastUpdated = 'November 26, 2026';
+    const effectiveDate = 'November 26, 2026';
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -102,7 +102,8 @@ export default function TermsOfServicePage() {
                             <li><strong>Prayer Library & Rosary:</strong> Over 3,900 prayers, litanies, interactive Rosary, and novena trackers.</li>
                             <li><strong>Daily Liturgical Readings:</strong> Official scripture readings and Catholic saints reflections.</li>
                             <li><strong>Mass Offerings:</strong> Coordination of Mass intentions with partner clergy worldwide.</li>
-                            <li><strong>Virtual Candles & Sanctuary Vigils:</strong> Real-time digital votive displays and tabernacle lamps.</li>
+                            <li><strong>Virtual Candles & Sanctuary Vigils:</strong> Real-time digital votive displays, Perpetual Vigil Lamps, and tabernacle lamps.</li>
+                            <li><strong>Sponsored Sacred Events & Seasonal Gift Bundles:</strong> Patronage sponsorships for online Rosary streams, Novena nights, and curated liturgical gift packages with digital certificates.</li>
                         </ul>
                     </section>
 

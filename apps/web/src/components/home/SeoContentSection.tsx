@@ -22,49 +22,51 @@ const FAQS = [
 
 export function SeoContentSection() {
     return (
-        <section className="py-20 bg-white border-t border-gray-100">
+        <section className="py-20 bg-[#18120D] text-[#FAF6EE] border-t border-gold-500/20">
             <div className="container mx-auto px-4 max-w-5xl">
 
                 {/* SEO Content Block */}
-                <div className="prose prose-lg prose-stone mx-auto text-center mb-16">
-                    <h2 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                        The Most Complete <span className="text-gold-600">Catholic Prayer App</span> & Community
+                <div className="mx-auto text-center mb-14 max-w-3xl">
+                    <h2 className="font-display text-3xl md:text-4xl font-bold text-[#FAF6EE] mb-5">
+                        A Global <span className="text-gold-300">Catholic Prayer Sanctuary</span> &amp; Devotional Community
                     </h2>
-                    <p className="text-gray-600 leading-relaxed">
-                        MyPrayerTower is more than just a website; it is a digital sanctuary for the modern Catholic.
-                        In an increasingly noisy world, we provide a sacred space to find
-                        <span className="font-bold text-gray-800"> peace, community, and spiritual growth</span>.
-                        Whether you are looking to <Link href="/rosary">pray the Rosary</Link>, find <Link href="/churches">Mass times near you</Link>,
-                        or simply light a virtual candle for a loved one, MyPrayerTower is your daily companion in faith.
+                    <p className="text-[#CFC5B4] text-base sm:text-lg leading-relaxed">
+                        MyPrayerTower is a digital Catholic sanctuary for prayer, scripture, and remembrance.
+                        In a busy world, we offer a quiet sacred space to find
+                        <span className="font-semibold text-[#FAF6EE]"> peace, intercession, and spiritual growth</span>.
+                        Whether you wish to <Link href="/candles" className="text-gold-300 hover:underline">light a virtual candle</Link>,{' '}
+                        <Link href="/rosary" className="text-gold-300 hover:underline">pray the Holy Rosary</Link>,{' '}
+                        <Link href="/mass-offerings" className="text-gold-300 hover:underline">request a Holy Mass</Link>,{' '}
+                        or <Link href="/churches" className="text-gold-300 hover:underline">find Catholic Mass times near you</Link>, MyPrayerTower is your daily companion in faith.
                     </p>
                 </div>
 
                 {/* Keyword Columns */}
-                <div className="grid md:grid-cols-3 gap-8 mb-20 text-center md:text-left">
-                    <div className="p-6 bg-gray-50 rounded-2xl">
-                        <h3 className="font-serif text-xl font-bold text-gray-900 mb-3">Daily Catholic Prayers</h3>
-                        <p className="text-sm text-gray-600 mb-4">
-                            Access a vast library of traditional prayers, from the <Link href="/prayers/morning-offering" className="text-gold-600 hover:underline">Morning Offering</Link> to
-                            the <Link href="/prayers/angelus" className="text-gold-600 hover:underline">Angelus</Link> and Night Prayers.
+                <div className="grid md:grid-cols-3 gap-6 mb-16 text-center md:text-left">
+                    <div className="p-6 bg-[#120E0A] border border-gold-500/20 rounded-2xl">
+                        <h3 className="font-display text-lg font-bold text-[#FAF6EE] mb-2">Daily Catholic Prayers</h3>
+                        <p className="text-sm text-[#CFC5B4]">
+                            Access 3,900+ traditional prayers, from the <Link href="/prayers/morning-offering" className="text-gold-300 hover:underline">Morning Offering</Link> to
+                            the <Link href="/prayers/angelus" className="text-gold-300 hover:underline">Angelus</Link> and Daily Readings.
                         </p>
                     </div>
-                    <div className="p-6 bg-gray-50 rounded-2xl">
-                        <h3 className="font-serif text-xl font-bold text-gray-900 mb-3">Novena Tracker</h3>
-                        <p className="text-sm text-gray-600 mb-4">
-                            Never miss a day of your novena again. Join community novenas for <Link href="/novenas" className="text-gold-600 hover:underline">St. Jude</Link>,
-                            Divine Mercy, and more.
+                    <div className="p-6 bg-[#120E0A] border border-gold-500/20 rounded-2xl">
+                        <h3 className="font-display text-lg font-bold text-[#FAF6EE] mb-2">Novenas &amp; Sponsored Vigils</h3>
+                        <p className="text-sm text-[#CFC5B4]">
+                            Track 9-day <Link href="/novenas" className="text-gold-300 hover:underline">Novenas</Link> or{' '}
+                            <Link href="/events" className="text-gold-300 hover:underline">sponsor a Rosary Marathon</Link> in honor of your family and loved ones.
                         </p>
                     </div>
-                    <div className="p-6 bg-gray-50 rounded-2xl">
-                        <h3 className="font-serif text-xl font-bold text-gray-900 mb-3">Global Prayer Wall</h3>
-                        <p className="text-sm text-gray-600 mb-4">
-                            Share your intentions and pray for others. Experience the power of the Communion of Saints in real-time on our <Link href="/prayer-wall" className="text-gold-600 hover:underline">Prayer Wall</Link>.
+                    <div className="p-6 bg-[#120E0A] border border-gold-500/20 rounded-2xl">
+                        <h3 className="font-display text-lg font-bold text-[#FAF6EE] mb-2">Global Prayer Wall</h3>
+                        <p className="text-sm text-[#CFC5B4]">
+                            Share your intentions and pray for others in the Communion of Saints on our <Link href="/prayer-wall" className="text-gold-300 hover:underline">Prayer Wall</Link>.
                         </p>
                     </div>
                 </div>
 
                 {/* FAQ / People Also Ask */}
-                <FAQSection items={FAQS} title="Common Questions about Catholic Prayer" />
+                <FAQSection items={FAQS} title="Common Questions about Catholic Prayer & Offerings" />
 
             </div>
         </section>

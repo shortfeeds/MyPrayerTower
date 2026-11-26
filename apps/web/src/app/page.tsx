@@ -1,62 +1,35 @@
-import { Suspense } from 'react';
 export const revalidate = 3600; // 1 hour
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { CoreActions } from '@/components/home/CoreActions';
-import { SocialReassurance } from '@/components/home/SocialReassurance';
-import { FeatureDiscovery } from '@/components/home/FeatureDiscovery';
-import { InvitationToReturn } from '@/components/home/InvitationToReturn';
-import { DailyFocus } from '@/components/home/DailyFocus';
-import { ParticleBackground } from '@/components/ui/ParticleBackground';
-import { TestimonialsSection } from '@/components/home/TestimonialsSection';
-import { AppDownloadBanner } from '@/components/home/PromotionalBanner';
 import { HomeSessionWrapper } from '@/components/home/HomeSessionWrapper';
+import { SanctuaryHero } from '@/components/home/SanctuaryHero';
+import { SanctuaryGateways } from '@/components/home/SanctuaryGateways';
+import { SponsoredEventsShowcase } from '@/components/home/SponsoredEventsShowcase';
+import { PerpetualAndSeasonalOfferings } from '@/components/home/PerpetualAndSeasonalOfferings';
+import { CompleteCatholicDirectory } from '@/components/home/CompleteCatholicDirectory';
+import { AppDownloadSection } from '@/components/home/AppDownloadSection';
 import { MemorialsBanner } from '@/components/home/MemorialsBanner';
 import { UpcomingNovenaCountdown } from '@/components/home/UpcomingNovenaCountdown';
-import { getLiturgicalData, getDailyReading, getSaintOfTheDay } from '@/app/actions/home';
-import { WelcomeGreeting } from '@/components/home/WelcomeGreeting';
-import { GlobalPerpetualFlame } from '@/components/novenas/GlobalPerpetualFlame';
-import { SeoContentSection } from '@/components/home/SeoContentSection';
-import { JsonLd } from '@/components/seo/JsonLd';
+import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { YouTubeChannelSection } from '@/components/home/YouTubeChannelSection';
 import { SanctuaryMemorialsWall } from '@/components/offerings/SanctuaryMemorialsWall';
+import { SeoContentSection } from '@/components/home/SeoContentSection';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { fetchYouTubeVideos } from '@/lib/youtube';
 
-async function AsyncDailyFocus() {
-    try {
-        const liturgicalData = await getLiturgicalData();
-        const [reading, saint] = await Promise.all([
-            getDailyReading(),
-            getSaintOfTheDay(liturgicalData.celebrations?.[0]?.name)
-        ]);
-
-        return (
-            <DailyFocus
-                reading={reading || undefined}
-                saint={saint || undefined}
-                date={liturgicalData.date}
-                liturgicalColor={liturgicalData.seasonColor}
-            />
-        );
-    } catch (error) {
-        console.error('Failed to load Daily Focus:', error);
-        return null;
-    }
-}
-
 /**
- * LoggedOutHomePage
- * 
- * Redesigned following Faith-Based UX wireframe:
- * 1. Hero - Emotional safety + clarity
- * 2. Core Actions - 3 choices only
- * 3. Social Reassurance - Gentle belonging
- * 4. Why We Exist - Meaning first
- * 5. Feature Discovery - Soft exploration
- * 6. Invitation to Return - Gentle retention
+ * LoggedOutHomePage — Style A: Candlelit Basilica Sanctuary
+ *
+ * Prayer-first Catholic architecture with:
+ * 1. Sanctuary Hero + Interactive Intention Selector + Golden Candle & Crimson Mass CTAs
+ * 2. 4 Gothic Arch Sacred Gateways
+ * 3. Sponsored Sacred Events ("Presented By" Patronage)
+ * 4. Perpetual Vigil Lamp & Seasonal Catholic Gift Packages
+ * 5. Eternal Memorials & Upcoming Novena Countdown
+ * 6. YouTube Sacred Media & Sanctuary Memorials Wall
+ * 7. Google Play App Download Showcase (with Desktop QR)
+ * 8. Complete 6-Pillar Catholic Directory + Parish Finder (Added Advantage)
+ * 9. Testimonials, Benediction & SEO Foundation
  */
 async function LoggedOutHomePage() {
-    // Fetch YouTube videos server-side (ISR cached, no per-visitor function invocation)
     let youtubeVideos: any[] = [];
     try {
         youtubeVideos = await fetchYouTubeVideos(6);
@@ -65,140 +38,46 @@ async function LoggedOutHomePage() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen selection:bg-gold-500/30 selection:text-gold-200">
-            {/* ============================================
-                SECTION 1: HERO (Above the Fold)
-                Goal: Immediate emotional safety + clarity
-            ============================================ */}
-            <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-sacred-800 via-sacred-900 to-gray-950 text-white pb-32">
-                {/* Subtle Animated Background */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-sacred-600/20 rounded-full blur-[120px]"></div>
-                    <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gold-600/10 rounded-full blur-[100px]"></div>
+        <div className="flex flex-col min-h-screen bg-[#120E0A] text-[#FAF6EE] selection:bg-gold-500/30 selection:text-gold-200">
+            {/* 1. Candlelit Basilica Hero & Intention Selector */}
+            <SanctuaryHero />
+
+            {/* 2. 4 Gothic Arch Sacred Gateways */}
+            <SanctuaryGateways />
+
+            {/* 3. Sponsored Online Prayer Events ("Presented By") */}
+            <SponsoredEventsShowcase />
+
+            {/* 4. Perpetual Vigil Lamp & Seasonal Gift Packages */}
+            <PerpetualAndSeasonalOfferings />
+
+            {/* 5. Eternal Memorials & Novena Countdown */}
+            <MemorialsBanner />
+            <div className="bg-[#120E0A] py-8">
+                <div className="container mx-auto px-4">
+                    <UpcomingNovenaCountdown />
                 </div>
-
-                <div className="opacity-20">
-                    <ParticleBackground count={3} opacity={0.2} />
-                </div>
-
-
-
-                <div className="container mx-auto px-4 relative z-10 pt-32 md:pt-40 text-center">
-
-                    {/* Time-Aware Greeting (Subtle) */}
-                    <div className="mb-8 flex flex-col items-center gap-6">
-                        <WelcomeGreeting />
-                        <GlobalPerpetualFlame />
-                    </div>
-
-                    {/* Mission-Driven Headline (Hero) */}
-                    <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium mb-8 leading-[1.1] animate-fade-in-up tracking-tight drop-shadow-2xl text-white">
-                        A global Catholic community
-                        <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-200 via-gold-400 to-gold-200 font-bold">
-                            united in prayer.
-                        </span>
-                    </h1>
-
-                    {/* Supportive Sub-line */}
-                    <p className="text-xl md:text-2xl text-blue-100/80 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in-up font-light delay-100">
-                        Pray together, light candles of hope, and offer intentions in faith.
-                    </p>
-
-                    {/* Primary CTAs */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up mb-16 delay-200 px-4 sm:px-0">
-                        <Link
-                            href="/prayer-wall"
-                            className="inline-flex items-center justify-center w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/20 group"
-                        >
-                            Start Praying
-                            <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                        <Link
-                            href="/candles"
-                            className="inline-flex items-center justify-center w-full sm:w-auto px-10 py-4 bg-white/5 hover:bg-white/10 text-white font-medium text-lg rounded-full transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30"
-                        >
-                            Light a Candle
-                        </Link>
-                    </div>
-
-                    {/* Emotional Reassurance - Sacred UX */}
-                    <div className="flex flex-col items-center gap-4 animate-fade-in-up delay-300">
-                        <div className="flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 backdrop-blur-sm">
-                            <svg className="w-3.5 h-3.5 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                            <span className="text-[10px] uppercase tracking-widest text-blue-100/60 font-bold">Sacred Privacy & Security</span>
-                        </div>
-                        <p className="text-blue-100/60 text-base font-light italic">
-                            You are welcome here.
-                        </p>
-                        <p className="text-sm md:text-base text-blue-200/60 font-medium tracking-wider">
-                            A global spiritual sanctuary, open to all.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* ============================================
-                SECTION 2: CORE ACTIONS (4 actions)
-                Goal: Reduce decision fatigue
-            ============================================ */}
-            <CoreActions />
-
-            {/* ============================================
-                SECTION 2.5: ETERNAL MEMORIALS BANNER
-                Goal: Promote key feature
-            ============================================ */}
-                        <MemorialsBanner />
-
-            {/* Liturgical Countdown */}
-            <div className="container mx-auto px-4">
-                <UpcomingNovenaCountdown />
             </div>
 
-            {/* ============================================
-                SECTION 3: SOCIAL REASSURANCE
-                Goal: Belonging, not persuasion
-            ============================================ */}
-            <SocialReassurance />
+            {/* 6. Sacred Media & Live Sanctuary Wall */}
+            <YouTubeChannelSection videos={youtubeVideos} />
+            <SanctuaryMemorialsWall />
 
-            {/* ============================================
-                SECTION 4: FEATURE DISCOVERY
-                Goal: Exploration, not conversion
-            ============================================ */}
-            <FeatureDiscovery />
+            {/* 7. Google Play App Download Showcase */}
+            <AppDownloadSection />
 
-            {/* Testimonials - Social Proof (Soft) */}
-            <div className="bg-slate-50 dark:bg-slate-900 py-16 border-t border-gray-100 dark:border-slate-800">
+            {/* 8. Complete 6-Pillar Catholic Directory + Parish Finder Advantage */}
+            <CompleteCatholicDirectory />
+
+            {/* 9. Faithful Testimonials */}
+            <div className="bg-[#18120D] py-16 border-t border-gold-500/15">
                 <TestimonialsSection />
             </div>
 
-            {/* ============================================
-                SECTION 5.5: YOUTUBE CHANNEL
-                Goal: Content discovery & engagement
-            ============================================ */}
-            <YouTubeChannelSection videos={youtubeVideos} />
-
-            {/* ============================================
-                SECTION 5.6: SANCTUARY MEMORIALS & OFFERINGS WALL
-                Goal: Social proof & communal reverence
-            ============================================ */}
-            <SanctuaryMemorialsWall />
-
-            {/* ============================================
-                SECTION 6: INVITATION TO RETURN
-                Goal: Retention without pressure
-            ============================================ */}
-            <InvitationToReturn />
-
-            {/* App Download */}
-            <AppDownloadBanner />
-
             {/* Closing Benediction */}
-            <div className="py-12 text-center">
-                <p className="font-serif text-xl italic text-neutral-400 font-light">
-                    "May peace remain with you."
+            <div className="py-12 text-center bg-[#120E0A] border-t border-gold-500/10">
+                <p className="font-serif text-xl italic text-[#CFC5B4] font-light">
+                    &ldquo;May peace remain with you.&rdquo;
                 </p>
             </div>
 
@@ -215,7 +94,7 @@ export default async function Home() {
                 '@context': 'https://schema.org',
                 '@type': 'WebSite',
                 name: 'MyPrayerTower',
-                alternateName: ['My Prayer Tower', 'MyPrayerTower Catholic App'],
+                alternateName: ['My Prayer Tower', 'MyPrayerTower Catholic Sanctuary'],
                 url: 'https://www.myprayertower.com',
                 potentialAction: {
                     '@type': 'SearchAction',
@@ -232,10 +111,10 @@ export default async function Home() {
                 mainEntity: [
                     {
                         '@type': 'Question',
-                        name: 'Can I request a Mass online?',
+                        name: 'Can I request a Catholic Holy Mass online?',
                         acceptedAnswer: {
                             '@type': 'Answer',
-                            text: 'Yes. MyPrayerTower allows you to request Holy Masses for your intentions, the departed, or special thanksgiving. Priests worldwide celebrate these Masses.'
+                            text: 'Yes. MyPrayerTower allows you to request Holy Masses for your intentions, the departed, or special thanksgiving. Ordained priests celebrate these Masses.'
                         }
                     },
                     {
@@ -243,15 +122,15 @@ export default async function Home() {
                         name: 'How do virtual prayer candles work?',
                         acceptedAnswer: {
                             '@type': 'Answer',
-                            text: 'You can light a virtual candle for an intention. It burns on our platform for a set duration, allowing the global community to view it and join you in prayer.'
+                            text: 'You can light a virtual candle for an intention starting from free. It burns on our sanctuary altar for your chosen duration, allowing the global community to pray with you.'
                         }
                     },
                     {
                         '@type': 'Question',
-                        name: 'Is MyPrayerTower free to use?',
+                        name: 'Can I sponsor an online Rosary or Novena event?',
                         acceptedAnswer: {
                             '@type': 'Answer',
-                            text: 'Creating a prayer request, joining the global prayer wall, and basic features are entirely free. We offer premium options like Mass Offerings and eternal memorials to support our ministry.'
+                            text: 'Yes. Families can sponsor nightly Rosary streams, Saint Feast celebrations, First Friday Adoration, or 9-day Novenas with their family name and dedication displayed.'
                         }
                     }
                 ]

@@ -101,7 +101,7 @@ export function Header() {
         <>
             {(mounted && appModeCtx.isNativeApp) ? (
                 // --- NATIVE APP MODE TOP BAR ---
-                <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0612]/95 backdrop-blur-xl border-b border-white/[0.08] text-white shadow-xl pt-safe select-none h-14">
+                <header className="fixed top-0 left-0 right-0 z-50 bg-[#120E0A]/95 backdrop-blur-xl border-b border-gold-500/20 text-[#FAF6EE] shadow-xl pt-safe select-none h-14">
                     <div className="flex items-center justify-between w-full px-4 h-full">
                         {/* Logo */}
                         <Link href={appModeCtx.isNativeApp ? "/app" : "/"} className="flex items-center gap-2.5 focus:outline-none" aria-label="MyPrayerTower">
@@ -142,8 +142,8 @@ export function Header() {
                 // --- CLEAN, TIDY WEB HEADER ---
                 <header
                     className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${mounted && scrolled
-                        ? 'bg-[#0a0612]/95 backdrop-blur-xl border-b border-white/[0.08] shadow-lg shadow-black/30'
-                        : 'bg-[#0a0612]/85 backdrop-blur-md border-b border-white/[0.05]'
+                        ? 'bg-[#120E0A]/95 backdrop-blur-xl border-b border-gold-500/20 shadow-lg shadow-black/40'
+                        : 'bg-[#120E0A]/85 backdrop-blur-md border-b border-gold-500/10'
                         }`}
                 >
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -246,6 +246,22 @@ export function Header() {
 
                                 {/* Divider */}
                                 <div className="h-4 w-px bg-white/10 mx-0.5" />
+
+                                {/* Get Android App */}
+                                <a
+                                    href="https://play.google.com/store/apps/details?id=com.myprayertower.myprayertower_app"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={() => {
+                                        if (typeof window !== 'undefined' && (window as any).gtag) {
+                                            (window as any).gtag('event', 'app_download_click', { platform: 'android', location: 'header' });
+                                        }
+                                    }}
+                                    className="hidden xl:inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 hover:text-emerald-200 border border-emerald-500/30 text-xs font-semibold tracking-wider transition-all"
+                                    title="Download MyPrayerTower on Google Play"
+                                >
+                                    <span>📱 App</span>
+                                </a>
 
                                 {/* Support / Donate */}
                                 <Link

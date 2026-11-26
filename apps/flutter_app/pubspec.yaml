@@ -51,7 +51,6 @@ dependencies:
   # Code Generation
   freezed_annotation: ^2.4.1
   json_annotation: ^4.9.0
-  google_mobile_ads: ^6.0.0
   supabase_flutter: ^2.12.0
   
   # Notifications

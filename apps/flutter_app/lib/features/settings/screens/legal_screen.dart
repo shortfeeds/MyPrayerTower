@@ -80,7 +80,7 @@ By accessing or using MyPrayerTower ("the App"), you agree to be bound by these 
 - Payments for Mass offerings, virtual candles, sleep stories, and subscriptions are **commercial service facilitation fees** (SAC Code).
 - Payments are **NOT tax-deductible** as charitable donations.
 - All deliverables are **100% digital** (electronic certificates, streaming audio, digital sanctuary shrines). No physical merchandise is shipped.
-- Mass offerings are forwarded to partner Catholic priests; scheduling is at clergy discretion. We guarantee fulfillment within 90 days or offer a full refund or alternative.
+- Mass offerings are forwarded to partner Catholic priests; scheduling is at clergy discretion. We coordinate fulfillment with reverence within 90 days.
 
 ## 4. Fee Transparency Breakdown (70/20/10)
 Devotional contributions are apportioned transparently:

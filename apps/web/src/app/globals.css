@@ -2,10 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Sacred UX Design System - Global Polish */
+/* Sacred UX Design System - Global Polish & Cross-OS/Device Optimization */
 @layer base {
-
-  /* Removed global transition-all for performance */
+  html,
+  body {
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
 
   /* Increased spacing for calm feel */
   body {
@@ -13,10 +19,27 @@
     letter-spacing: 0.01em;
   }
 
+  button,
+  a,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+
   /* Softer shadows instead of hard borders */
   .card {
     @apply shadow-sm hover:shadow-md;
     border: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

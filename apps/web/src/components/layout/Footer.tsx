@@ -86,8 +86,8 @@ function NewsletterForm() {
     };
 
     return (
-        <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-            <h4 className="text-white font-bold text-sm mb-2">Spiritual Nourishment</h4>
+        <div className="bg-[#120E0A]/90 p-4 rounded-xl border border-gold-500/25">
+            <h4 className="text-[#FAF6EE] font-bold text-sm mb-2">Spiritual Nourishment</h4>
             <form onSubmit={handleSubmit} className="flex gap-2 relative">
                 <SpamShield honeypotName="website_url" />
                 <input
@@ -96,7 +96,7 @@ function NewsletterForm() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Receive daily grace..."
-                    className="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold-500"
+                    className="flex-1 px-3 py-2 bg-[#18120D] border border-gold-500/25 rounded-lg text-sm text-[#FAF6EE] placeholder-[#CFC5B4]/50 focus:outline-none focus:border-gold-400"
                 />
                 <button
                     type="submit"
@@ -137,10 +137,10 @@ export function Footer() {
 
     return (
         <>
-            <footer className={`hidden lg:block bg-gray-950 text-gray-400 border-t border-gray-900 pt-16 pb-8 ${appModeCtx.isNativeApp ? 'hidden' : ''}`}>
+            <footer className={`hidden lg:block bg-[#120E0A] text-[#CFC5B4] border-t border-gold-500/20 pt-16 pb-8 ${appModeCtx.isNativeApp ? 'hidden' : ''}`}>
                 <div className="container mx-auto px-6">
                     {/* Desktop Newsletter Bar */}
-                    <div className="mb-14 p-8 rounded-3xl bg-gradient-to-r from-gray-900 via-sacred-950 to-gray-900 border border-gray-800 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-xl">
+                    <div className="mb-14 p-8 rounded-3xl bg-gradient-to-r from-[#18120D] via-[#1F1711] to-[#18120D] border border-gold-500/30 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-xl">
                         <div className="max-w-xl text-left">
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gold-500 mb-2 block">Daily Grace</span>
                             <h3 className="font-serif text-2xl font-bold text-white mb-2">Receive Daily Spiritual Nourishment</h3>
@@ -151,89 +151,105 @@ export function Footer() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10">
                         <div className="col-span-2">
-                            <Link href="/" className="inline-flex items-center gap-3 mb-6">
-                                <span className="w-10 h-10 bg-gold-500 rounded-xl flex items-center justify-center font-bold text-white text-xl">M</span>
-                                <span className="font-bold text-xl text-white">MyPrayerTower</span>
+                            <Link href="/" className="inline-flex items-center gap-3 mb-5 group">
+                                <img src="/icon.png" alt="MyPrayerTower" className="w-10 h-10 rounded-xl border border-gold-500/40 shadow-md group-hover:scale-105 transition-transform" />
+                                <div>
+                                    <span className="font-display font-bold text-xl text-[#FAF6EE] block leading-none">MyPrayerTower</span>
+                                    <span className="text-[10px] uppercase tracking-[0.2em] text-gold-400 font-semibold">Catholic Digital Sanctuary</span>
+                                </div>
                             </Link>
-                            <p className="text-sm leading-relaxed mb-6 max-w-sm italic">
-                                "Where two or three are gathered in my name, there am I among them."
+                            <p className="font-serif text-base leading-relaxed mb-6 max-w-sm italic text-[#CFC5B4]">
+                                &ldquo;Where two or three are gathered in my name, there am I among them.&rdquo; — Matthew 18:20
                             </p>
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                                 {socialLinks.map((s) => (
-                                    <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-lg hover:border-gold-500 hover:text-gold-400 transition-all" aria-label={s.label}>
+                                    <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-[#18120D] border border-gold-500/25 rounded-xl hover:border-gold-400 hover:text-gold-300 text-[#CFC5B4] transition-all" aria-label={s.label}>
                                         <s.icon className="w-4 h-4" />
                                     </a>
                                 ))}
                             </div>
                         </div>
                         <div>
-                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-widest">Divine</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li><Link href="/readings" className="hover:text-white transition-colors">Daily Readings</Link></li>
-                                <li><Link href="/rosary" className="hover:text-white transition-colors">Holy Rosary</Link></li>
-                                <li><Link href="/prayers" className="hover:text-white transition-colors">Prayer Library</Link></li>
-                                <li><Link href="/candles" className="hover:text-white transition-colors">Virtual Candles</Link></li>
-                                <li><Link href="/mass-offerings" className="hover:text-gold-400 transition-colors">Request a Mass</Link></li>
-                                <li><Link href="/blessings" className="hover:text-gold-400 transition-colors">Occasion Blessings</Link></li>
-                                <li><Link href="/bouquets" className="hover:text-gold-400 transition-colors">Spiritual Bouquets</Link></li>
-                                <li><Link href="/my-vigils" className="hover:text-gold-400 transition-colors">My Sacred Vigils</Link></li>
+                            <h4 className="font-display font-bold text-gold-300 mb-5 uppercase text-xs tracking-[0.2em]">Prayer &amp; Word</h4>
+                            <ul className="space-y-2.5 text-sm text-[#CFC5B4]">
+                                <li><Link href="/readings" className="hover:text-gold-300 transition-colors">Daily Mass Readings</Link></li>
+                                <li><Link href="/rosary" className="hover:text-gold-300 transition-colors">Holy Rosary</Link></li>
+                                <li><Link href="/novenas" className="hover:text-gold-300 transition-colors">9-Day Novenas</Link></li>
+                                <li><Link href="/prayers" className="hover:text-gold-300 transition-colors">Prayer Library</Link></li>
+                                <li><Link href="/prayer-wall" className="hover:text-gold-300 transition-colors">Global Prayer Wall</Link></li>
+                                <li><Link href="/saints" className="hover:text-gold-300 transition-colors">Saints &amp; Feasts</Link></li>
+                                <li><Link href="/churches" className="hover:text-gold-300 transition-colors">Find a Parish</Link></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-widest">Community</h4>
-                            <ul className="space-y-4 text-sm">
-                                <li><Link href="/churches" className="hover:text-white transition-colors">Find a Church</Link></li>
-                                <li><Link href="/memorials" className="hover:text-white transition-colors text-gold-500">Eternal Memorials</Link></li>
-                                <li><Link href="/about" className="hover:text-white transition-colors">About Mission</Link></li>
-                                <li><Link href="/contact" className="hover:text-white transition-colors">Contact Support</Link></li>
+                            <h4 className="font-display font-bold text-gold-300 mb-5 uppercase text-xs tracking-[0.2em]">Sacred Offerings</h4>
+                            <ul className="space-y-2.5 text-sm text-[#CFC5B4]">
+                                <li><Link href="/candles" className="hover:text-gold-300 transition-colors">Light a Virtual Candle</Link></li>
+                                <li><Link href="/mass-offerings" className="hover:text-gold-300 transition-colors">Request a Holy Mass</Link></li>
+                                <li><Link href="/events" className="hover:text-gold-300 transition-colors text-gold-300 font-semibold">Sponsor Prayer Events</Link></li>
+                                <li><Link href="/memorials" className="hover:text-gold-300 transition-colors">Eternal Memorials</Link></li>
+                                <li><Link href="/bouquets" className="hover:text-gold-300 transition-colors">Spiritual Bouquets</Link></li>
+                                <li><Link href="/blessings" className="hover:text-gold-300 transition-colors">Occasion Blessings</Link></li>
+                                <li><Link href="/donate" className="hover:text-gold-300 transition-colors">Support Ministry</Link></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-widest">Carry Grace</h4>
+                            <h4 className="font-display font-bold text-gold-300 mb-5 uppercase text-xs tracking-[0.2em]">Carry Grace</h4>
                             <div className="flex flex-col gap-3">
                                 <AppStoreButton store="google" />
                                 <AppStoreButton store="telegram" />
                             </div>
+                            <ul className="mt-5 space-y-2 text-xs text-[#CFC5B4]/80">
+                                <li><Link href="/about" className="hover:text-gold-300 transition-colors">About Mission</Link></li>
+                                <li><Link href="/contact" className="hover:text-gold-300 transition-colors">Contact Support</Link></li>
+                            </ul>
                         </div>
                     </div>
-                    <div className="mt-16 pt-8 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600">
-                        <p>© {currentYear} MyPrayerTower. All rights reserved.</p>
+                    <div className="mt-14 pt-7 border-t border-gold-500/20 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#CFC5B4]/75">
+                        <p>© {currentYear} MyPrayerTower · Catholic Digital Sanctuary. All rights reserved.</p>
                         <div className="flex items-center gap-6">
                             <LanguageSwitcher id="google_translate_footer" variant="footer" />
-                            <div className="flex gap-6 uppercase tracking-tighter">
-                                <Link href="/privacy" className="hover:text-gray-400">Privacy</Link>
-                                <Link href="/terms" className="hover:text-gray-400">Terms</Link>
-                                <Link href="/refunds" className="hover:text-gray-400">Refund Policy</Link>
+                            <div className="flex gap-5 uppercase tracking-wider text-[11px]">
+                                <Link href="/privacy" className="hover:text-gold-300 transition-colors">Privacy</Link>
+                                <Link href="/terms" className="hover:text-gold-300 transition-colors">Terms</Link>
+                                <Link href="/cookies" className="hover:text-gold-300 transition-colors">Cookies</Link>
+                                <Link href="/guidelines" className="hover:text-gold-300 transition-colors">Guidelines</Link>
                             </div>
                         </div>
                     </div>
                 </div>
             </footer>
 
-            <footer className={`lg:hidden bg-gray-950 px-4 py-12 border-t border-gray-900 pb-32 ${appModeCtx.isNativeApp ? 'hidden' : ''}`}>
+            <footer className={`lg:hidden bg-[#120E0A] px-4 py-12 border-t border-gold-500/20 pb-32 ${appModeCtx.isNativeApp ? 'hidden' : ''}`}>
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2 mb-4">
-                        <span className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center font-bold text-white">M</span>
-                        <span className="font-bold text-white">MyPrayerTower</span>
+                    <Link href="/" className="inline-flex items-center gap-2.5 mb-3">
+                        <img src="/icon.png" alt="MyPrayerTower" className="w-9 h-9 rounded-xl border border-gold-500/40" />
+                        <span className="font-display font-bold text-lg text-[#FAF6EE]">MyPrayerTower</span>
                     </Link>
-                    <p className="text-gray-500 text-sm">Your digital sanctuary for global prayer.</p>
+                    <p className="font-serif italic text-[#CFC5B4] text-sm">Your digital Catholic sanctuary for global prayer.</p>
                 </div>
                 <NewsletterForm />
-                <div className="mt-8 flex justify-center gap-3">
+                <div className="mt-8 flex flex-wrap justify-center gap-2.5">
                     {socialLinks.map((s) => (
-                        <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-lg hover:border-gold-500 hover:text-gold-400 text-gray-400 transition-all" aria-label={s.label}>
+                        <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-[#18120D] border border-gold-500/25 rounded-xl hover:border-gold-400 text-[#CFC5B4] transition-all" aria-label={s.label}>
                             <s.icon className="w-4 h-4" />
                         </a>
                     ))}
                 </div>
                 <div className="mt-6 flex flex-col items-center gap-3">
+                    <AppStoreButton store="google" />
                     <AppStoreButton store="telegram" />
                     <LanguageSwitcher id="google_translate_mobile_footer" variant="footer" />
                 </div>
-                <div className="mt-12 text-center text-[10px] text-gray-600 uppercase tracking-widest leading-relaxed">
-                    <p>May peace remain with you.</p>
+                <div className="mt-8 flex justify-center gap-4 text-[11px] text-[#CFC5B4]/80 uppercase tracking-wider">
+                    <Link href="/privacy" className="hover:text-gold-300">Privacy</Link>
+                    <Link href="/terms" className="hover:text-gold-300">Terms</Link>
+                    <Link href="/cookies" className="hover:text-gold-300">Cookies</Link>
+                </div>
+                <div className="mt-8 text-center text-[11px] text-[#CFC5B4]/60 uppercase tracking-widest leading-relaxed">
+                    <p>✠ May peace remain with you. ✠</p>
                     <p className="mt-2">© {currentYear} MyPrayerTower</p>
                 </div>
             </footer>

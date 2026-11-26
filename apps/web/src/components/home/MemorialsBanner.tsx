@@ -12,11 +12,11 @@ import { Heart, Flame, Gift, Calendar, ArrowRight } from 'lucide-react';
  */
 export function MemorialsBanner() {
     return (
-        <section className="py-16 bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-rose-950/30 dark:via-slate-900 dark:to-amber-950/20 border-y border-gray-100 dark:border-slate-800 overflow-hidden relative">
+        <section className="py-16 bg-gradient-to-br from-[#18120D] via-[#120E0A] to-[#1F1412] border-y border-gold-500/20 text-[#FAF6EE] overflow-hidden relative">
             {/* Decorative elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-24 -right-24 w-96 h-96 bg-rose-200/30 dark:bg-rose-800/10 rounded-full blur-3xl" />
-                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-200/30 dark:bg-amber-800/10 rounded-full blur-3xl" />
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-crimson-600/15 rounded-full blur-3xl" />
+                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-gold-500/10 rounded-full blur-3xl" />
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
@@ -28,16 +28,16 @@ export function MemorialsBanner() {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 mb-6">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-crimson-600/25 border border-gold-500/30 text-gold-300 mb-6">
                                 <Heart className="w-4 h-4" />
                                 <span className="text-sm font-medium">Honor Those You Love</span>
                             </div>
 
-                            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 dark:text-white mb-4">
-                                Create an <span className="text-rose-600 dark:text-rose-400">Eternal Memorial</span>
+                            <h2 className="text-3xl md:text-4xl font-display font-bold text-[#FAF6EE] mb-4">
+                                Create an <span className="text-gold-300">Eternal Memorial</span>
                             </h2>
 
-                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-6">
+                            <p className="text-[#CFC5B4] text-lg leading-relaxed mb-6">
                                 Keep the memory of your loved ones alive with a beautiful digital memorial.
                                 Light candles, share memories, and invite others to pray.
                             </p>
@@ -45,14 +45,14 @@ export function MemorialsBanner() {
                             <div className="flex flex-wrap gap-4 mb-8">
                                 <Link
                                     href="/memorials/create"
-                                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-semibold rounded-xl shadow-lg shadow-rose-500/25 transition-all group"
+                                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#E8CA68] to-[#D4AF37] hover:brightness-110 text-[#120E0A] font-bold rounded-xl shadow-lg transition-all group"
                                 >
                                     Create Memorial
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </Link>
                                 <Link
                                     href="/memorials"
-                                    className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 font-medium rounded-xl border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+                                    className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 text-[#FAF6EE] font-medium rounded-xl border border-gold-500/30 hover:bg-white/10 transition-colors"
                                 >
                                     View Memorials
                                 </Link>
@@ -75,13 +75,13 @@ export function MemorialsBanner() {
                                 <Link
                                     href={feature.href}
                                     key={feature.title}
-                                    className="block bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all hover:bg-white dark:hover:bg-slate-800"
+                                    className="block bg-[#18120D] p-5 rounded-2xl border border-gold-500/25 hover:border-gold-400 shadow-lg transition-all"
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center mb-3">
-                                        <feature.icon className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+                                    <div className="w-10 h-10 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center mb-3">
+                                        <feature.icon className="w-5 h-5 text-gold-300" />
                                     </div>
-                                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{feature.title}</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{feature.description}</p>
+                                    <h3 className="font-semibold text-[#FAF6EE] mb-1">{feature.title}</h3>
+                                    <p className="text-sm text-[#CFC5B4]">{feature.description}</p>
                                 </Link>
                             ))}
                         </motion.div>

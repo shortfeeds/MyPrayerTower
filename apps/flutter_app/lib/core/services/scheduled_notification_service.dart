@@ -118,6 +118,18 @@ class ScheduledNotificationService {
         description: 'Important announcements from MyPrayerTower',
         importance: Importance.high,
       ),
+      AndroidNotificationChannel(
+        'candle_vigils',
+        'Candle & Vigil Alerts',
+        description: 'Automatic reminders before your virtual sanctuary candle expires',
+        importance: Importance.high,
+      ),
+      AndroidNotificationChannel(
+        'sponsored_events',
+        'Sponsored Prayer Events',
+        description: 'Live alerts 15 minutes before nightly Rosary & Novena events begin',
+        importance: Importance.high,
+      ),
     ];
 
     final androidPlugin = _notifications
@@ -209,20 +221,104 @@ class ScheduledNotificationService {
       );
     }
 
-    // 6. Night Prayer & Examen (9:00 PM)
+    // 6. Night Prayer, Examen & Sleep Stories (9:30 PM)
     if (nightEnabled) {
       await _scheduleDaily(
         id: 6,
         hour: 21,
-        minute: 0,
-        title: '🌙 Night Compline & Examen',
-        body: 'End your day in peace. Reflect in gratitude before the Lord.',
+        minute: 30,
+        title: '🌙 Night Compline & Sleep Stories',
+        body: 'Pause and rest in Christ. Listen to a calming Catholic Sleep Story tonight.',
         channelId: 'daily_prayers',
-        payload: '/prayers',
+        payload: '/sleep-stories',
       );
     }
 
-    debugPrint('All 6 daily Catholic devotional reminders scheduled with exact alarms.');
+    // 7. Evening Rosary & Novena Streak (7:45 PM)
+    if (streakEnabled) {
+      await _scheduleDaily(
+        id: 7,
+        hour: 19,
+        minute: 45,
+        title: '📿 Tonight\'s Rosary Begins in 15 Minutes',
+        body: 'Join thousands of faithful in tonight\'s global Rosary & Novena prayer.',
+        channelId: 'sponsored_events',
+        payload: '/rosary',
+      );
+    }
+
+    debugPrint('All automatic Catholic devotional & event reminders scheduled.');
+  }
+
+  /// Automatically schedule a reminder 2 hours before a virtual candle expires
+  Future<void> scheduleCandleExpiryReminder({
+    required String candleId,
+    required String intention,
+    required DateTime expiresAt,
+  }) async {
+    await initialize();
+    final alertTime = expiresAt.subtract(const Duration(hours: 2));
+    if (alertTime.isBefore(DateTime.now())) return;
+
+    final id = 10000 + (candleId.hashCode.abs() % 50000);
+    final scheduledDate = tz.TZDateTime.from(alertTime, tz.local);
+
+    await _notifications.zonedSchedule(
+      id,
+      '🕯️ Your Sanctuary Candle Expires Soon',
+      'Your vigil flame for "$intention" expires in 2 hours. Renew your flame or offer a Holy Mass.',
+      scheduledDate,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'candle_vigils',
+          'Candle & Vigil Alerts',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+          actions: [
+            AndroidNotificationAction('action_renew_candle', '🕯️ Renew Flame', showsUserInterface: true),
+            AndroidNotificationAction('action_offer_mass', '✝️ Offer Mass', showsUserInterface: true),
+          ],
+        ),
+        iOS: DarwinNotificationDetails(presentAlert: true, presentSound: true),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      payload: '/my-vigils',
+    );
+  }
+
+  /// Automatically schedule a 15-minute live alert for a Sponsored Event
+  Future<void> scheduleSponsoredEventReminder({
+    required String eventId,
+    required String eventTitle,
+    required String sponsorFamily,
+    required DateTime eventStart,
+  }) async {
+    await initialize();
+    final alertTime = eventStart.subtract(const Duration(minutes: 15));
+    if (alertTime.isBefore(DateTime.now())) return;
+
+    final id = 60000 + (eventId.hashCode.abs() % 30000);
+    final scheduledDate = tz.TZDateTime.from(alertTime, tz.local);
+
+    await _notifications.zonedSchedule(
+      id,
+      '✨ $eventTitle Begins in 15 Minutes',
+      'Sponsored with love by $sponsorFamily. Tap to join the global prayer.',
+      scheduledDate,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'sponsored_events',
+          'Sponsored Prayer Events',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+        ),
+        iOS: DarwinNotificationDetails(presentAlert: true, presentSound: true),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      payload: '/rosary',
+    );
   }
 
   RawResourceAndroidNotificationSound? _getSoundForChannel(String channelId) {

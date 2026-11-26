@@ -83,6 +83,7 @@ export const OFFER_MENU = {
         {
             title: 'Charity & Giving',
             items: [
+                { label: 'Sponsor an Event', href: '/events', icon: Sparkles, desc: 'Sponsor Rosary & Novena nights' },
                 { label: 'Support Missions', href: '/contributions', icon: Heart, desc: 'Tithing & global giving' },
                 { label: 'Local Parish', href: '/churches', icon: Building, desc: 'Giving to your community' },
                 { label: 'Campaigns', href: '/campaigns', icon: Users, desc: 'Urgent Catholic causes' },
@@ -158,10 +159,10 @@ export function MegaMenu({ config, isOpen, onClose }: MegaMenuProps) {
                         transition={{ duration: 0.18, ease: "easeOut" }}
                         className="absolute top-full left-0 w-full flex justify-center z-50 pt-2 pointer-events-none"
                     >
-                        {/* Compact, Clean Card with Solid High-Contrast Obsidian Background */}
+                        {/* Compact, Clean Card with Solid High-Contrast Basilica Bronze Background */}
                         <div
-                            style={{ backgroundColor: '#0d0718' }}
-                            className="bg-[#0d0718] rounded-2xl shadow-[0_24px_70px_rgba(0,0,0,0.95)] border border-amber-500/30 overflow-hidden pointer-events-auto w-[94%] max-w-4xl relative"
+                            style={{ backgroundColor: '#18120D' }}
+                            className="bg-[#18120D] rounded-2xl shadow-[0_24px_70px_rgba(0,0,0,0.95)] border border-gold-500/30 overflow-hidden pointer-events-auto w-[94%] max-w-4xl relative"
                         >
                             {/* Subtle gold top border glow */}
                             <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-amber-400/80 to-transparent" />
