@@ -16,7 +16,6 @@ import {
     Flame,
     CreditCard,
     DollarSign,
-    Candle,
     Gift,
     ShoppingBag,
     AlertOctagon,
@@ -104,6 +103,15 @@ export function AdminSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen
 
     const pillars: PillarItem[] = [
         {
+            name: 'Executive & Studio',
+            icon: LayoutDashboard,
+            defaultHref: '/admin',
+            children: [
+                { name: 'Command Center', href: '/admin' },
+                { name: 'Frontend Studio & Health', href: '/admin/frontend-studio' },
+            ]
+        },
+        {
             name: 'Financials & Offerings',
             icon: CreditCard,
             defaultHref: '/admin/finance/overview',
@@ -114,9 +122,8 @@ export function AdminSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen
                 { name: 'Mass Offerings', href: '/admin/mass-offerings' },
                 { name: 'Sponsored Events & Bundles', href: '/admin/sponsored-events' },
                 { name: 'Spiritual Bouquets', href: '/admin/bouquets' },
-                { name: 'Donations & Tithing', href: '/admin/donations' },
+                { name: 'Donations & Carts', href: '/admin/donations' },
                 { name: 'Failed Payments', href: '/admin/finance/failed-payments' },
-                { name: 'Abandoned Carts', href: '/admin/abandoned-carts' },
             ]
         },
         {
@@ -127,7 +134,6 @@ export function AdminSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen
                 { name: 'User Directory', href: '/admin/users' },
                 { name: 'Parish Directory', href: '/admin/churches' },
                 { name: 'Parish Claim Requests', href: '/admin/churches/claims', badge: claimCount },
-                { name: 'Verified Parishes', href: '/admin/churches/verified' },
                 { name: 'Eternal Memorials', href: '/admin/memorials' },
                 { name: 'Mass Partners Network', href: '/admin/partners' },
             ]
@@ -160,11 +166,9 @@ export function AdminSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen
                 { name: 'Platform Analytics', href: '/admin/analytics' },
                 { name: 'Customer Clicks & Actions', href: '/admin/interactions' },
                 { name: 'Automation & Notifications', href: '/admin/sponsored-events#automation' },
-                { name: 'Sponsor Advertisements', href: '/admin/ads' },
                 { name: 'Instant Indexing (SEO)', href: '/admin/indexing' },
                 { name: 'Newsletter Subscribers', href: '/admin/newsletter' },
-                { name: 'Feature Controls', href: '/admin/features' },
-                { name: 'Platform Settings', href: '/admin/settings' },
+                { name: 'Feature & Platform Settings', href: '/admin/settings' },
             ]
         }
     ];

@@ -37,3 +37,22 @@ class RewardedAdButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
+
+/// Unlocked directly without ads.
+class RewardedAdUnlock extends StatelessWidget {
+  final String title;
+  final String description;
+  final String previewContent;
+  final Widget Function(BuildContext) fullContentBuilder;
+
+  const RewardedAdUnlock({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.previewContent,
+    required this.fullContentBuilder,
+  });
+
+  @override
+  Widget build(BuildContext context) => fullContentBuilder(context);
+}

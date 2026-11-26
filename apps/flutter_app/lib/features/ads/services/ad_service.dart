@@ -19,6 +19,13 @@ class AdService {
   Future<void> trackImpression(String adId) async {}
   Future<void> trackClick(String adId) async {}
   bool canShowInterstitial() => false;
+
+  Future<void> loadInterstitialAd({
+    required Function(dynamic) onAdLoaded,
+    required Function(String) onAdFailed,
+  }) async {
+    onAdFailed('Ads disabled');
+  }
 }
 
 final adServiceProvider = Provider<AdService>((ref) => AdService(ref));

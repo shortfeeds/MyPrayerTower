@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Flame, Church, ArrowRight, Sparkles, Lock, Heart } from 'lucide-react';
 import { openOfferingModal } from '@/components/offerings/UniversalOfferingModal';
@@ -66,6 +66,23 @@ export function SanctuaryHero() {
     const [selectedId, setSelectedId] = useState<string>('healing');
     const [prayedCount, setPrayedCount] = useState<number>(0);
     const [hasPrayed, setHasPrayed] = useState(false);
+    const [cms, setCms] = useState({
+        heroTitle: 'Enter a Sanctuary of Perpetual Prayer',
+        heroSubtitle: 'Light a vigil candle before the altar, unite in the Holy Rosary, and entrust your intentions to priests and faithful worldwide.',
+        candlesBurningCount: '12,847',
+        faithfulOfferedCount: '428',
+    });
+
+    useEffect(() => {
+        fetch('/api/frontend-config')
+            .then(r => r.json())
+            .then(d => {
+                if (d?.config) {
+                    setCms(prev => ({ ...prev, ...d.config }));
+                }
+            })
+            .catch(() => {});
+    }, []);
 
     const active = INTENTIONS.find(i => i.id === selectedId) || INTENTIONS[0];
 
@@ -94,24 +111,21 @@ export function SanctuaryHero() {
                 <div className="inline-flex flex-wrap items-center justify-center gap-3 px-4 py-1.5 rounded-full bg-[#18120D]/90 border border-gold-500/35 text-xs text-[#CFC5B4] mb-6 shadow-lg backdrop-blur-md">
                     <span className="flex items-center gap-1.5 text-gold-300 font-semibold">
                         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                        12,847 candles burning now
+                        {cms.candlesBurningCount} candles burning now
                     </span>
                     <span className="text-gold-500/40">•</span>
-                    <span>428 faithful offered this month</span>
+                    <span>{cms.faithfulOfferedCount} faithful offered this month</span>
                     <span className="text-gold-500/40 hidden sm:inline">•</span>
                     <span className="hidden sm:inline text-emerald-300/90">✠ Catholic Digital Sanctuary</span>
                 </div>
 
                 {/* Liturgical Headline */}
                 <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-[#FAF6EE] leading-[1.12] mb-5 drop-shadow-[0_6px_28px_rgba(0,0,0,0.9)]">
-                    Enter a Sanctuary of{' '}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E8CA68] via-[#D4AF37] to-[#F3E2A3]">
-                        Perpetual Prayer
-                    </span>
+                    {cms.heroTitle}
                 </h1>
 
                 <p className="font-serif italic text-lg sm:text-xl md:text-2xl text-[#CFC5B4] max-w-2xl mx-auto mb-8 leading-relaxed">
-                    Light a vigil candle before the altar, unite in the Holy Rosary, and entrust your intentions to priests and faithful worldwide.
+                    {cms.heroSubtitle}
                 </p>
 
                 {/* Primary Revenue + Prayer CTAs */}

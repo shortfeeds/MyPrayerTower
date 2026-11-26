@@ -6,25 +6,38 @@ export const revalidate = 60; // 1 minute ISR
 
 export async function GET() {
     try {
-        // Fetch recent candles
-        const candles = await db.prayerCandle.findMany({
-            where: { isActive: true },
-            take: 12,
-            orderBy: { litAt: 'desc' },
-            select: {
-                id: true,
-                name: true,
-                country: true,
-                intention: true,
-                isAnonymous: true,
-                duration: true,
-                prayerCount: true,
-                litAt: true,
-            },
-        });
+        // Fetch recent active candles & recent Holy Mass offerings (newest first)
+        const [candles, masses] = await Promise.all([
+            db.prayerCandle.findMany({
+                where: { isActive: true },
+                take: 10,
+                orderBy: { litAt: 'desc' },
+                select: {
+                    id: true,
+                    name: true,
+                    country: true,
+                    intention: true,
+                    isAnonymous: true,
+                    duration: true,
+                    prayerCount: true,
+                    litAt: true,
+                },
+            }),
+            db.massOffering.findMany({
+                take: 6,
+                orderBy: { createdAt: 'desc' },
+                select: {
+                    id: true,
+                    intentionFor: true,
+                    specialIntention: true,
+                    offeringType: true,
+                    createdAt: true,
+                },
+            }).catch(() => []),
+        ]);
 
-        // Format as sanctuary dedication items
-        const memorials = candles.map((c) => {
+        // Format candles as sanctuary dedication items
+        const candleItems = candles.map((c) => {
             let dedicationType = 'SPECIAL_INTENTION';
             const lowerIntention = (c.intention || '').toLowerCase();
             if (lowerIntention.includes('memory') || lowerIntention.includes('rest') || lowerIntention.includes('soul')) {
@@ -53,6 +66,22 @@ export async function GET() {
                 createdAt: c.litAt.toISOString(),
             };
         });
+
+        const massItems = (masses as any[]).map((m) => ({
+            id: m.id,
+            type: 'mass',
+            title: m.offeringType === 'NOVENA' ? '9-Day Novena Mass' : 'Holy Mass Intention',
+            dedicationType: 'IN_MEMORY',
+            intention: m.specialIntention || `For ${m.intentionFor || 'Special Intention'}`,
+            offeredBy: 'Faithful Soul',
+            isAnonymous: false,
+            prayerCount: 1,
+            createdAt: m.createdAt.toISOString(),
+        }));
+
+        const memorials = [...candleItems, ...massItems]
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, 12);
 
         // Fallback default reverent memorials if database has fewer than 4 records
         if (memorials.length < 4) {

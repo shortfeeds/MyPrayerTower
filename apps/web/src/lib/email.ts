@@ -60,7 +60,7 @@ Sent from MyPrayerTower Admin Notifications
             return false;
         }
 
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.GMAIL_USER,
@@ -230,32 +230,90 @@ export async function sendAnniversaryReminder(data: {
     anniversaryDate: string;
     recipientEmail: string;
     recipientName?: string;
-}) {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myprayertower.com';
+}): Promise<boolean> {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.myprayertower.com';
     const memorialUrl = `${baseUrl}/memorials/${data.memorialSlug}`;
+    const subject = `🕯️ Anniversary Remembrance: ${data.memorialName} — MyPrayerTower`;
 
-    const subject = `🕯️ Anniversary Remembrance: ${data.memorialName}`;
-    const body = `
-Dear ${data.recipientName || 'Friend'},
+    const htmlBody = `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"></head>
+    <body style="margin: 0; padding: 0; background-color: #120E0A; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #FAF6EE;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #120E0A; padding: 40px 20px;">
+        <tr>
+          <td align="center">
+            <table width="100%" style="max-width: 540px; background: linear-gradient(180deg, #18120D 0%, #120E0A 100%); border: 2px solid #D4AF37; border-radius: 20px; padding: 36px 28px; text-align: center;">
+              <tr>
+                <td>
+                  <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: #D4AF37; margin: 0 0 8px 0; font-weight: bold;">Sacred Anniversary Remembrance</p>
+                  <h1 style="font-family: Georgia, serif; font-size: 24px; color: #FAF6EE; margin: 0 0 16px 0;">IN LOVING MEMORY OF ${data.memorialName.toUpperCase()}</h1>
+                  <div style="width: 80px; height: 1px; background: #D4AF37; margin: 0 auto 24px auto;"></div>
+                  <p style="font-size: 14px; color: #CFC5B4; line-height: 1.6; margin: 0 0 20px 0;">
+                    Dear ${data.recipientName || 'Faithful Friend'},<br/><br/>
+                    ${data.anniversaryDate} marks a sacred remembrance for <strong>${data.memorialName}</strong>. Light an anniversary candle or request a Holy Mass in their honor.
+                  </p>
+                  <a href="${memorialUrl}" style="display: inline-block; background: linear-gradient(135deg, #E8CA68 0%, #D4AF37 100%); color: #120E0A; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 28px; border-radius: 30px; margin-bottom: 20px;">
+                    Visit Memorial &amp; Light a Candle &rarr;
+                  </a>
+                  <p style="font-size: 11px; color: #CFC5B4; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 16px; margin: 16px 0 0 0;">
+                    "Eternal rest grant unto them, O Lord." &bull; MyPrayerTower Sanctuary
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>`;
 
-Today marks the anniversary of ${data.memorialName}.
+    try {
+        const nodemailer = require('nodemailer');
+        if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+            console.log(`[ANNIVERSARY EMAIL LOG]: To ${data.recipientEmail} | Memorial: ${data.memorialName}`);
+            return true;
+        }
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD },
+        });
+        await transporter.sendMail({
+            from: `"MyPrayerTower Sanctuary" <${process.env.GMAIL_USER}>`,
+            to: data.recipientEmail,
+            subject,
+            html: htmlBody,
+        });
+        return true;
+    } catch (err) {
+        console.error('Failed to send anniversary reminder email:', err);
+        return false;
+    }
+}
 
-Take a moment to light a candle, say a prayer, or leave a message in their memory.
-
-Visit their memorial: ${memorialUrl}
-
-With prayers,
-MyPrayerTower Team
-    `.trim();
-
-    console.log('=== ANNIVERSARY EMAIL ===');
-    console.log(`To: ${data.recipientEmail}`);
-    console.log(`Subject: ${subject}`);
-    console.log(body);
-    console.log('=========================');
-
-    // In production, send actual email
-    return true;
+export async function sendTestAdminEmail(toEmail: string = ADMIN_EMAIL): Promise<{ ok: boolean; error?: string }> {
+    try {
+        const nodemailer = require('nodemailer');
+        if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+            return { ok: false, error: 'GMAIL_USER or GMAIL_APP_PASSWORD not set' };
+        }
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD },
+        });
+        await transporter.sendMail({
+            from: `"MyPrayerTower Sanctuary" <${process.env.GMAIL_USER}>`,
+            to: toEmail,
+            subject: '✠ MyPrayerTower System Health — SMTP Test Verified',
+            html: `<div style="background:#120E0A;color:#FAF6EE;padding:28px;border:1px solid #D4AF37;border-radius:16px;font-family:Georgia,serif;">
+                <h2 style="color:#E8CA68;margin:0 0 10px 0;">✠ MyPrayerTower Email System Active</h2>
+                <p style="color:#CFC5B4;font-size:14px;">SMTP delivery via <strong>${process.env.GMAIL_USER}</strong> is verified and working.</p>
+            </div>`,
+        });
+        return { ok: true };
+    } catch (err: any) {
+        return { ok: false, error: err?.message || 'SMTP send failed' };
+    }
 }
 
 /**
@@ -280,11 +338,11 @@ export async function sendVigilConfirmationEmail(data: {
       <meta charset="utf-8">
       <title>Your Vigil Flame is Burning</title>
     </head>
-    <body style="margin: 0; padding: 0; background-color: #0a0612; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #f3f4f6;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0612; padding: 40px 20px;">
+    <body style="margin: 0; padding: 0; background-color: #120E0A; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #FAF6EE;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #120E0A; padding: 40px 20px;">
         <tr>
           <td align="center">
-            <table width="100%" style="max-width: 540px; background: linear-gradient(180deg, #160d29 0%, #0d071a 100%); border: 2px solid #d4af37; border-radius: 20px; overflow: hidden; padding: 36px 28px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+            <table width="100%" style="max-width: 540px; background: linear-gradient(180deg, #18120D 0%, #120E0A 100%); border: 2px solid #D4AF37; border-radius: 20px; overflow: hidden; padding: 36px 28px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
               <tr>
                 <td>
                   <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: #d4af37; margin: 0 0 8px 0; font-weight: bold;">Sanctuary of Perpetual Prayer</p>
@@ -337,7 +395,7 @@ export async function sendVigilConfirmationEmail(data: {
             return true;
         }
 
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.GMAIL_USER,
@@ -379,11 +437,11 @@ export async function sendMassConfirmationEmail(data: {
       <meta charset="utf-8">
       <title>Holy Mass Offering Certificate</title>
     </head>
-    <body style="margin: 0; padding: 0; background-color: #0a0612; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #f3f4f6;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0612; padding: 40px 20px;">
+    <body style="margin: 0; padding: 0; background-color: #120E0A; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #FAF6EE;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #120E0A; padding: 40px 20px;">
         <tr>
           <td align="center">
-            <table width="100%" style="max-width: 540px; background: linear-gradient(180deg, #140b24 0%, #080410 100%); border: 2px solid #d4af37; border-radius: 20px; overflow: hidden; padding: 36px 28px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+            <table width="100%" style="max-width: 540px; background: linear-gradient(180deg, #18120D 0%, #120E0A 100%); border: 2px solid #D4AF37; border-radius: 20px; overflow: hidden; padding: 36px 28px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
               <tr>
                 <td>
                   <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: #d4af37; margin: 0 0 8px 0; font-weight: bold;">Sanctuary of Perpetual Prayer</p>
@@ -430,7 +488,7 @@ export async function sendMassConfirmationEmail(data: {
             return true;
         }
 
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.GMAIL_USER,
@@ -466,11 +524,11 @@ export async function sendVigilCompletedEmail(data: {
     <!DOCTYPE html>
     <html>
     <head><meta charset="utf-8"></head>
-    <body style="margin: 0; padding: 0; background-color: #0a0612; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #f3f4f6;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0612; padding: 40px 20px;">
+    <body style="margin: 0; padding: 0; background-color: #120E0A; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #FAF6EE;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #120E0A; padding: 40px 20px;">
         <tr>
           <td align="center">
-            <table width="100%" style="max-width: 540px; background: linear-gradient(180deg, #140b24 0%, #080410 100%); border: 2px solid #d4af37; border-radius: 20px; overflow: hidden; padding: 36px 28px; text-align: center;">
+            <table width="100%" style="max-width: 540px; background: linear-gradient(180deg, #18120D 0%, #120E0A 100%); border: 2px solid #D4AF37; border-radius: 20px; overflow: hidden; padding: 36px 28px; text-align: center;">
               <tr>
                 <td>
                   <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: #d4af37; margin: 0 0 8px 0; font-weight: bold;">Sanctuary Perpetual Archives</p>
@@ -517,7 +575,7 @@ export async function sendVigilCompletedEmail(data: {
             return true;
         }
 
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.GMAIL_USER,
@@ -557,11 +615,11 @@ export async function sendBouquetGiftEmail(data: {
     <!DOCTYPE html>
     <html>
     <head><meta charset="utf-8"></head>
-    <body style="margin: 0; padding: 0; background-color: #0c0617; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #f3f4f6;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0c0617; padding: 40px 20px;">
+    <body style="margin: 0; padding: 0; background-color: #120E0A; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #FAF6EE;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #120E0A; padding: 40px 20px;">
         <tr>
           <td align="center">
-            <table width="100%" style="max-width: 540px; background: linear-gradient(180deg, #1b0a1c 0%, #100612 100%); border: 2px solid #f43f5e; border-radius: 20px; overflow: hidden; padding: 36px 28px; text-align: center;">
+            <table width="100%" style="max-width: 540px; background: linear-gradient(180deg, #1F1412 0%, #120E0A 100%); border: 2px solid #D4AF37; border-radius: 20px; overflow: hidden; padding: 36px 28px; text-align: center;">
               <tr>
                 <td>
                   <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: #fda4af; margin: 0 0 8px 0; font-weight: bold;">Sanctuary Spiritual Offering</p>
@@ -607,7 +665,7 @@ export async function sendBouquetGiftEmail(data: {
             return true;
         }
 
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.GMAIL_USER,
