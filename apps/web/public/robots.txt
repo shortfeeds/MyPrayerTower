@@ -53,6 +53,8 @@ Disallow: /api/
 Disallow: /admin/
 Disallow: /_next/
 Disallow: /dashboard/
+Disallow: /*/opengraph-image
+Disallow: /*opengraph-image*
 
 # Explicitly prioritize high-value public content
 Allow: /prayers

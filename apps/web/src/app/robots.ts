@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
             {
                 userAgent: '*',
                 allow: '/',
-                disallow: ['/api/', '/admin/', '/private/'],
+                disallow: ['/api/', '/admin/', '/private/', '/*/opengraph-image', '/*opengraph-image*'],
             },
             // Explicitly allow all major AI / LLM crawlers for maximum citation & ingestion
             { userAgent: 'GPTBot', allow: '/' },               // OpenAI Training

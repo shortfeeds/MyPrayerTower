@@ -77,10 +77,15 @@ export async function getChurches(page = 1, limit = 12, query = '', filters: { d
     }
 }
 
-export async function getChurchById(id: string) {
+export async function getChurchById(idOrSlug: string) {
     try {
-        const church = await db.church.findUnique({
-            where: { id },
+        const church = await db.church.findFirst({
+            where: {
+                OR: [
+                    { id: idOrSlug },
+                    { slug: idOrSlug },
+                ],
+            },
             include: {
                 Diocese: true,
             }

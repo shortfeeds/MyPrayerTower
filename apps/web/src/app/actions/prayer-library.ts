@@ -121,13 +121,16 @@ export async function getPrayerBySlug(slug: string) {
             }
         });
 
-        // Resilient smart lookup: if exact slug is not found, try slug contains or title match
+        // Resilient smart lookup: if exact slug is not found, try id, slug contains/endsWith, or title match
         if (!prayer) {
             const normalized = slug.replace(/-/g, ' ').trim();
             prayer = await db.prayer.findFirst({
                 where: {
                     is_active: true,
                     OR: [
+                        { id: slug },
+                        { slug: { equals: slug, mode: 'insensitive' } },
+                        { slug: { endsWith: `-${slug}`, mode: 'insensitive' } },
                         { slug: { contains: slug, mode: 'insensitive' } },
                         { title: { contains: normalized, mode: 'insensitive' } },
                     ]
