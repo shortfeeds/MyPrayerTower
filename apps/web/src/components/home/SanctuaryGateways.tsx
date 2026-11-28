@@ -84,14 +84,15 @@ export function SanctuaryGateways() {
                                 className={`group relative rounded-t-[110px] rounded-b-2xl bg-[#18120D] border ${card.accent} overflow-hidden shadow-2xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col`}
                             >
                                 {/* Gothic Arch Image Header */}
-                                <div className="relative h-48 overflow-hidden">
+                                <div className="relative h-52 overflow-hidden bg-[#0E0A07] p-2 flex items-center justify-center">
                                     <img
                                         src={card.image}
                                         alt={card.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        loading="lazy"
+                                        decoding="async"
+                                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#18120D] via-[#18120D]/30 to-transparent" />
-                                    <span className="absolute top-4 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#120E0A]/85 border border-gold-500/40 text-[10px] font-bold tracking-widest text-gold-300 whitespace-nowrap">
+                                    <span className="absolute top-4 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#120E0A]/90 border border-gold-500/40 text-[10px] font-bold tracking-widest text-gold-300 whitespace-nowrap">
                                         {card.badge}
                                     </span>
                                 </div>

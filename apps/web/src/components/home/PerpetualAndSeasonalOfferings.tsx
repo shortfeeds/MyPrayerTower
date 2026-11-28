@@ -60,7 +60,7 @@ export function PerpetualAndSeasonalOfferings() {
                             Keep a Sacred Flame Burning Night &amp; Day for Your Family
                         </h2>
                         <p className="text-sm text-[#CFC5B4] leading-relaxed">
-                            Sponsor the 7-Day Tabernacle Lamp ($25) or enroll in a Perpetual Vigil — your family&apos;s name &amp; intention remain before the Altar with monthly consecration certificates.
+                            Sponsor the 7-Day Tabernacle Lamp or enroll in a Perpetual Vigil — your family&apos;s name &amp; intention remain before the Altar with monthly consecration certificates.
                         </p>
                         <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-xs text-gold-200 pt-1">
                             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> Family name displayed</span>
@@ -76,7 +76,7 @@ export function PerpetualAndSeasonalOfferings() {
                             className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#E8CA68] to-[#D4AF37] text-[#120E0A] font-extrabold text-sm shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2"
                         >
                             <Flame className="w-4 h-4 fill-current" />
-                            <span>Tabernacle Lamp — $25</span>
+                            <span>Sponsor Tabernacle Lamp</span>
                         </button>
                         <button
                             type="button"
@@ -109,21 +109,22 @@ export function PerpetualAndSeasonalOfferings() {
                                 className="rounded-2xl bg-[#18120D] border border-gold-500/25 hover:border-gold-400 overflow-hidden flex flex-col justify-between shadow-xl transition-all"
                             >
                                 <div>
-                                    <div className="relative h-36 overflow-hidden bg-[#120E0A]">
+                                    <div className="relative h-56 overflow-hidden bg-[#0E0A07] p-3 flex items-center justify-center">
                                         <img
                                             src={bundle.image}
                                             alt={bundle.title}
-                                            className="w-full h-full object-cover opacity-85"
+                                            loading="lazy"
+                                            decoding="async"
+                                            className="w-full h-full object-contain"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#18120D] via-[#18120D]/25 to-transparent" />
-                                        <span className="absolute top-3 left-3 inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#120E0A]/85 text-gold-300 border border-gold-500/35">
+                                        <span className="absolute top-3 left-3 inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#120E0A]/90 text-gold-300 border border-gold-500/35">
                                             {bundle.badge}
                                         </span>
                                     </div>
                                     <div className="p-6 pb-0">
                                         <h4 className="font-display text-xl font-bold text-[#FAF6EE]">{bundle.title}</h4>
-                                        <div className="text-2xl font-mono font-black text-gold-300 mt-1">
-                                            ${bundle.price.toFixed(2)} <span className="text-xs font-normal text-[#CFC5B4]">offering</span>
+                                        <div className="text-xs font-semibold text-gold-300 mt-1">
+                                            {bundle.season} • Optional Offering Inside
                                         </div>
                                         <p className="text-xs text-[#CFC5B4] mt-3 leading-relaxed">{bundle.description}</p>
                                     </div>

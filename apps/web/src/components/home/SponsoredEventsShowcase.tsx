@@ -276,16 +276,15 @@ export function SponsoredEventsShowcase() {
                             className="rounded-2xl bg-[#120E0A]/90 border border-gold-500/25 hover:border-gold-400 overflow-hidden flex flex-col justify-between transition-all hover:-translate-y-1 shadow-xl"
                         >
                             <div>
-                                <div className="relative h-32 overflow-hidden">
+                                <div className="relative h-44 overflow-hidden bg-[#0E0A07] p-2 flex items-center justify-center">
                                     <img
                                         src={pkg.image}
                                         alt={pkg.title}
                                         loading="lazy"
                                         decoding="async"
-                                        className="w-full h-full object-cover opacity-85"
+                                        className="w-full h-full object-contain"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#120E0A] via-[#120E0A]/30 to-transparent" />
-                                    <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#120E0A]/85 text-gold-300 border border-gold-500/40">
+                                    <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#120E0A]/90 text-gold-300 border border-gold-500/40">
                                         {pkg.badge}
                                     </span>
                                 </div>
